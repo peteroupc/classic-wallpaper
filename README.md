@@ -1,4 +1,4 @@
-## Classic Wallpaper Challenge
+# Classic Tiled Wallpaper Challenge
 
 This repository is intended to hold public-domain wallpaper images and source code for the following challenge.
 
