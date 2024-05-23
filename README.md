@@ -45,6 +45,14 @@ Also welcome would be computer code (released to the public domain or under Crea
 
 meeting the requirements given above.
 
+## Examples
+
+|  Name  | Made by  |  Colors  |  Size  | License/Notes |
+  --- | --- | --- | -- | --- |
+| truchet2color.png | peteroupc | Black and white | 32x32 | CC0 |
+| truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 |
+| truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0; generated from truchet3color [^4] |
+
 <a id=License></a>
 
 ## License
@@ -52,3 +60,5 @@ meeting the requirements given above.
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under [**Creative Commons Zero**](https://creativecommons.org/publicdomain/zero/1.0/).
 
 [^3]: Tileable wallpapers employing more than 256 colors are acceptable, though not preferable, if they otherwise meet all requirements here, since they can be reduced to this color palette using known techniques for color dithering.
+
+[^4]: Generated using the following [ImageMagick](https://imagemagick.org/) command: `convert truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.

@@ -1,0 +1,13 @@
+*.Cache
+*.bat
+*.cache
+*.jar
+*.map
+*.nupkg
+*.pyc
+*.userprefs
+.nuget/
+.vs/
+encodingfldr/
+packages/
+target/
