@@ -94,9 +94,6 @@ def classiccolors():
         [128, 128, 0],
     ]
 
-def tileable():
-    return "\\( +clone -flip \\) -append \\( +clone -flop \\) +append"
-
 def _isqrtceil(i):
     r = math.isqrt(i)
     return r if r * r == i else r + 1
@@ -262,7 +259,62 @@ def magickgradientditherfilterrandom():
             basecolors = [rgb1, rgb2]
     return magickgradientditherfilter(rgb1, rgb2, basecolors, hue=hue)
 
+def tileable():
+    # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
+    # This command can be applied to arbitrary images to render them
+    # tileable.
+    # NOTE: "-append" is a vertical append; "+append" is a horizontal append;
+    # "-flip" reverses the row order; "-flop" reverses the column order.
+    return "\\( +clone -flip \\) -append \\( +clone -flop \\) +append"
+
+def groupP2():
+    # ImageMagick command to generate a P2 wallpaper group tiling pattern.
+    # For best results, the command should be applied to images whose
+    # last row's first half is a mirror of its second half.
+    return "\\( +clone -flip -flop \\) -append"
+
+def groupPm():
+    # ImageMagick command to generate a Pm wallpaper group tiling pattern.
+    return "\\( +clone -flop \\) +append"
+
+def groupPg():
+    # ImageMagick command to generate a Pg wallpaper group tiling pattern.
+    # For best results, the command should be applied to images whose
+    # last column's first half is a mirror of its second half.
+    return "\\( +clone -flip \\) -append"
+
+def groupPgg():
+    # ImageMagick command to generate a Pgg wallpaper group tiling pattern.
+    # For best results, the command should be applied to images whose
+    # last row's and last column's first half is a mirror of its
+    # second half.
+    return "-write mpr:wpgroup -delete 0 " +\
+      "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "+\
+      "\\( \\( mpr:wpgroup -flip -flop \\) mpr:wpgroup +append \\) "+\
+      "-append"
+
+def groupCmm():
+    # ImageMagick command to generate a Cmm wallpaper group tiling pattern.
+    # For best results, the command should be applied to images whose
+    # last row's and last column's first half is a mirror of its
+    # second half.
+    return "\\( +clone -flip \\) -append -write mpr:wpgroup -delete 0 " +\
+      "\\( mpr:wpgroup \\( mpr:wpgroup -flop \\) +append \\) "+\
+      "\\( \\( mpr:wpgroup -flop \\) mpr:wpgroup +append \\) "+\
+      "-append"
+
+def groupPmg():
+    # ImageMagick command to generate a Pmg wallpaper group tiling pattern.
+    # For best results, the command should be applied to images whose
+    # last column's first half is a mirror of its
+    # second half.
+    return "-write mpr:wpgroup -delete 0 " +\
+      "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "+\
+      "\\( \\( mpr:wpgroup -flip \\) \\( mpr:wpgroup -flop \\) +append \\) "+\
+      "-append"
+
 def horizhatch(f, hatchspace=8):
+    # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
     size = hatchspace * 4
     fd = open(f, "wb")
     fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
@@ -272,6 +324,7 @@ def horizhatch(f, hatchspace=8):
     fd.close()
 
 def crosshatch(f, hhatchspace=8, vhatchspace=8):
+    # Generate a portable pixelmap (PPM) of a horizontal and vertical hatch pattern.
     fd = open(f, "wb")
     width = vhatchspace * 4
     height = hhatchspace * 4
@@ -291,6 +344,7 @@ def crosshatch(f, hhatchspace=8, vhatchspace=8):
     fd.close()
 
 def verthatch(f, hatchspace=8):
+    # Generate a portable pixelmap (PPM) of a vertical hatch pattern.
     size = hatchspace * 4
     fd = open(f, "wb")
     fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))

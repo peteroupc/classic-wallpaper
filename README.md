@@ -53,6 +53,10 @@ meeting the requirements given above.
 | truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
 
+## Notes
+
+Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one side pointing north in two of them, and another parallelogram in the remaining five.
+
 <a id=License></a>
 
 ## License
