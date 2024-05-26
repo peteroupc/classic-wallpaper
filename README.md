@@ -4,7 +4,7 @@ This repository is intended to hold public-domain wallpaper images and source co
 
 Given that desktop backgrounds today tend to cover the full computer screen, to employ thousands of colors, and to have a high-definition resolution (1920&times;1080 or larger), rendering tileable backgrounds with limited colors and pixel size ever harder to find, I make the following challenge.
 
-Create a tileable desktop wallpaper image meeting the following requirements.
+Create a tileable desktop wallpaper image [^1] meeting the following requirements.
 
 - The image employs one of the following color options:
     - Two colors only.
@@ -53,15 +53,13 @@ meeting the requirements given above.
 | truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
 
-## Notes
-
-Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.
-
 <a id=License></a>
 
 ## License
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under [**Creative Commons Zero**](https://creativecommons.org/publicdomain/zero/1.0/).
+
+[^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.
 
 [^3]: Tileable wallpapers employing more than 256 colors are acceptable, though not preferable, if they otherwise meet all requirements here, since they can be reduced to this color palette using known techniques for color dithering.
 
