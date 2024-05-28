@@ -354,6 +354,29 @@ def verthatch(f, hatchspace=8):
         )
     fd.close()
 
+def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
+    # Generate a portable pixelmap (PPM) of a diagonal stripe pattern
+    if stripesize>wpsize: raise ValueError
+    if wpsize<=0: raise ValueError
+    fd = open(f, "wb")
+    fd.write(bytes("P6\n%d %d\n255\n" % (wpsize, wpsize), "utf-8"))
+    image = [255 for i in range(wpsize * wpsize * 3)]
+    # Draw the stripe
+    xpstart=-(stripesize//2)
+    for y in range(wpsize):
+        yp = y * wpsize * 3
+        for x in range(stripesize):
+            xp = x + xpstart
+            while xp<0: xp+=wpsize
+            while xp>=wpsize: xp-=wpsize
+            if reverse: xp = wpsize-1-xp
+            image[yp + xp * 3] = 0
+            image[yp + xp * 3 + 1] = 0
+            image[yp + xp * 3 + 2] = 0
+        xpstart+=1
+    fd.write(bytes(image))
+    fd.close()
+
 def diaggradient(f):
     size = 64
     fd = open(f, "wb")

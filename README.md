@@ -15,6 +15,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
         - Allows for hue shifting to, say, a black-to-red palette.
     - 16-color [**canonical CGA palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
     - 16-color VGA palette (light gray; or each color component is 0 or 255; or each color component is 0 or 128).[^3]
+    - The VGA palette plus the following four colors set by legacy versions of Windows: (192,220,192), (160,160,164), (255,251,240), (166,202,240).
     - Up to four colors from the VGA palette.
     - Up to four colors from the canonical CGA palette.
     - Up to eight colors from the VGA palette.
@@ -49,6 +50,8 @@ meeting the requirements given above.
 
 |  Name  | Made by  |  Colors  |  Size  | License/Notes |
   --- | --- | --- | -- | --- |
+| dstripe.png | peteroupc | Black and white | 32x32 | CC0 |
+| dzigzag.png | peteroupc | Black and white | 64x32 | CC0 [^2] |
 | truchet2color.png | peteroupc | Black and white | 32x32 | CC0 |
 | truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
@@ -60,6 +63,8 @@ meeting the requirements given above.
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under [**Creative Commons Zero**](https://creativecommons.org/publicdomain/zero/1.0/).
 
 [^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.
+
+[^2]: Generated from `dstripe` using the following ImageMagick command: `convert dstripe.png \( +clone -flop \) +append dzigzag.png`.
 
 [^3]: Tileable wallpapers employing more than 256 colors are acceptable, though not preferable, if they otherwise meet all requirements here, since they can be reduced to this color palette using known techniques for color dithering.
 
