@@ -100,7 +100,7 @@ def _isqrtceil(i):
 
 # Returns an ImageMagick filter string to generate a desktop background from an image, in three steps.
 # 1. If rgb1 and rgb2 are not nil, converts the input image to grayscale, then translates the grayscale
-# palette to a gradient starting at rgb1 for black ( a 3-item array of the red,
+# palette to a gradient starting at rgb1 for black (a 3-item array of the red,
 # green, and blue components in that order; e.g., [2,10,255] where each
 # component is from 0 through 255) and ending at rgb2 for white (same format as rgb1).
 # Raises an error if rgb1 or rgb2 has a length less than 3.
@@ -307,14 +307,21 @@ def groupCmm():
         + "-append"
     )
 
-def diamondTiling():
+def diamondTiling(bgcolor):
     # ImageMagick command to generating a diamond tiling pattern (or a brick tiling
     # pattern if the image the command is applied to has only its top half
     # or its bottom half drawn).  For best results, the command should be applied
-    # to images with an even width and height.
+    # to images with an even width and height. 'bgcolor' is the background color,
+    # either None or a 3-item array of the red,
+    # green, and blue components in that order; e.g., [2,10,255] where each
+    # component is from 0 through 255; default is None, or no background color.
+    bc = ""
+    if bgcolor:
+       bc = " \\( -size 100%x100% xc:#%02x%02x%02x \\) -compose DstOver -composite" % (
+          int(bg[0]), int(bg[1]), int(bg[2]))
     return (
         "\\( +clone \\( +clone \\) -append \\( +clone \\) +append -chop "
-        + "25%x25% \\) -compose Over -composite"
+        + "25%x25% \\) -compose Over -composite" + bc
     )
 
 def groupPmg():
