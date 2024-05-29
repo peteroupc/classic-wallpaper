@@ -288,33 +288,51 @@ def groupPgg():
     # For best results, the command should be applied to images whose
     # last row's and last column's first half is a mirror of its
     # second half.
-    return "-write mpr:wpgroup -delete 0 " +\
-      "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "+\
-      "\\( \\( mpr:wpgroup -flip -flop \\) mpr:wpgroup +append \\) "+\
-      "-append"
+    return (
+        "-write mpr:wpgroup -delete 0 "
+        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "
+        + "\\( \\( mpr:wpgroup -flip -flop \\) mpr:wpgroup +append \\) "
+        + "-append"
+    )
 
 def groupCmm():
     # ImageMagick command to generate a Cmm wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last row's and last column's first half is a mirror of its
     # second half.
-    return "\\( +clone -flip \\) -append -write mpr:wpgroup -delete 0 " +\
-      "\\( mpr:wpgroup \\( mpr:wpgroup -flop \\) +append \\) "+\
-      "\\( \\( mpr:wpgroup -flop \\) mpr:wpgroup +append \\) "+\
-      "-append"
+    return (
+        "\\( +clone -flip \\) -append -write mpr:wpgroup -delete 0 "
+        + "\\( mpr:wpgroup \\( mpr:wpgroup -flop \\) +append \\) "
+        + "\\( \\( mpr:wpgroup -flop \\) mpr:wpgroup +append \\) "
+        + "-append"
+    )
+
+def diamondTiling():
+    # ImageMagick command to generating a diamond tiling pattern (or a brick tiling
+    # pattern if the image the command is applied to has only its top half
+    # or its bottom half drawn).  For best results, the command should be applied
+    # to images with an even width and height.
+    return (
+        "\\( +clone \\( +clone \\) -append \\( +clone \\) +append -chop "
+        + "25%x25% \\) -compose Over -composite"
+    )
 
 def groupPmg():
     # ImageMagick command to generate a Pmg wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last column's first half is a mirror of its
     # second half.
-    return "-write mpr:wpgroup -delete 0 " +\
-      "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "+\
-      "\\( \\( mpr:wpgroup -flip \\) \\( mpr:wpgroup -flop \\) +append \\) "+\
-      "-append"
+    return (
+        "-write mpr:wpgroup -delete 0 "
+        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "
+        + "\\( \\( mpr:wpgroup -flip \\) \\( mpr:wpgroup -flop \\) +append \\) "
+        + "-append"
+    )
 
 def horizhatch(f, hatchspace=8):
     # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
+    if hatchspace <= 0:
+        raise ValueError
     size = hatchspace * 4
     fd = open(f, "wb")
     fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
@@ -326,6 +344,10 @@ def horizhatch(f, hatchspace=8):
 def crosshatch(f, hhatchspace=8, vhatchspace=8):
     # Generate a portable pixelmap (PPM) of a horizontal and vertical hatch pattern.
     fd = open(f, "wb")
+    if hhatchspace <= 0:
+        raise ValueError
+    if vhatchspace <= 0:
+        raise ValueError
     width = vhatchspace * 4
     height = hhatchspace * 4
     fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
@@ -345,6 +367,8 @@ def crosshatch(f, hhatchspace=8, vhatchspace=8):
 
 def verthatch(f, hatchspace=8):
     # Generate a portable pixelmap (PPM) of a vertical hatch pattern.
+    if hatchspace <= 0:
+        raise ValueError
     size = hatchspace * 4
     fd = open(f, "wb")
     fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
@@ -356,24 +380,29 @@ def verthatch(f, hatchspace=8):
 
 def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
     # Generate a portable pixelmap (PPM) of a diagonal stripe pattern
-    if stripesize>wpsize: raise ValueError
-    if wpsize<=0: raise ValueError
+    if stripesize > wpsize:
+        raise ValueError
+    if wpsize <= 0:
+        raise ValueError
     fd = open(f, "wb")
     fd.write(bytes("P6\n%d %d\n255\n" % (wpsize, wpsize), "utf-8"))
     image = [255 for i in range(wpsize * wpsize * 3)]
     # Draw the stripe
-    xpstart=-(stripesize//2)
+    xpstart = -(stripesize // 2)
     for y in range(wpsize):
         yp = y * wpsize * 3
         for x in range(stripesize):
             xp = x + xpstart
-            while xp<0: xp+=wpsize
-            while xp>=wpsize: xp-=wpsize
-            if reverse: xp = wpsize-1-xp
+            while xp < 0:
+                xp += wpsize
+            while xp >= wpsize:
+                xp -= wpsize
+            if reverse:
+                xp = wpsize - 1 - xp
             image[yp + xp * 3] = 0
             image[yp + xp * 3 + 1] = 0
             image[yp + xp * 3 + 2] = 0
-        xpstart+=1
+        xpstart += 1
     fd.write(bytes(image))
     fd.close()
 
