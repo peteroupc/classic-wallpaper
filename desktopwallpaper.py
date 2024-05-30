@@ -317,11 +317,16 @@ def diamondTiling(bgcolor):
     # component is from 0 through 255; default is None, or no background color.
     bc = ""
     if bgcolor:
-       bc = " \\( -size 100%x100% xc:#%02x%02x%02x \\) -compose DstOver -composite" % (
-          int(bg[0]), int(bg[1]), int(bg[2]))
+        bc = " \\( -size 100%x100%"
+        bc += " xc:#%02x%02x%02x \\) -compose DstOver -composite" % (
+            int(bg[0]),
+            int(bg[1]),
+            int(bg[2]),
+        )
     return (
         "\\( +clone \\( +clone \\) -append \\( +clone \\) +append -chop "
-        + "25%x25% \\) -compose Over -composite" + bc
+        + "25%x25% \\) -compose Over -composite"
+        + bc
     )
 
 def groupPmg():
@@ -374,7 +379,7 @@ def crosshatch(f, hhatchspace=8, vhatchspace=8):
 
 def verthatch(f, hatchspace=8):
     # Generate a portable pixelmap (PPM) of a vertical hatch pattern.
-    if hatchspace <= 0:
+    if hatchspace <= 0 or int(hatchspace) != hatchspace:
         raise ValueError
     size = hatchspace * 4
     fd = open(f, "wb")
@@ -389,10 +394,8 @@ def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
     # Generate a portable pixelmap (PPM) of a diagonal stripe pattern
     if stripesize > wpsize:
         raise ValueError
-    if wpsize <= 0:
+    if wpsize <= 0 or int(wpsize) != wpsize:
         raise ValueError
-    fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (wpsize, wpsize), "utf-8"))
     image = [255 for i in range(wpsize * wpsize * 3)]
     # Draw the stripe
     xpstart = -(stripesize // 2)
@@ -410,11 +413,15 @@ def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
             image[yp + xp * 3 + 1] = 0
             image[yp + xp * 3 + 2] = 0
         xpstart += 1
+    fd = open(f, "wb")
+    fd.write(bytes("P6\n%d %d\n255\n" % (wpsize, wpsize), "utf-8"))
     fd.write(bytes(image))
     fd.close()
 
-def diaggradient(f):
-    size = 64
+def diaggradient(f, size=32):
+    # Generate a portable pixelmap (PPM) of a diagonal linear gradient
+    if size <= 0 or int(size) != size:
+        raise ValueError
     fd = open(f, "wb")
     fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
     row = [0 for i in range(size * 3)]
@@ -426,6 +433,57 @@ def diaggradient(f):
             row[x * 3 + 2] = r
         fd.write(bytes(row))
     fd.close()
+
+import random
+def noiseppm(f, size=32):
+    # Generate a portable pixelmap (PPM) of noise
+    if size <= 0 or int(size) != size:
+        raise ValueError
+    fd = open(f, "wb")
+    fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
+    row = [0 for i in range(size * 3)]
+    for y in range(size):
+        for x in range(size):
+            rarr = [0,255,192,192,192,192,192,192,128]
+            r=rarr[random.randint(0,len(rarr)-1)]
+            row[x * 3] = r
+            row[x * 3 + 1] = r
+            row[x * 3 + 2] = r
+        fd.write(bytes(row))
+    fd.close()
+
+def whitenoiseppm(f, size=64):
+    # Generate a portable pixelmap (PPM) of noise
+    if size <= 0 or int(size) != size:
+        raise ValueError
+    fd = open(f, "wb")
+    fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
+    row = [0 for i in range(size * 3)]
+    for y in range(size):
+        for x in range(size):
+            r=random.randint(0,255)
+            row[x * 3] = r
+            row[x * 3 + 1] = r
+            row[x * 3 + 2] = r
+        fd.write(bytes(row))
+    fd.close()
+
+def _join(ls):
+  ret=""
+  for i in range(len(ls)):
+    if i>0: ret+=","
+    ret+=str(ls[i])
+  return ret
+
+def brushedmetal():
+    # ImageMagick command to generate a brushed metal texture from a noise image.
+    # A brushed metal texture was featured in Mac OS X Panther and
+    # Tiger (10.3, 10.4) and other Apple products
+    # around the time of either OS's release.
+    return (
+        "+clone +append -morphology Convolve \"50x1+49+0:" + _join([1/50 for i in range(50)])+\
+        "\" -crop 50%x0+0+0"
+    )
 
 # What follows are methods for generating scalable vector graphics (SVGs) of
 # classic OS style borders and button controls.  Although the SVGs are scalable
