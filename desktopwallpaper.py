@@ -123,27 +123,25 @@ def classiccolors2():
                     colors.append(cij)
     return colors
 
+def _ceil(x,y):
+  return -(-x // y)
+
 def cgacolors2():
     # colors in cgacolors() and their "half-and-half" versions
     colors = []
-    acc = []
     cc = cgacolors()
     for c in cc:
         cij = [x for x in c]
         if cij not in colors:
             colors.append(cij)
-    for i in range(len(acc)):
-        for j in range(i + 1, len(acc)):
-            ci = acc[i]
-            cj = acc[j]
-            cij = [(a + b + 1) // 2 for a, b in zip(ci, cj)]
+    for i in range(len(cc)):
+        for j in range(i + 1, len(cc)):
+            ci = cc[i]
+            cj = cc[j]
+            cij = [a+_ceil(b-a, 2) for a, b in zip(ci, cj)]
             if cij not in colors:
-                # print(cij)
                 colors.append(cij)
     return colors
-
-print(classiccolors2())
-print(len(classiccolors2()))
 
 def _isqrtceil(i):
     r = math.isqrt(i)
@@ -1073,35 +1071,45 @@ def drawbutton(
     sh,
     dksh,
     btn,  # button face color
-    frame=None,  # optional frame color
+    frame,
     squareedge=True,
+    isDefault=False # whether the button is a default button
 ):
-    edge = 0 if frame == None else 1
-    return buttonup(
+    if lt==None: lt=btn
+    if dksh==None: dksh=sh
+    if isDefault:
+      return _drawedgebotdom(x0,y0,x1,y1,frame,frame) + \
+             _drawedgebotdom(x0+1,y0+1,x1-1,y1-1,sh,sh) + \
+             _drawinnerface(x0+2,y0+2,x1-2,y1-2,btn)
+    else:
+      edge = 1 if isDefault else 0
+      return buttondown(
         x0 + edge, y0 + edge, x1 - edge, y1 - edge, hilt, lt, sh, dksh, btn
-    ) + ("" if frame is None else _drawrsedge(x0, y0, x1, y1, frame, frame, squareedge))
+      )
 
-def draw16buttonsquare(x0, y0, x1, y1, lt, sh, btn, frame=None, squareedge=True):
-    return drawbutton(x0, y0, x1, y1, lt, btn, sh, sh, btn, frame, squareedge)
-
-def draw16buttonfocus(
+def drawbuttonpush(
     x0,
     y0,
     x1,
     y1,
+    hilt,
     lt,
     sh,
+    dksh,
     btn,  # button face color
-    frame=None,  # optional frame color
-    squareframe=False,
+    frame,
+    squareedge=True,
+    isDefault=False # whether the button is a default button
 ):
-    return draw16button(x0 + 1, y0 + 1, x1 - 1, y1 - 1, lt, sh, btn, None) + (
-        ""
-        if frame is None
-        else _drawrsedge(x0, y0, x1, y1, frame, frame, squareframe)
-        + _drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
-    )
+    if lt==None: lt=btn
+    if dksh==None: dksh=sh
+    # If isDefault is True, no frame is drawn and no room is left for the frame
+    edge = 1 if isDefault else 0
+    return buttonup(
+        x0 + edge, y0 + edge, x1 - edge, y1 - edge, hilt, lt, sh, dksh, btn
+    ) + ("" if not isDefault else _drawrsedge(x0, y0, x1, y1, frame, frame, squareedge))
 
+# Draws a pressed button in 16-bit style
 def draw16buttonpush(
     x0,
     y0,
@@ -1112,18 +1120,22 @@ def draw16buttonpush(
     btn,  # button face color
     frame=None,  # optional frame color
     squareframe=False,
+    isDefault=False, # whether the button is a default button
 ):
+    # Leave 1-pixel room for the frame even if 'frame' is None
+    edge=2 if isDefault else 1
     return (
-        _drawedgetopdom(x0 + 2, y0 + 2, x1 - 2, y1 - 2, sh, btn)
-        + _rect(x0 + 3, y0 + 3, x1 - 3, y1 - 3, btn)
+        _drawedgetopdom(x0 + edge, y0 + edge, x1 - edge, y1 - edge, sh, btn)
+        + _rect(x0 + edge + 1, y0 + edge + 1, x1 - edge - 1, y1 - edge - 1, btn)
         + (
             ""
             if frame is None
             else _drawrsedge(x0, y0, x1, y1, frame, frame, squareframe)
-            + _drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
+            + (_drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame) if isDefault else "")
         )
     )
 
+# Draws a button in 16-bit style
 def draw16button(
     x0,
     y0,
@@ -1134,15 +1146,19 @@ def draw16button(
     btn,  # button face color
     frame=None,  # optional frame color
     squareframe=False,
+    isDefault=False
 ):
+    # Leave 1-pixel room for the frame even if 'frame' is None
+    edge=2 if isDefault else 1
     return (
-        _drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, lt, sh)
-        + _drawedgebotdom(x0 + 2, y0 + 2, x1 - 2, y1 - 2, lt, sh)
-        + _rect(x0 + 3, y0 + 3, x1 - 3, y1 - 3, btn)
+        _drawedgebotdom(x0 + edge, y0 + edge, x1 - edge, y1 - edge, lt, sh)
+        + _drawedgebotdom(x0 + edge+1, y0 + edge+1, x1 - edge-1, y1 - edge-1, lt, sh)
+        + _rect(x0 + edge+2, y0 + edge+2, x1 - edge-2, y1 - edge-2, btn)
         + (
             ""
             if frame is None
             else _drawrsedge(x0, y0, x1, y1, frame, frame, squareframe)
+            + (_drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame) if isDefault else "")
         )
     )
 

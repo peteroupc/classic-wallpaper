@@ -60,6 +60,35 @@ meeting the requirements given above.
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
 | boxes.png | peteroupc | VGA palette | 128x128 | CC0 |
 
+## Button and Border Styles
+
+Another challenge, related to classic user-interface style, this time relating to user interface elements.  Write computer code (released to the public domain or under Creative Commons Zero) to draw the following border and button styles:
+
+- Window border, field border, status field border, and grouping border.
+- Buttons and default buttons:
+    - Unpressed, pressed, mixed value, unavailable.
+- Buttons and default buttons in the option-set style:
+    - Unpressed, unavailable.
+- Toolbar buttons:
+    - Unpressed, hover, pressed, unavailable.
+- Checkboxes when set, checkboxes when unset:
+    - Unpressed, pressed, mixed value (same for both), unavailable.
+- Option buttons ("radio buttons") when set, option buttons when unset, sliders:
+    - Unpressed, pressed, unavailable.
+
+Using only the following colors and with some pixels allowed to be transparent:
+
+- Button highlight color (white by default).
+- Button "light" highlight color (by default, (192, 192, 192)).
+- Button shadow color (by default, (128, 128, 128)).
+- Button dark shadow color (black by default).
+- Button face color (by default, (192, 192, 192)).
+- Window frame color (black by default).
+
+It is allowed to use dithering to simulate the appearance of more colors using these six colors.
+
+The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect lots of other creative possibilities here, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
+
 <a id=License></a>
 
 ## License
