@@ -97,15 +97,16 @@ def classiccolors():
 
 def classiccolors2():
     # colors in classiccolors() and their "half-and-half" versions
+    colors=[]
     for a in [0, 64, 128, 192]:
         for b in [0, 64, 128, 192]:
             for c in [0, 64, 128, 192]:
                 cij = [a, b, c]
                 if cij not in colors:
                     colors.append(cij)
-    for a in [0, 128, 256]:
-        for b in [0, 128, 256]:
-            for c in [0, 128, 256]:
+    for a in [0, 128, 255]:
+        for b in [0, 128, 255]:
+            for c in [0, 128, 255]:
                 cij = [a, b, c]
                 if cij not in colors:
                     colors.append(cij)
@@ -142,6 +143,41 @@ def cgacolors2():
             if cij not in colors:
                 colors.append(cij)
     return colors
+
+def classicdithercolors():
+    colors = {}
+    cc = classiccolors()
+    for c in cc:
+        cij = c[0]|(c[1]<<8)|(c[2]<<16)
+        if cij not in colors:
+            colors[cij]=[cij,cij]
+    for i in range(len(cc)):
+        for j in range(i + 1, len(cc)):
+            ci = cc[i]
+            cj = cc[j]
+            ci1 = ci[0]|(ci[1]<<8)|(ci[2]<<16)
+            cj1 = cj[0]|(cj[1]<<8)|(cj[2]<<16)
+            cij = ((ci[0]+cj[0]+1)//2)| \
+                  (((ci[1]+cj[1]+1)//2)<<8)| \
+                  (((ci[2]+cj[2]+1)//2)<<16)
+            if cij not in colors:
+                colors[cij]=[ci1,cj1]
+    return colors
+
+def classicditherimage(image,width,height):
+  if width<=0 or height<=0: raise ValueError
+  cdcolors=classicdithercolors()
+  for y in range(height):
+   yd=y*width
+   for x in range(width):
+    xp=yd+x
+    col=image[xp*3]|(image[xp*3]<<8)|(image[xp*3]<<16)
+    cd=cdcolors[col]
+    if not cd: raise ValueError
+    col=cd[0] if (x+y)%2==0 else cd[1]
+    image[xp*3]=col&0xFF
+    image[xp*3+1]=(col>>8)&0xFF
+    image[xp*3+2]=(col>>16)&0xFF
 
 def _isqrtceil(i):
     r = math.isqrt(i)
