@@ -21,6 +21,8 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     - Up to eight colors from the VGA palette.
     - 216-color "web safe" palette (each color component is a multiple of 51).[^3]
     - 216-color "web safe" palette plus VGA palette.[^3]
+    - The VGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 98 unique colors (each color component is 0, 64, 128, or 192; or each color component is 0, 128, or 255; or each color component is 96 or 160; or each color component is 96 or 224).
+    - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
     - The 64 colors displayable by EGA monitors (each color component is 0, 85, 170, or 255).[^3]
     - Up to 16 colors from the "web safe" palette.
     - Up to 16 colors from the "web safe" and VGA palettes.
@@ -56,6 +58,7 @@ meeting the requirements given above.
 | truchet2color.png | peteroupc | Black and white | 32x32 | CC0 |
 | truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
+| boxes.png | peteroupc | VGA palette | 128x128 | CC0 |
 
 <a id=License></a>
 
@@ -72,3 +75,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^4]: Generated from `truchet3color` using the following [ImageMagick](https://imagemagick.org/) command: `convert truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
 
 [^5]: Can be generated from `truchet2color` using the following ImageMagick command: `convert truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1x2 gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF-808080` indicates the two colors white and gray, respectively.
+
+[^6]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each up to the nearest integer.

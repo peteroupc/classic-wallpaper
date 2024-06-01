@@ -31,6 +31,7 @@
 import shlex
 import os
 import math
+import random
 
 def websafecolors():
     colors = []
@@ -78,7 +79,6 @@ def classiccolors():
     return [
         [0, 0, 0],
         [128, 128, 128],
-        [255, 255, 255],
         [192, 192, 192],
         [255, 0, 0],
         [128, 0, 0],
@@ -92,7 +92,58 @@ def classiccolors():
         [0, 128, 128],
         [255, 255, 0],
         [128, 128, 0],
+        [255, 255, 255],
     ]
+
+def classiccolors2():
+    # colors in classiccolors() and their "half-and-half" versions
+    for a in [0, 64, 128, 192]:
+        for b in [0, 64, 128, 192]:
+            for c in [0, 64, 128, 192]:
+                cij = [a, b, c]
+                if cij not in colors:
+                    colors.append(cij)
+    for a in [0, 128, 256]:
+        for b in [0, 128, 256]:
+            for c in [0, 128, 256]:
+                cij = [a, b, c]
+                if cij not in colors:
+                    colors.append(cij)
+    for a in [96, 160]:
+        for b in [96, 160]:
+            for c in [96, 160]:
+                cij = [a, b, c]
+                if cij not in colors:
+                    colors.append(cij)
+    for a in [96, 224]:
+        for b in [96, 224]:
+            for c in [96, 224]:
+                cij = [a, b, c]
+                if cij not in colors:
+                    colors.append(cij)
+    return colors
+
+def cgacolors2():
+    # colors in cgacolors() and their "half-and-half" versions
+    colors = []
+    acc = []
+    cc = cgacolors()
+    for c in cc:
+        cij = [x for x in c]
+        if cij not in colors:
+            colors.append(cij)
+    for i in range(len(acc)):
+        for j in range(i + 1, len(acc)):
+            ci = acc[i]
+            cj = acc[j]
+            cij = [(a + b + 1) // 2 for a, b in zip(ci, cj)]
+            if cij not in colors:
+                # print(cij)
+                colors.append(cij)
+    return colors
+
+print(classiccolors2())
+print(len(classiccolors2()))
 
 def _isqrtceil(i):
     r = math.isqrt(i)
@@ -308,7 +359,7 @@ def groupCmm():
     )
 
 def diamondTiling(bgcolor):
-    # ImageMagick command to generating a diamond tiling pattern (or a brick tiling
+    # ImageMagick command to generate a diamond tiling pattern (or a brick tiling
     # pattern if the image the command is applied to has only its top half
     # or its bottom half drawn).  For best results, the command should be applied
     # to images with an even width and height. 'bgcolor' is the background color,
@@ -341,6 +392,12 @@ def groupPmg():
         + "-append"
     )
 
+def _writeppm(f, image, width, height):
+    fd = open(f, "wb")
+    fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
+    fd.write(bytes(image))
+    fd.close()
+
 def horizhatch(f, hatchspace=8):
     # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
     if hatchspace <= 0:
@@ -352,6 +409,64 @@ def horizhatch(f, hatchspace=8):
         b = 0 if y % hatchspace == 0 else 255
         fd.write(bytes([b for i in range(size * 3)]))
     fd.close()
+
+def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
+    # Draw a wraparound dither-colored box on an image.
+    # 'border' is the border color, and 'color1' and 'color2' are the dithered
+    # versions of the inner color.  'border' can be None; 'color1' and 'color2'
+    # can't be.
+    if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
+        raise ValueError
+    if width <= 0 or height <= 0:
+        raise ValueError
+    if (not color1) or (not image) or (not color2):
+        raise ValueError
+    for y in range(y0, y1):
+        ypp = y % height
+        yp = ypp * width * 3
+        for x in range(x0, x1):
+            xp = x % width
+            if border and (y == y0 or y == y1 - 1 or x == x0 or x == x1 - 1):
+                # Draw border color
+                image[yp + xp * 3] = border[0]
+                image[yp + xp * 3 + 1] = border[1]
+                image[yp + xp * 3 + 2] = border[2]
+            elif ypp % 2 == xp % 2:
+                # Draw first color
+                image[yp + xp * 3] = color1[0]
+                image[yp + xp * 3 + 1] = color1[1]
+                image[yp + xp * 3 + 2] = color1[2]
+            else:
+                # Draw second color
+                image[yp + xp * 3] = color2[0]
+                image[yp + xp * 3 + 1] = color2[1]
+                image[yp + xp * 3 + 2] = color2[2]
+
+def randomboxes(f, width, height, palette):
+    # Generate a portable pixelmap (PPM) of a tileable pattern with random boxes,
+    # using only the colors in the given palette
+    if width <= 0 or int(width) != width:
+        raise ValueError
+    if height <= 0 or int(height) != height:
+        raise ValueError
+    image = [255 for i in range(width * height * 3)]
+    borderedbox(
+        image, width, height, palette[0], palette[0], palette[0], 0, 0, width, height
+    )
+    for i in range(40):
+        x0 = random.randint(0, width - 1)
+        x1 = x0 + random.randint(1, max(1, width * 3 // 4))
+        y0 = random.randint(0, height - 1)
+        y1 = y0 + random.randint(1, max(1, height * 3 // 4))
+        border = (
+            palette[random.randint(0, len(palette) - 1)]
+            if random.randint(0, 5) == 0
+            else palette[0]
+        )
+        color1 = palette[random.randint(0, len(palette) - 1)]
+        color2 = palette[random.randint(0, len(palette) - 1)]
+        borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
+    _writeppm(f, image, width, height)
 
 def crosshatch(f, hhatchspace=8, vhatchspace=8):
     # Generate a portable pixelmap (PPM) of a horizontal and vertical hatch pattern.
@@ -413,10 +528,7 @@ def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
             image[yp + xp * 3 + 1] = 0
             image[yp + xp * 3 + 2] = 0
         xpstart += 1
-    fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (wpsize, wpsize), "utf-8"))
-    fd.write(bytes(image))
-    fd.close()
+    _writeppm(f, image, width, height)
 
 def diaggradient(f, size=32):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
@@ -434,7 +546,6 @@ def diaggradient(f, size=32):
         fd.write(bytes(row))
     fd.close()
 
-import random
 def noiseppm(f, size=32):
     # Generate a portable pixelmap (PPM) of noise
     if size <= 0 or int(size) != size:
@@ -444,24 +555,26 @@ def noiseppm(f, size=32):
     row = [0 for i in range(size * 3)]
     for y in range(size):
         for x in range(size):
-            rarr = [0,255,192,192,192,192,192,192,128]
-            r=rarr[random.randint(0,len(rarr)-1)]
+            rarr = [0, 255, 192, 192, 192, 192, 192, 192, 128]
+            r = rarr[random.randint(0, len(rarr) - 1)]
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
         fd.write(bytes(row))
     fd.close()
 
-def whitenoiseppm(f, size=64):
+def whitenoiseppm(f, width=64, height=64):
     # Generate a portable pixelmap (PPM) of noise
-    if size <= 0 or int(size) != size:
+    if width <= 0 or int(width) != width:
+        raise ValueError
+    if height <= 0 or int(height) != height:
         raise ValueError
     fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
-    row = [0 for i in range(size * 3)]
-    for y in range(size):
-        for x in range(size):
-            r=random.randint(0,255)
+    fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
+    row = [0 for i in range(width * 3)]
+    for y in range(height):
+        for x in range(width):
+            r = random.randint(0, 255)
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
@@ -469,11 +582,12 @@ def whitenoiseppm(f, size=64):
     fd.close()
 
 def _join(ls):
-  ret=""
-  for i in range(len(ls)):
-    if i>0: ret+=","
-    ret+=str(ls[i])
-  return ret
+    ret = ""
+    for i in range(len(ls)):
+        if i > 0:
+            ret += ","
+        ret += str(ls[i])
+    return ret
 
 def brushedmetal():
     # ImageMagick command to generate a brushed metal texture from a noise image.
@@ -481,8 +595,9 @@ def brushedmetal():
     # Tiger (10.3, 10.4) and other Apple products
     # around the time of either OS's release.
     return (
-        "+clone +append -morphology Convolve \"50x1+49+0:" + _join([1/50 for i in range(50)])+\
-        "\" -crop 50%x0+0+0"
+        '+clone +append -morphology Convolve "50x1+49+0:'
+        + _join([1 / 50 for i in range(50)])
+        + '" -crop 50%x0+0+0'
     )
 
 # What follows are methods for generating scalable vector graphics (SVGs) of
@@ -601,6 +716,31 @@ def _drawinnerface(x0, y0, x1, y1, face):
         face,
         edgesize=edgesize,
     )
+
+def drawindentborder(
+    x0, y0, x1, y1, hilt, sh, frame, outerBorderSize=1, innerBorderSize=1
+):
+    if innerBorderSize < 0:
+        raise ValueError
+    ret = ""
+    for i in range(outerBorderSize):
+        ret += _drawedgebotdom(x0, y0, x1, y1, sh, hilt)
+        x0 += 1
+        y0 += 1
+        x1 -= 1
+        y1 -= 1
+    ret += _drawedgebotdom(x0 + 1, y1 + 1, x1 - 1, y1 - 1, frame, frame)
+    x0 += 1
+    y0 += 1
+    x1 -= 1
+    y1 -= 1
+    for i in range(innerBorderSize):
+        ret += _drawedgebotdom(x0, y0, x1, y1, hilt, sh)
+        x0 += 1
+        y0 += 1
+        x1 -= 1
+        y1 -= 1
+    return ret
 
 # highlight color, light color, shadow color, dark shadow color
 def drawraisedouter(x0, y0, x1, y1, hilt, lt, sh, dksh):
@@ -1014,18 +1154,89 @@ def makesvg():
     sh = "rgb(128,128,128)"
     dksh = "black"
     face = "rgb(192,192,192)"
-    face = "url(#ditherbg)"
-    frame = None  # "black"
+    frame = "black"
     return (
-        "<svg width='%dpx' height='%dpx' viewBox='0 0 %d %d'"
-        % (width, height, width, height)
+        (
+            "<svg width='%dpx' height='%dpx' viewBox='0 0 %d %d'"
+            % (width, height, width, height)
+        )
         + " xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
-        + monopattern(
-            "ditherbg", [64, 192, 200, 120, 120, 72, 0, 0], "rgb(192,192,192)", hilt
-        )
-        # + _ditherbg("ditherbg", "rgb(192,192,192)", hilt)
-        + windowborder(
-            0 + 10, 0 + 10, width - 10, height - 10, hilt, lt, sh, dksh, face
-        )
         + "</svg>"
     )
+
+DitherMatrix = [  # Bayer 8x8 ordered dither matrix
+    0,
+    32,
+    8,
+    40,
+    2,
+    34,
+    10,
+    42,
+    48,
+    16,
+    56,
+    24,
+    50,
+    18,
+    58,
+    26,
+    12,
+    44,
+    4,
+    36,
+    14,
+    46,
+    6,
+    38,
+    60,
+    28,
+    52,
+    20,
+    62,
+    30,
+    54,
+    22,
+    3,
+    35,
+    11,
+    43,
+    1,
+    33,
+    9,
+    41,
+    51,
+    19,
+    59,
+    27,
+    49,
+    17,
+    57,
+    25,
+    15,
+    47,
+    7,
+    39,
+    13,
+    45,
+    5,
+    37,
+    63,
+    31,
+    55,
+    23,
+    61,
+    29,
+    53,
+    21,
+]
+
+def _bayerdither(a, b, t, x, y):
+    # 't' is such that 0<=t<=1; closer to 1 means closer to 'b';
+    # closer to 0 means closer to 'a'.
+    # 'x' and 'y' are a pixel position.
+    bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+    if bdither < t * 64:
+        return b
+    else:
+        return a
