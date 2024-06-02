@@ -28,7 +28,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     - Up to 16 colors from the "web safe" and VGA palettes.
     - Up to 16 colors from those displayable by EGA monitors (each color component is 0, 85, 170, or 255).
     - 5- to 64-color grayscale palette (all color components the same).
-    - Not preferred: Up to 16 colors from those displayable by pure VGA monitors (each color component modulo 4 is 0).
+    - Not preferred: Up to 16 colors from those displayable by pure VGA monitors (each color component is a multiple of 4).
     - Not preferred: 65- to 236-color grayscale palette (all color components the same).
     - Not preferred: 237- to 256-color grayscale palette (all color components the same).
 - The image employs one of the following pixel dimension options:
@@ -75,6 +75,7 @@ Another challenge, related to classic user-interface style, this time relating t
     - Unpressed, pressed, mixed value (same for both), unavailable.
 - Option buttons ("radio buttons") when set, option buttons when unset, sliders:
     - Unpressed, pressed, unavailable.
+- Optionally, other user interface elements (such as sliders or scroll bars).
 
 Using only the following colors and with some pixels allowed to be transparent:
 
@@ -87,7 +88,7 @@ Using only the following colors and with some pixels allowed to be transparent:
 
 It is allowed to use dithering to simulate the appearance of more colors using these six colors.
 
-The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect lots of other creative possibilities here, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
+The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
 
 <a id=License></a>
 
@@ -105,4 +106,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^5]: Can be generated from `truchet2color` using the following ImageMagick command: `convert truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1x2 gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF-808080` indicates the two colors white and gray, respectively.
 
-[^6]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each up to the nearest integer.
+[^6]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
