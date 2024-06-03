@@ -33,6 +33,9 @@ import os
 import math
 import random
 
+def _listdir(p):
+  return [os.path.abspath(p+"/"+x) for x in os.listdir(p)]
+
 DitherMatrix = [  # Bayer 8x8 ordered dither matrix
     0,
     32,
@@ -497,23 +500,22 @@ def groupPmg():
         + "-append"
     )
 
-def _writeppm(f, image, width, height):
-    fd = open(f, "wb")
+def writeppm(f, image, width, height):
+    fd = open(f, "x+b")
     fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
     fd.write(bytes(image))
     fd.close()
 
-def horizhatch(f, hatchspace=8):
+def horizhatch(hatchspace=8):
     # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
     if hatchspace <= 0:
         raise ValueError
     size = hatchspace * 4
-    fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
+    image=[]
     for y in range(size):
         b = 0 if y % hatchspace == 0 else 255
-        fd.write(bytes([b for i in range(size * 3)]))
-    fd.close()
+        image.append([b for i in range(size * 3)])
+    return [px for row in image for px in row]
 
 def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # Draw a wraparound dither-colored box on an image.
@@ -547,7 +549,7 @@ def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
                 image[yp + xp * 3 + 1] = color2[1]
                 image[yp + xp * 3 + 2] = color2[2]
 
-def randomboxes(f, width, height, palette):
+def randomboxes(width, height, palette):
     # Generate a portable pixelmap (PPM) of a tileable pattern with random boxes,
     # using only the colors in the given palette
     if width <= 0 or int(width) != width:
@@ -558,11 +560,11 @@ def randomboxes(f, width, height, palette):
     borderedbox(
         image, width, height, palette[0], palette[0], palette[0], 0, 0, width, height
     )
-    for i in range(40):
+    for i in range(45):
         x0 = random.randint(0, width - 1)
-        x1 = x0 + random.randint(1, max(1, width * 3 // 4))
+        x1 = x0 + random.randint(3, max(3, width * 3 // 4))
         y0 = random.randint(0, height - 1)
-        y1 = y0 + random.randint(1, max(1, height * 3 // 4))
+        y1 = y0 + random.randint(3, max(3, height * 3 // 4))
         border = (
             palette[random.randint(0, len(palette) - 1)]
             if random.randint(0, 5) == 0
@@ -571,46 +573,38 @@ def randomboxes(f, width, height, palette):
         color1 = palette[random.randint(0, len(palette) - 1)]
         color2 = palette[random.randint(0, len(palette) - 1)]
         borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
-    _writeppm(f, image, width, height)
+    return image
 
-def crosshatch(f, hhatchspace=8, vhatchspace=8):
+def crosshatch(hhatchspace=8, vhatchspace=8):
     # Generate a portable pixelmap (PPM) of a horizontal and vertical hatch pattern.
-    fd = open(f, "wb")
     if hhatchspace <= 0:
         raise ValueError
     if vhatchspace <= 0:
         raise ValueError
     width = vhatchspace * 4
     height = hhatchspace * 4
-    fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
+    image=[]
     for y in range(height * 4):
         if y % hhatchspace == 0:
-            fd.write(bytes([0 for i in range(width * 3)]))
+            image.append([0 for i in range(width * 3)])
         else:
-            fd.write(
-                bytes(
+            image.append(
                     [
                         0 if (i // 3) % vhatchspace == 0 else 255
                         for i in range(width * 3)
                     ]
-                )
             )
-    fd.close()
+    return [px for row in image for px in row]
 
-def verthatch(f, hatchspace=8):
+def verthatch(hatchspace=8):
     # Generate a portable pixelmap (PPM) of a vertical hatch pattern.
     if hatchspace <= 0 or int(hatchspace) != hatchspace:
         raise ValueError
-    size = hatchspace * 4
-    fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
-    for y in range(size):
-        fd.write(
-            bytes([0 if (i // 3) % hatchspace == 0 else 255 for i in range(size * 3)])
-        )
-    fd.close()
+    rowbyte=[0 if (i // 3) % hatchspace == 0 else 255 for i in range(size * 3)]
+    im=[rowbyte for i in range(size)]
+    return [px for row in image for px in row]
 
-def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
+def diagstripe(wpsize=64, stripesize=32, reverse=False):
     # Generate a portable pixelmap (PPM) of a diagonal stripe pattern
     if stripesize > wpsize:
         raise ValueError
@@ -633,18 +627,9 @@ def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
             image[yp + xp * 3 + 1] = 0
             image[yp + xp * 3 + 2] = 0
         xpstart += 1
-    _writeppm(f, image, width, height)
+    return image
 
-def _diaggradient(f, size=32, grays=255):
-    # Generate a portable pixelmap (PPM) of a diagonal linear gradient
-    if size <= 0 or int(size) != size:
-        raise ValueError
-    fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
-    row = [0 for i in range(size * 3)]
-    for y in range(size):
-        for x in range(size):
-            r = abs(x - (size - 1 - y)) * 255 // (size - 1)
+def _dithergray(r, x, y, grays):
             if grays == 4:
                 # Dither to the four VGA grays
                 bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
@@ -661,46 +646,63 @@ def _diaggradient(f, size=32, grays=255):
                     r = 128 if bdither < r * 64 // 128 else 0
                 else:
                     r = 255 if bdither < (r - 128) * 64 // 127 else 128
-            row[x * 3] = r
-            row[x * 3 + 1] = r
-            row[x * 3 + 2] = r
-        fd.write(bytes(row))
-    fd.close()
+            elif grays == 6:
+                # Dither to the six grays in the "Web safe" palette
+                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                rmod = r%51
+                r = (r-rmod)+51 if bdither < r * 64 // 51 else (r-rmod)
+            return r
 
-def noiseppm(f, size=32):
-    # Generate a portable pixelmap (PPM) of noise
+def diaggradient(f, size=32, grays=255):
+    # Generate a portable pixelmap (PPM) of a diagonal linear gradient
     if size <= 0 or int(size) != size:
         raise ValueError
-    fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (size, size), "utf-8"))
-    row = [0 for i in range(size * 3)]
+    image=[]
     for y in range(size):
+        row = [0 for i in range(size * 3)]
         for x in range(size):
-            rarr = [0, 255, 192, 192, 192, 192, 192, 192, 128]
-            r = rarr[random.randint(0, len(rarr) - 1)]
+            r = abs(x - (size - 1 - y)) * 255 // (size - 1)
+            r = _dithergray(r,x,y,grays)
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
-        fd.write(bytes(row))
-    fd.close()
+        image.append(row)
+    return [px for row in image for px in row]
 
-def whitenoiseppm(f, width=64, height=64):
+def noiseppm(size=32):
     # Generate a portable pixelmap (PPM) of noise
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    fd = open(f, "wb")
-    fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
-    row = [0 for i in range(width * 3)]
+    rarr = [0, 255, 192, 192, 192, 192, 192, 192, 128]
+    image=[]
     for y in range(height):
+        row = [0 for i in range(size * 3)]
+        for x in range(width):
+            r = rarr[random.randint(0, len(rarr) - 1)]
+            row[x * 3] = r
+            row[x * 3 + 1] = r
+            row[x * 3 + 2] = r
+        image.append(row)
+    return [px for row in image for px in row]
+
+def whitenoiseppm(width=64, height=64):
+    # Generate a portable pixelmap (PPM) of noise
+    if width <= 0 or int(width) != width:
+        raise ValueError
+    if height <= 0 or int(height) != height:
+        raise ValueError
+    image=[]
+    for y in range(height):
+        row = [0 for i in range(size * 3)]
         for x in range(width):
             r = random.randint(0, 255)
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
-        fd.write(bytes(row))
-    fd.close()
+        image.append(row)
+    return [px for row in image for px in row]
 
 def _join(ls):
     ret = ""

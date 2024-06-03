@@ -37,7 +37,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     - Not preferred: Custom size up to 96&times;96.
     - Not preferred: Custom size up to 256&times;256.
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
-- The image is in the public domain or licensed under Creative Commons Zero or Attribution or, less preferably, another open-source license.
+- The image is in the public domain or licensed under Creative Commons Zero (CC0) or Attribution (CC-BY) or, less preferably, another open-source license.
 - The image was not produced by artificial intelligence tools or with their help.
 
 Also welcome would be computer code (released to the public domain or under Creative Commons Zero) to generate tileable&mdash;
