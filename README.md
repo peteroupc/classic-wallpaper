@@ -59,6 +59,7 @@ meeting the requirements given above.
 | truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
 | boxes.png | peteroupc | VGA palette | 128x128 | CC0 |
+| [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100x100 | MIT License |
 
 ## Button and Border Styles
 
@@ -75,7 +76,7 @@ Another challenge, related to classic user-interface style, this time relating t
     - Unpressed, pressed, mixed value (same for both), unavailable.
 - Option buttons ("radio buttons") when set, option buttons when unset, sliders:
     - Unpressed, pressed, unavailable.
-- Optionally, other user interface elements (such as sliders or scroll bars).
+- Optionally, other user interface elements (such as scroll bars).
 
 Using only the following colors and with some pixels allowed to be transparent:
 
@@ -96,7 +97,7 @@ The _desktopwallpaper.py_ file contains some example code for border and button 
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under [**Creative Commons Zero**](https://creativecommons.org/publicdomain/zero/1.0/).
 
-[^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.
+[^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.  Many tileable wallpapers are _seamless_, but not all (consider a pattern of bricks or square floor tiles).
 
 [^2]: Generated from `dstripe` using the following ImageMagick command: `convert dstripe.png \( +clone -flop \) +append dzigzag.png`.
 

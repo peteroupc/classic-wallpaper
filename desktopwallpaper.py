@@ -33,6 +33,73 @@ import os
 import math
 import random
 
+DitherMatrix = [  # Bayer 8x8 ordered dither matrix
+    0,
+    32,
+    8,
+    40,
+    2,
+    34,
+    10,
+    42,
+    48,
+    16,
+    56,
+    24,
+    50,
+    18,
+    58,
+    26,
+    12,
+    44,
+    4,
+    36,
+    14,
+    46,
+    6,
+    38,
+    60,
+    28,
+    52,
+    20,
+    62,
+    30,
+    54,
+    22,
+    3,
+    35,
+    11,
+    43,
+    1,
+    33,
+    9,
+    41,
+    51,
+    19,
+    59,
+    27,
+    49,
+    17,
+    57,
+    25,
+    15,
+    47,
+    7,
+    39,
+    13,
+    45,
+    5,
+    37,
+    63,
+    31,
+    55,
+    23,
+    61,
+    29,
+    53,
+    21,
+]
+
 def websafecolors():
     colors = []
     for r in range(6):
@@ -97,7 +164,7 @@ def classiccolors():
 
 def classiccolors2():
     # colors in classiccolors() and their "half-and-half" versions
-    colors=[]
+    colors = []
     for a in [0, 64, 128, 192]:
         for b in [0, 64, 128, 192]:
             for c in [0, 64, 128, 192]:
@@ -124,8 +191,8 @@ def classiccolors2():
                     colors.append(cij)
     return colors
 
-def _ceil(x,y):
-  return -(-x // y)
+def _ceil(x, y):
+    return -(-x // y)
 
 def cgacolors2():
     # colors in cgacolors() and their "half-and-half" versions
@@ -139,7 +206,7 @@ def cgacolors2():
         for j in range(i + 1, len(cc)):
             ci = cc[i]
             cj = cc[j]
-            cij = [a+_ceil(b-a, 2) for a, b in zip(ci, cj)]
+            cij = [a + _ceil(b - a, 2) for a, b in zip(ci, cj)]
             if cij not in colors:
                 colors.append(cij)
     return colors
@@ -148,36 +215,40 @@ def classicdithercolors():
     colors = {}
     cc = classiccolors()
     for c in cc:
-        cij = c[0]|(c[1]<<8)|(c[2]<<16)
+        cij = c[0] | (c[1] << 8) | (c[2] << 16)
         if cij not in colors:
-            colors[cij]=[cij,cij]
+            colors[cij] = [cij, cij]
     for i in range(len(cc)):
         for j in range(i + 1, len(cc)):
             ci = cc[i]
             cj = cc[j]
-            ci1 = ci[0]|(ci[1]<<8)|(ci[2]<<16)
-            cj1 = cj[0]|(cj[1]<<8)|(cj[2]<<16)
-            cij = ((ci[0]+cj[0]+1)//2)| \
-                  (((ci[1]+cj[1]+1)//2)<<8)| \
-                  (((ci[2]+cj[2]+1)//2)<<16)
+            ci1 = ci[0] | (ci[1] << 8) | (ci[2] << 16)
+            cj1 = cj[0] | (cj[1] << 8) | (cj[2] << 16)
+            cij = (
+                ((ci[0] + cj[0] + 1) // 2)
+                | (((ci[1] + cj[1] + 1) // 2) << 8)
+                | (((ci[2] + cj[2] + 1) // 2) << 16)
+            )
             if cij not in colors:
-                colors[cij]=[ci1,cj1]
+                colors[cij] = [ci1, cj1]
     return colors
 
-def classicditherimage(image,width,height):
-  if width<=0 or height<=0: raise ValueError
-  cdcolors=classicdithercolors()
-  for y in range(height):
-   yd=y*width
-   for x in range(width):
-    xp=yd+x
-    col=image[xp*3]|(image[xp*3]<<8)|(image[xp*3]<<16)
-    cd=cdcolors[col]
-    if not cd: raise ValueError
-    col=cd[0] if (x+y)%2==0 else cd[1]
-    image[xp*3]=col&0xFF
-    image[xp*3+1]=(col>>8)&0xFF
-    image[xp*3+2]=(col>>16)&0xFF
+def classicditherimage(image, width, height):
+    if width <= 0 or height <= 0:
+        raise ValueError
+    cdcolors = classicdithercolors()
+    for y in range(height):
+        yd = y * width
+        for x in range(width):
+            xp = yd + x
+            col = image[xp * 3] | (image[xp * 3] << 8) | (image[xp * 3] << 16)
+            cd = cdcolors[col]
+            if not cd:
+                raise ValueError
+            col = cd[0] if (x + y) % 2 == 0 else cd[1]
+            image[xp * 3] = col & 0xFF
+            image[xp * 3 + 1] = (col >> 8) & 0xFF
+            image[xp * 3 + 2] = (col >> 16) & 0xFF
 
 def _isqrtceil(i):
     r = math.isqrt(i)
@@ -564,7 +635,7 @@ def diagstripe(f, wpsize=64, stripesize=32, reverse=False):
         xpstart += 1
     _writeppm(f, image, width, height)
 
-def diaggradient(f, size=32):
+def _diaggradient(f, size=32, grays=255):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
     if size <= 0 or int(size) != size:
         raise ValueError
@@ -573,7 +644,23 @@ def diaggradient(f, size=32):
     row = [0 for i in range(size * 3)]
     for y in range(size):
         for x in range(size):
-            r = abs(x - (63 - y)) * 255 // (size - 1)
+            r = abs(x - (size - 1 - y)) * 255 // (size - 1)
+            if grays == 4:
+                # Dither to the four VGA grays
+                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                if r <= 128:
+                    r = 128 if bdither < r * 64 // 128 else 0
+                elif r <= 192:
+                    r = 192 if bdither < (r - 128) else 128
+                else:
+                    r = 255 if bdither < (r - 192) * 64 // 63 else 192
+            elif grays == 3:
+                # Dither to three grays
+                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                if r <= 128:
+                    r = 128 if bdither < r * 64 // 128 else 0
+                else:
+                    r = 255 if bdither < (r - 128) * 64 // 127 else 128
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
@@ -1109,19 +1196,23 @@ def drawbutton(
     btn,  # button face color
     frame,
     squareedge=True,
-    isDefault=False # whether the button is a default button
+    isDefault=False,  # whether the button is a default button
 ):
-    if lt==None: lt=btn
-    if dksh==None: dksh=sh
+    if lt == None:
+        lt = btn
+    if dksh == None:
+        dksh = sh
     if isDefault:
-      return _drawedgebotdom(x0,y0,x1,y1,frame,frame) + \
-             _drawedgebotdom(x0+1,y0+1,x1-1,y1-1,sh,sh) + \
-             _drawinnerface(x0+2,y0+2,x1-2,y1-2,btn)
+        return (
+            _drawedgebotdom(x0, y0, x1, y1, frame, frame)
+            + _drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, sh)
+            + _drawinnerface(x0 + 2, y0 + 2, x1 - 2, y1 - 2, btn)
+        )
     else:
-      edge = 1 if isDefault else 0
-      return buttondown(
-        x0 + edge, y0 + edge, x1 - edge, y1 - edge, hilt, lt, sh, dksh, btn
-      )
+        edge = 1 if isDefault else 0
+        return buttondown(
+            x0 + edge, y0 + edge, x1 - edge, y1 - edge, hilt, lt, sh, dksh, btn
+        )
 
 def drawbuttonpush(
     x0,
@@ -1135,10 +1226,12 @@ def drawbuttonpush(
     btn,  # button face color
     frame,
     squareedge=True,
-    isDefault=False # whether the button is a default button
+    isDefault=False,  # whether the button is a default button
 ):
-    if lt==None: lt=btn
-    if dksh==None: dksh=sh
+    if lt == None:
+        lt = btn
+    if dksh == None:
+        dksh = sh
     # If isDefault is True, no frame is drawn and no room is left for the frame
     edge = 1 if isDefault else 0
     return buttonup(
@@ -1156,10 +1249,10 @@ def draw16buttonpush(
     btn,  # button face color
     frame=None,  # optional frame color
     squareframe=False,
-    isDefault=False, # whether the button is a default button
+    isDefault=False,  # whether the button is a default button
 ):
     # Leave 1-pixel room for the frame even if 'frame' is None
-    edge=2 if isDefault else 1
+    edge = 2 if isDefault else 1
     return (
         _drawedgetopdom(x0 + edge, y0 + edge, x1 - edge, y1 - edge, sh, btn)
         + _rect(x0 + edge + 1, y0 + edge + 1, x1 - edge - 1, y1 - edge - 1, btn)
@@ -1167,7 +1260,11 @@ def draw16buttonpush(
             ""
             if frame is None
             else _drawrsedge(x0, y0, x1, y1, frame, frame, squareframe)
-            + (_drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame) if isDefault else "")
+            + (
+                _drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
+                if isDefault
+                else ""
+            )
         )
     )
 
@@ -1182,19 +1279,25 @@ def draw16button(
     btn,  # button face color
     frame=None,  # optional frame color
     squareframe=False,
-    isDefault=False
+    isDefault=False,
 ):
     # Leave 1-pixel room for the frame even if 'frame' is None
-    edge=2 if isDefault else 1
+    edge = 2 if isDefault else 1
     return (
         _drawedgebotdom(x0 + edge, y0 + edge, x1 - edge, y1 - edge, lt, sh)
-        + _drawedgebotdom(x0 + edge+1, y0 + edge+1, x1 - edge-1, y1 - edge-1, lt, sh)
-        + _rect(x0 + edge+2, y0 + edge+2, x1 - edge-2, y1 - edge-2, btn)
+        + _drawedgebotdom(
+            x0 + edge + 1, y0 + edge + 1, x1 - edge - 1, y1 - edge - 1, lt, sh
+        )
+        + _rect(x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn)
         + (
             ""
             if frame is None
             else _drawrsedge(x0, y0, x1, y1, frame, frame, squareframe)
-            + (_drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame) if isDefault else "")
+            + (
+                _drawedgebotdom(x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
+                if isDefault
+                else ""
+            )
         )
     )
 
@@ -1215,73 +1318,6 @@ def makesvg():
         + " xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
         + "</svg>"
     )
-
-DitherMatrix = [  # Bayer 8x8 ordered dither matrix
-    0,
-    32,
-    8,
-    40,
-    2,
-    34,
-    10,
-    42,
-    48,
-    16,
-    56,
-    24,
-    50,
-    18,
-    58,
-    26,
-    12,
-    44,
-    4,
-    36,
-    14,
-    46,
-    6,
-    38,
-    60,
-    28,
-    52,
-    20,
-    62,
-    30,
-    54,
-    22,
-    3,
-    35,
-    11,
-    43,
-    1,
-    33,
-    9,
-    41,
-    51,
-    19,
-    59,
-    27,
-    49,
-    17,
-    57,
-    25,
-    15,
-    47,
-    7,
-    39,
-    13,
-    45,
-    5,
-    37,
-    63,
-    31,
-    55,
-    23,
-    61,
-    29,
-    53,
-    21,
-]
 
 def _bayerdither(a, b, t, x, y):
     # 't' is such that 0<=t<=1; closer to 1 means closer to 'b';
