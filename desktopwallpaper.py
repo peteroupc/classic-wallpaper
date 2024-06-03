@@ -653,7 +653,7 @@ def _dithergray(r, x, y, grays):
                 r = (r-rmod)+51 if bdither < r * 64 // 51 else (r-rmod)
             return r
 
-def diaggradient(f, size=32, grays=255):
+def diaggradient(size=32, grays=255):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
     if size <= 0 or int(size) != size:
         raise ValueError
