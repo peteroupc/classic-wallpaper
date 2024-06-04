@@ -34,7 +34,7 @@ import math
 import random
 
 def _listdir(p):
-  return [os.path.abspath(p+"/"+x) for x in os.listdir(p)]
+    return [os.path.abspath(p + "/" + x) for x in os.listdir(p)]
 
 DitherMatrix = [  # Bayer 8x8 ordered dither matrix
     0,
@@ -102,6 +102,16 @@ DitherMatrix = [  # Bayer 8x8 ordered dither matrix
     53,
     21,
 ]
+
+def _bayerdither(a, b, t, x, y):
+    # 't' is such that 0<=t<=1; closer to 1 means closer to 'b';
+    # closer to 0 means closer to 'a'.
+    # 'x' and 'y' are a pixel position.
+    bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+    if bdither < t * 64:
+        return b
+    else:
+        return a
 
 def websafecolors():
     colors = []
@@ -320,20 +330,20 @@ def magickgradientditherfilter(
             if abstractImage
             else "-dither FloydSteinberg"
         )
-        return "%s %s \\( %s \\) %s -remap mpr:z" % (
+        return " %s %s \\( %s \\) %s -remap mpr:z " % (
             mgradient,
             hueshift,
             image,
             ditherkind,
         )
     else:
-        return "%s %s" % (mgradient, hueshift)
+        return " %s %s " % (mgradient, hueshift)
 
 def solid(bg=[192, 192, 192], w=64, h=64):
     if bg == None or len(bg) < 3:
         raise ValueError
     bc = "#%02x%02x%02x" % (int(bg[0]), int(bg[1]), int(bg[2]))
-    return "-size %dx%d xc:%s" % (w, h, bg)
+    return " -size %dx%d xc:%s " % (w, h, bg)
 
 def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
@@ -346,7 +356,7 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     hc = "#%02x%02x%02x" % (int(highlight[0]), int(highlight[1]), int(highlight[2]))
     sc = "#%02x%02x%02x" % (int(shadow[0]), int(shadow[1]), int(shadow[2]))
     return (
-        "-grayscale Rec709Luma -channel RGB -threshold 50%% -write mpr:z "
+        " -grayscale Rec709Luma -channel RGB -threshold 50%% -write mpr:z "
         + '\\( -clone 0 -morphology Convolve "3:0,0,0 0,0,0 0,0,1" -write mpr:z1 \\) '
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0 '
         + "-compose Multiply -composite "
@@ -355,14 +365,14 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + 'mpr:z1 \\( mpr:z -negate -morphology Convolve "3:1,0,0 0,0,0 0,0,0" \\) -compose Multiply -composite '
         + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
         + '\\( mpr:z -negate -morphology Convolve "3:0,0,0 0,0,0 0,0,1" \\) mpr:z2 -compose Multiply -composite '
-        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite"
+        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite "
     ) % (bc, hc, sc)
 
 def emboss():
     # Emboss a two-color black and white image into a 3-color (black/gray/white) image
     return (
-        "\\( +clone \\( +clone \\) -append \\( +clone \\) +append -crop 50%x50%+1+1 \\( "
-        + "-size 1x2 gradient:#FFFFFF-#808080 \\) -clut \\) -compose Multiply -composite"
+        " \\( +clone \\( +clone \\) -append \\( +clone \\) +append -crop 50%x50%+1+1 \\( "
+        + "-size 1x2 gradient:#FFFFFF-#808080 \\) -clut \\) -compose Multiply -composite "
     )
 
 def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
@@ -376,7 +386,7 @@ def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     hc = "#%02x%02x%02x" % (int(highlight[0]), int(highlight[1]), int(highlight[2]))
     sc = "#%02x%02x%02x" % (int(shadow[0]), int(shadow[1]), int(shadow[2]))
     return (
-        "-grayscale Rec709Luma -channel RGB -threshold 50%% -write mpr:z "
+        " -grayscale Rec709Luma -channel RGB -threshold 50%% -write mpr:z "
         + '\\( -clone 0 -morphology Convolve "3:0,0,0 0,0,0 0,0,1" -write mpr:z1 \\) '
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0--1 '
         + "mpr:z2 \\( mpr:z -negate \\) -compose Multiply -composite -write mpr:a10 "
@@ -385,7 +395,7 @@ def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
         + "mpr:a10 mpr:a20 -compose Plus -composite -negate "
         + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite "
-        + "mpr:a1 -compose Plus -composite"
+        + "mpr:a1 -compose Plus -composite "
     ) % (sc, hc, bc)
 
 def magickgradientditherfilterrandom():
@@ -424,23 +434,23 @@ def tileable():
     # tileable.
     # NOTE: "-append" is a vertical append; "+append" is a horizontal append;
     # "-flip" reverses the row order; "-flop" reverses the column order.
-    return "\\( +clone -flip \\) -append \\( +clone -flop \\) +append"
+    return " \\( +clone -flip \\) -append \\( +clone -flop \\) +append "
 
 def groupP2():
     # ImageMagick command to generate a P2 wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last row's first half is a mirror of its second half.
-    return "\\( +clone -flip -flop \\) -append"
+    return " \\( +clone -flip -flop \\) -append "
 
 def groupPm():
     # ImageMagick command to generate a Pm wallpaper group tiling pattern.
-    return "\\( +clone -flop \\) +append"
+    return " \\( +clone -flop \\) +append "
 
 def groupPg():
     # ImageMagick command to generate a Pg wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last column's first half is a mirror of its second half.
-    return "\\( +clone -flip \\) -append"
+    return " \\( +clone -flip \\) -append "
 
 def groupPgg():
     # ImageMagick command to generate a Pgg wallpaper group tiling pattern.
@@ -448,10 +458,10 @@ def groupPgg():
     # last row's and last column's first half is a mirror of its
     # second half.
     return (
-        "-write mpr:wpgroup -delete 0 "
+        " -write mpr:wpgroup -delete 0 "
         + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "
         + "\\( \\( mpr:wpgroup -flip -flop \\) mpr:wpgroup +append \\) "
-        + "-append"
+        + "-append "
     )
 
 def groupCmm():
@@ -460,13 +470,13 @@ def groupCmm():
     # last row's and last column's first half is a mirror of its
     # second half.
     return (
-        "\\( +clone -flip \\) -append -write mpr:wpgroup -delete 0 "
+        " \\( +clone -flip \\) -append -write mpr:wpgroup -delete 0 "
         + "\\( mpr:wpgroup \\( mpr:wpgroup -flop \\) +append \\) "
         + "\\( \\( mpr:wpgroup -flop \\) mpr:wpgroup +append \\) "
-        + "-append"
+        + "-append "
     )
 
-def diamondTiling(bgcolor):
+def diamondTiling(bgcolor=None):
     # ImageMagick command to generate a diamond tiling pattern (or a brick tiling
     # pattern if the image the command is applied to has only its top half
     # or its bottom half drawn).  For best results, the command should be applied
@@ -477,14 +487,14 @@ def diamondTiling(bgcolor):
     bc = ""
     if bgcolor:
         bc = " \\( -size 100%x100%"
-        bc += " xc:#%02x%02x%02x \\) -compose DstOver -composite" % (
+        bc += " xc:#%02x%02x%02x \\) -compose DstOver -composite " % (
             int(bg[0]),
             int(bg[1]),
             int(bg[2]),
         )
     return (
-        "\\( +clone \\( +clone \\) -append \\( +clone \\) +append -chop "
-        + "25%x25% \\) -compose Over -composite"
+        " \\( +clone \\( +clone \\) -append \\( +clone \\) +append -chop "
+        + "25%x25% \\) -compose Over -composite "
         + bc
     )
 
@@ -494,28 +504,21 @@ def groupPmg():
     # last column's first half is a mirror of its
     # second half.
     return (
-        "-write mpr:wpgroup -delete 0 "
+        " -write mpr:wpgroup -delete 0 "
         + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "
         + "\\( \\( mpr:wpgroup -flip \\) \\( mpr:wpgroup -flop \\) +append \\) "
-        + "-append"
+        + "-append "
     )
 
 def writeppm(f, image, width, height):
+    if not image:
+        raise ValueError
+    if len(image) != width * height * 3:
+        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
     fd = open(f, "x+b")
     fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
     fd.write(bytes(image))
     fd.close()
-
-def horizhatch(hatchspace=8):
-    # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
-    if hatchspace <= 0:
-        raise ValueError
-    size = hatchspace * 4
-    image=[]
-    for y in range(size):
-        b = 0 if y % hatchspace == 0 else 255
-        image.append([b for i in range(size * 3)])
-    return [px for row in image for px in row]
 
 def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # Draw a wraparound dither-colored box on an image.
@@ -575,34 +578,43 @@ def randomboxes(width, height, palette):
         borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
     return image
 
-def crosshatch(hhatchspace=8, vhatchspace=8):
-    # Generate a portable pixelmap (PPM) of a horizontal and vertical hatch pattern.
-    if hhatchspace <= 0:
+def crosshatch(hhatchdist=8, vhatchdist=8, hhatchthick=1, vhatchthick=1):
+    # Generate a portable pixelmap (PPM) of a horizontal and vertical hatch
+    # pattern.
+    # hhatchdist - distance from beginning of one horizontal hash line to the
+    # beginning of the next, in pixels.
+    # hatchthick - thickness in pixels of each horizontal hash line.
+    # Similar for vhatchdist and vhatchthick, with vertical hash lines.
+    if hhatchdist <= 0 or hhatchthick < 0 or hhatchthick > hhatchdist:
         raise ValueError
-    if vhatchspace <= 0:
+    if vhatchdist <= 0 or vhatchthick < 0 or vhatchthick > vhatchdist:
         raise ValueError
-    width = vhatchspace * 4
-    height = hhatchspace * 4
-    image=[]
-    for y in range(height * 4):
-        if y % hhatchspace == 0:
+    width = vhatchdist * 4
+    height = hhatchdist * 4
+    image = []
+    for y in range(height):
+        if y % hhatchdist < hhatchthick:
             image.append([0 for i in range(width * 3)])
         else:
             image.append(
-                    [
-                        0 if (i // 3) % vhatchspace == 0 else 255
-                        for i in range(width * 3)
-                    ]
+                [
+                    0 if (i // 3) % vhatchdist < vhatchthick else 255
+                    for i in range(width * 3)
+                ]
             )
-    return [px for row in image for px in row]
+    return {
+        "image": [px for row in image for px in row],
+        "width": width,
+        "height": height,
+    }
 
-def verthatch(hatchspace=8):
+def verthatch(hatchdist=8, hatchthick=1):
     # Generate a portable pixelmap (PPM) of a vertical hatch pattern.
-    if hatchspace <= 0 or int(hatchspace) != hatchspace:
-        raise ValueError
-    rowbyte=[0 if (i // 3) % hatchspace == 0 else 255 for i in range(size * 3)]
-    im=[rowbyte for i in range(size)]
-    return [px for row in image for px in row]
+    return crosshatch(1, hatchdist, 0, hatchthick)
+
+def horizhatch(hatchdist=8, hatchthick=1):
+    # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
+    return crosshatch(hatchdist, 1, hatchthick, 0)
 
 def diagstripe(wpsize=64, stripesize=32, reverse=False):
     # Generate a portable pixelmap (PPM) of a diagonal stripe pattern
@@ -630,55 +642,60 @@ def diagstripe(wpsize=64, stripesize=32, reverse=False):
     return image
 
 def _dithergray(r, x, y, grays):
-            if grays == 4:
-                # Dither to the four VGA grays
-                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-                if r <= 128:
-                    r = 128 if bdither < r * 64 // 128 else 0
-                elif r <= 192:
-                    r = 192 if bdither < (r - 128) else 128
-                else:
-                    r = 255 if bdither < (r - 192) * 64 // 63 else 192
-            elif grays == 3:
-                # Dither to three grays
-                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-                if r <= 128:
-                    r = 128 if bdither < r * 64 // 128 else 0
-                else:
-                    r = 255 if bdither < (r - 128) * 64 // 127 else 128
-            elif grays == 6:
-                # Dither to the six grays in the "Web safe" palette
-                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-                rmod = r%51
-                r = (r-rmod)+51 if bdither < r * 64 // 51 else (r-rmod)
-            return r
+    if grays == 4:
+        # Dither to the four VGA grays
+        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+        if r <= 128:
+            r = 128 if bdither < r * 64 // 128 else 0
+        elif r <= 192:
+            r = 192 if bdither < (r - 128) else 128
+        else:
+            r = 255 if bdither < (r - 192) * 64 // 63 else 192
+    if grays == -4:
+        # Dither to the four canonical CGA grays
+        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+        rmod = r % 0x55
+        r = (r - rmod) + 0x55 if bdither < r * 64 // 0x55 else (r - rmod)
+    elif grays == 3:
+        # Dither to three grays
+        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+        if r <= 128:
+            r = 128 if bdither < r * 64 // 128 else 0
+        else:
+            r = 255 if bdither < (r - 128) * 64 // 127 else 128
+    elif grays == 6:
+        # Dither to the six grays in the "Web safe" palette
+        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+        rmod = r % 51
+        r = (r - rmod) + 51 if bdither < r * 64 // 51 else (r - rmod)
+    return r
 
 def diaggradient(size=32, grays=255):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
     if size <= 0 or int(size) != size:
         raise ValueError
-    image=[]
+    image = []
     for y in range(size):
         row = [0 for i in range(size * 3)]
         for x in range(size):
             r = abs(x - (size - 1 - y)) * 255 // (size - 1)
-            r = _dithergray(r,x,y,grays)
+            r = _dithergray(r, x, y, grays)
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
         image.append(row)
     return [px for row in image for px in row]
 
-def noiseppm(size=32):
+def noiseppm(width=64, height=64):
     # Generate a portable pixelmap (PPM) of noise
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
     rarr = [0, 255, 192, 192, 192, 192, 192, 192, 128]
-    image=[]
+    image = []
     for y in range(height):
-        row = [0 for i in range(size * 3)]
+        row = [0 for i in range(width * 3)]
         for x in range(width):
             r = rarr[random.randint(0, len(rarr) - 1)]
             row[x * 3] = r
@@ -693,9 +710,9 @@ def whitenoiseppm(width=64, height=64):
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    image=[]
+    image = []
     for y in range(height):
-        row = [0 for i in range(size * 3)]
+        row = [0 for i in range(width * 3)]
         for x in range(width):
             r = random.randint(0, 255)
             row[x * 3] = r
@@ -718,9 +735,9 @@ def brushedmetal():
     # Tiger (10.3, 10.4) and other Apple products
     # around the time of either OS's release.
     return (
-        '+clone +append -morphology Convolve "50x1+49+0:'
+        ' +clone +append -morphology Convolve "50x1+49+0:'
         + _join([1 / 50 for i in range(50)])
-        + '" -crop 50%x0+0+0'
+        + '" -crop 50%x0+0+0 '
     )
 
 # What follows are methods for generating scalable vector graphics (SVGs) of
@@ -1131,7 +1148,8 @@ def _dither(face, hilt, hiltIsScrollbarColor=False):
 # Generate SVG code for an 8x8 monochrome pattern.
 # 'idstr' is a string identifying the pattern in SVG.
 # 'pattern' is an 8-item array with integers in the interval [0,255].
-# The first integer represents the first row, the second, the second row, etc.
+# The first integer represents the first row from the top;
+# the second, the second row, etc.
 # For each integer, the eight bits from most to least significant represent
 # the column from left to right (right to left if 'msbfirst' is False).
 # If a bit is set, the corresponding position
@@ -1320,13 +1338,3 @@ def makesvg():
         + " xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
         + "</svg>"
     )
-
-def _bayerdither(a, b, t, x, y):
-    # 't' is such that 0<=t<=1; closer to 1 means closer to 'b';
-    # closer to 0 means closer to 'a'.
-    # 'x' and 'y' are a pixel position.
-    bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-    if bdither < t * 64:
-        return b
-    else:
-        return a

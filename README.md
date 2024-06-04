@@ -31,11 +31,15 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     - Not preferred: Up to 16 colors from those displayable by pure VGA monitors (each color component is a multiple of 4).
     - Not preferred: 65- to 236-color grayscale palette (all color components the same).
     - Not preferred: 237- to 256-color grayscale palette (all color components the same).
+
+    > **Note:** If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and converted to fit any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/).  For an example, see the `magickgradientditherfilter` method in _desktopwallpaper.py_.
+
 - The image employs one of the following pixel dimension options:
     - Preferred: 8&times;8, 16&times;16, 32&times;32, 64&times;64, 64&times;32, 32&times;64, 96&times;96, 128&times;128, 256&times;256.
     - Not preferred: 320&times;240, 320&times;200.
     - Not preferred: Custom size up to 96&times;96.
     - Not preferred: Custom size up to 256&times;256.
+
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
 - The image is in the public domain or licensed under Creative Commons Zero (CC0) or Attribution (CC-BY) or, less preferably, another open-source license.
 - The image was not produced by artificial intelligence tools or with their help.
@@ -101,7 +105,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^2]: Generated from `dstripe` using the following ImageMagick command: `convert dstripe.png \( +clone -flop \) +append dzigzag.png`.
 
-[^3]: Tileable wallpapers employing more than 256 colors are acceptable, though not preferable, if they otherwise meet all requirements here, since they can be reduced to this color palette using known techniques for color dithering.
+[^3]: Tileable wallpapers employing more than 256 colors are acceptable, though not preferable, if they otherwise meet all requirements here, since they can be converted to fit this color palette using known techniques for color dithering.
 
 [^4]: Generated from `truchet3color` using the following [ImageMagick](https://imagemagick.org/) command: `convert truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
 
