@@ -428,29 +428,41 @@ def magickgradientditherfilterrandom():
             basecolors = [rgb1, rgb2]
     return magickgradientditherfilter(rgb1, rgb2, basecolors, hue=hue)
 
+def _chopBeforeHAppend():
+    return " -gravity West -chop 1x0 +gravity "  # Remove the left column
+
+def _chopBeforeVAppend():
+    return " -gravity North -chop 0x1 +gravity "  # Remove the top row
+
 def tileable():
     # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
     # This command can be applied to arbitrary images to render them
     # tileable.
     # NOTE: "-append" is a vertical append; "+append" is a horizontal append;
     # "-flip" reverses the row order; "-flop" reverses the column order.
-    return " \\( +clone -flip \\) -append \\( +clone -flop \\) +append "
+    return (
+        " \\( +clone -flip "
+        + _chopBeforeVAppend()
+        + "\\) -append \\( +clone -flop "
+        + _chopBeforeHAppend()
+        + " \\) +append "
+    )
 
 def groupP2():
     # ImageMagick command to generate a P2 wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last row's first half is a mirror of its second half.
-    return " \\( +clone -flip -flop \\) -append "
+    return " \\( +clone -flip -flop  " + _chopBeforeVAppend() + "\\) -append "
 
 def groupPm():
     # ImageMagick command to generate a Pm wallpaper group tiling pattern.
-    return " \\( +clone -flop \\) +append "
+    return " \\( +clone -flop " + _chopBeforeHAppend() + " \\) +append "
 
 def groupPg():
     # ImageMagick command to generate a Pg wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last column's first half is a mirror of its second half.
-    return " \\( +clone -flip \\) -append "
+    return " \\( +clone -flip " + _chopBeforeVAppend() + "\\) -append "
 
 def groupPgg():
     # ImageMagick command to generate a Pgg wallpaper group tiling pattern.
@@ -459,8 +471,14 @@ def groupPgg():
     # second half.
     return (
         " -write mpr:wpgroup -delete 0 "
-        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "
-        + "\\( \\( mpr:wpgroup -flip -flop \\) mpr:wpgroup +append \\) "
+        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop "
+        + _chopBeforeHAppend()
+        + "\\) +append \\) "
+        + "\\( \\( mpr:wpgroup -flip -flop \\) \\( mpr:wpgroup "
+        + _chopBeforeHAppend()
+        + " \\) +append "
+        + _chopBeforeVAppend()
+        + "\\) "
         + "-append "
     )
 
@@ -471,8 +489,14 @@ def groupCmm():
     # second half.
     return (
         " \\( +clone -flip \\) -append -write mpr:wpgroup -delete 0 "
-        + "\\( mpr:wpgroup \\( mpr:wpgroup -flop \\) +append \\) "
-        + "\\( \\( mpr:wpgroup -flop \\) mpr:wpgroup +append \\) "
+        + "\\( mpr:wpgroup \\( mpr:wpgroup -flop "
+        + _chopBeforeHAppend()
+        + " \\) +append \\) "
+        + "\\( \\( mpr:wpgroup -flop \\) \\( mpr:wpgroup "
+        + _chopBeforeHAppend()
+        + " \\) +append "
+        + _chopBeforeVAppend()
+        + "\\) "
         + "-append "
     )
 
@@ -505,8 +529,14 @@ def groupPmg():
     # second half.
     return (
         " -write mpr:wpgroup -delete 0 "
-        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop \\) +append \\) "
-        + "\\( \\( mpr:wpgroup -flip \\) \\( mpr:wpgroup -flop \\) +append \\) "
+        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop "
+        + _chopBeforeHAppend()
+        + "\\) +append \\) "
+        + "\\( \\( mpr:wpgroup -flip \\) \\( mpr:wpgroup -flop "
+        + _chopBeforeHAppend()
+        + "\\) +append "
+        + _chopBeforeVAppend()
+        + "\\) "
         + "-append "
     )
 
@@ -520,17 +550,23 @@ def writeppm(f, image, width, height):
     fd.write(bytes(image))
     fd.close()
 
+def _simplebox(image, width, height, color, x0, y0, x1, y1):
+    borderedbox(image, width, height, None, color, color, x0, y0, x1, y1)
+
 def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # Draw a wraparound dither-colored box on an image.
-    # 'border' is the border color, and 'color1' and 'color2' are the dithered
-    # versions of the inner color.  'border' can be None; 'color1' and 'color2'
-    # can't be.
+    # 'border' is the color of the 1-pixel-thick border. Can be None (so
+    # that no border is drawn)
+    # 'color1' and 'color2' are the dithered
+    # versions of the inner color. 'color1' and 'color2' can't be None.
     if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
         raise ValueError
     if width <= 0 or height <= 0:
         raise ValueError
     if (not color1) or (not image) or (not color2):
         raise ValueError
+    if x0 == x1 or y0 == y1:
+        return
     for y in range(y0, y1):
         ypp = y % height
         yp = ypp * width * 3
@@ -552,6 +588,14 @@ def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
                 image[yp + xp * 3 + 1] = color2[1]
                 image[yp + xp * 3 + 2] = color2[2]
 
+def _blankimage(width, height, color=None):
+    if color and len(color) < 3:
+        raise ValueError
+    image = [255 for i in range(width * height * 3)]  # default background is white
+    if color:
+        _simplebox(image, width, height, color, 0, 0, width, height)
+    return image
+
 def randomboxes(width, height, palette):
     # Generate a portable pixelmap (PPM) of a tileable pattern with random boxes,
     # using only the colors in the given palette
@@ -559,10 +603,9 @@ def randomboxes(width, height, palette):
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    image = [255 for i in range(width * height * 3)]
-    borderedbox(
-        image, width, height, palette[0], palette[0], palette[0], 0, 0, width, height
-    )
+    if (not palette) or len(palette) <= 0:
+        raise ValueError
+    image = _blankimage(width, height, palette[0])
     for i in range(45):
         x0 = random.randint(0, width - 1)
         x1 = x0 + random.randint(3, max(3, width * 3 // 4))
@@ -578,68 +621,116 @@ def randomboxes(width, height, palette):
         borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
     return image
 
-def crosshatch(hhatchdist=8, vhatchdist=8, hhatchthick=1, vhatchthick=1):
-    # Generate a portable pixelmap (PPM) of a horizontal and vertical hatch
+def crosshatch(
+    hhatchdist=8, vhatchdist=8, hhatchthick=1, vhatchthick=1, fgcolor=None, bgcolor=None
+):
+    # Generate a portable pixelmap (PPM) of a horizontal and/or vertical hatch
     # pattern.
     # hhatchdist - distance from beginning of one horizontal hash line to the
     # beginning of the next, in pixels.
-    # hatchthick - thickness in pixels of each horizontal hash line.
+    # hhatchthick - thickness in pixels of each horizontal hash line.
     # Similar for vhatchdist and vhatchthick, with vertical hash lines.
+    # fgcolor -  foreground color.  If None, default is black.
+    # bgcolor -  background color.  If None, default is white.
     if hhatchdist <= 0 or hhatchthick < 0 or hhatchthick > hhatchdist:
         raise ValueError
     if vhatchdist <= 0 or vhatchthick < 0 or vhatchthick > vhatchdist:
         raise ValueError
+    if fgcolor and len(fgcolor) != 3:
+        raise ValueError
+    if bgcolor and len(bgcolor) != 3:
+        raise ValueError
     width = vhatchdist * 4
     height = hhatchdist * 4
-    image = []
-    for y in range(height):
-        if y % hhatchdist < hhatchthick:
-            image.append([0 for i in range(width * 3)])
-        else:
-            image.append(
-                [
-                    0 if (i // 3) % vhatchdist < vhatchthick else 255
-                    for i in range(width * 3)
-                ]
-            )
+    image = _blankimage(width, height, bgcolor)
+    for i in range(4):
+        _simplebox(
+            image,
+            width,
+            height,
+            fgcolor,
+            0,
+            hhatchdist * i,
+            width,
+            hhatchdist * i + hhatchthick,
+        )
+        _simplebox(
+            image,
+            width,
+            height,
+            fgcolor,
+            vhatchdist * i,
+            0,
+            vhatchdist * i + vhatchthick,
+            height,
+        )
     return {
-        "image": [px for row in image for px in row],
+        "image": image,
         "width": width,
         "height": height,
     }
 
-def verthatch(hatchdist=8, hatchthick=1):
+def verthatch(hatchdist=8, hatchthick=1, fgcolor=None, bgcolor=None):
     # Generate a portable pixelmap (PPM) of a vertical hatch pattern.
-    return crosshatch(1, hatchdist, 0, hatchthick)
+    return crosshatch(1, hatchdist, 0, hatchthick, fgcolor=fgcolor, bgcolor=bgcolor)
 
-def horizhatch(hatchdist=8, hatchthick=1):
+def horizhatch(hatchdist=8, hatchthick=1, fgcolor=None, bgcolor=None):
     # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
-    return crosshatch(hatchdist, 1, hatchthick, 0)
+    return crosshatch(hatchdist, 1, hatchthick, 0, fgcolor=fgcolor, bgcolor=bgcolor)
 
-def diagstripe(wpsize=64, stripesize=32, reverse=False):
+def diagcrosshatch(
+    wpsize=64, stripesize=32, revstripesize=32, fgcolor=None, bgcolor=None
+):
     # Generate a portable pixelmap (PPM) of a diagonal stripe pattern
-    if stripesize > wpsize:
+    # 'wpsize': image width and height, in pixels
+    # 'stripesize': thickness of stripe (running from top left to bottom
+    # right assuming the image's first row is the top row), in pixels
+    # 'revstripesize': thickness of stripe (running from top right to bottom
+    # left), in pixels
+    # 'fgcolor': foreground color.  If None, default is black.
+    # 'bgcolor': background color.  If None, default is white.
+    if stripesize > wpsize or stripesize < 0:
+        raise ValueError
+    if revstripesize > wpsize or revstripesize < 0:
         raise ValueError
     if wpsize <= 0 or int(wpsize) != wpsize:
         raise ValueError
-    image = [255 for i in range(wpsize * wpsize * 3)]
+    if fgcolor and len(fgcolor) != 3:
+        raise ValueError
+    fgbytes = bytes(fgcolor) if fgcolor else None
+    image = _blankimage(wpsize, wpsize, bgcolor)
     # Draw the stripe
-    xpstart = -(stripesize // 2)
-    for y in range(wpsize):
-        yp = y * wpsize * 3
-        for x in range(stripesize):
-            xp = x + xpstart
-            while xp < 0:
-                xp += wpsize
-            while xp >= wpsize:
-                xp -= wpsize
-            if reverse:
-                xp = wpsize - 1 - xp
-            image[yp + xp * 3] = 0
-            image[yp + xp * 3 + 1] = 0
-            image[yp + xp * 3 + 2] = 0
-        xpstart += 1
+    stripesizes = [stripesize, revstripesize]
+    for i in range(2):
+        xpstart = -(stripesizes[i] // 2)
+        for y in range(wpsize):
+            yp = y * wpsize * 3
+            for x in range(stripesizes[i]):
+                xp = x + xpstart
+                while xp < 0:
+                    xp += wpsize
+                while xp >= wpsize:
+                    xp -= wpsize
+                if i == 1:  # drawing reverse stripe
+                    xp = wpsize - 1 - xp
+                imagepos = yp + xp * 3
+                if fgcolor:
+                    image[imagepos] = fgbytes[0]
+                    image[imagepos + 1] = fgbytes[1]
+                    image[imagepos + 2] = fgbytes[2]
+                else:
+                    # default foreground color is black
+                    image[imagepos] = 0
+                    image[imagepos + 1] = 0
+                    image[imagepos + 2] = 0
+            xpstart += 1
     return image
+
+def diaghatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
+    return diagcrosshatch(wpsize, stripesize, 0, fgcolor, bgcolor)
+
+def diagrevhatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
+    return diagcrosshatch(wpsize, 0, stripesize, fgcolor, bgcolor)
 
 def _dithergray(r, x, y, grays):
     if grays == 4:

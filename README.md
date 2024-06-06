@@ -41,7 +41,8 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     - Not preferred: Custom size up to 256&times;256.
 
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
-- The image does not contain text, realistic depictions of people or human faces, or images of body parts, and should not depict people or human faces.
+- The image does not contain text.  Images that contain depictions of people or human faces are not preferred.
+- The image should be losslessly compressed (so in PNG or BMP format, for example, rather than JPG format).
 - The image is in the public domain or licensed under Creative Commons Zero (CC0) or Attribution (CC-BY) or, less preferably, another open-source license.
 - The image was not produced by artificial intelligence tools or with their help.
 
