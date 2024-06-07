@@ -224,17 +224,18 @@ def cgacolors2():
                 colors.append(cij)
     return colors
 
-def classicdithercolors():
+def getdithercolors(palette):
+    if (not palette) or (len(palette) > 256):  # too long palettes not supported
+        raise ValueError
     colors = {}
-    cc = classiccolors()
-    for c in cc:
+    for c in palette:
         cij = c[0] | (c[1] << 8) | (c[2] << 16)
         if cij not in colors:
             colors[cij] = [cij, cij]
-    for i in range(len(cc)):
-        for j in range(i + 1, len(cc)):
-            ci = cc[i]
-            cj = cc[j]
+    for i in range(len(palette)):
+        for j in range(i + 1, len(palette)):
+            ci = palette[i]
+            cj = palette[j]
             ci1 = ci[0] | (ci[1] << 8) | (ci[2] << 16)
             cj1 = cj[0] | (cj[1] << 8) | (cj[2] << 16)
             cij = (
@@ -246,10 +247,10 @@ def classicdithercolors():
                 colors[cij] = [ci1, cj1]
     return colors
 
-def classicditherimage(image, width, height):
+def halfhalfditherimage(image, width, height, palette):
     if width <= 0 or height <= 0:
         raise ValueError
-    cdcolors = classicdithercolors()
+    cdcolors = getdithercolors(palette)
     for y in range(height):
         yd = y * width
         for x in range(width):
@@ -429,10 +430,12 @@ def magickgradientditherfilterrandom():
     return magickgradientditherfilter(rgb1, rgb2, basecolors, hue=hue)
 
 def _chopBeforeHAppend():
-    return " -gravity West -chop 1x0 +gravity "  # Remove the left column
+    return " -gravity West -chop 1x0 -gravity East -chop 1x0 +gravity "  # Remove the left and right column
+    #return " -gravity West -chop 1x0 +gravity "  # Remove the left column
 
 def _chopBeforeVAppend():
-    return " -gravity North -chop 0x1 +gravity "  # Remove the top row
+    return " -gravity North -chop 0x1 -gravity South -chop 1x0 +gravity "  # Remove the top and bottom row
+    #return " -gravity North -chop 0x1 +gravity "  # Remove the top row
 
 def tileable():
     # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
@@ -540,12 +543,12 @@ def groupPmg():
         + "-append "
     )
 
-def writeppm(f, image, width, height):
+def writeppm(f, image, width, height, raiseIfExists=False):
     if not image:
         raise ValueError
     if len(image) != width * height * 3:
         raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
-    fd = open(f, "x+b")
+    fd = open(f, "xb" if raiseIfExists else "wb")
     fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
     fd.write(bytes(image))
     fd.close()
@@ -596,30 +599,80 @@ def _blankimage(width, height, color=None):
         _simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
-def randomboxes(width, height, palette):
-    # Generate a portable pixelmap (PPM) of a tileable pattern with random boxes,
-    # using only the colors in the given palette
+def _isdark(c):
+    r = c & 0xFF
+    g = (c >> 8) & 0xFF
+    b = (c >> 16) & 0xFF
+    return (r * 0.3 + g * 0.5 + b * 0.2) < 127.5
+
+def _nearest(pal, c):
+    best = -1
+    ret = 0
+    r = c & 0xFF
+    g = (c >> 8) & 0xFF
+    b = (c >> 16) & 0xFF
+    for i in range(len(pal)):
+        cr = pal[i] & 0xFF
+        cg = (pal[i] >> 8) & 0xFF
+        cb = (pal[i] >> 16) & 0xFF
+        dist = (r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2
+        if i == 0 or dist < best:
+            ret = i
+            best = dist
+    return ret
+
+def _darker(c):
+    cr = c & 0xFF
+    cg = (c >> 8) & 0xFF
+    cb = (c >> 16) & 0xFF
+    return (cr // 2) + ((cg // 2) << 8) + ((cb // 2) << 16)
+
+def _p2a(c):
+    # packed to array
+    r = c & 0xFF
+    g = (c >> 8) & 0xFF
+    b = (c >> 16) & 0xFF
+    return [r, g, b]
+
+def randomboxeslightdark(width, height, palette):
+    # Generate two portable pixelmaps (PPM) of a tileable pattern
+    # with random boxes, namely a light version and a dark version,
+    # using only the colors in the given palette.
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    if (not palette) or len(palette) <= 0:
+    if (not palette) or len(palette) <= 0 or len(palette) > 256:
+        # too long palette not supported
         raise ValueError
-    image = _blankimage(width, height, palette[0])
+    cdcolors = getdithercolors(palette)
+    lightimage = _blankimage(width, height, [0, 0, 0])
+    darkimage = _blankimage(width, height, [0, 0, 0])
+    paletteSize = len(cdcolors)
+    cdkeys = [k for k in cdcolors.keys()]
+    cdkeys.sort()
+    darkkeys = [cdkeys[_nearest(cdkeys, _darker(cd))] for cd in cdkeys]
     for i in range(45):
         x0 = random.randint(0, width - 1)
         x1 = x0 + random.randint(3, max(3, width * 3 // 4))
         y0 = random.randint(0, height - 1)
         y1 = y0 + random.randint(3, max(3, height * 3 // 4))
-        border = (
-            palette[random.randint(0, len(palette) - 1)]
-            if random.randint(0, 5) == 0
-            else palette[0]
-        )
-        color1 = palette[random.randint(0, len(palette) - 1)]
-        color2 = palette[random.randint(0, len(palette) - 1)]
-        borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
-    return image
+        border1 = random.randint(0, 5)
+        border2 = random.randint(0, paletteSize - 1)
+        color = random.randint(0, paletteSize - 1)
+        border = border2 if border1 == 0 else 0
+        c1 = _p2a(cdcolors[cdkeys[color]][0])
+        c2 = _p2a(cdcolors[cdkeys[color]][1])
+        borderedbox(lightimage, width, height, [0, 0, 0], c1, c2, x0, y0, x1, y1)
+        c1 = _p2a(cdcolors[darkkeys[color]][0])
+        c2 = _p2a(cdcolors[darkkeys[color]][1])
+        borderedbox(darkimage, width, height, [0, 0, 0], c1, c2, x0, y0, x1, y1)
+    return {"light": lightimage, "dark": darkimage}
+
+def randomboxes(width, height, palette):
+    # Generate a portable pixelmap (PPM) of a tileable pattern with random boxes,
+    # using only the colors in the given palette
+    return randomboxeslightdark(width, height, palette)["light"]
 
 def crosshatch(
     hhatchdist=8, vhatchdist=8, hhatchthick=1, vhatchthick=1, fgcolor=None, bgcolor=None
@@ -640,6 +693,7 @@ def crosshatch(
         raise ValueError
     if bgcolor and len(bgcolor) != 3:
         raise ValueError
+    if not fgcolor: fgcolor=[0,0,0]
     width = vhatchdist * 4
     height = hhatchdist * 4
     image = _blankimage(width, height, bgcolor)
