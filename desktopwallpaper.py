@@ -204,27 +204,13 @@ def classiccolors2():
                     colors.append(cij)
     return colors
 
-def _ceil(x, y):
-    return -(-x // y)
-
-def cgacolors2():
-    # colors in cgacolors() and their "half-and-half" versions
-    colors = []
-    cc = cgacolors()
-    for c in cc:
-        cij = [x for x in c]
-        if cij not in colors:
-            colors.append(cij)
-    for i in range(len(cc)):
-        for j in range(i + 1, len(cc)):
-            ci = cc[i]
-            cj = cc[j]
-            cij = [a + _ceil(b - a, 2) for a, b in zip(ci, cj)]
-            if cij not in colors:
-                colors.append(cij)
-    return colors
+def paletteandhalfhalf(palette):
+    ret = [k for k in getdithercolors(palette).keys()]
+    ret.sort()
+    return ret
 
 def getdithercolors(palette):
+    # Gets the "half-and half" versions of colors in the given palette.
     if (not palette) or (len(palette) > 256):  # too long palettes not supported
         raise ValueError
     colors = {}
@@ -255,7 +241,7 @@ def halfhalfditherimage(image, width, height, palette):
         yd = y * width
         for x in range(width):
             xp = yd + x
-            col = image[xp * 3] | (image[xp * 3] << 8) | (image[xp * 3] << 16)
+            col = image[xp * 3] | (image[xp * 3 + 1] << 8) | (image[xp * 3 + 2] << 16)
             cd = cdcolors[col]
             if not cd:
                 raise ValueError
@@ -277,15 +263,13 @@ def _isqrtceil(i):
 # The output image is the input for the next step.
 # 2. If hue is not 0, performs a hue shift, in degrees (-180 to 180), of the input image.
 # The output image is the input for the next step.
-# 3. If basecolors is not nil, performs a dithering operation on the input image; that is, it
-# reduces the number of colors of the image to those given in 'basecolors', which is a list
-# of colors (each color is of the same format as rgb1 and rgb2),
-# and scatters the remaining colors in the image so that they appear close to the original colors.
+# 3. If basecolors is not nil, ensures that that the image used only the colors
+# given in 'basecolors', which is a list
+# of colors (each color is of the same format as rgb1 and rgb2).  If 'dither' is also True, the
+# image's colors are then scattered so that they appear close to the original colors.
 # Raises an error if 'basecolors' has a length greater than 256.
-# 'abstractImage' indicates that the image to apply the filter to
-# is abstract or geometric (as opposed to photographic).  Default is False.
 def magickgradientditherfilter(
-    rgb1=None, rgb2=None, basecolors=None, hue=0, abstractImage=False
+    rgb1=None, rgb2=None, basecolors=None, hue=0, dither=True
 ):
     if hue < -180 or hue > 180:
         raise ValueError
@@ -326,11 +310,13 @@ def magickgradientditherfilter(
         # per color channel in the ordered dither algorithm, and this number is taken
         # as the square root of the palette size, rounded up, minus 1, but not less
         # than 2.
-        ditherkind = (
-            "-ordered-dither 8x8,%d" % (min(2, _isqrtceil(len(basecolors)) - 1))
-            if abstractImage
-            else "-dither FloydSteinberg"
-        )
+        # ditherkind = (
+        #    "-ordered-dither 8x8,%d" % (min(2, _isqrtceil(len(basecolors)) - 1))
+        #    if abstractImage
+        #    else "-dither FloydSteinberg"
+        # )
+        # "+dither" disables dithering
+        ditherkind = "+dither" if dither else "-dither FloydSteinberg"
         return " %s %s \\( %s \\) %s -remap mpr:z " % (
             mgradient,
             hueshift,
@@ -431,11 +417,11 @@ def magickgradientditherfilterrandom():
 
 def _chopBeforeHAppend():
     return " -gravity West -chop 1x0 -gravity East -chop 1x0 +gravity "  # Remove the left and right column
-    #return " -gravity West -chop 1x0 +gravity "  # Remove the left column
+    # return " -gravity West -chop 1x0 +gravity "  # Remove the left column
 
 def _chopBeforeVAppend():
     return " -gravity North -chop 0x1 -gravity South -chop 1x0 +gravity "  # Remove the top and bottom row
-    #return " -gravity North -chop 0x1 +gravity "  # Remove the top row
+    # return " -gravity North -chop 0x1 +gravity "  # Remove the top row
 
 def tileable():
     # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
@@ -693,7 +679,8 @@ def crosshatch(
         raise ValueError
     if bgcolor and len(bgcolor) != 3:
         raise ValueError
-    if not fgcolor: fgcolor=[0,0,0]
+    if not fgcolor:
+        fgcolor = [0, 0, 0]
     width = vhatchdist * 4
     height = hhatchdist * 4
     image = _blankimage(width, height, bgcolor)
@@ -786,6 +773,19 @@ def diaghatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
 def diagrevhatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
     return diagcrosshatch(wpsize, 0, stripesize, fgcolor, bgcolor)
 
+def dithergrayimage(image, width, height, grays):
+    image = [x for x in image]
+    for y in range(height):
+        yp = y * width * 3
+        for x in range(width):
+            xp = yp + x * 3
+            if image[xp] != image[xp + 1] or image[xp] != image[xp + 2]:
+                raise ValueError
+            image[xp] = image[xp + 1] = image[xp + 2] = _dithergray(
+                image[xp], x, y, grays
+            )
+    return image
+
 def _dithergray(r, x, y, grays):
     if grays == 4:
         # Dither to the four VGA grays
@@ -808,6 +808,10 @@ def _dithergray(r, x, y, grays):
             r = 128 if bdither < r * 64 // 128 else 0
         else:
             r = 255 if bdither < (r - 128) * 64 // 127 else 128
+    elif grays == 2:
+        # Dither to black and white
+        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+        r = 255 if bdither < r * 64 // 255 else 0
     elif grays == 6:
         # Dither to the six grays in the "Web safe" palette
         bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]

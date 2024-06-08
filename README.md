@@ -33,6 +33,8 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     - Not preferred: 237- to 256-color grayscale palette (all color components the same).
 
     > **Note:** If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and converted to fit any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/).  For an example, see the `magickgradientditherfilter` method in _desktopwallpaper.py_.  If the automatic conversion to a particular color palette (such as black and white, or the three VGA gray tones, or the six "Web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
+    >
+    > **Note:** The wallpaper image is allowed to be a vector graphic in the SVG format made only of two-dimensional vector paths, each of which has no stroke, a black fill, and any fill opacity from 0 through 100%.  With this vector format, the image can be scaled to any pixel dimension desired and turned into a grayscale bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
 
 - The image employs one of the following pixel dimension options:
     - Preferred: 8&times;8, 16&times;16, 32&times;32, 64&times;64, 64&times;32, 32&times;64, 96&times;96, 128&times;128, 256&times;256.
