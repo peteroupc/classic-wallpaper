@@ -205,7 +205,7 @@ def classiccolors2():
     return colors
 
 def paletteandhalfhalf(palette):
-    ret = [k for k in getdithercolors(palette).keys()]
+    ret = [[k&0xff,(k>>8)&0xff,(k>>16)&0xff] for k in getdithercolors(palette).keys()]
     ret.sort()
     return ret
 
@@ -343,7 +343,7 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     hc = "#%02x%02x%02x" % (int(highlight[0]), int(highlight[1]), int(highlight[2]))
     sc = "#%02x%02x%02x" % (int(shadow[0]), int(shadow[1]), int(shadow[2]))
     return (
-        " -grayscale Rec709Luma -channel RGB -threshold 50%% -write mpr:z "
+        " -grayscale Rec709Luma -channel RGB -threshold 51%% -write mpr:z "
         + '\\( -clone 0 -morphology Convolve "3:0,0,0 0,0,0 0,0,1" -write mpr:z1 \\) '
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0 '
         + "-compose Multiply -composite "
@@ -373,7 +373,7 @@ def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     hc = "#%02x%02x%02x" % (int(highlight[0]), int(highlight[1]), int(highlight[2]))
     sc = "#%02x%02x%02x" % (int(shadow[0]), int(shadow[1]), int(shadow[2]))
     return (
-        " -grayscale Rec709Luma -channel RGB -threshold 50%% -write mpr:z "
+        " -grayscale Rec709Luma -channel RGB -threshold 51%% -write mpr:z "
         + '\\( -clone 0 -morphology Convolve "3:0,0,0 0,0,0 0,0,1" -write mpr:z1 \\) '
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0--1 '
         + "mpr:z2 \\( mpr:z -negate \\) -compose Multiply -composite -write mpr:a10 "
