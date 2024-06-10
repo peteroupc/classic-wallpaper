@@ -1,6 +1,6 @@
 GIMP Palette
 # Name: Three Grays
 # Colors: 3
-0 0 0 #000000
-128 128 128 #808080
-255 255 255 #FFFFFF
+0 0 0 black #000000
+128 128 128 gray #808080
+255 255 255 white #ffffff

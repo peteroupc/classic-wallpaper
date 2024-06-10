@@ -34,7 +34,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 
     > **Notes:**
     >
-    > 1. If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and converted to fit any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/).  For an example, see the `magickgradientditherfilter` method in _desktopwallpaper.py_.  If the automatic conversion to a particular color palette (such as black and white, or the three VGA gray tones, or the six "Web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
+    > 1. If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/).  For an example, see the `magickgradientditherfilter` method in _desktopwallpaper.py_.  If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "Web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
     >
     > 2. The wallpaper image is allowed to be a vector graphic in the SVG format made only of two-dimensional vector paths, each of which has no stroke, a black fill, and any fill opacity from 0 through 100%.  With this vector format, the image can be scaled to any pixel dimension desired and turned into a grayscale bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
     >
@@ -113,7 +113,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^2]: Generated from `dstripe` using the following ImageMagick command: `convert dstripe.png \( +clone -flop \) +append dzigzag.png`.
 
-[^3]: Tileable wallpapers employing more than 256 colors are acceptable, though not preferable, if they otherwise meet all requirements here, since they can be converted to fit this color palette using known techniques for color dithering.
+[^3]: Tileable wallpapers employing more than 256 colors are acceptable, though not preferable, if they otherwise meet all requirements here, since they can be adapted to have the colors of this color palette using known techniques for color dithering.
 
 [^4]: Generated from `truchet3color` using the following [ImageMagick](https://imagemagick.org/) command: `convert truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
 
