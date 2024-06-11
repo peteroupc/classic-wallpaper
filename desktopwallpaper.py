@@ -316,7 +316,7 @@ def magickgradientditherfilter(
         #    else "-dither FloydSteinberg"
         # )
         # "+dither" disables dithering
-        ditherkind = "+dither" if dither else "-dither FloydSteinberg"
+        ditherkind = "-dither FloydSteinberg" if dither else "+dither"
         return " %s %s \\( %s \\) %s -remap mpr:z " % (
             mgradient,
             hueshift,
@@ -1602,3 +1602,71 @@ def writepalette(f, palette, name=None, checkIfExists=False):
         _writef32(ff, c[1] / 255.0)
         _writef32(ff, c[2] / 255.0)
         _writeu16(ff, 0)
+
+if __name__ == "__main__":
+ try:
+  os.mkdir("palettes")
+ except FileExistsError:
+  pass
+ # The following code tests some of the methods in this module.
+ dw.writepalette("palettes/2color", [[0, 0, 0], [255, 255, 255]], "Two Colors")
+ dw.writepalette(
+      "palettes/3gray", [[0, 0, 0], [128, 128, 128], [255, 255, 255]], "Three Grays"
+ )
+ dw.writepalette(
+     "palettes/4gray",
+     [[0, 0, 0], [128, 128, 128], [192, 192, 192], [255, 255, 255]],
+     "Four Grays",
+ )
+ dw.writepalette(
+    "palettes/6gray", [[x * 51, x * 51, x * 51] for x in range(6)], "Six Grays"
+ )
+ dw.writepalette(
+    "palettes/16gray",
+    [[x * 0x11, x * 0x11, x * 0x11] for x in range(16)],
+    "16 Grays",
+ )
+ dw.writepalette(
+    "palettes/64gray",
+    [[x * 255 // 63, x * 255 // 63, x * 255 // 63] for x in range(64)],
+    "64 Grays",
+ )
+ dw.writepalette("palettes/256gray", [[x, x, x] for x in range(256)], "256 Grays")
+ dw.writepalette(
+    "palettes/cga-canonical", dw.cgacolors(), "Canonical 16-Color CGA Palette"
+ )
+ dw.writepalette(
+    "palettes/cga-with-halfmixtures",
+    dw.paletteandhalfhalf(dw.cgacolors()),
+    "Canonical CGA Palette with Half-and-Half Mixtures",
+ )
+ dw.writepalette("palettes/vga", dw.classiccolors(), "VGA (Windows) 16-Color Palette")
+ dw.writepalette("palettes/16color", dw.classiccolors(), "VGA (Windows) 16-Color Palette")
+ dw.writepalette("palettes/ega", dw.egacolors(), "Colors Displayable by EGA Monitors")
+ dw.writepalette("palettes/websafe", dw.websafecolors(), '"Web Safe" Colors')
+ dw.writepalette(
+    "palettes/websafe-and-vga",
+    dw.websafecolors()
+    + [
+        [128, 128, 128],
+        [192, 192, 192],
+        [128, 0, 0],
+        [0, 128, 0],
+        [0, 0, 128],
+        [128, 0, 128],
+        [0, 128, 128],
+        [128, 128, 0],
+    ],
+    '"Web Safe" and VGA Colors',
+ )
+ dw.writepalette(
+    "palettes/windows-20",
+    dw.classiccolors()
+    + [[192, 220, 192], [160, 160, 164], [255, 251, 240], [166, 202, 240]],
+    "Windows 20-Color Palette",
+ )
+ dw.writepalette(
+    "palettes/vga-with-halfmixtures",
+    dw.paletteandhalfhalf(dw.classiccolors()),
+    "VGA Palette with Half-and-Half Mixtures",
+ )

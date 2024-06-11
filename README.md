@@ -9,9 +9,9 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 - The image employs one of the following color options:
     - Two colors only.
         - Such as black and white, which allows for hue shifting to, say, a black-to-red or gray-to-blue palette.
-    - Three tints: black, gray (128, 128, 128), white.
+    - Three gray tones: black, gray (128, 128, 128), white.
         - Allows for hue shifting to, say, a black-to-red palette.
-    - Four tints: black, gray (128, 128, 128), light gray (192, 192, 192), white.
+    - Four gray tones: black, gray (128, 128, 128), light gray (192, 192, 192), white.
         - Allows for hue shifting to, say, a black-to-red palette.
     - 16-color [**canonical CGA palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
     - 16-color VGA palette (light gray; or each color component is 0 or 255; or each color component is 0 or 128).[^3]
@@ -69,6 +69,7 @@ meeting the requirements given above.
 | dzigzagcyan.png | peteroupc | Two colors (cyan and teal) | 64x32 | CC0 |
 | truchet2color.png | peteroupc | Black and white | 32x32 | CC0 |
 | truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
+| smallslant.png | peteroupc | Four tones | 8x8 | CC0 |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
 | boxes.png | peteroupc | VGA palette | 128x128 | CC0 |
 | [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100x100 | MIT License |
