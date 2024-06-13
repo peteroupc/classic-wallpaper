@@ -314,7 +314,7 @@ def magickgradientditherfilter(
         ret += (
             ["(", "-size", "1x1"]
             + bases
-            + ["+append", "-write", "mpr:z", "+delete" + ")"]
+            + ["+append", "-write", "mpr:z", "+delete", ")"]
         )
         # Apply Floyd-Steinberg error diffusion dither.
         # NOTE: For abstractImage = True, ImageMagick's ordered 8x8 dithering
@@ -333,7 +333,11 @@ def magickgradientditherfilter(
         #    else "-dither FloydSteinberg"
         # )
         # "+dither" disables dithering
-        ret += ["-dither FloydSteinberg" if dither else "+dither", "-remap", "mpr:z"]
+        if dither:
+          ret+=["-dither","FloydSteinberg"]
+        else:
+          ret+=["+dither"]
+        ret += ["-remap", "mpr:z"]
     return ret
 
 def _magickgradientditherfilter(
@@ -461,6 +465,7 @@ def _chopBeforeHAppendArray(withFarEnd=True):
     if withFarEnd:
         # Remove the left and right column
         return [
+            '+repage', # If absent, chop might fail
             "-gravity",
             "West",
             "-chop",
@@ -472,7 +477,7 @@ def _chopBeforeHAppendArray(withFarEnd=True):
             "+gravity",
         ]
     # Remove the left column
-    return ["-gravity", "West", "-chop", "1x0", "+gravity"]
+    return ['+repage',"-gravity", "West", "-chop", "1x0", "+gravity"]
 
 def _chopBeforeVAppend():
     return " " + (" ".join(_chopBeforeVAppendArray())) + " "
@@ -481,6 +486,7 @@ def _chopBeforeVAppendArray(withFarEnd=True):
     if withFarEnd:
         # Remove the top and bottom row
         return [
+            '+repage', # If absent, chop might fail
             "-gravity",
             "North",
             "-chop",
@@ -492,7 +498,7 @@ def _chopBeforeVAppendArray(withFarEnd=True):
             "+gravity",
         ]
     # Remove the top row
-    return ["-gravity", "North", "-chop", "0x1", "+gravity"]
+    return ['+repage',"-gravity", "North", "-chop", "0x1", "+gravity"]
 
 def tileable():
     # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
@@ -669,6 +675,13 @@ def hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1, msbfirst=Tr
                 image[yp + xp * 3 + 1] = cg
                 image[yp + xp * 3 + 2] = cb
 
+def shadowedborderedbox(image, width, height, border, shadow, color1, color2, x0, y0, x1, y1):
+   if shadow:
+      # Draw box's shadow
+      pattern=[0xAA,0x55,0xAA,0x55,0xAA,0x55,0xAA,0x55]
+      hatchedbox(image,width, height,shadow,pattern,x0+4,y0+4,x1+4,y1+4)
+   borderedbox(image,width, height, border, color1, color2, x0, y0, x1, y1)
+
 def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # Draw a wraparound dither-colored box on an image.
     # 'border' is the color of the 1-pixel-thick border. Can be None (so
@@ -790,9 +803,11 @@ def randomboxeslightdark(width, height, palette):
         color = random.randint(0, paletteSize - 1)
         border = border2 if border1 == 0 else 0
         c1 = _p2a(cdkeys[color])
-        borderedbox(lightimage, width, height, darkest, c1, c1, x0, y0, x1, y1)
+        shadowedborderedbox(lightimage, width, height,
+           darkest, None, c1, c1, x0, y0, x1, y1)
         c1 = _p2a(darkkeys[color])
-        borderedbox(darkimage, width, height, darkest, c1, c1, x0, y0, x1, y1)
+        shadowedborderedbox(darkimage, width, height,
+           darkest, None, c1, c1, x0, y0, x1, y1)
     return {"light": lightimage, "dark": darkimage}
 
 def randomboxes(width, height, palette):
@@ -963,7 +978,7 @@ def _dithergray(r, x, y, grays):
         r = (r - rmod) + 51 if bdither < r * 64 // 51 else (r - rmod)
     return r
 
-def diaggradient(size=32, grays=256):
+def diaggradient(size=32):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
     if size <= 0 or int(size) != size:
         raise ValueError
@@ -972,7 +987,6 @@ def diaggradient(size=32, grays=256):
         row = [0 for i in range(size * 3)]
         for x in range(size):
             r = abs(x - (size - 1 - y)) * 255 // (size - 1)
-            r = _dithergray(r, x, y, grays)
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
@@ -1653,6 +1667,58 @@ def makesvg():
         + " xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
         + "</svg>"
     )
+
+# random wallpaper generation
+
+def randomhatchimage(palette=None):
+    # Generates a random hatch image using the given palette
+    # (default is the palette in classiccolors2)
+    pal = palette if palette else classiccolors2()
+    if random.randint(0, 99) < 50:
+                    w = random.randint(40, 96)
+                    w -= w % 2  # make even
+                    image = diagcrosshatch(
+                        w,
+                        random.randint(0, 16),
+                        random.randint(0, 16),
+                        bgcolor=random.choice(pal),
+                        fgcolor=random.choice(pal),
+                    )
+                    return {"image": image, "width": w, "height": w}
+    else:
+                    hhatch = random.randint(0, 7)
+                    vhatch = random.randint(0, 7)
+                    return crosshatch(
+                        hhatch + random.randint(4, 32),
+                        vhatch + random.randint(4, 32),
+                        hhatch,
+                        vhatch,
+                        bgcolor=random.choice(pal),
+                        fgcolor=random.choice(pal),
+                    )
+
+def randomboxesimage(palette=None):
+    # Generates a random boxes image using the given palette
+    # (default is the palette in classiccolors2)
+    pal = palette if palette else classiccolors2()
+    w = random.randint(180, 320)
+    w -= w % 2  # make even
+    h = random.randint(140, 240)
+    h -= h % 2  # make even
+    image = randomboxes(w, h, pal)
+    return {"image":image,"width":w,"height":h}
+
+def randomcheckimage(palette=None):
+    # Generates a random checkerboard pattern image using the given palette
+    # (default is the palette in classiccolors2)
+    pal = palette if palette else classiccolors2()
+    w = random.randint(16, 128)
+    w -= w % 2  # make even
+    h = random.randint(16, 128)
+    h -= h % 2  # make even
+    hatch = None if random.randint(0,1)==0 else random.choice(pal)
+    image = checkerboardimage(w, h, random.choice(pal),random.choice(pal),hatch)
+    return {"image":image,"width":w, "height":h}
 
 # palette generation
 
