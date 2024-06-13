@@ -205,7 +205,10 @@ def classiccolors2():
     return colors
 
 def paletteandhalfhalf(palette):
-    ret = [[k&0xff,(k>>8)&0xff,(k>>16)&0xff] for k in getdithercolors(palette).keys()]
+    ret = [
+        [k & 0xFF, (k >> 8) & 0xFF, (k >> 16) & 0xFF]
+        for k in getdithercolors(palette).keys()
+    ]
     ret.sort()
     return ret
 
@@ -283,22 +286,36 @@ def magickgradientditherfilter(
         for k in basecolors:
             if (not k) or len(k) < 3:
                 raise ValueError
+    ret = []
     huemod = (hue + 180) * 100.0 / 180.0
-    hueshift = "" if hue == 0 else ("-modulate 100,100,%.02f" % (huemod))
-    mgradient = None
     if rgb1 != None and rgb2 != None:
         r1 = "#%02x%02x%02x" % (int(rgb1[0]), int(rgb1[1]), int(rgb1[2]))
         r2 = "#%02x%02x%02x" % (int(rgb2[0]), int(rgb2[1]), int(rgb2[2]))
-        mgradient = (
-            "\\( +clone -grayscale Rec709Luma \\) \\( -size 1x256 gradient:%s-%s \\) -delete 0 -clut"
-            % (r1, r2)
-        )
-    else:
-        mgradient = ""
+        ret += [
+            "(",
+            "+clone",
+            "-grayscale",
+            "Rec709Luma",
+            ")",
+            "(",
+            "-size",
+            "1x256",
+            "gradient:%s-%s" % (r1, r2),
+            ")",
+            "-delete",
+            "0",
+            "-clut",
+        ]
+    if hue != 0:
+        ret += ["-modulate", "100,100,%.02f" % (huemod)]
     if basecolors and len(basecolors) > 0:
         bases = ["xc:#%02X%02X%02X" % (k[0], k[1], k[2]) for k in basecolors]
         # ImageMagick command to generate the palette image
-        image = "-size 1x1 " + (" ".join(bases)) + " +append -write mpr:z +delete"
+        ret += (
+            ["(", "-size", "1x1"]
+            + bases
+            + ["+append", "-write", "mpr:z", "+delete" + ")"]
+        )
         # Apply Floyd-Steinberg error diffusion dither.
         # NOTE: For abstractImage = True, ImageMagick's ordered 8x8 dithering
         # algorithm ("-ordered-dither 8x8") is by default a per-channel monochrome
@@ -316,21 +333,23 @@ def magickgradientditherfilter(
         #    else "-dither FloydSteinberg"
         # )
         # "+dither" disables dithering
-        ditherkind = "-dither FloydSteinberg" if dither else "+dither"
-        return " %s %s \\( %s \\) %s -remap mpr:z " % (
-            mgradient,
-            hueshift,
-            image,
-            ditherkind,
-        )
-    else:
-        return " %s %s " % (mgradient, hueshift)
+        ret += ["-dither FloydSteinberg" if dither else "+dither", "-remap", "mpr:z"]
+    return ret
+
+def _magickgradientditherfilter(
+    rgb1=None, rgb2=None, basecolors=None, hue=0, dither=True
+):
+    return (
+        " "
+        + (" ".join(magickgradientditherfilter(rgb1, rgb2, basecolors, hue, dither)))
+        + " "
+    )
 
 def solid(bg=[192, 192, 192], w=64, h=64):
     if bg == None or len(bg) < 3:
         raise ValueError
     bc = "#%02x%02x%02x" % (int(bg[0]), int(bg[1]), int(bg[2]))
-    return " -size %dx%d xc:%s " % (w, h, bg)
+    return ["-size", "%dx%d" % (w, h), "xc:%s" % (bc)]
 
 def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
@@ -357,10 +376,30 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
 
 def emboss():
     # Emboss a two-color black and white image into a 3-color (black/gray/white) image
-    return (
-        " \\( +clone \\( +clone \\) -append \\( +clone \\) +append -crop 50%x50%+1+1 \\( "
-        + "-size 1x2 gradient:#FFFFFF-#808080 \\) -clut \\) -compose Multiply -composite "
-    )
+    return [
+        "(",
+        "+clone",
+        "(",
+        "+clone",
+        ")",
+        "-append",
+        "(",
+        "+clone",
+        ")",
+        "+append",
+        "-crop",
+        "50%x50%+1+1",
+        "(",
+        "-size",
+        "1x2",
+        "gradient:#FFFFFF-#808080",
+        ")",
+        "-clut",
+        ")",
+        "-compose",
+        "Multiply",
+        "-composite",
+    ]
 
 def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
@@ -416,12 +455,44 @@ def magickgradientditherfilterrandom():
     return magickgradientditherfilter(rgb1, rgb2, basecolors, hue=hue)
 
 def _chopBeforeHAppend():
-    return " -gravity West -chop 1x0 -gravity East -chop 1x0 +gravity "  # Remove the left and right column
-    # return " -gravity West -chop 1x0 +gravity "  # Remove the left column
+    return " " + (" ".join(_chopBeforeHAppendArray())) + " "
+
+def _chopBeforeHAppendArray(withFarEnd=True):
+    if withFarEnd:
+        # Remove the left and right column
+        return [
+            "-gravity",
+            "West",
+            "-chop",
+            "1x0",
+            "-gravity",
+            "East",
+            "-chop",
+            "1x0",
+            "+gravity",
+        ]
+    # Remove the left column
+    return ["-gravity", "West", "-chop", "1x0", "+gravity"]
 
 def _chopBeforeVAppend():
-    return " -gravity North -chop 0x1 -gravity South -chop 1x0 +gravity "  # Remove the top and bottom row
-    # return " -gravity North -chop 0x1 +gravity "  # Remove the top row
+    return " " + (" ".join(_chopBeforeVAppendArray())) + " "
+
+def _chopBeforeVAppendArray(withFarEnd=True):
+    if withFarEnd:
+        # Remove the top and bottom row
+        return [
+            "-gravity",
+            "North",
+            "-chop",
+            "0x1",
+            "-gravity",
+            "South",
+            "-chop",
+            "0x1",
+            "+gravity",
+        ]
+    # Remove the top row
+    return ["-gravity", "North", "-chop", "0x1", "+gravity"]
 
 def tileable():
     # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
@@ -430,28 +501,30 @@ def tileable():
     # NOTE: "-append" is a vertical append; "+append" is a horizontal append;
     # "-flip" reverses the row order; "-flop" reverses the column order.
     return (
-        " \\( +clone -flip "
-        + _chopBeforeVAppend()
-        + "\\) -append \\( +clone -flop "
-        + _chopBeforeHAppend()
-        + " \\) +append "
+        ["(", "+clone", "-flip"]
+        + _chopBeforeVAppendArray()
+        + [")", "-append", "(", "+clone", "-flop"]
+        + _chopBeforeHAppendArray()
+        + [")", "+append"]
     )
 
 def groupP2():
     # ImageMagick command to generate a P2 wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last row's first half is a mirror of its second half.
-    return " \\( +clone -flip -flop  " + _chopBeforeVAppend() + "\\) -append "
+    return (
+        ["(", "+clone", "-flip", "-flop"] + _chopBeforeVAppendArray() + [")", "-append"]
+    )
 
 def groupPm():
     # ImageMagick command to generate a Pm wallpaper group tiling pattern.
-    return " \\( +clone -flop " + _chopBeforeHAppend() + " \\) +append "
+    return ["(", "+clone", "-flop"] + _chopBeforeHAppendArray() + [")", "+append"]
 
 def groupPg():
     # ImageMagick command to generate a Pg wallpaper group tiling pattern.
     # For best results, the command should be applied to images whose
     # last column's first half is a mirror of its second half.
-    return " \\( +clone -flip " + _chopBeforeVAppend() + "\\) -append "
+    return ["(", "+clone", "-flip"] + _chopBeforeVAppendArray() + [")", "-append"]
 
 def groupPgg():
     # ImageMagick command to generate a Pgg wallpaper group tiling pattern.
@@ -459,16 +532,35 @@ def groupPgg():
     # last row's and last column's first half is a mirror of its
     # second half.
     return (
-        " -write mpr:wpgroup -delete 0 "
-        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop "
-        + _chopBeforeHAppend()
-        + "\\) +append \\) "
-        + "\\( \\( mpr:wpgroup -flip -flop \\) \\( mpr:wpgroup "
-        + _chopBeforeHAppend()
-        + " \\) +append "
-        + _chopBeforeVAppend()
-        + "\\) "
-        + "-append "
+        [
+            "-write",
+            "mpr:wpgroup",
+            "-delete",
+            "0",
+            "(",
+            "mpr:wpgroup",
+            "(",
+            "mpr:wpgroup",
+            "-flip",
+            "-flop",
+        ]
+        + _chopBeforeHAppendArray()
+        + [
+            ")",
+            "+append",
+            ")" "(",
+            "(",
+            "mpr:wpgroup",
+            "-flip",
+            "-flop",
+            ")",
+            "(",
+            "mpr:wpgroup",
+        ]
+        + _chopBeforeHAppendArray()
+        + [")", "+append"]
+        + _chopBeforeVAppendArray()
+        + [")", "-append"]
     )
 
 def groupCmm():
@@ -584,6 +676,14 @@ def _blankimage(width, height, color=None):
     if color:
         _simplebox(image, width, height, color, 0, 0, width, height)
     return image
+
+# TODO: Write variant with a diagonal hatch on one dark square and a
+# reverse diagonal hatch on the other dark square
+def checkerboardimage(width, height, darkcolor, lightcolor):
+  image=_blankimage(width,height,lightcolor)
+  _simplebox(image,width,height,darkcolor,0,0,width//2,height//2)
+  _simplebox(image,width,height,darkcolor,width//2,height//2,width,height)
+  return image
 
 def _isdark(c):
     r = c & 0xFF
@@ -719,6 +819,34 @@ def horizhatch(hatchdist=8, hatchthick=1, fgcolor=None, bgcolor=None):
     # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
     return crosshatch(hatchdist, 1, hatchthick, 0, fgcolor=fgcolor, bgcolor=bgcolor)
 
+def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None, offset=0):
+        if stripesize > max(width,height) or stripesize < 0:
+           raise ValueError
+        if fgcolor and len(fgcolor) != 3:
+           raise ValueError
+        xpstart = -(stripesize // 2)
+        for y in range(height):
+            yp = y * width * 3
+            for x in range(stripesize):
+                xp = x + xpstart + offset
+                while xp < 0:
+                    xp += width
+                while xp >= width:
+                    xp -= width
+                if i == 1:  # drawing reverse stripe
+                    xp = width - 1 - xp
+                imagepos = yp + xp * 3
+                if fgcolor:
+                    image[imagepos] = fgcolor[0]&0xFF
+                    image[imagepos + 1] = fgcolor[1]&0xFF
+                    image[imagepos + 2] = fgcolor[2]&0xFF
+                else:
+                    # default foreground color is black
+                    image[imagepos] = 0
+                    image[imagepos + 1] = 0
+                    image[imagepos + 2] = 0
+            xpstart += 1
+
 def diagcrosshatch(
     wpsize=64, stripesize=32, revstripesize=32, fgcolor=None, bgcolor=None
 ):
@@ -738,33 +866,12 @@ def diagcrosshatch(
         raise ValueError
     if fgcolor and len(fgcolor) != 3:
         raise ValueError
-    fgbytes = bytes(fgcolor) if fgcolor else None
-    image = _blankimage(wpsize, wpsize, bgcolor)
-    # Draw the stripe
-    stripesizes = [stripesize, revstripesize]
-    for i in range(2):
-        xpstart = -(stripesizes[i] // 2)
-        for y in range(wpsize):
-            yp = y * wpsize * 3
-            for x in range(stripesizes[i]):
-                xp = x + xpstart
-                while xp < 0:
-                    xp += wpsize
-                while xp >= wpsize:
-                    xp -= wpsize
-                if i == 1:  # drawing reverse stripe
-                    xp = wpsize - 1 - xp
-                imagepos = yp + xp * 3
-                if fgcolor:
-                    image[imagepos] = fgbytes[0]
-                    image[imagepos + 1] = fgbytes[1]
-                    image[imagepos + 2] = fgbytes[2]
-                else:
-                    # default foreground color is black
-                    image[imagepos] = 0
-                    image[imagepos + 1] = 0
-                    image[imagepos + 2] = 0
-            xpstart += 1
+    width = wpsize
+    height = wpsize
+    image = _blankimage(width, height, bgcolor)
+    # Draw the stripes
+    _drawdiagstripe(image,width,height,stripesize,False,fgcolor=fgcolor)
+    _drawdiagstripe(image,width,height,revstripesize,True,fgcolor=fgcolor)
     return image
 
 def diaghatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
@@ -883,11 +990,15 @@ def brushedmetal():
     # A brushed metal texture was featured in Mac OS X Panther and
     # Tiger (10.3, 10.4) and other Apple products
     # around the time of either OS's release.
-    return (
-        ' +clone +append -morphology Convolve "50x1+49+0:'
-        + _join([1 / 50 for i in range(50)])
-        + '" -crop 50%x0+0+0 '
-    )
+    return [
+        "+clone",
+        "+append",
+        "-morphology",
+        "Convolve",
+        "50x1+49+0:" + _join([1 / 50 for i in range(50)]),
+        "-crop",
+        "50%x0+0+0",
+    ]
 
 # What follows are methods for generating scalable vector graphics (SVGs) of
 # classic OS style borders and button controls.  Although the SVGs are scalable
@@ -1536,26 +1647,28 @@ def _setup_rgba_to_colorname_hash():
     __color_to_rgba_namedColors = {}
     i = 0
     while i < len(nc):
-        __color_to_rgba_namedColors["#"+nc[i+1]] = nc[i]
+        __color_to_rgba_namedColors["#" + nc[i + 1]] = nc[i]
         i += 2
     return __color_to_rgba_namedColors
 
 _rgba_to_colorname_hash = _setup_rgba_to_colorname_hash()
 
 def _colorname(c):
-    cname="#%02x%02x%02x" % (c[0], c[1], c[2])
+    cname = "#%02x%02x%02x" % (c[0], c[1], c[2])
     if cname in _rgba_to_colorname_hash:
-      return _rgba_to_colorname_hash[cname]+" "+cname
+        return _rgba_to_colorname_hash[cname] + " " + cname
     return cname
 
 def writepalette(f, palette, name=None, checkIfExists=False):
     if "\n" in name:
         raise ValueError
-    if (not palette) or len(palette)>512: raise ValueError
+    if (not palette) or len(palette) > 512:
+        raise ValueError
+    # GIMP palette
     ff = open(f + ".gpl", "xb" if checkIfExists else "wb")
     ff.write(bytes("GIMP Palette\n", "utf-8"))
     if name:
-       ff.write(bytes("# Name: %s\n" % (name), "utf-8"))
+        ff.write(bytes("# Name: %s\n" % (name), "utf-8"))
     ff.write(bytes("# Colors: %d\n" % (len(palette)), "utf-8"))
     for c in palette:
         ff.write(
@@ -1565,6 +1678,7 @@ def writepalette(f, palette, name=None, checkIfExists=False):
             )
         )
     ff.close()
+    # Adobe color swatch format
     ff = open(f + ".aco", "xb" if checkIfExists else "wb")
     _writeu16(ff, 1)
     _writeu16(ff, len(palette))
@@ -1586,6 +1700,7 @@ def writepalette(f, palette, name=None, checkIfExists=False):
         _writeu16(ff, 0)
         _writeutf16(ff, _colorname(c))
     ff.close()
+    # Adobe swatch exchange format
     ff = open(f + ".ase", "xb" if checkIfExists else "wb")
     ff.write(bytes("ASEF", "utf-8"))
     _writeu16(ff, 1)
@@ -1604,69 +1719,74 @@ def writepalette(f, palette, name=None, checkIfExists=False):
         _writeu16(ff, 0)
 
 if __name__ == "__main__":
- try:
-  os.mkdir("palettes")
- except FileExistsError:
-  pass
- # The following code tests some of the methods in this module.
- dw.writepalette("palettes/2color", [[0, 0, 0], [255, 255, 255]], "Two Colors")
- dw.writepalette(
-      "palettes/3gray", [[0, 0, 0], [128, 128, 128], [255, 255, 255]], "Three Grays"
- )
- dw.writepalette(
-     "palettes/4gray",
-     [[0, 0, 0], [128, 128, 128], [192, 192, 192], [255, 255, 255]],
-     "Four Grays",
- )
- dw.writepalette(
-    "palettes/6gray", [[x * 51, x * 51, x * 51] for x in range(6)], "Six Grays"
- )
- dw.writepalette(
-    "palettes/16gray",
-    [[x * 0x11, x * 0x11, x * 0x11] for x in range(16)],
-    "16 Grays",
- )
- dw.writepalette(
-    "palettes/64gray",
-    [[x * 255 // 63, x * 255 // 63, x * 255 // 63] for x in range(64)],
-    "64 Grays",
- )
- dw.writepalette("palettes/256gray", [[x, x, x] for x in range(256)], "256 Grays")
- dw.writepalette(
-    "palettes/cga-canonical", dw.cgacolors(), "Canonical 16-Color CGA Palette"
- )
- dw.writepalette(
-    "palettes/cga-with-halfmixtures",
-    dw.paletteandhalfhalf(dw.cgacolors()),
-    "Canonical CGA Palette with Half-and-Half Mixtures",
- )
- dw.writepalette("palettes/vga", dw.classiccolors(), "VGA (Windows) 16-Color Palette")
- dw.writepalette("palettes/16color", dw.classiccolors(), "VGA (Windows) 16-Color Palette")
- dw.writepalette("palettes/ega", dw.egacolors(), "Colors Displayable by EGA Monitors")
- dw.writepalette("palettes/websafe", dw.websafecolors(), '"Web Safe" Colors')
- dw.writepalette(
-    "palettes/websafe-and-vga",
-    dw.websafecolors()
-    + [
-        [128, 128, 128],
-        [192, 192, 192],
-        [128, 0, 0],
-        [0, 128, 0],
-        [0, 0, 128],
-        [128, 0, 128],
-        [0, 128, 128],
-        [128, 128, 0],
-    ],
-    '"Web Safe" and VGA Colors',
- )
- dw.writepalette(
-    "palettes/windows-20",
-    dw.classiccolors()
-    + [[192, 220, 192], [160, 160, 164], [255, 251, 240], [166, 202, 240]],
-    "Windows 20-Color Palette",
- )
- dw.writepalette(
-    "palettes/vga-with-halfmixtures",
-    dw.paletteandhalfhalf(dw.classiccolors()),
-    "VGA Palette with Half-and-Half Mixtures",
- )
+    try:
+        os.mkdir("palettes")
+    except FileExistsError:
+        pass
+    dw.writepalette("palettes/2color", [[0, 0, 0], [255, 255, 255]], "Two Colors")
+    dw.writepalette(
+        "palettes/3gray", [[0, 0, 0], [128, 128, 128], [255, 255, 255]], "Three Grays"
+    )
+    dw.writepalette(
+        "palettes/4gray",
+        [[0, 0, 0], [128, 128, 128], [192, 192, 192], [255, 255, 255]],
+        "Four Grays",
+    )
+    dw.writepalette(
+        "palettes/6gray", [[x * 51, x * 51, x * 51] for x in range(6)], "Six Grays"
+    )
+    dw.writepalette(
+        "palettes/16gray",
+        [[x * 0x11, x * 0x11, x * 0x11] for x in range(16)],
+        "16 Grays",
+    )
+    dw.writepalette(
+        "palettes/64gray",
+        [[x * 255 // 63, x * 255 // 63, x * 255 // 63] for x in range(64)],
+        "64 Grays",
+    )
+    dw.writepalette("palettes/256gray", [[x, x, x] for x in range(256)], "256 Grays")
+    dw.writepalette(
+        "palettes/cga-canonical", dw.cgacolors(), "Canonical 16-Color CGA Palette"
+    )
+    dw.writepalette(
+        "palettes/cga-with-halfmixtures",
+        dw.paletteandhalfhalf(dw.cgacolors()),
+        "Canonical CGA Palette with Half-and-Half Mixtures",
+    )
+    dw.writepalette(
+        "palettes/vga", dw.classiccolors(), "VGA (Windows) 16-Color Palette"
+    )
+    dw.writepalette(
+        "palettes/16color", dw.classiccolors(), "VGA (Windows) 16-Color Palette"
+    )
+    dw.writepalette(
+        "palettes/ega", dw.egacolors(), "Colors Displayable by EGA Monitors"
+    )
+    dw.writepalette("palettes/websafe", dw.websafecolors(), '"Web Safe" Colors')
+    dw.writepalette(
+        "palettes/websafe-and-vga",
+        dw.websafecolors()
+        + [
+            [128, 128, 128],
+            [192, 192, 192],
+            [128, 0, 0],
+            [0, 128, 0],
+            [0, 0, 128],
+            [128, 0, 128],
+            [0, 128, 128],
+            [128, 128, 0],
+        ],
+        '"Web Safe" and VGA Colors',
+    )
+    dw.writepalette(
+        "palettes/windows-20",
+        dw.classiccolors()
+        + [[192, 220, 192], [160, 160, 164], [255, 251, 240], [166, 202, 240]],
+        "Windows 20-Color Palette",
+    )
+    dw.writepalette(
+        "palettes/vga-with-halfmixtures",
+        dw.paletteandhalfhalf(dw.classiccolors()),
+        "VGA Palette with Half-and-Half Mixtures",
+    )
