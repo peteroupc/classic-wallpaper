@@ -72,6 +72,7 @@ meeting the requirements given above.
 | smallslant.png | peteroupc | Four tones | 8x8 | CC0 |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
 | boxes.png | peteroupc | VGA palette | 128x128 | CC0 |
+| check.png | peteroupc | VGA palette | 96x96 | CC0 |
 | [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100x100 | MIT License |
 
 ## Button and Border Styles

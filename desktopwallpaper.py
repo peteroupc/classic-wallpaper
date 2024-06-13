@@ -634,6 +634,41 @@ def writeppm(f, image, width, height, raiseIfExists=False):
 def _simplebox(image, width, height, color, x0, y0, x1, y1):
     borderedbox(image, width, height, None, color, color, x0, y0, x1, y1)
 
+def hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1, msbfirst=True, drawborder=False):
+    # Draw a wraparound hatched box on an image.
+    # 'color' is the color of the hatch, drawn on every "black" pixel
+    # in the pattern's tiling.
+    # 'pattern' and 'msbfirst' have the same meaning as in the _monopattern_
+    # method.
+    # 'drawborder' means to draw the box's border with the hatch color;
+    # default is False.
+    if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
+        raise ValueError
+    if width <= 0 or height <= 0:
+        raise ValueError
+    if (not color) or len(color)!=3:
+        raise ValueError
+    if x0 == x1 or y0 == y1:
+        return
+    cr=color[0]&0xFF
+    cg=color[1]&0xFF
+    cb=color[2]&0xFF
+    for y in range(y0, y1):
+        ypp = y % height
+        yp = ypp * width * 3
+        for x in range(x0, x1):
+            xp = x % width
+            c = (
+                ((pattern[ypp&7] >> (7 - (xp&7))) & 1)
+                if msbfirst
+                else ((pattern[ypp&7] >> (xp&7)) & 1)
+            )
+            if (drawborder and (y == y0 or y == y1 - 1 or x == x0 or x == x1 - 1)) or c==1:
+                # Draw hatch color
+                image[yp + xp * 3] = cr
+                image[yp + xp * 3 + 1] = cg
+                image[yp + xp * 3 + 2] = cb
+
 def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # Draw a wraparound dither-colored box on an image.
     # 'border' is the color of the 1-pixel-thick border. Can be None (so
@@ -677,12 +712,19 @@ def _blankimage(width, height, color=None):
         _simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
-# TODO: Write variant with a diagonal hatch on one dark square and a
-# reverse diagonal hatch on the other dark square
-def checkerboardimage(width, height, darkcolor, lightcolor):
+def checkerboardimage(width, height, darkcolor, lightcolor, hatchColor=None):
   image=_blankimage(width,height,lightcolor)
   _simplebox(image,width,height,darkcolor,0,0,width//2,height//2)
   _simplebox(image,width,height,darkcolor,width//2,height//2,width,height)
+  if hatchColor:
+    #hatch=[0x88,0x44,0x22,0x11,0x88,0x44,0x22,0x11] # denser diagonal hatch
+    #revhatch=[0x22,0x44,0x88,0x11,0x22,0x44,0x88,0x11] # denser diagonal hatch
+    hatch=[0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01]
+    revhatch=[0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x01]
+    hatchedbox(image,width,height,hatchColor,hatch,
+       0,0,width//2,height//2)
+    hatchedbox(image,width,height,hatchColor,revhatch,
+       width//2,height//2,width,height)
   return image
 
 def _isdark(c):
@@ -728,15 +770,15 @@ def randomboxeslightdark(width, height, palette):
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    if (not palette) or len(palette) <= 0 or len(palette) > 256:
+    if (not palette) or len(palette) <= 0 or len(palette) > 512:
         # too long palette not supported
         raise ValueError
-    cdcolors = getdithercolors(palette)
-    lightimage = _blankimage(width, height, [0, 0, 0])
-    darkimage = _blankimage(width, height, [0, 0, 0])
-    paletteSize = len(cdcolors)
-    cdkeys = [k for k in cdcolors.keys()]
+    cdkeys = [k[0]|(k[1]<<8)|(k[2]<<16) for k in palette]
     cdkeys.sort()
+    darkest=_p2a(_nearest(cdkeys,0x000000))
+    lightimage = _blankimage(width, height, darkest)
+    darkimage = _blankimage(width, height, darkest)
+    paletteSize = len(palette)
     darkkeys = [cdkeys[_nearest(cdkeys, _darker(cd))] for cd in cdkeys]
     for i in range(45):
         x0 = random.randint(0, width - 1)
@@ -747,12 +789,10 @@ def randomboxeslightdark(width, height, palette):
         border2 = random.randint(0, paletteSize - 1)
         color = random.randint(0, paletteSize - 1)
         border = border2 if border1 == 0 else 0
-        c1 = _p2a(cdcolors[cdkeys[color]][0])
-        c2 = _p2a(cdcolors[cdkeys[color]][1])
-        borderedbox(lightimage, width, height, [0, 0, 0], c1, c2, x0, y0, x1, y1)
-        c1 = _p2a(cdcolors[darkkeys[color]][0])
-        c2 = _p2a(cdcolors[darkkeys[color]][1])
-        borderedbox(darkimage, width, height, [0, 0, 0], c1, c2, x0, y0, x1, y1)
+        c1 = _p2a(cdkeys[color])
+        borderedbox(lightimage, width, height, darkest, c1, c1, x0, y0, x1, y1)
+        c1 = _p2a(darkkeys[color])
+        borderedbox(darkimage, width, height, darkest, c1, c1, x0, y0, x1, y1)
     return {"light": lightimage, "dark": darkimage}
 
 def randomboxes(width, height, palette):
@@ -833,7 +873,7 @@ def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None, off
                     xp += width
                 while xp >= width:
                     xp -= width
-                if i == 1:  # drawing reverse stripe
+                if reverse:  # drawing reverse stripe
                     xp = width - 1 - xp
                 imagepos = yp + xp * 3
                 if fgcolor:
@@ -880,18 +920,15 @@ def diaghatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
 def diagrevhatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
     return diagcrosshatch(wpsize, 0, stripesize, fgcolor, bgcolor)
 
-def dithergrayimage(image, width, height, grays):
-    image = [x for x in image]
+def dithertograyimage(image, width, height, grays):
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
             xp = yp + x * 3
-            if image[xp] != image[xp + 1] or image[xp] != image[xp + 2]:
-                raise ValueError
+            c=(image[xp]*2126+image[xp+1]*7152+image[xp+2]*722)//10000
             image[xp] = image[xp + 1] = image[xp + 2] = _dithergray(
-                image[xp], x, y, grays
+                c, x, y, grays
             )
-    return image
 
 def _dithergray(r, x, y, grays):
     if grays == 4:
@@ -926,7 +963,7 @@ def _dithergray(r, x, y, grays):
         r = (r - rmod) + 51 if bdither < r * 64 // 51 else (r - rmod)
     return r
 
-def diaggradient(size=32, grays=255):
+def diaggradient(size=32, grays=256):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
     if size <= 0 or int(size) != size:
         raise ValueError
@@ -941,6 +978,24 @@ def diaggradient(size=32, grays=255):
             row[x * 3 + 2] = r
         image.append(row)
     return [px for row in image for px in row]
+
+def colorizegrayimage(image, width, height, c0, c1):
+    cr0=c0[0]&0xff
+    cg0=c0[1]&0xff
+    cb0=c0[2]&0xff
+    cr1=c1[0]&0xff
+    cg1=c1[1]&0xff
+    cb1=c1[2]&0xff
+    for y in range(height):
+        yp = y * width * 3
+        for x in range(width):
+            xp = yp + x * 3
+            if image[xp] != image[xp + 1] or image[xp] != image[xp + 2]:
+                raise ValueError
+            gray=image[xp]
+            image[xp]=cr0+(cr1-cr0)*gray//255
+            image[xp+1]=cg0+(cg1-cg0)*gray//255
+            image[xp+2]=cb0+(cb1-cb0)*gray//255
 
 def noiseppm(width=64, height=64):
     # Generate a portable pixelmap (PPM) of noise
@@ -1420,7 +1475,7 @@ def _dither(face, hilt, hiltIsScrollbarColor=False):
 # 'msbfirst' is the bit order for each integer in 'pattern'.  If True,
 # the Windows convention is used; if False, the X pixmap convention is used.
 # 'originX' and 'originY' give the initial offset of the monochrome pattern, from
-# the top left corner of the image.
+# the top left corner of the image.  The default for both parameters is 0.
 def monopattern(
     idstr, pattern, black="black", white="white", msbfirst=True, originX=0, originY=0
 ):
