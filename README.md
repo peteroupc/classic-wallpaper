@@ -82,10 +82,10 @@ Another challenge, related to classic user-interface style, this time relating t
 - Window border, field border, status field border, and grouping border.
 - Buttons and default buttons:
     - Unpressed, pressed, mixed value, unavailable.
-- Buttons and default buttons in the option-set style:
-    - Unpressed, unavailable.
 - Toolbar buttons:
     - Unpressed, hover, pressed, unavailable.
+- Buttons, default buttons, and toolbar buttons in the option-set style:
+    - Unpressed, unavailable.
 - Checkboxes when set, checkboxes when unset:
     - Unpressed, pressed, mixed value (same for both), unavailable.
 - Option buttons ("radio buttons") when set, option buttons when unset, sliders:
