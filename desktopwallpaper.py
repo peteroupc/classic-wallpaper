@@ -656,8 +656,16 @@ def hatchedbox(
     # Draw a wraparound hatched box on an image.
     # 'color' is the color of the hatch, drawn on every "black" pixel
     # in the pattern's tiling.
-    # 'pattern' and 'msbfirst' have the same meaning as in the _monopattern_
-    # method.
+    # 'pattern' is an 8-item array with integers in the interval [0,255].
+    # The first integer represents the first row from the top;
+    # the second, the second row, etc.
+    # For each integer, the eight bits from most to least significant represent
+    # the column from left to right (right to left if 'msbfirst' is False).
+    # If a bit is set, the corresponding position
+    # in the pattern is a "black" pixel; if clear, a "white" pixel.
+    # Either can be set to None to omit pixels of that color in the pattern
+    # 'msbfirst' is the bit order for each integer in 'pattern'.  If True,
+    # the Windows convention is used; if False, the X pixmap convention is used.
     # 'drawborder' means to draw the box's border with the hatch color;
     # default is False.
     if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
@@ -1093,12 +1101,14 @@ def brushedmetal():
         "-morphology",
         "Convolve",
         "50x1+49+0:" + _join([1 / 50 for i in range(50)]),
+        "+repage",
         "-crop",
         "50%x0+0+0",
     ]
 
-# What follows are methods for generating scalable vector graphics (SVGs) of
-# classic OS style borders and button controls.  Although the SVGs are scalable
+# What follows are methods for generating scalable vector graphics (SVGs)
+# and raster graphics of classic OS style borders and button controls.
+# Although the SVGs are scalable
 # by definition, they are pixelated just as they would appear in classic OSs.
 #
 # NOTE: A more flexible approach for this kind of drawing
@@ -1107,21 +1117,87 @@ def brushedmetal():
 # "lower outer part", an "upper inner part", a "lower inner part", and a "middle part".
 # Each of these five parts can be colored separately or filled with a pattern.
 
-class ImageWraparoundRectDraw:
+def svgimagepattern(idstr, image, width, height, transcolor=None, originX=0, originY=0):
+    if not image:
+        raise ValueError
+    if idstr:
+        raise ValueError
+    ret = (
+        "<pattern patternUnits='userSpaceOnUse' id='"
+        + idstr.replace("'", "&apos;")
+        + (
+            "' width='%s' height='%s' patternTransform='translate(%d %d)'>"
+            % (width / 2 - originX, height / 2 - originY)
+        )
+    )
+    helper = SvgDraw.new()
+    for y in range(height):
+        yp = y * width * 3
+        for x in range(width):
+            c = [image[yp + x * 3], image[yp + x * 3 + 1], image[yp + x * 3 + 2]]
+            if transcolor and c != transcolor:
+                helper.rect(x, y, x + 1, y + 1, c)
+    return str(helper) + "</pattern>"
+
+class ImageWraparoundDraw:
     def __init__(self, image, width, height):
         self.image = image
         self.width = width
         self.height = height
 
     def rect(self, x0, y0, x1, y1, c):
-        _simplebox(self.image, self.width, self.height, c, x0, y0, x1, y1)
+        if len(c) == 2:
+            borderedbox(image, width, height, None, c[0], c[1], x0, y0, x1, y1)
+        else:
+            _simplebox(self.image, self.width, self.height, c, x0, y0, x1, y1)
 
     def __str__(self):
         pass
 
-class SvgRectDraw:
+class SvgDraw:
     def __init__(self):
         self.svg = ""
+        self.patterns = []
+
+    def _tocolor(self, c):
+        if isinstance(c, list) and len(c) == 3:
+            return "rgb(%d,%d,%d)" % (c[0], c[1], c[2])
+        if isinstance(c, list) and len(c) == 2:
+            return self._ensurepattern(c[0], c[1])
+        return c
+
+    def _ditherbg(self, idstr, face, hilt, hiltIsScrollbarColor=False):
+        # 'face' is the button face color
+        # 'hilt' is the button highlight color
+        if hiltIsScrollbarColor:
+            return hilt
+        if "'" in idstr:
+            raise ValueError
+        if '"' in idstr:
+            raise ValueError
+        image = _blankimage(2, 2)
+        helper = ImageWraparoundDraw(image, 2, 2)
+        if hiltIsScrollbarColor:
+            helper.rect(0, 0, 2, 2, hilt)
+        # elif 256 or more colors and hilt is not white:
+        #    helper.rect(0, 0, 2, 2, [(a+b)//2 for a,b in zip(face, hilt)])
+        else:
+            helper.rect(0, 0, 1, 1, hilt)
+            helper.rect(1, 1, 2, 2, hilt)
+            helper.rect(0, 1, 1, 2, face)
+            helper.rect(1, 0, 2, 1, face)
+        return svgimagepattern(idstr, image, 2, 2)
+
+    def _ensurepattern(self, c1, c2):
+        if not c1 or not c2 or len(c1) != 3 or len(c2) != 3:
+            raise ValueError
+        for pattern in self.patterns:
+            if pattern[0] == c1 and pattern[1] == c2:
+                return "url(#" + pattern[c2] + ")"
+        patid = "pat%d" % (len(self.patterns))
+        patsvg = self._ditherbg(patid, c1, c2)
+        self.patterns.append([[x for x in c1], [x for x in c2], patid, patsvg])
+        return "url(#" + patid + ")"
 
     def rect(self, x0, y0, x1, y1, c):
         if x0 >= x1 or y0 >= y1:
@@ -1129,7 +1205,7 @@ class SvgRectDraw:
         self.svg += (
             "<path style='stroke:none;fill:%s' d='M%d %dL%d %dL%d %dL%d %dZ'/>"
             % (
-                c,
+                self._tocolor(c),
                 x0,
                 y0,
                 x1,
@@ -1141,8 +1217,18 @@ class SvgRectDraw:
             )
         )
 
+    def toSvg(self, width, height):
+        return "<svg width='%dpx' height='%dpx' viewBox='0 0 %d %d'" % (
+            width,
+            height,
+            width,
+            height,
+        )
+        +" xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
+        +str(self) + "</svg>"
+
     def __str__(self):
-        return self.svg
+        return ("".join(x[3] for x in self.patterns)) + self.svg
 
 # helper for edge drawing (top left edge "dominates")
 # hilt = upper part of edge, dksh = lower part of edge
@@ -1330,6 +1416,7 @@ def monoborder(  # "Monochrome" flat border
     y1,
     clientAreaColor,  # draw the inner and middle parts with this color
     windowFrameColor,  # draw the outer parts with this color
+    drawFace=True,
 ):
     drawraisedouter(  # upper and lower outer parts
         helper,
@@ -1353,17 +1440,18 @@ def monoborder(  # "Monochrome" flat border
         clientAreaColor,
         clientAreaColor,
     )
-    _drawinnerface(  # middle
-        helper,
-        x0,
-        y0,
-        x1,
-        y1,
-        clientAreaColor,
-        clientAreaColor,
-        clientAreaColor,
-        clientAreaColor,
-    )
+    if drawFace:
+        _drawinnerface(  # middle
+            helper,
+            x0,
+            y0,
+            x1,
+            y1,
+            clientAreaColor,
+            clientAreaColor,
+            clientAreaColor,
+            clientAreaColor,
+        )
 
 def flatborder(  # Flat border
     helper,
@@ -1373,14 +1461,16 @@ def flatborder(  # Flat border
     y1,
     sh,  # draw the outer parts with this color
     buttonFace,  # draw the inner and middle parts with this color
+    drawFace=True,
 ):
     drawraisedouter(helper, x0, y0, x1, y1, sh, sh, sh, sh)
     drawraisedinner(
         helper, x0, y0, x1, y1, buttonFace, buttonFace, buttonFace, buttonFace
     )
-    _drawinnerface(
-        helper, x0, y0, x1, y1, buttonFace, buttonFace, buttonFace, buttonFace
-    )
+    if drawFace:
+        _drawinnerface(
+            helper, x0, y0, x1, y1, buttonFace, buttonFace, buttonFace, buttonFace
+        )
 
 def windowborder(
     helper,
@@ -1393,11 +1483,13 @@ def windowborder(
     sh,  # shadow color
     dksh,  # dark shadow color
     face=None,  # face color
+    drawFace=True,
 ):
     face = face if face else lt
     drawraisedouter(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
     drawraisedinner(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    _drawinnerface(helper, x0, y0, x1, y1, face)
+    if drawFace:
+        _drawinnerface(helper, x0, y0, x1, y1, face)
 
 def buttonup(
     x0,
@@ -1510,79 +1602,6 @@ def _drawrsedge(helper, x0, y0, x1, y1, lt, sh, squareFrame=False):
         _drawedgebotdom(helper, x0, y0, x1, y1, lt, sh)
     else:
         _drawroundedge(helper, x0, y0, x1, y1, lt, sh)
-
-def _dither(helper, face, hilt, hiltIsScrollbarColor=False):
-    if hiltIsScrollbarColor:
-        helper.rect(0, 0, 2, 2, hilt)
-    # elif 256 or more colors and hilt is not white:
-    #    helper.rect(0, 0, 2, 2, mix(face, hilt))
-    else:
-        helper.rect(0, 0, 1, 1, hilt)
-        helper.rect(1, 1, 2, 2, hilt)
-        helper.rect(0, 1, 1, 2, face)
-        helper.rect(1, 0, 2, 1, face)
-
-# Generate SVG code for an 8x8 monochrome pattern.
-# 'idstr' is a string identifying the pattern in SVG.
-# 'pattern' is an 8-item array with integers in the interval [0,255].
-# The first integer represents the first row from the top;
-# the second, the second row, etc.
-# For each integer, the eight bits from most to least significant represent
-# the column from left to right (right to left if 'msbfirst' is False).
-# If a bit is set, the corresponding position
-# in the pattern is filled with 'black'; if clear, with 'white'.
-# 'black' is the black color (or pattern color), and 'white' is the white color
-# (or user-selected background color).
-# Either can be set to None to omit pixels of that color in the pattern
-# 'msbfirst' is the bit order for each integer in 'pattern'.  If True,
-# the Windows convention is used; if False, the X pixmap convention is used.
-# 'originX' and 'originY' give the initial offset of the monochrome pattern, from
-# the top left corner of the image.  The default for both parameters is 0.
-def monopattern(
-    idstr, pattern, black="black", white="white", msbfirst=True, originX=0, originY=0
-):
-    if pattern is None or len(pattern) < 8:
-        raise ValueError
-    if black is None and white is None:
-        return ""
-    ret = (
-        "<pattern patternUnits='userSpaceOnUse' id='"
-        + idstr
-        + (
-            "' width='8' height='8' patternTransform='translate(%d %d)'>"
-            % (4 - originX, 4 - originY)
-        )
-    )
-    bw = [white, black]
-    helper = SvgRectDraw.new()
-    for y in range(8):
-        for x in range(8):
-            c = (
-                bw[(pattern[y] >> (7 - x)) & 1]
-                if msbfirst
-                else bw[(pattern[y] >> x) & 1]
-            )
-            if c is None:
-                continue
-            helper.rect(x, y, x + 1, y + 1, c)
-    return str(helper) + "</pattern>"
-
-def _ditherbg(idstr, face, hilt, hiltIsScrollbarColor=False):
-    if hiltIsScrollbarColor:
-        return hilt
-    if "'" in idstr:
-        raise ValueError
-    if '"' in idstr:
-        raise ValueError
-    helper = SvgRectDraw.new()
-    _dither(helper, face, hilt, hiltIsScrollbarColor)
-    return (
-        "<pattern patternUnits='userSpaceOnUse' id='"
-        + idstr
-        + "' width='2' height='2' patternTransform='translate(1 1)'>"
-        + str(helper)
-        + "</pattern>"
-    )
 
 def drawbuttonpush(
     helper,
