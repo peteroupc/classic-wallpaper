@@ -860,7 +860,7 @@ def randomboxeslightdark(width, height, palette):
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    if (not palette) or len(palette) <= 0 or len(palette) > 512:
+    if (not palette) or len(palette) <= 0 or len(palette) > 2000:
         # too long palette not supported
         raise ValueError
     cdkeys = [k[0] | (k[1] << 8) | (k[2] << 16) for k in palette]
@@ -1015,12 +1015,25 @@ def diagrevhatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
     return diagcrosshatch(wpsize, 0, stripesize, fgcolor, bgcolor)
 
 def dithertograyimage(image, width, height, grays):
+    if not grays or len(grays) < 2:
+        raise ValueError
+    for i in range(1, len(grays)):
+        if grays[i] < grays[i - 1] or (grays[i] - grays[i - 1]) > 255:
+            raise ValueError
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
             xp = yp + x * 3
             c = (image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722) // 10000
-            image[xp] = image[xp + 1] = image[xp + 2] = _dithergray(c, x, y, grays)
+            r = 0
+            bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+            for i in range(1, len(grays)):
+                r = (
+                    grays[i]
+                    if bdither < (r - grays[i - 1]) * 64 // (grays[i] - grays[i - 1])
+                    else grays[i - 1]
+                )
+            image[xp] = image[xp + 1] = image[xp + 2] = r
     return image
 
 def graymap(image, width, height, colors):
@@ -1030,46 +1043,15 @@ def graymap(image, width, height, colors):
         yp = y * width * 3
         for x in range(width):
             xp = yp + x * 3
-            if image[xp]!=image[xp+1] or image[xp+1]!=image[xp+2]: raise ValueError
-            col=colors[image[xp]]
-            if not col: raise ValueError
-            image[xp]=col[0]
-            image[xp+1]=col[1]
-            image[xp+2]=col[2]
+            if image[xp] != image[xp + 1] or image[xp + 1] != image[xp + 2]:
+                raise ValueError
+            col = colors[image[xp]]
+            if not col:
+                raise ValueError
+            image[xp] = col[0]
+            image[xp + 1] = col[1]
+            image[xp + 2] = col[2]
     return image
-
-def _dithergray(r, x, y, grays):
-    if grays == 4:
-        # Dither to the four VGA grays
-        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-        if r <= 128:
-            r = 128 if bdither < r * 64 // 128 else 0
-        elif r <= 192:
-            r = 192 if bdither < (r - 128) else 128
-        else:
-            r = 255 if bdither < (r - 192) * 64 // 63 else 192
-    if grays == -4:
-        # Dither to the four canonical CGA grays
-        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-        rmod = r % 0x55
-        r = (r - rmod) + 0x55 if bdither < r * 64 // 0x55 else (r - rmod)
-    elif grays == 3:
-        # Dither to three grays
-        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-        if r <= 128:
-            r = 128 if bdither < r * 64 // 128 else 0
-        else:
-            r = 255 if bdither < (r - 128) * 64 // 127 else 128
-    elif grays == 2:
-        # Dither to black and white
-        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-        r = 255 if bdither < r * 64 // 255 else 0
-    elif grays == 6:
-        # Dither to the six grays in the "Web safe" palette
-        bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-        rmod = r % 51
-        r = (r - rmod) + 51 if bdither < r * 64 // 51 else (r - rmod)
-    return r
 
 def diaggradient(size=32):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
@@ -1844,12 +1826,42 @@ def makesvg():
     )
     return image
 
+def getgrays(palette):
+    grays = 0
+    for p in palette:
+        if p[0] >= 256 or p[0] < 0:
+            raise ValueError
+        if p[0] == p[1] and p[1] == p[2]:
+            grays |= 1 << p[0]
+    ret = []
+    for i in range(256):
+        if (grays & (1 << i)) != 0:
+            ret.append(i)
+    return ret  # return a sorted list of gray tones
+
 # random wallpaper generation
+
+def _randomdither(image, palette):
+    # Dithering from classiccolors2() to classiccolors()
+    grays = getgrays(palette)
+    if len(grays) >= 2 and random.randint(0, 99) < 10:
+        # Convert to the grays in classiccolors()
+        dithertograyimage(image["image"], image["width"], image["height"], grays)
+    else:
+        # Dither to classic color palette
+        halfhalfditherimage(
+            image["image"],
+            image["width"],
+            image["height"],
+            palette,
+        )
+    return image
 
 def randomhatchimage(palette=None):
     # Generates a random hatch image using the given palette
-    # (default is the palette in classiccolors2)
-    pal = palette if palette else classiccolors2()
+    # (default is the palette in classiccolors)
+    pal = palette if palette else classiccolors()
+    expandedpal = paletteandhalfhalf(pal)
     if random.randint(0, 99) < 50:
         w = random.randint(40, 96)
         w -= w % 2  # make even
@@ -1857,111 +1869,130 @@ def randomhatchimage(palette=None):
             w,
             random.randint(0, 16),
             random.randint(0, 16),
-            bgcolor=random.choice(pal),
-            fgcolor=random.choice(pal),
+            bgcolor=random.choice(expandedpal),
+            fgcolor=random.choice(expandedpal),
         )
-        return {"image": image, "width": w, "height": w}
+        return _randomdither({"image": image, "width": w, "height": w}, pal)
     else:
         hhatch = random.randint(0, 7)
         vhatch = random.randint(0, 7)
-        return crosshatch(
-            hhatch + random.randint(4, 32),
-            vhatch + random.randint(4, 32),
-            hhatch,
-            vhatch,
-            bgcolor=random.choice(pal),
-            fgcolor=random.choice(pal),
+        return _randomdither(
+            crosshatch(
+                hhatch + random.randint(4, 32),
+                vhatch + random.randint(4, 32),
+                hhatch,
+                vhatch,
+                bgcolor=random.choice(expandedpal),
+                fgcolor=random.choice(expandedpal),
+            ),
+            pal,
         )
 
 def randomboxesimage(palette=None):
     # Generates a random boxes image using the given palette
-    # (default is the palette in classiccolors2)
-    pal = palette if palette else classiccolors2()
+    # (default is the palette in classiccolors)
+    pal = palette if palette else classiccolors()
+    expandedpal = paletteandhalfhalf(pal)
     w = random.randint(180, 320)
     w -= w % 2  # make even
     h = random.randint(140, 240)
     h -= h % 2  # make even
-    image = randomboxes(w, h, pal)
-    return {"image": image, "width": w, "height": h}
+    image = randomboxes(w, h, expandedpal)
+    return _randomdither({"image": image, "width": w, "height": h}, pal)
 
 def randomcheckimage(palette=None):
     # Generates a random checkerboard pattern image using the given palette
-    # (default is the palette in classiccolors2)
-    pal = palette if palette else classiccolors2()
+    # (default is the palette in classiccolors)
+    pal = palette if palette else classiccolors()
+    expandedpal = paletteandhalfhalf(pal)
     w = random.randint(16, 128)
     w -= w % 2  # make even
     h = random.randint(16, 128)
     h -= h % 2  # make even
-    hatch = None if random.randint(0, 1) == 0 else random.choice(pal)
-    image = checkerboardimage(w, h, random.choice(pal), random.choice(pal), hatch)
-    return {"image": image, "width": w, "height": h}
+    hatch = None if random.randint(0, 1) == 0 else random.choice(expandedpal)
+    image = checkerboardimage(
+        w, h, random.choice(expandedpal), random.choice(expandedpal), hatch
+    )
+    return _randomdither({"image": image, "width": w, "height": h}, pal)
 
 def monochromeFromThreeGrays(image, width, height):
-   # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
-   # Turns the image into a black-and-white image, with middle gray dithered.
-   image=[x for x in image]
-   dw.dithertograyimage(image,width,height,2)
-   return image
+    # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
+    # Turns the image into a black-and-white image, with middle gray dithered.
+    image = [x for x in image]
+    dithertograyimage(image, width, height, [0, 255])
+    return image
 
-def randomPalettedFromThreeGrays(image, width, height,palette=None):
-   # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
-   # Default for palette is VGA palette (classiccolors())
-   image=[x for x in image]
-   if not palette: palette=classiccolors()
-   cc=paletteandhalfhalf(palette)
-   whiteColor=random.choice(palette) # choose color in 'palette' at random
-   r=random.randint(0,100)
-   colors=[None for i in range(256)]
-   if r<40:
-     colors[0]=palette[_nearest_rgb(palette,[0,0,0])]
-   elif r<80:
-     colors[0]=palette[_nearest_rgb(palette,[255,255,255])]
-   else:
-     colors[0]=random.choice(palette)
-   middleColor=cc[_nearest_rgb(cc,[(a+b)//2 for a,b in zip(colors[0],whiteColor)])]
-   colors[128]=middleColor
-   colors[255]=whiteColor
-   graymap(image,width,height,colors)
-   halfhalfditherimage(image,width,height,palette)
-   return image
+def randomPalettedFromThreeGrays(image, width, height, palette=None):
+    # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
+    # Default for palette is VGA palette (classiccolors())
+    image = [x for x in image]
+    if not palette:
+        palette = classiccolors()
+    cc = paletteandhalfhalf(palette)
+    whiteColor = random.choice(palette)  # choose color in 'palette' at random
+    r = random.randint(0, 100)
+    colors = [None for i in range(256)]
+    if r < 40:
+        colors[0] = palette[_nearest_rgb(palette, [0, 0, 0])]
+    elif r < 80:
+        colors[0] = palette[_nearest_rgb(palette, [255, 255, 255])]
+    else:
+        colors[0] = random.choice(palette)
+    middleColor = cc[
+        _nearest_rgb(cc, [(a + b) // 2 for a, b in zip(colors[0], whiteColor)])
+    ]
+    colors[128] = middleColor
+    colors[255] = whiteColor
+    graymap(image, width, height, colors)
+    halfhalfditherimage(image, width, height, palette)
+    return image
 
 def vgaVariantsFromThreeGrays(image, width, height):
-   # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
-   colors=[None for i in range(256)]
-   colors[0]=[0,0,0]
-   colors[128]=[128,0,0]
-   colors[255]=[255,0,0]
-   red=graymap([x for x in image],width,height,colors)
-   colors[128]=[0,128,0]
-   colors[255]=[0,255,0]
-   green=graymap([x for x in image],width,height,colors)
-   colors[128]=[0,0,128]
-   colors[255]=[0,0,255]
-   blue=graymap([x for x in image],width,height,colors)
-   colors[128]=[128,128,0]
-   colors[255]=[255,255,0]
-   yellow=graymap([x for x in image],width,height,colors)
-   colors[128]=[0,128,128]
-   colors[255]=[0,255,255]
-   cyan=graymap([x for x in image],width,height,colors)
-   colors[128]=[128,0,128]
-   colors[255]=[255,0,255]
-   magenta=graymap([x for x in image],width,height,colors)
-   colors[0]=[0,0,0]
-   colors[128]=[192,192,192]
-   colors[255]=[255,255,255]
-   lightgray=graymap([x for x in image],width,height,colors)
-   colors[0]=[128,128,128]
-   colors[128]=[192,192,192]
-   colors[255]=[255,255,255]
-   light=graymap([x for x in image],width,height,colors)
-   colors[0]=[0,0,0]
-   colors[128]=[128,128,128]
-   colors[255]=[192,192,192]
-   dark=graymap([x for x in image],width,height,colors)
-   return {"gray":[x for x in image],"red":red,"green":green,
-      "blue":blue,"yellow":yellow,"cyan":cyan,"magenta":magenta,
-      "lightgray":lightgray,"light":light,"dark":dark}
+    # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
+    colors = [None for i in range(256)]
+    colors[0] = [0, 0, 0]
+    colors[128] = [128, 0, 0]
+    colors[255] = [255, 0, 0]
+    red = graymap([x for x in image], width, height, colors)
+    colors[128] = [0, 128, 0]
+    colors[255] = [0, 255, 0]
+    green = graymap([x for x in image], width, height, colors)
+    colors[128] = [0, 0, 128]
+    colors[255] = [0, 0, 255]
+    blue = graymap([x for x in image], width, height, colors)
+    colors[128] = [128, 128, 0]
+    colors[255] = [255, 255, 0]
+    yellow = graymap([x for x in image], width, height, colors)
+    colors[128] = [0, 128, 128]
+    colors[255] = [0, 255, 255]
+    cyan = graymap([x for x in image], width, height, colors)
+    colors[128] = [128, 0, 128]
+    colors[255] = [255, 0, 255]
+    magenta = graymap([x for x in image], width, height, colors)
+    colors[0] = [0, 0, 0]
+    colors[128] = [192, 192, 192]
+    colors[255] = [255, 255, 255]
+    lightgray = graymap([x for x in image], width, height, colors)
+    colors[0] = [128, 128, 128]
+    colors[128] = [192, 192, 192]
+    colors[255] = [255, 255, 255]
+    light = graymap([x for x in image], width, height, colors)
+    colors[0] = [0, 0, 0]
+    colors[128] = [128, 128, 128]
+    colors[255] = [192, 192, 192]
+    dark = graymap([x for x in image], width, height, colors)
+    return {
+        "gray": [x for x in image],
+        "red": red,
+        "green": green,
+        "blue": blue,
+        "yellow": yellow,
+        "cyan": cyan,
+        "magenta": magenta,
+        "lightgray": lightgray,
+        "light": light,
+        "dark": dark,
+    }
 
 # palette generation
 
