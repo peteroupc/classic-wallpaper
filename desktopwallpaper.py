@@ -768,7 +768,7 @@ def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
                 image[yp + xp * 3 + 1] = color2[1]
                 image[yp + xp * 3 + 2] = color2[2]
 
-def _blankimage(width, height, color=None):
+def blankimage(width, height, color=None):
     if color and len(color) < 3:
         raise ValueError
     image = [255 for i in range(width * height * 3)]  # default background is white
@@ -777,7 +777,7 @@ def _blankimage(width, height, color=None):
     return image
 
 def checkerboardimage(width, height, darkcolor, lightcolor, hatchColor=None):
-    image = _blankimage(width, height, lightcolor)
+    image = blankimage(width, height, lightcolor)
     _simplebox(image, width, height, darkcolor, 0, 0, width // 2, height // 2)
     _simplebox(image, width, height, darkcolor, width // 2, height // 2, width, height)
     if hatchColor:
@@ -866,8 +866,8 @@ def randomboxeslightdark(width, height, palette):
     cdkeys = [k[0] | (k[1] << 8) | (k[2] << 16) for k in palette]
     cdkeys.sort()
     darkest = _p2a(_nearest(cdkeys, 0x000000))
-    lightimage = _blankimage(width, height, darkest)
-    darkimage = _blankimage(width, height, darkest)
+    lightimage = blankimage(width, height, darkest)
+    darkimage = blankimage(width, height, darkest)
     paletteSize = len(palette)
     darkkeys = [cdkeys[_nearest(cdkeys, _darker(cd))] for cd in cdkeys]
     for i in range(45):
@@ -917,7 +917,7 @@ def crosshatch(
         fgcolor = [0, 0, 0]
     width = vhatchdist * 4
     height = hhatchdist * 4
-    image = _blankimage(width, height, bgcolor)
+    image = blankimage(width, height, bgcolor)
     for i in range(4):
         _simplebox(
             image,
@@ -1002,7 +1002,7 @@ def diagcrosshatch(
         raise ValueError
     width = wpsize
     height = wpsize
-    image = _blankimage(width, height, bgcolor)
+    image = blankimage(width, height, bgcolor)
     # Draw the stripes
     _drawdiagstripe(image, width, height, stripesize, False, fgcolor=fgcolor)
     _drawdiagstripe(image, width, height, revstripesize, True, fgcolor=fgcolor)
@@ -1013,6 +1013,19 @@ def diaghatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
 
 def diagrevhatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
     return diagcrosshatch(wpsize, 0, stripesize, fgcolor, bgcolor)
+
+def getgrays(palette):
+    grays = 0
+    for p in palette:
+        if p[0] >= 256 or p[0] < 0:
+            raise ValueError
+        if p[0] == p[1] and p[1] == p[2]:
+            grays |= 1 << p[0]
+    ret = []
+    for i in range(256):
+        if (grays & (1 << i)) != 0:
+            ret.append(i)
+    return ret  # return a sorted list of gray tones in the given palette
 
 def dithertograyimage(image, width, height, grays):
     if not grays or len(grays) < 2:
@@ -1028,29 +1041,41 @@ def dithertograyimage(image, width, height, grays):
             r = 0
             bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
             for i in range(1, len(grays)):
-                r = (
-                    grays[i]
-                    if bdither < (r - grays[i - 1]) * 64 // (grays[i] - grays[i - 1])
-                    else grays[i - 1]
-                )
+                if c >= grays[i - 1] and c <= grays[i]:
+                    r = (
+                        grays[i]
+                        if bdither
+                        < (c - grays[i - 1]) * 64 // (grays[i] - grays[i - 1])
+                        else grays[i - 1]
+                    )
+                    break
             image[xp] = image[xp + 1] = image[xp + 2] = r
     return image
 
-def graymap(image, width, height, colors):
-    # Maps the gray tones in the given grayscale image
-    # to colors in the given colors array
+def graymap(image, width, height, colors=None):
+    # Converts the image to grayscale and maps the resulting gray tones
+    # to colors in the given colors array.  If 'colors' is None, the default,
+    # the mapping step is skipped.
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
             xp = yp + x * 3
-            if image[xp] != image[xp + 1] or image[xp + 1] != image[xp + 2]:
-                raise ValueError
-            col = colors[image[xp]]
-            if not col:
-                raise ValueError
-            image[xp] = col[0]
-            image[xp + 1] = col[1]
-            image[xp + 2] = col[2]
+            c = image[xp]
+            if c != image[xp + 1] or image[xp + 1] != image[xp + 2]:
+                # Not a gray pixel, so find gray value
+                c = (
+                    image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722
+                ) // 10000
+            if colors:
+                col = colors[c]
+                if not col:
+                    # No color defined at this index
+                    raise ValueError
+                image[xp] = col[0]
+                image[xp + 1] = col[1]
+                image[xp + 2] = col[2]
+            else:
+                image[xp] = image[xp + 1] = image[xp + 2] = c
     return image
 
 def diaggradient(size=32):
@@ -1214,7 +1239,7 @@ class SvgDraw:
             raise ValueError
         if '"' in idstr:
             raise ValueError
-        image = _blankimage(2, 2)
+        image = blankimage(2, 2)
         helper = ImageWraparoundDraw(image, 2, 2)
         if hiltIsScrollbarColor:
             helper.rect(0, 0, 2, 2, hilt)
@@ -1796,7 +1821,7 @@ def draw16button(
             _drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
 
 def makesvg():
-    image = _blankimage(64, 64)
+    image = blankimage(64, 64)
     helper = ImageWraparoundDraw(image, 64, 64)
     draw16button(
         helper,
@@ -1826,29 +1851,15 @@ def makesvg():
     )
     return image
 
-def getgrays(palette):
-    grays = 0
-    for p in palette:
-        if p[0] >= 256 or p[0] < 0:
-            raise ValueError
-        if p[0] == p[1] and p[1] == p[2]:
-            grays |= 1 << p[0]
-    ret = []
-    for i in range(256):
-        if (grays & (1 << i)) != 0:
-            ret.append(i)
-    return ret  # return a sorted list of gray tones
-
 # random wallpaper generation
 
 def _randomdither(image, palette):
-    # Dithering from classiccolors2() to classiccolors()
     grays = getgrays(palette)
     if len(grays) >= 2 and random.randint(0, 99) < 10:
-        # Convert to the grays in classiccolors()
+        # Convert to the grays in the palette
         dithertograyimage(image["image"], image["width"], image["height"], grays)
     else:
-        # Dither to classic color palette
+        # Dither away from half-and-half colors
         halfhalfditherimage(
             image["image"],
             image["width"],
@@ -1929,9 +1940,10 @@ def randomPalettedFromThreeGrays(image, width, height, palette=None):
     if not palette:
         palette = classiccolors()
     cc = paletteandhalfhalf(palette)
-    whiteColor = random.choice(palette)  # choose color in 'palette' at random
-    r = random.randint(0, 100)
+    endColor = random.choice(palette)  # choose color in 'palette' at random
+    r = random.randint(0, 99)
     colors = [None for i in range(256)]
+    # Random beginning color
     if r < 40:
         colors[0] = palette[_nearest_rgb(palette, [0, 0, 0])]
     elif r < 80:
@@ -1939,13 +1951,80 @@ def randomPalettedFromThreeGrays(image, width, height, palette=None):
     else:
         colors[0] = random.choice(palette)
     middleColor = cc[
-        _nearest_rgb(cc, [(a + b) // 2 for a, b in zip(colors[0], whiteColor)])
+        _nearest_rgb(cc, [(a + b) // 2 for a, b in zip(colors[0], endColor)])
     ]
     colors[128] = middleColor
-    colors[255] = whiteColor
+    colors[255] = endColor
     graymap(image, width, height, colors)
     halfhalfditherimage(image, width, height, palette)
     return image
+
+def randomColorization(palette=None):
+    # Generates a random colorization gradient
+    # Random beginning color
+    colors = [None for i in range(256)]
+    r = random.randint(0, 99)
+    if r < 40:
+        colors[0] = [0, 0, 0]
+    elif r < 80:
+        colors[0] = [255, 255, 255]
+    else:
+        colors[0] = (
+            random.choice(palette)
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
+    # Random end color
+    colors[255] = (
+        random.choice(palette)
+        if palette
+        else [random.randint(0, 255) for i in range(3)]
+    )
+    for i in range(1, 255):
+        colors[i] = [a + ((b - a) * i // 255) for a, b in zip(colors[0], colors[255])]
+    return colors
+
+def patternDither(image, width, height, palette):
+    # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
+    # https://bisqwit.iki.fi/story/howto/dither/jy/
+    candidates = [None for i in range(len(DitherMatrix))]
+    trials = {}
+    for y in range(height):
+        yp = y * width * 3
+        for x in range(width):
+            xp = yp + x * 3
+            e = [0, 0, 0]
+            exact = False
+            for i in range(len(DitherMatrix)):
+                trial = [
+                    min(255, max(0, image[xp + i] + e[i] * 9 // 100)) for i in range(3)
+                ]
+                t = trial[0] | (trial[1] << 8) | (trial[2] << 16)
+                canvalue = None
+                if t in trials:
+                    canvalue = trials[t]
+                else:
+                    canindex = _nearest_rgb(
+                        palette,
+                        [min(255, max(0, image[xp + i] + e[i] // 2)) for i in range(3)],
+                    )
+                    can = palette[canindex]
+                    trials[t] = canvalue = [
+                        (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000,
+                        can,
+                    ]  # sort key consisting of gray value then color
+                candidates[i] = canvalue
+                e[0] += image[xp] - canvalue[1][0]
+                e[1] += image[xp + 1] - canvalue[1][1]
+                e[2] += image[xp + 2] - canvalue[1][2]
+            if exact:
+                continue
+            candidates.sort()
+            bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+            fcan = candidates[bdither][1]
+            image[xp] = fcan[0]
+            image[xp + 1] = fcan[1]
+            image[xp + 2] = fcan[2]
 
 def vgaVariantsFromThreeGrays(image, width, height):
     # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
