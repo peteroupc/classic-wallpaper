@@ -9,7 +9,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 - The image employs one of the following color options:
     - Two colors only.
         - Such as black and white, which allows for hue shifting to, say, a black-to-red or gray-to-blue palette.
-    - Three gray tones: black, gray (128, 128, 128), white.
+    - Three gray tones: black (0, 0, 0), gray (128, 128, 128), white (255, 255, 255).
         - Allows for hue shifting to, say, a black-to-red palette.
     - Four gray tones: black, gray (128, 128, 128), light gray (192, 192, 192), white.
         - Allows for hue shifting to, say, a black-to-red palette.
@@ -34,11 +34,13 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 
     > **Notes:**
     >
-    > 1. If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/).  For an example, see the `magickgradientditherfilter` method in _desktopwallpaper.py_.  If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "Web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
+    > 1. _Grayscale_ means having no colors other than gray tones, black, and white.
     >
-    > 2. The wallpaper image is allowed to be a vector graphic in the SVG format made only of two-dimensional vector paths, each of which has no stroke, a black fill, and any fill opacity from 0 through 100%.  With this vector format, the image can be scaled to any pixel dimension desired and turned into a grayscale bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
+    > 2. If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/).  For an example, see the `magickgradientditherfilter` method in _desktopwallpaper.py_.  If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "Web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
     >
-    > 3. The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in drawing programs, especially those devoted to pixel art.
+    > 3. The wallpaper image is allowed to be a vector graphic in the SVG format made only of two-dimensional vector paths, each of which has no stroke, a black fill, and any fill opacity from 0 through 100%.  With this vector format, the image can be scaled to any pixel dimension desired and turned into a grayscale bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
+    >
+    > 4. The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in drawing programs, especially those devoted to pixel art.
 
 - The image employs one of the following pixel dimension options:
     - Preferred: 8&times;8, 16&times;16, 32&times;32, 64&times;64, 64&times;32, 32&times;64, 96&times;96, 128&times;128, 256&times;256.

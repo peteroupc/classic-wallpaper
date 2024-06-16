@@ -628,6 +628,22 @@ def groupPmg():
         + "-append "
     )
 
+def brushedmetal():
+    # ImageMagick command to generate a brushed metal texture from a noise image.
+    # A brushed metal texture was featured in Mac OS X Panther and
+    # Tiger (10.3, 10.4) and other Apple products
+    # around the time of either OS's release.
+    return [
+        "+clone",
+        "+append",
+        "-morphology",
+        "Convolve",
+        "50x1+49+0:" + (''.join([str(1 / 50) for i in range(50)])),
+        "+repage",
+        "-crop",
+        "50%x0+0+0",
+    ]
+
 def writeppm(f, image, width, height, raiseIfExists=False):
     if not image:
         raise ValueError
@@ -1078,6 +1094,48 @@ def graymap(image, width, height, colors=None):
                 image[xp] = image[xp + 1] = image[xp + 2] = c
     return image
 
+def patternDither(image, width, height, palette):
+    # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
+    # https://bisqwit.iki.fi/story/howto/dither/jy/
+    candidates = [None for i in range(len(DitherMatrix))]
+    trials = {}
+    for y in range(height):
+        yp = y * width * 3
+        for x in range(width):
+            xp = yp + x * 3
+            e = [0, 0, 0]
+            exact = False
+            for i in range(len(DitherMatrix)):
+                trial = [
+                    min(255, max(0, image[xp + i] + e[i] * 9 // 100)) for i in range(3)
+                ]
+                t = trial[0] | (trial[1] << 8) | (trial[2] << 16)
+                canvalue = None
+                if t in trials:
+                    canvalue = trials[t]
+                else:
+                    canindex = _nearest_rgb(
+                        palette,
+                        [min(255, max(0, image[xp + i] + e[i] // 2)) for i in range(3)],
+                    )
+                    can = palette[canindex]
+                    trials[t] = canvalue = [
+                        (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000,
+                        can,
+                    ]  # sort key consisting of gray value then color
+                candidates[i] = canvalue
+                e[0] += image[xp] - canvalue[1][0]
+                e[1] += image[xp + 1] - canvalue[1][1]
+                e[2] += image[xp + 2] - canvalue[1][2]
+            if exact:
+                continue
+            candidates.sort()
+            bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+            fcan = candidates[bdither][1]
+            image[xp] = fcan[0]
+            image[xp + 1] = fcan[1]
+            image[xp + 2] = fcan[2]
+
 def diaggradient(size=32):
     # Generate a portable pixelmap (PPM) of a diagonal linear gradient
     if size <= 0 or int(size) != size:
@@ -1145,30 +1203,6 @@ def whitenoiseimage(width=64, height=64):
             row[x * 3 + 2] = r
         image.append(row)
     return [px for row in image for px in row]
-
-def _join(ls):
-    ret = ""
-    for i in range(len(ls)):
-        if i > 0:
-            ret += ","
-        ret += str(ls[i])
-    return ret
-
-def brushedmetal():
-    # ImageMagick command to generate a brushed metal texture from a noise image.
-    # A brushed metal texture was featured in Mac OS X Panther and
-    # Tiger (10.3, 10.4) and other Apple products
-    # around the time of either OS's release.
-    return [
-        "+clone",
-        "+append",
-        "-morphology",
-        "Convolve",
-        "50x1+49+0:" + _join([1 / 50 for i in range(50)]),
-        "+repage",
-        "-crop",
-        "50%x0+0+0",
-    ]
 
 # What follows are methods for generating scalable vector graphics (SVGs)
 # and raster graphics of classic OS style borders and button controls.
@@ -1983,48 +2017,6 @@ def randomColorization(palette=None):
     for i in range(1, 255):
         colors[i] = [a + ((b - a) * i // 255) for a, b in zip(colors[0], colors[255])]
     return colors
-
-def patternDither(image, width, height, palette):
-    # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
-    # https://bisqwit.iki.fi/story/howto/dither/jy/
-    candidates = [None for i in range(len(DitherMatrix))]
-    trials = {}
-    for y in range(height):
-        yp = y * width * 3
-        for x in range(width):
-            xp = yp + x * 3
-            e = [0, 0, 0]
-            exact = False
-            for i in range(len(DitherMatrix)):
-                trial = [
-                    min(255, max(0, image[xp + i] + e[i] * 9 // 100)) for i in range(3)
-                ]
-                t = trial[0] | (trial[1] << 8) | (trial[2] << 16)
-                canvalue = None
-                if t in trials:
-                    canvalue = trials[t]
-                else:
-                    canindex = _nearest_rgb(
-                        palette,
-                        [min(255, max(0, image[xp + i] + e[i] // 2)) for i in range(3)],
-                    )
-                    can = palette[canindex]
-                    trials[t] = canvalue = [
-                        (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000,
-                        can,
-                    ]  # sort key consisting of gray value then color
-                candidates[i] = canvalue
-                e[0] += image[xp] - canvalue[1][0]
-                e[1] += image[xp + 1] - canvalue[1][1]
-                e[2] += image[xp + 2] - canvalue[1][2]
-            if exact:
-                continue
-            candidates.sort()
-            bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-            fcan = candidates[bdither][1]
-            image[xp] = fcan[0]
-            image[xp + 1] = fcan[1]
-            image[xp + 2] = fcan[2]
 
 def vgaVariantsFromThreeGrays(image, width, height):
     # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
