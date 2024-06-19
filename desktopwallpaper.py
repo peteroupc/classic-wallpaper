@@ -892,7 +892,7 @@ def _nearest_rgb3(pal, r, g, b):
     return ret
 
 def _nearest_rgb(pal, rgb):
-    return _nearest_rgb(pal, rgb[0], rgb[1], rgb[2])
+    return _nearest_rgb3(pal, rgb[0], rgb[1], rgb[2])
 
 def randomboxeslightdark(width, height, palette):
     # Generate two portable pixelmaps (PPM) of a tileable pattern
@@ -1118,7 +1118,21 @@ def graymap(image, width, height, colors=None):
                 image[xp] = image[xp + 1] = image[xp + 2] = c
     return image
 
+def websafeDither(image, width, height):
+    # Dithering for the color palette returned by websafecolors()
+    for y in range(height):
+        yp = y * width * 3
+        for x in range(width):
+            xp = yp + x * 3
+            for i in range(3):
+              c = image[xp+i]
+              cm = c%51
+              bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+              image[xp+i] = (c-cm) + 51 if bdither < cm * 64 // 51 else c-cm
+    return image
+
 def patternDither(image, width, height, palette):
+    # Dithering for arbitrary color palettes
     # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
     # https://bisqwit.iki.fi/story/howto/dither/jy/
     candidates = [None for i in range(len(DitherMatrix))]
@@ -1164,7 +1178,6 @@ def patternDither(image, width, height, palette):
             if exact:
                 continue
             candidates.sort()
-            #bdither = DitherMatrix4x4[(y & 3) * 4 + (x & 3)]
             bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
             fcan = candidates[bdither][1]
             image[xp] = fcan[0]
