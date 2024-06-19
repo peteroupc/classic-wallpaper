@@ -37,6 +37,13 @@ import zlib
 def _listdir(p):
     return [os.path.abspath(p + "/" + x) for x in os.listdir(p)]
 
+DitherMatrix4x4=[ # Bayer 4x4 ordered dither matrix
+      0 ,  8 ,  2,  10,
+     12 ,  4 , 14 ,  6,
+      3 , 11 ,  1 ,  9,
+     15 ,  7 , 13 ,  5,
+]
+
 DitherMatrix = [  # Bayer 8x8 ordered dither matrix
     0,
     32,
@@ -871,34 +878,9 @@ def checkerboardimage(width, height, darkcolor, lightcolor, hatchColor=None):
         )
     return image
 
-def _isdark(c):
-    r = c & 0xFF
-    g = (c >> 8) & 0xFF
-    b = (c >> 16) & 0xFF
-    return (r * 0.3 + g * 0.5 + b * 0.2) < 127.5
-
-def _nearest(pal, c):
+def _nearest_rgb3(pal, r, g, b):
     best = -1
     ret = 0
-    r = c & 0xFF
-    g = (c >> 8) & 0xFF
-    b = (c >> 16) & 0xFF
-    for i in range(len(pal)):
-        cr = pal[i] & 0xFF
-        cg = (pal[i] >> 8) & 0xFF
-        cb = (pal[i] >> 16) & 0xFF
-        dist = (r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2
-        if i == 0 or dist < best:
-            ret = i
-            best = dist
-    return ret
-
-def _nearest_rgb(pal, rgb):
-    best = -1
-    ret = 0
-    r = rgb[0]
-    g = rgb[1]
-    b = rgb[2]
     for i in range(len(pal)):
         cr = pal[i][0]
         cg = pal[i][1]
@@ -909,18 +891,8 @@ def _nearest_rgb(pal, rgb):
             best = dist
     return ret
 
-def _darker(c):
-    cr = c & 0xFF
-    cg = (c >> 8) & 0xFF
-    cb = (c >> 16) & 0xFF
-    return (cr // 2) + ((cg // 2) << 8) + ((cb // 2) << 16)
-
-def _p2a(c):
-    # packed to array
-    r = c & 0xFF
-    g = (c >> 8) & 0xFF
-    b = (c >> 16) & 0xFF
-    return [r, g, b]
+def _nearest_rgb(pal, rgb):
+    return _nearest_rgb(pal, rgb[0], rgb[1], rgb[2])
 
 def randomboxeslightdark(width, height, palette):
     # Generate two portable pixelmaps (PPM) of a tileable pattern
@@ -933,13 +905,11 @@ def randomboxeslightdark(width, height, palette):
     if (not palette) or len(palette) <= 0 or len(palette) > 2000:
         # too long palette not supported
         raise ValueError
-    cdkeys = [k[0] | (k[1] << 8) | (k[2] << 16) for k in palette]
-    cdkeys.sort()
-    darkest = _p2a(_nearest(cdkeys, 0x000000))
+    darkest = palette[_nearest_rgb3(palette,0,0,0)]
     lightimage = blankimage(width, height, darkest)
     darkimage = blankimage(width, height, darkest)
     paletteSize = len(palette)
-    darkkeys = [cdkeys[_nearest(cdkeys, _darker(cd))] for cd in cdkeys]
+    darkkeys = [palette[_nearest_rgb(palette, [x//2 for x in c])] for c in palette]
     for i in range(45):
         x0 = random.randint(0, width - 1)
         x1 = x0 + random.randint(3, max(3, width * 3 // 4))
@@ -949,11 +919,11 @@ def randomboxeslightdark(width, height, palette):
         border2 = random.randint(0, paletteSize - 1)
         color = random.randint(0, paletteSize - 1)
         border = border2 if border1 == 0 else 0
-        c1 = _p2a(cdkeys[color])
+        c1 = palette[color]
         shadowedborderedbox(
             lightimage, width, height, darkest, None, c1, c1, x0, y0, x1, y1
         )
-        c1 = _p2a(darkkeys[color])
+        c1 = darkkeys[color]
         shadowedborderedbox(
             darkimage, width, height, darkest, None, c1, c1, x0, y0, x1, y1
         )
@@ -1153,6 +1123,8 @@ def patternDither(image, width, height, palette):
     # https://bisqwit.iki.fi/story/howto/dither/jy/
     candidates = [None for i in range(len(DitherMatrix))]
     trials = {}
+    numtrials=0
+    numskips=0
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
@@ -1160,17 +1132,25 @@ def patternDither(image, width, height, palette):
             e = [0, 0, 0]
             exact = False
             for i in range(len(DitherMatrix)):
-                trial = [
-                    min(255, max(0, image[xp + i] + e[i] * 9 // 100)) for i in range(3)
-                ]
-                t = trial[0] | (trial[1] << 8) | (trial[2] << 16)
+                t0=image[xp] + e[0] * 25 // 100
+                if t0<0: t0=0
+                if t0>255: t0=255
+                t1=image[xp+1] + e[1] * 25 // 100
+                if t1<0: t1=0
+                if t1>255: t1=255
+                t2=image[xp+2] + e[2] * 25 // 100
+                if t2<0: t2=0
+                if t2>255: t2=255
+                t = t0 | (t1 << 8) | (t2 << 16)
                 canvalue = None
+                numtrials+=1
                 if t in trials:
+                    numskips+=1
                     canvalue = trials[t]
                 else:
-                    canindex = _nearest_rgb(
+                    canindex = _nearest_rgb3(
                         palette,
-                        [min(255, max(0, image[xp + i] + e[i] // 2)) for i in range(3)],
+                        t0,t1,t2,
                     )
                     can = palette[canindex]
                     trials[t] = canvalue = [
@@ -1184,6 +1164,7 @@ def patternDither(image, width, height, palette):
             if exact:
                 continue
             candidates.sort()
+            #bdither = DitherMatrix4x4[(y & 3) * 4 + (x & 3)]
             bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
             fcan = candidates[bdither][1]
             image[xp] = fcan[0]
