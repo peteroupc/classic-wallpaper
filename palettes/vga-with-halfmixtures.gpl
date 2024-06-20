@@ -1,5 +1,6 @@
 GIMP Palette
-# Name: VGA Palette with Half-and-Half Mixtures
+Name: VGA Palette with Half-and-Half Mixtures
+Columns: 16
 # Colors: 98
 0 0 0 black #000000
 0 0 64 #000040

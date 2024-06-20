@@ -1136,6 +1136,9 @@ def patternDither(image, width, height, palette):
     # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
     # https://bisqwit.iki.fi/story/howto/dither/jy/
     candidates = [None for i in range(len(DitherMatrix))]
+    paletteLum = [
+    (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
+    ]
     trials = {}
     numtrials=0
     numskips=0
@@ -1146,13 +1149,18 @@ def patternDither(image, width, height, palette):
             e = [0, 0, 0]
             exact = False
             for i in range(len(DitherMatrix)):
-                t0=image[xp] + e[0] * 25 // 100
+                ir=image[xp]
+                ig=image[xp+1]
+                ib=image[xp+2]
+                # "// 4" is equiv. to "* 0.25" where 0.25
+                # is the dithering strength
+                t0=ir + e[0] // 4
                 if t0<0: t0=0
                 if t0>255: t0=255
-                t1=image[xp+1] + e[1] * 25 // 100
+                t1=ig + e[1] // 4
                 if t1<0: t1=0
                 if t1>255: t1=255
-                t2=image[xp+2] + e[2] * 25 // 100
+                t2=ib + e[2] // 4
                 if t2<0: t2=0
                 if t2>255: t2=255
                 t = t0 | (t1 << 8) | (t2 << 16)
@@ -1168,18 +1176,20 @@ def patternDither(image, width, height, palette):
                     )
                     can = palette[canindex]
                     trials[t] = canvalue = [
-                        (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000,
-                        can,
+                        paletteLum[canindex],
+                        canindex,
                     ]  # sort key consisting of gray value then color
                 candidates[i] = canvalue
-                e[0] += image[xp] - canvalue[1][0]
-                e[1] += image[xp + 1] - canvalue[1][1]
-                e[2] += image[xp + 2] - canvalue[1][2]
+                cv1=palette[canvalue[1]]
+                e[0] += ir - cv1[0]
+                e[1] += ig - cv1[1]
+                e[2] += ib - cv1[2]
             if exact:
                 continue
             candidates.sort()
             bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
             fcan = candidates[bdither][1]
+            fcan = palette[fcan]
             image[xp] = fcan[0]
             image[xp + 1] = fcan[1]
             image[xp + 2] = fcan[2]
@@ -2177,7 +2187,8 @@ def writepalette(f, palette, name=None, checkIfExists=False):
     ff = open(f + ".gpl", "xb" if checkIfExists else "wb")
     ff.write(bytes("GIMP Palette\n", "utf-8"))
     if name:
-        ff.write(bytes("# Name: %s\n" % (name), "utf-8"))
+        ff.write(bytes("Name: %s\n" % (name), "utf-8"))
+    ff.write(bytes("Columns: %d\n" % (min(16,len(palette))), "utf-8"))
     ff.write(bytes("# Colors: %d\n" % (len(palette)), "utf-8"))
     for c in palette:
         ff.write(

@@ -1,5 +1,6 @@
 GIMP Palette
-# Name: VGA (Windows) 16-Color Palette
+Name: VGA (Windows) 16-Color Palette
+Columns: 16
 # Colors: 16
 0 0 0 black #000000
 128 128 128 gray #808080

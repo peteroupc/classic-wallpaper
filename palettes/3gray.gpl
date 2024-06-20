@@ -1,5 +1,6 @@
 GIMP Palette
-# Name: Three Grays
+Name: Three Grays
+Columns: 3
 # Colors: 3
 0 0 0 black #000000
 128 128 128 gray #808080
