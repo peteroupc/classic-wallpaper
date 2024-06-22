@@ -37,11 +37,23 @@ import zlib
 def _listdir(p):
     return [os.path.abspath(p + "/" + x) for x in os.listdir(p)]
 
-DitherMatrix4x4=[ # Bayer 4x4 ordered dither matrix
-      0 ,  8 ,  2,  10,
-     12 ,  4 , 14 ,  6,
-      3 , 11 ,  1 ,  9,
-     15 ,  7 , 13 ,  5,
+DitherMatrix4x4 = [  # Bayer 4x4 ordered dither matrix
+    0,
+    8,
+    2,
+    10,
+    12,
+    4,
+    14,
+    6,
+    3,
+    11,
+    1,
+    9,
+    15,
+    7,
+    13,
+    5,
 ]
 
 DitherMatrix = [  # Bayer 8x8 ordered dither matrix
@@ -110,16 +122,6 @@ DitherMatrix = [  # Bayer 8x8 ordered dither matrix
     53,
     21,
 ]
-
-def _bayerdither(a, b, t, x, y):
-    # 't' is such that 0<=t<=1; closer to 1 means closer to 'b';
-    # closer to 0 means closer to 'a'.
-    # 'x' and 'y' are a pixel position.
-    bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-    if bdither < t * 64:
-        return b
-    else:
-        return a
 
 def websafecolors():
     colors = []
@@ -347,15 +349,6 @@ def magickgradientditherfilter(
             ret += ["+dither"]
         ret += ["-remap", "mpr:z"]
     return ret
-
-def _magickgradientditherfilter(
-    rgb1=None, rgb2=None, basecolors=None, hue=0, dither=True
-):
-    return (
-        " "
-        + (" ".join(magickgradientditherfilter(rgb1, rgb2, basecolors, hue, dither)))
-        + " "
-    )
 
 def solid(bg=[192, 192, 192], w=64, h=64):
     if bg == None or len(bg) < 3:
@@ -595,26 +588,71 @@ def groupCmm():
         + "-append "
     )
 
-def diamondTiling(bgcolor=None):
-    # ImageMagick command to generate a diamond tiling pattern (or a brick tiling
-    # pattern if the image the command is applied to has only its top half
-    # or its bottom half drawn).  For best results, the command should be applied
-    # to images with an even width and height. 'bgcolor' is the background color,
+def backgroundColorUnder(w, h, bgcolor=None):
+    # 'bgcolor' is the background color,
     # either None or a 3-item array of the red,
     # green, and blue components in that order; e.g., [2,10,255] where each
     # component is from 0 through 255; default is None, or no background color.
-    bc = ""
-    if bgcolor:
-        bc = " \\( -size 100%x100%"
-        bc += " xc:#%02x%02x%02x \\) -compose DstOver -composite " % (
-            int(bg[0]),
-            int(bg[1]),
-            int(bg[2]),
-        )
+    return ["("]+solid(bgcolor,w,h)+[
+        ")",
+        "-compose",
+        "DstOver",
+        "-composite",
+    ]
+
+def diamondTiling():
+    # ImageMagick command to generate a diamond tiling pattern (or a brick tiling
+    # pattern if the image the command is applied to has only its top half
+    # or its bottom half drawn).  For best results, the command should be applied
+    # to images with an even width and height.
+    ret = [
+        "(",
+        "+clone",
+        "(",
+        "+clone",
+        ")",
+        "-append",
+        "(",
+        "+clone",
+        ")",
+        "+append",
+        "-chop",
+        "25%x25%",
+        ")",
+        "-compose",
+        "Over",
+        "-composite",
+    ]
+    return ret
+
+def imagePadding(leftPadding, topPadding, rightPadding, bottomPadding):
+    # ImageMagick command for padding an image with a transparent area
+    # All parameters are in pixels
     return (
-        " \\( +clone \\( +clone \\) -append \\( +clone \\) +append -chop "
-        + "25%x25% \\) -compose Over -composite "
-        + bc
+        ["-background", "transparent"]
+        + (
+            [
+                "+repage",
+                "-gravity",
+                "NorthWest",
+                "-splice",
+                "%dx%d" % (leftPadding, topPadding),
+            ]
+            if leftPadding > 0 or topPadding > 0
+            else []
+        )
+        + (
+            [
+                "+repage",
+                "-gravity",
+                "SouthEast",
+                "-splice",
+                "%dx%d" % (rightPadding, bottomPadding),
+            ]
+            if rightPadding > 0 or bottomPadding > 0
+            else []
+        )
+        + ["+gravity", "+repage"]
     )
 
 def groupPmg():
@@ -905,11 +943,11 @@ def randomboxeslightdark(width, height, palette):
     if (not palette) or len(palette) <= 0 or len(palette) > 2000:
         # too long palette not supported
         raise ValueError
-    darkest = palette[_nearest_rgb3(palette,0,0,0)]
+    darkest = palette[_nearest_rgb3(palette, 0, 0, 0)]
     lightimage = blankimage(width, height, darkest)
     darkimage = blankimage(width, height, darkest)
     paletteSize = len(palette)
-    darkkeys = [palette[_nearest_rgb(palette, [x//2 for x in c])] for c in palette]
+    darkkeys = [palette[_nearest_rgb(palette, [x // 2 for x in c])] for c in palette]
     for i in range(45):
         x0 = random.randint(0, width - 1)
         x1 = x0 + random.randint(3, max(3, width * 3 // 4))
@@ -1125,10 +1163,10 @@ def websafeDither(image, width, height):
         for x in range(width):
             xp = yp + x * 3
             for i in range(3):
-              c = image[xp+i]
-              cm = c%51
-              bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-              image[xp+i] = (c-cm) + 51 if bdither < cm * 64 // 51 else c-cm
+                c = image[xp + i]
+                cm = c % 51
+                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                image[xp + i] = (c - cm) + 51 if bdither < cm * 64 // 51 else c - cm
     return image
 
 def patternDither(image, width, height, palette):
@@ -1137,11 +1175,11 @@ def patternDither(image, width, height, palette):
     # https://bisqwit.iki.fi/story/howto/dither/jy/
     candidates = [None for i in range(len(DitherMatrix))]
     paletteLum = [
-    (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
+        (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
     ]
     trials = {}
-    numtrials=0
-    numskips=0
+    numtrials = 0
+    numskips = 0
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
@@ -1149,30 +1187,38 @@ def patternDither(image, width, height, palette):
             e = [0, 0, 0]
             exact = False
             for i in range(len(DitherMatrix)):
-                ir=image[xp]
-                ig=image[xp+1]
-                ib=image[xp+2]
+                ir = image[xp]
+                ig = image[xp + 1]
+                ib = image[xp + 2]
                 # "// 4" is equiv. to "* 0.25" where 0.25
                 # is the dithering strength
-                t0=ir + e[0] // 4
-                if t0<0: t0=0
-                if t0>255: t0=255
-                t1=ig + e[1] // 4
-                if t1<0: t1=0
-                if t1>255: t1=255
-                t2=ib + e[2] // 4
-                if t2<0: t2=0
-                if t2>255: t2=255
+                t0 = ir + e[0] // 4
+                if t0 < 0:
+                    t0 = 0
+                if t0 > 255:
+                    t0 = 255
+                t1 = ig + e[1] // 4
+                if t1 < 0:
+                    t1 = 0
+                if t1 > 255:
+                    t1 = 255
+                t2 = ib + e[2] // 4
+                if t2 < 0:
+                    t2 = 0
+                if t2 > 255:
+                    t2 = 255
                 t = t0 | (t1 << 8) | (t2 << 16)
                 canvalue = None
-                numtrials+=1
+                numtrials += 1
                 if t in trials:
-                    numskips+=1
+                    numskips += 1
                     canvalue = trials[t]
                 else:
                     canindex = _nearest_rgb3(
                         palette,
-                        t0,t1,t2,
+                        t0,
+                        t1,
+                        t2,
                     )
                     can = palette[canindex]
                     trials[t] = canvalue = [
@@ -1180,7 +1226,7 @@ def patternDither(image, width, height, palette):
                         canindex,
                     ]  # sort key consisting of gray value then color
                 candidates[i] = canvalue
-                cv1=palette[canvalue[1]]
+                cv1 = palette[canvalue[1]]
                 e[0] += ir - cv1[0]
                 e[1] += ig - cv1[1]
                 e[2] += ib - cv1[2]
@@ -2188,7 +2234,7 @@ def writepalette(f, palette, name=None, checkIfExists=False):
     ff.write(bytes("GIMP Palette\n", "utf-8"))
     if name:
         ff.write(bytes("Name: %s\n" % (name), "utf-8"))
-    ff.write(bytes("Columns: %d\n" % (min(16,len(palette))), "utf-8"))
+    ff.write(bytes("Columns: %d\n" % (min(16, len(palette))), "utf-8"))
     ff.write(bytes("# Colors: %d\n" % (len(palette)), "utf-8"))
     for c in palette:
         ff.write(
