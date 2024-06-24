@@ -350,11 +350,16 @@ def magickgradientditherfilter(
         ret += ["-remap", "mpr:z"]
     return ret
 
-def solid(bg=[192, 192, 192], w=64, h=64):
+def solid(bg=[192, 192, 192]):
     if bg == None or len(bg) < 3:
         raise ValueError
     bc = "#%02x%02x%02x" % (int(bg[0]), int(bg[1]), int(bg[2]))
-    return ["-size", "%dx%d" % (w, h), "xc:%s" % (bc)]
+    # Fred Weinhaus suggested the following to me, which avoids
+    # having to know the input image size in advance:
+    # https://github.com/ImageMagick/ImageMagick/discussions/7423
+    # return ["(", "+clone", "-fill", "xc:" + bc, "-colorize", "100", ")"]
+    # another solution that works better with alpha channel images
+    return ["(", "+clone", "-size", "%wx%h", "xc:" + bc, "-delete", "-2", ")"]
 
 def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
@@ -379,11 +384,8 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite "
     ) % (bc, hc, sc)
 
-def emboss():
-    # Emboss a two-color black and white image into a 3-color (black/gray/white) image
+def shiftwrap(xOrigin, yOrigin):
     return [
-        "(",
-        "+clone",
         "(",
         "+clone",
         ")",
@@ -393,18 +395,42 @@ def emboss():
         ")",
         "+append",
         "-crop",
-        "50%x50%+1+1",
-        "(",
-        "-size",
-        "1x2",
-        "gradient:#FFFFFF-#808080",
-        ")",
-        "-clut",
-        ")",
-        "-compose",
-        "Multiply",
-        "-composite",
+        "50%%x50%%%s%d%s%d"
+        % ("+" if xOrigin >= 0 else "", xOrigin, "+" if yOrigin >= 0 else "", yOrigin),
     ]
+
+def emboss():
+    # Emboss a two-color black and white image into a 3-color (black/gray/white) image
+    return (
+        ["(", "-clone", "0"]
+        + versatilePattern([0, 0, 0], None)
+        + [")", "(", "-clone", "0"]
+        + versatilePattern([255, 255, 255], [128, 128, 128])
+        + shiftwrap(1, 1)
+        + [")", "-delete", "0", "-alpha", "on", "-compose", "DstOver", "-composite"]
+    )
+
+def versatilePattern(fgcolor, bgcolor=None):
+    # ImageMagick command for setting a foreground pattern, whose black parts
+    # are set in the given foreground color, on a background that can optionally
+    # be colored.
+    # 'fgcolor' and 'bgcolor' are the foreground and background color, respectively.
+    # The input image this command will be applied to is assumed to be an SVG file
+    # which must be black in the nontransparent areas (given that ImageMagick renders the
+    # SVG on a white background by default) or a raster image with only
+    # gray tones, where the blacker, the less transparent.
+    # 'bgcolor' can be None so that an alpha
+    # background is used.  Each color is a
+    # 3-item array of the red, green, and blue components in that order; e.g.,
+    # [2,10,255] where each component is from 0 through 255.
+    # Inspired by the technique for generating backgrounds in heropatterns.com.
+    return [
+        "-negate",
+        "-background",
+        "#%02x%02x%02x" % (int(fgcolor[0]), int(fgcolor[1]), int(fgcolor[2])),
+        "-alpha",
+        "shape",
+    ] + backgroundColorUnder(bgcolor)
 
 def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
@@ -588,17 +614,21 @@ def groupCmm():
         + "-append "
     )
 
-def backgroundColorUnder(w, h, bgcolor=None):
+def backgroundColorUnder(bgcolor=None):
     # 'bgcolor' is the background color,
     # either None or a 3-item array of the red,
     # green, and blue components in that order; e.g., [2,10,255] where each
     # component is from 0 through 255; default is None, or no background color.
-    return ["("]+solid(bgcolor,w,h)+[
-        ")",
-        "-compose",
-        "DstOver",
-        "-composite",
-    ]
+    return (
+        solid(bgcolor)
+        + [
+            "-compose",
+            "DstOver",
+            "-composite",
+        ]
+        if bgcolor
+        else []
+    )
 
 def diamondTiling():
     # ImageMagick command to generate a diamond tiling pattern (or a brick tiling
@@ -625,34 +655,59 @@ def diamondTiling():
     ]
     return ret
 
-def imagePadding(leftPadding, topPadding, rightPadding, bottomPadding):
-    # ImageMagick command for padding an image with a transparent area
-    # All parameters are in pixels
+def _bottomPadding():
+    return [
+        "-background",
+        "transparent",
+        "+repage",
+        "-gravity",
+        "SouthEast",
+        "-splice",
+        "0x%h",
+        "+gravity",
+        "+repage",
+    ]
+
+def _rightPadding():
+    return [
+        "-background",
+        "transparent",
+        "+repage",
+        "-gravity",
+        "NorthWest",
+        "-splice",
+        "%wx0",
+        "+gravity",
+        "+repage",
+    ]
+
+def diamondTiled(bgcolor=None, kind=0):
+    # kind=0: image drawn in middle and padded
+    # kind=1: brick drawn at top
+    # kind=2: brick drawn at left
     return (
-        ["-background", "transparent"]
-        + (
-            [
-                "+repage",
-                "-gravity",
-                "NorthWest",
-                "-splice",
-                "%dx%d" % (leftPadding, topPadding),
-            ]
-            if leftPadding > 0 or topPadding > 0
-            else []
+        (
+            _bottomPadding()
+            if kind == 1
+            else (
+                _rightPadding()
+                if kind == 2
+                else [
+                    "-alpha",
+                    "on",
+                    "-mattecolor",
+                    "transparent",
+                    "-bordercolor",
+                    "transparent",
+                    "-frame",
+                    "50%",
+                    "-bordercolor",
+                    "white",
+                ]
+            )
         )
-        + (
-            [
-                "+repage",
-                "-gravity",
-                "SouthEast",
-                "-splice",
-                "%dx%d" % (rightPadding, bottomPadding),
-            ]
-            if rightPadding > 0 or bottomPadding > 0
-            else []
-        )
-        + ["+gravity", "+repage"]
+        + diamondTiling()
+        + backgroundColorUnder(bgcolor)
     )
 
 def groupPmg():
