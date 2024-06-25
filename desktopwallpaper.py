@@ -350,6 +350,12 @@ def magickgradientditherfilter(
         ret += ["-remap", "mpr:z"]
     return ret
 
+def solidfill(bg=[192, 192, 192]):
+    if bg == None or len(bg) < 3:
+        raise ValueError
+    bc = "#%02x%02x%02x" % (int(bg[0]), int(bg[1]), int(bg[2]))
+    return ["-size", "%wx%h", "xc:" + bc, "-delete", "-2"]
+
 def solid(bg=[192, 192, 192]):
     if bg == None or len(bg) < 3:
         raise ValueError
@@ -372,7 +378,7 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     hc = "#%02x%02x%02x" % (int(highlight[0]), int(highlight[1]), int(highlight[2]))
     sc = "#%02x%02x%02x" % (int(shadow[0]), int(shadow[1]), int(shadow[2]))
     return (
-        " -grayscale Rec709Luma -channel RGB -threshold 51%% -write mpr:z "
+        " -grayscale Rec709Luma -channel RGB -threshold 51%% +channel -write mpr:z "
         + '\\( -clone 0 -morphology Convolve "3:0,0,0 0,0,0 0,0,1" -write mpr:z1 \\) '
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0 '
         + "-compose Multiply -composite "
@@ -399,15 +405,19 @@ def shiftwrap(xOrigin, yOrigin):
         % ("+" if xOrigin >= 0 else "", xOrigin, "+" if yOrigin >= 0 else "", yOrigin),
     ]
 
-def emboss():
+def emboss(bgColor=None,fgColor=None,hiltColor=None):
     # Emboss a two-color black and white image into a 3-color (black/gray/white) image
+    if not bgColor: bgColor=[128,128,128]
+    if not fgColor: fgColor=[0,0,0]
+    if not hiltColor: hiltColor=[255,255,255]
+    mpre="mpr:emboss"
     return (
-        ["(", "-clone", "0"]
-        + versatilePattern([0, 0, 0], None)
-        + [")", "(", "-clone", "0"]
-        + versatilePattern([255, 255, 255], [128, 128, 128])
+        ["-write",mpre,"-delete","0","(", mpre]
+        + versatilePattern(fgColor, None)
+        + [")", "(", mpre]
+        + versatilePattern(hiltColor,bgColor)
         + shiftwrap(1, 1)
-        + [")", "-delete", "0", "-alpha", "on", "-compose", "DstOver", "-composite"]
+        + [")", "-alpha", "on", "-compose", "DstOver", "-composite"]
     )
 
 def versatilePattern(fgcolor, bgcolor=None):
@@ -778,7 +788,7 @@ def writepng(f, image, width, height, raiseIfExists=False):
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
 
-def _simplebox(image, width, height, color, x0, y0, x1, y1):
+def simplebox(image, width, height, color, x0, y0, x1, y1):
     borderedbox(image, width, height, None, color, color, x0, y0, x1, y1)
 
 def hatchedbox(
@@ -943,13 +953,13 @@ def blankimage(width, height, color=None):
         raise ValueError
     image = [255 for i in range(width * height * 3)]  # default background is white
     if color:
-        _simplebox(image, width, height, color, 0, 0, width, height)
+        simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
 def checkerboardimage(width, height, darkcolor, lightcolor, hatchColor=None):
     image = blankimage(width, height, lightcolor)
-    _simplebox(image, width, height, darkcolor, 0, 0, width // 2, height // 2)
-    _simplebox(image, width, height, darkcolor, width // 2, height // 2, width, height)
+    simplebox(image, width, height, darkcolor, 0, 0, width // 2, height // 2)
+    simplebox(image, width, height, darkcolor, width // 2, height // 2, width, height)
     if hatchColor:
         # hatch=[0x88,0x44,0x22,0x11,0x88,0x44,0x22,0x11] # denser diagonal hatch
         # revhatch=[0x22,0x44,0x88,0x11,0x22,0x44,0x88,0x11] # denser diagonal hatch
@@ -1052,7 +1062,7 @@ def crosshatch(
     height = hhatchdist * 4
     image = blankimage(width, height, bgcolor)
     for i in range(4):
-        _simplebox(
+        simplebox(
             image,
             width,
             height,
@@ -1062,7 +1072,7 @@ def crosshatch(
             width,
             hhatchdist * i + hhatchthick,
         )
-        _simplebox(
+        simplebox(
             image,
             width,
             height,
@@ -1164,7 +1174,8 @@ def dithertograyimage(image, width, height, grays):
     if not grays or len(grays) < 2:
         raise ValueError
     for i in range(1, len(grays)):
-        if grays[i] < grays[i - 1] or (grays[i] - grays[i - 1]) > 255:
+        # Grays must be sorted
+        if grays[i]<0 or grays[i] < grays[i - 1] or (grays[i] - grays[i - 1]) > 255:
             raise ValueError
     for y in range(height):
         yp = y * width * 3
@@ -1358,6 +1369,16 @@ def whitenoiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
+def brushednoise(width,height):
+ image=blankimage(width,height,[192,192,192])
+ for i in range(max(width,height)*5):
+   c=random.choice([128,128,128,128,0,255])
+   x=random.randint(0,width-1)
+   y=random.randint(0,height-1)
+   x1=x+random.randint(0,width*2//4)
+   simplebox(image,width,height,[c,c,c],x,y,x1,y+1)
+ return image
+
 # What follows are methods for generating scalable vector graphics (SVGs)
 # and raster graphics of classic OS style borders and button controls.
 # Although the SVGs are scalable
@@ -1401,7 +1422,7 @@ class ImageWraparoundDraw:
         if len(c) == 2:
             borderedbox(image, width, height, None, c[0], c[1], x0, y0, x1, y1)
         else:
-            _simplebox(self.image, self.width, self.height, c, x0, y0, x1, y1)
+            simplebox(self.image, self.width, self.height, c, x0, y0, x1, y1)
 
     def __str__(self):
         pass
