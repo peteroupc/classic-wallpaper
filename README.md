@@ -36,11 +36,11 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     >
     > 1. _Grayscale_ means having no colors other than gray tones, black, and white.
     >
-    > 2. If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/).  For an example, see the `magickgradientditherfilter` method in _desktopwallpaper.py_.  If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "Web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
+    > 2. If a wallpaper image is _monochrome_ (it is grayscale, or its colors are of the same hue and the same chroma or "saturation"), then a grayscale version of the image is preferred, since then it could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/). Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.  If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "Web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
     >
     > 3. The wallpaper image is allowed to be a vector graphic in the SVG format made only of two-dimensional vector paths, each of which has no stroke, a black fill, and any fill opacity from 0 through 100%.  With this vector format, the image can be scaled to any pixel dimension desired and turned into a grayscale bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
     >
-    > 4. The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in drawing programs, especially those devoted to pixel art.
+    > 4. The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in software programs for drawing, especially those devoted to pixel art.
 
 - The image employs one of the following pixel dimension options:
     - Preferred: 8&times;8, 16&times;16, 32&times;32, 64&times;64, 64&times;32, 32&times;64, 96&times;96, 128&times;128, 256&times;256.
@@ -96,14 +96,14 @@ def _togray(x):
 
 width=128
 height=128
-# Draw a grayscale gradient image
-image = [_togray(contouring(x*2.0/width-1.0,y*2.0/height-1.0,2.5)) 
+# Draw an image with a grayscale gradient fill
+image = [_togray(contouring(x*2.0/width-1.0,y*2.0/height-1.0,2.5))
    for x in range(width) for y in range(height)]
 image = [cc for pix in [(x,x,x) for x in image] for cc in pix]
-# Colorize the image
+# Assign color to each gray tone in the image
 dw.graymap(image, width, height, dw.randomColorization())
 # Draw a checkerboard overlay over the image
-dw.checkerboardoverlay(image,width,height,[random.randint(0,255) 
+dw.checkerboardoverlay(image,width,height,[random.randint(0,255)
    for i in range(3)])
 # Dither the image
 image2=[x for x in image] # copy image for dithering
@@ -113,6 +113,13 @@ dw.websafeDither(image2, width, height)
 dw.writepng("circlec.png", image, width,height)
 # Dither in "web safe" colors
 dw.writepng("circlews.png", image2, width,height)
+```
+
+Replacing the `contouring` method above with the one below leads to a diagonal gradient fill that's tileable:
+
+```
+def contouring(x,y,z):
+   c=abs(x+y)%2.0; return 2-c if c > 1.0 else c
 ```
 
 ## Button and Border Styles
