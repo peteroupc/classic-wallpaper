@@ -1,5 +1,8 @@
 # This Python script helps generate interesting variations on desktop
-# wallpapers based on existing image files.
+# wallpapers based on existing image files.  Because they run on the CPU
+# and are implemented in pure Python, the methods are intended for
+# relatively small images that are suitable as tileable desktop wallpaper
+# patterns, especially with dimensions 256x256 or smaller.
 #
 # This script is released to the public domain; in case that is not possible, the
 # file is also licensed under Creative Commons Zero (CC0).
@@ -405,17 +408,20 @@ def shiftwrap(xOrigin, yOrigin):
         % ("+" if xOrigin >= 0 else "", xOrigin, "+" if yOrigin >= 0 else "", yOrigin),
     ]
 
-def emboss(bgColor=None,fgColor=None,hiltColor=None):
+def emboss(bgColor=None, fgColor=None, hiltColor=None):
     # Emboss a two-color black and white image into a 3-color (black/gray/white) image
-    if not bgColor: bgColor=[128,128,128]
-    if not fgColor: fgColor=[0,0,0]
-    if not hiltColor: hiltColor=[255,255,255]
-    mpre="mpr:emboss"
+    if not bgColor:
+        bgColor = [128, 128, 128]
+    if not fgColor:
+        fgColor = [0, 0, 0]
+    if not hiltColor:
+        hiltColor = [255, 255, 255]
+    mpre = "mpr:emboss"
     return (
-        ["-write",mpre,"-delete","0","(", mpre]
+        ["-write", mpre, "-delete", "0", "(", mpre]
         + versatilePattern(fgColor, None)
         + [")", "(", mpre]
-        + versatilePattern(hiltColor,bgColor)
+        + versatilePattern(hiltColor, bgColor)
         + shiftwrap(1, 1)
         + [")", "-alpha", "on", "-compose", "DstOver", "-composite"]
     )
@@ -744,11 +750,10 @@ def brushedmetal():
     # Tiger (10.3, 10.4) and other Apple products
     # around the time of either OS's release.
     return [
-        "+clone",
         "+append",
         "-morphology",
         "Convolve",
-        "50x1+49+0:" + ("".join([str(1 / 50) for i in range(50)])),
+        "50x1+49+0:" + (",".join([str(1 / 50) for i in range(50)])),
         "+repage",
         "-crop",
         "50%x0+0+0",
@@ -764,14 +769,16 @@ def writeppm(f, image, width, height, raiseIfExists=False):
     fd.write(bytes(image))
     fd.close()
 
-def writepng(f, image, width, height, raiseIfExists=False):
+def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     if not image:
         raise ValueError
-    if len(image) != width * height * 3:
+    if len(image) != width * height * (4 if alpha else 3):
         raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
     fd = open(f, "xb" if raiseIfExists else "wb")
     fd.write(b"\x89PNG\x0d\n\x1a\n")
-    chunk = b"IHDR" + struct.pack(">LLbbbbb", width, height, 8, 2, 0, 0, 0)
+    chunk = b"IHDR" + struct.pack(
+        ">LLbbbbb", width, height, 8, 6 if alpha else 2, 0, 0, 0
+    )
     fd.write(struct.pack(">L", 0x0D))
     fd.write(chunk)
     fd.write(struct.pack(">L", zlib.crc32(chunk)))
@@ -779,8 +786,8 @@ def writepng(f, image, width, height, raiseIfExists=False):
     pos = 0
     for y in range(height):
         newimage.append(0)
-        newimage += [image[x] for x in range(pos, pos + width * 3)]
-        pos += width * 3
+        newimage += [image[x] for x in range(pos, pos + width * (4 if alpha else 3))]
+        pos += width * (4 if alpha else 3)
     chunk = b"IDAT" + zlib.compress(bytes(newimage))
     fd.write(struct.pack(">L", len(chunk) - 4))
     fd.write(chunk)
@@ -1175,7 +1182,7 @@ def dithertograyimage(image, width, height, grays):
         raise ValueError
     for i in range(1, len(grays)):
         # Grays must be sorted
-        if grays[i]<0 or grays[i] < grays[i - 1] or (grays[i] - grays[i - 1]) > 255:
+        if grays[i] < 0 or grays[i] < grays[i - 1] or (grays[i] - grays[i - 1]) > 255:
             raise ValueError
     for y in range(height):
         yp = y * width * 3
@@ -1369,15 +1376,182 @@ def whitenoiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
-def brushednoise(width,height):
- image=blankimage(width,height,[192,192,192])
- for i in range(max(width,height)*5):
-   c=random.choice([128,128,128,128,0,255])
-   x=random.randint(0,width-1)
-   y=random.randint(0,height-1)
-   x1=x+random.randint(0,width*2//4)
-   simplebox(image,width,height,[c,c,c],x,y,x1,y+1)
- return image
+def circledraw(image, width, height, c, cx, cy, r):
+    # Draws a wraparound circle
+    stride = width * 3
+    fullstride = stride * height
+    # midpoint circle algorithm
+    z = -r
+    x = r
+    y = 0
+    while y < x:
+        octs = [[x, y], [-x, -y], [x, -y], [-x, y], [y, x], [-y, -x], [y, -x], [-y, x]]
+        for xx, yy in octs:
+            px = (cx + xx) % width
+            py = (cy + yy) % height
+            pos = stride * py + px * 3
+            image[pos] = c[0]
+            image[pos + 1] = c[1]
+            image[pos + 2] = c[2]
+        z += 1 + y + y
+        y += 1
+        if z >= 0:
+            z -= x + x - 1
+            x -= 1
+
+def linedraw(image, width, height, c, x0, y0, x1, y1, drawEndPoint=False):
+    # Draws a wraparound line
+    stride = width * 3
+    fullstride = stride * height
+    # Bresenham's algorithm
+    dx = x1 - x0
+    dy = y1 - y0
+    wrap = (
+        x0 < 0
+        or x1 < 0
+        or y0 < 0
+        or y1 < 0
+        or x0 >= width
+        or x1 >= width
+        or y0 >= height
+        or y1 >= height
+    )
+    # Starting point
+    imgpos = (y0 % height) * stride + (x0 % width) * 3 if wrap else y0 * stride + x0 * 3
+    image[imgpos] = c[0]
+    image[imgpos + 1] = c[1]
+    image[imgpos + 2] = c[2]
+    # Ending point
+    if drawEndPoint:
+        imgpos = (
+            (y1 % height) * stride + (x1 % width) * 3 if wrap else y1 * stride + x1 * 3
+        )
+        image[imgpos] = c[0]
+        image[imgpos + 1] = c[1]
+        image[imgpos + 2] = c[2]
+    if abs(dy) > abs(dx):
+        if y1 < y0:
+            dy = abs(dy)
+            t = y0
+            y0 = y1
+            y1 = t
+        a = abs(dx + dx)
+        z = a - dy
+        b = z - dy
+        y = y0
+        x = x0
+        if wrap:
+            y %= height
+            x %= width
+        pos = y * stride + x * 3
+        stridechange = -3 if dx < 0 else 3
+        coordchange = -1 if dx < 0 else 1
+        for i in range(1, y1 - y0):
+            pos += stride
+            y += 1
+            if wrap and y == height:
+                y = 0
+                pos -= fullstride
+            if z < 0:
+                z += a
+            else:
+                z += b
+                pos = pos + stridechange
+                x += coordchange
+                if wrap and x < 0:
+                    pos += stride
+                    x += width
+                elif wrap and x >= width:
+                    pos -= stride
+                    x -= width
+            image[pos] = c[0]
+            image[pos + 1] = c[1]
+            image[pos + 2] = c[2]
+    else:
+        if x1 < x0:
+            dx = abs(dx)
+            t = x0
+            x0 = x1
+            x1 = t
+        a = abs(dy + dy)
+        z = a - dx
+        b = z - dx
+        y = y0
+        x = x0
+        if wrap:
+            y %= height
+            x %= width
+        pos = y * stride + x * 3
+        stridechange = -stride if dy < 0 else stride
+        coordchange = -1 if dy < 0 else 1
+        for i in range(1, x1 - x0):
+            pos += 3
+            x += 1
+            if wrap and x == width:
+                x = 0
+                pos -= stride
+            if z < 0:
+                z += a
+            else:
+                z += b
+                pos = pos + stridechange
+                y += coordchange
+                if wrap and y < 0:
+                    pos += fullstride
+                    y += height
+                elif wrap and y >= height:
+                    pos -= fullstride
+                    y -= height
+            image[pos] = c[0]
+            image[pos + 1] = c[1]
+            image[pos + 2] = c[2]
+
+def brushednoise(width, height):
+    image = blankimage(width, height, [192, 192, 192])
+    for i in range(max(width, height) * 5):
+        c = random.choice([128, 128, 128, 128, 0, 255])
+        x = random.randint(0, width - 1)
+        y = random.randint(0, height - 1)
+        x1 = x + random.randint(0, width // 2)
+        simplebox(image, width, height, [c, c, c], x, y, x1, y + 1)
+    return image
+
+def brushednoise2(width, height):
+    image = blankimage(width, height, [192, 192, 192])
+    for i in range(max(width, height) * 5):
+        c = random.choice([128, 128, 128, 128, 0, 255])
+        x = random.randint(0, width)
+        y = random.randint(0, height)
+        x1 = x + (-1 if random.randint(0, 1) == 0 else 1) * random.randint(
+            0, width // 2
+        )
+        y1 = y + (-1 if random.randint(0, 1) == 0 else 1) * random.randint(
+            0, height // 2
+        )
+        linedraw(image, width, height, [c, c, c], x, y, x1, y1)
+    return image
+
+def brushednoise3(width, height):
+    image = blankimage(width, height, [192, 192, 192])
+    for i in range(max(width, height) * 3):
+        c = random.choice([128, 128, 128, 128, 0, 255])
+        if random.randint(0, 2) == 0:
+            # circle
+            x = random.randint(0, width)
+            y = random.randint(0, height)
+            x1 = random.randint(0, width // 2)
+            circledraw(image, width, height, [c, c, c], x, y, x1)
+        else:
+            x = random.randint(0, width)
+            y = random.randint(0, height)
+            x1 = x + (-1 if random.randint(0, 1) == 0 else 1) * random.randint(
+                0, width // 2
+            )
+            y1 = y + (-1 if random.randint(0, 1) == 0 else 1) * random.randint(
+                0, height // 2
+            )
+            linedraw(image, width, height, [c, c, c], x, y, x1, y1)
+    return image
 
 # What follows are methods for generating scalable vector graphics (SVGs)
 # and raster graphics of classic OS style borders and button controls.
@@ -2113,12 +2287,34 @@ def randomboxesimage(palette=None):
     # (default is the palette in classiccolors)
     pal = palette if palette else classiccolors()
     expandedpal = paletteandhalfhalf(pal)
-    w = random.randint(180, 320)
+    w = random.randint(160, 256)
     w -= w % 2  # make even
-    h = random.randint(140, 240)
+    h = random.randint(140, 256)
     h -= h % 2  # make even
     image = randomboxes(w, h, expandedpal)
     return _randomdither({"image": image, "width": w, "height": h}, pal)
+
+def randombrushednoiseimage(palette=None):
+    pal = palette if palette else classiccolors()
+    w = random.randint(96, 224)
+    w -= w % 8  # make divisible by 8
+    h = random.randint(96, 224)
+    h -= h % 8  # make divisible by 8
+    r = random.randint(0, 2)
+    if r == 0:
+        image = brushednoise(w, h)
+    elif r == 1:
+        image = brushednoise2(w, h)
+    else:
+        image = brushednoise3(w, h)
+    graymap(
+        image,
+        w,
+        h,
+        colorgradient([0, 0, 0], [random.randint(0, 255) for i in range(3)]),
+    )
+    patternDither(image, w, h, pal)
+    return {"image": image, "width": w, "height": h}
 
 def randomcheckimage(palette=None):
     # Generates a random checkerboard pattern image using the given palette
@@ -2170,13 +2366,19 @@ def randomPalettedFromThreeGrays(image, width, height, palette=None):
 
 def randomColorization(palette=None):
     # Generates a random colorization gradient
-    # Random beginning color
+    # Random beginning color.  Palette is optional;
+    # if not None (the default), the beginning and end colors are limited
+    # to those in the given palette.
     colors = [None for i in range(256)]
     r = random.randint(0, 99)
     if r < 40:
-        colors[0] = [0, 0, 0]
+        colors[0] = palette[_nearest_rgb(palette, [0, 0, 0])] if palette else [0, 0, 0]
     elif r < 80:
-        colors[0] = [255, 255, 255]
+        colors[0] = (
+            palette[_nearest_rgb(palette, [255, 255, 255])]
+            if palette
+            else [255, 255, 255]
+        )
     else:
         colors[0] = (
             random.choice(palette)
