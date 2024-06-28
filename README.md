@@ -97,12 +97,14 @@ def _togray(x):
 width=128
 height=128
 # Draw a grayscale gradient image
-image = [_togray(contouring(x*2.0/width-1.0,y*2.0/height-1.0,2.5)) for x in range(width) for y in range(height)]
+image = [_togray(contouring(x*2.0/width-1.0,y*2.0/height-1.0,2.5)) 
+   for x in range(width) for y in range(height)]
 image = [cc for pix in [(x,x,x) for x in image] for cc in pix]
 # Colorize the image
 dw.graymap(image, width, height, dw.randomColorization())
 # Draw a checkerboard overlay over the image
-dw.checkerboardoverlay(image,width,height,[random.randint(0,255) for i in range(3)])
+dw.checkerboardoverlay(image,width,height,[random.randint(0,255) 
+   for i in range(3)])
 # Dither the image
 image2=[x for x in image] # copy image for dithering
 dw.patternDither(image, width, height, dw.classiccolors())
