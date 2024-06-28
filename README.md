@@ -74,9 +74,44 @@ meeting the requirements given above.
 | smallslant.png | peteroupc | Four tones | 8x8 | CC0 |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
 | boxes.png | peteroupc | VGA palette | 128x128 | CC0 |
+| circlec.png | peteroupc | VGA palette | 128x128 | CC0 |
+| circlews.png | peteroupc | "Web safe" palette | 128x128 | CC0 |
 | check.png | peteroupc | VGA palette | 96x96 | CC0 |
 | brushed.png | peteroupc | VGA palette | 96x96 | CC0 |
 | [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100x100 | MIT License |
+
+## Sample Wallpaper Generation Code
+
+The following code in Python is presented as an example of computer code to generate tileable wallpaper patterns. It helped generate `circlec.png` and `circlews.png`.
+
+```python
+import desktopwallpaper as dw
+import random
+
+def contouring(x,y,z):
+   return abs(x**z+y**z)**(1/z)
+
+def _togray(x):
+   return int(abs(max(-1,min(1,x)))*255.0)
+
+width=128
+height=128
+# Draw a grayscale gradient image
+image = [_togray(contouring(x*2.0/width-1.0,y*2.0/height-1.0,2.5)) for x in range(width) for y in range(height)]
+image = [cc for pix in [(x,x,x) for x in image] for cc in pix]
+# Colorize the image
+dw.graymap(image, width, height, dw.randomColorization())
+# Draw a checkerboard overlay over the image
+dw.checkerboardoverlay(image,width,height,[random.randint(0,255) for i in range(3)])
+# Dither the image
+image2=[x for x in image] # copy image for dithering
+dw.patternDither(image, width, height, dw.classiccolors())
+dw.websafeDither(image2, width, height)
+# Dither in VGA colors
+dw.writepng("circlec.png", image, width,height)
+# Dither in "web safe" colors
+dw.writepng("circlews.png", image2, width,height)
+```
 
 ## Button and Border Styles
 

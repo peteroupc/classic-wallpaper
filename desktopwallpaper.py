@@ -7,17 +7,16 @@
 # This script is released to the public domain; in case that is not possible, the
 # file is also licensed under Creative Commons Zero (CC0).
 #
-# NOTE: Animation of tilings composed from a wallpaper
-# image can be implemented by shifting, with each frame, the starting
-# position for drawing the top left corner of the wallpaper tiling
-# (e.g., from the top left corner of the image
-# to some other position in the image).
+# NOTES:
 #
-# NOTE: In Windows, if both an 8x8 monochrome pattern and a centered wallpaper
+# 1. Animation of tilings composed from a wallpaper image can be implemented by
+# shifting, with each frame, the starting position for drawing the top left
+# corner of the wallpaper tiling (e.g., from the top left corner of the image
+# to some other position in the image).
+# 2. In Windows, if both an 8x8 monochrome pattern and a centered wallpaper
 # are set as the desktop background, both the pattern and the wallpaper
 # will be drawn on the desktop, the latter appearing above the former.
-#
-# NOTE: I would welcome it if readers could contribute computer code (released
+# 3. I would welcome it if readers could contribute computer code (released
 # to the public domain or under Creative Commons Zero) to generate tileable—
 # - noise,
 # - procedural textures or patterns, or
@@ -963,8 +962,7 @@ def blankimage(width, height, color=None):
         simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
-def checkerboardimage(width, height, darkcolor, lightcolor, hatchColor=None):
-    image = blankimage(width, height, lightcolor)
+def checkerboardoverlay(image, width, height, darkcolor, hatchColor=None):
     simplebox(image, width, height, darkcolor, 0, 0, width // 2, height // 2)
     simplebox(image, width, height, darkcolor, width // 2, height // 2, width, height)
     if hatchColor:
@@ -986,7 +984,6 @@ def checkerboardimage(width, height, darkcolor, lightcolor, hatchColor=None):
             width,
             height,
         )
-    return image
 
 def _nearest_rgb3(pal, r, g, b):
     best = -1
@@ -2326,9 +2323,8 @@ def randomcheckimage(palette=None):
     h = random.randint(16, 128)
     h -= h % 2  # make even
     hatch = None if random.randint(0, 1) == 0 else random.choice(expandedpal)
-    image = checkerboardimage(
-        w, h, random.choice(expandedpal), random.choice(expandedpal), hatch
-    )
+    image = blankimage(width, height, random.choice(expandedpal))
+    checkerboardoverlay(image, w, h, random.choice(expandedpal), hatch)
     return _randomdither({"image": image, "width": w, "height": h}, pal)
 
 def monochromeFromThreeGrays(image, width, height):
