@@ -89,30 +89,32 @@ import desktopwallpaper as dw
 import random
 
 def contouring(x,y,z):
-   return abs(x**z+y**z)**(1/z)
+    return abs(x**z+y**z)**(1/z)
 
 def _togray(x):
-   return int(abs(max(-1,min(1,x)))*255.0)
+    return int(abs(max(-1, min(1, x))) * 255.0)
 
-width=128
-height=128
+width = 128
+height = 128
 # Draw an image with a grayscale gradient fill
-image = [_togray(contouring(x*2.0/width-1.0,y*2.0/height-1.0,2.5))
-   for x in range(width) for y in range(height)]
-image = [cc for pix in [(x,x,x) for x in image] for cc in pix]
-# Assign color to each gray tone in the image
-dw.graymap(image, width, height, dw.randomColorization())
+image = [
+    _togray(contouring((p%width) * 2.0 / width - 1.0, (p//width) * 2.0 / height - 1.0, 2.5))
+    for p in range(width*height)
+]
+# Generate a random color gradient
+colors = dw.randomColorization()
+# Create a colorized version of the image
+image = [cc for pix in [colors[x] for x in image] for cc in pix]
 # Draw a checkerboard overlay over the image
-dw.checkerboardoverlay(image,width,height,[random.randint(0,255)
-   for i in range(3)])
+dw.checkerboardoverlay(image, width, height, [random.randint(0, 255) for i in range(3)])
 # Dither the image
-image2=[x for x in image] # copy image for dithering
+image2 = [x for x in image]  # copy image for dithering
 dw.patternDither(image, width, height, dw.classiccolors())
 dw.websafeDither(image2, width, height)
 # Dither in VGA colors
-dw.writepng("circlec.png", image, width,height)
+dw.writepng("/tmp/circlec.png", image, width, height)
 # Dither in "web safe" colors
-dw.writepng("circlews.png", image2, width,height)
+dw.writepng("/tmp/circlews.png", image2, width, height)
 ```
 
 Replacing the `contouring` method above with the one below leads to a diagonal gradient fill that's tileable:

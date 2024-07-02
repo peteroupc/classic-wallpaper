@@ -1041,66 +1041,57 @@ def randomboxes(width, height, palette):
     # using only the colors in the given palette
     return randomboxeslightdark(width, height, palette)["light"]
 
-def crosshatch(
-    hhatchdist=8, vhatchdist=8, hhatchthick=1, vhatchthick=1, fgcolor=None, bgcolor=None
-):
-    # Generate a portable pixelmap (PPM) of a horizontal and/or vertical hatch
-    # pattern.
-    # hhatchdist - distance from beginning of one horizontal hash line to the
-    # beginning of the next, in pixels.
-    # hhatchthick - thickness in pixels of each horizontal hash line.
-    # Similar for vhatchdist and vhatchthick, with vertical hash lines.
-    # fgcolor -  foreground color.  If None, default is black.
-    # bgcolor -  background color.  If None, default is white.
-    if hhatchdist <= 0 or hhatchthick < 0 or hhatchthick > hhatchdist:
+def drawhatchcolumns(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
+  # hatchdist - distance from beginning of one vertical hash line to the
+  # beginning of the next, in pixels.
+  # hatchthick - thickness in pixels of each vertical hash line.
+  if hatchdist <= 0 or hatchthick < 0 or hatchthick > hatchdist:
         raise ValueError
-    if vhatchdist <= 0 or vhatchthick < 0 or vhatchthick > vhatchdist:
+  if fgcolor and len(fgcolor) != 3:
         raise ValueError
-    if fgcolor and len(fgcolor) != 3:
-        raise ValueError
-    if bgcolor and len(bgcolor) != 3:
-        raise ValueError
-    if not fgcolor:
+  if not fgcolor:
         fgcolor = [0, 0, 0]
-    width = vhatchdist * 4
-    height = hhatchdist * 4
-    image = blankimage(width, height, bgcolor)
-    for i in range(4):
-        simplebox(
+  pos=0
+  while pos<width:
+    simplebox(
+            image,
+            width,
+            height,
+            fgcolor,
+            pos,
+            0,
+            min(width, pos + hatchthick),
+            height,
+    )
+    pos+=hatchdist
+
+def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
+  if hatchdist <= 0 or hatchthick < 0 or hatchthick > hatchdist:
+        raise ValueError
+  if fgcolor and len(fgcolor) != 3:
+        raise ValueError
+  if not fgcolor:
+        fgcolor = [0, 0, 0]
+  pos=0
+  while pos<height:
+    simplebox(
             image,
             width,
             height,
             fgcolor,
             0,
-            hhatchdist * i,
+            pos,
             width,
-            hhatchdist * i + hhatchthick,
-        )
-        simplebox(
-            image,
-            width,
-            height,
-            fgcolor,
-            vhatchdist * i,
-            0,
-            vhatchdist * i + vhatchthick,
-            height,
-        )
-    return {
-        "image": image,
-        "width": width,
-        "height": height,
-    }
-
-def verthatch(hatchdist=8, hatchthick=1, fgcolor=None, bgcolor=None):
-    # Generate a portable pixelmap (PPM) of a vertical hatch pattern.
-    return crosshatch(1, hatchdist, 0, hatchthick, fgcolor=fgcolor, bgcolor=bgcolor)
-
-def horizhatch(hatchdist=8, hatchthick=1, fgcolor=None, bgcolor=None):
-    # Generate a portable pixelmap (PPM) of a horizontal hatch pattern.
-    return crosshatch(hatchdist, 1, hatchthick, 0, fgcolor=fgcolor, bgcolor=bgcolor)
+            min(height, pos + hatchthick),
+    )
+    pos+=hatchdist
 
 def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None, offset=0):
+    # 'stripesize' is in pixels
+    # reverse=false: stripe runs from top left to bottom
+    # right assuming the image's first row is the top row
+    # reverse=true: stripe runs from top right to bottom
+    # left
     if stripesize > max(width, height) or stripesize < 0:
         raise ValueError
     if fgcolor and len(fgcolor) != 3:
@@ -1127,39 +1118,6 @@ def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None, off
                 image[imagepos + 1] = 0
                 image[imagepos + 2] = 0
         xpstart += 1
-
-def diagcrosshatch(
-    wpsize=64, stripesize=32, revstripesize=32, fgcolor=None, bgcolor=None
-):
-    # Generate a portable pixelmap (PPM) of a diagonal stripe pattern
-    # 'wpsize': image width and height, in pixels
-    # 'stripesize': thickness of stripe (running from top left to bottom
-    # right assuming the image's first row is the top row), in pixels
-    # 'revstripesize': thickness of stripe (running from top right to bottom
-    # left), in pixels
-    # 'fgcolor': foreground color.  If None, default is black.
-    # 'bgcolor': background color.  If None, default is white.
-    if stripesize > wpsize or stripesize < 0:
-        raise ValueError
-    if revstripesize > wpsize or revstripesize < 0:
-        raise ValueError
-    if wpsize <= 0 or int(wpsize) != wpsize:
-        raise ValueError
-    if fgcolor and len(fgcolor) != 3:
-        raise ValueError
-    width = wpsize
-    height = wpsize
-    image = blankimage(width, height, bgcolor)
-    # Draw the stripes
-    _drawdiagstripe(image, width, height, stripesize, False, fgcolor=fgcolor)
-    _drawdiagstripe(image, width, height, revstripesize, True, fgcolor=fgcolor)
-    return image
-
-def diaghatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
-    return diagcrosshatch(wpsize, stripesize, 0, fgcolor, bgcolor)
-
-def diagrevhatch(wpsize=64, stripesize=32, fgcolor=None, bgcolor=None):
-    return diagcrosshatch(wpsize, 0, stripesize, fgcolor, bgcolor)
 
 def getgrays(palette):
     grays = 0
@@ -1309,21 +1267,6 @@ def patternDither(image, width, height, palette):
             image[xp] = fcan[0]
             image[xp + 1] = fcan[1]
             image[xp + 2] = fcan[2]
-
-def diaggradient(size=32):
-    # Generate a portable pixelmap (PPM) of a diagonal linear gradient
-    if size <= 0 or int(size) != size:
-        raise ValueError
-    image = []
-    for y in range(size):
-        row = [0 for i in range(size * 3)]
-        for x in range(size):
-            r = abs(x - (size - 1 - y)) * 255 // (size - 1)
-            row[x * 3] = r
-            row[x * 3 + 1] = r
-            row[x * 3 + 2] = r
-        image.append(row)
-    return [px for row in image for px in row]
 
 def colorgradient(blackColor, whiteColor):
     if (
@@ -2233,6 +2176,34 @@ def makesvg():
 
 # random wallpaper generation
 
+def _togray(x):
+   return int(abs(max(-1,min(1,x)))*255.0)
+
+def _diagcontour(x,y):
+   if x>1 or x<-1: raise ValueError(x)
+   if y>1 or y<-1: raise ValueError(y)
+   c=abs(x+y)%2.0; return 2-c if c > 1.0 else c
+
+def _randomgradientfill(width, height, palette):
+    image = None
+    r=random.randint(0,3)
+    if r==0:
+      # horizontal gradient
+      image=[_togray((p//width)*2.0/height-1.0) for p in range(width*height)]
+    elif r==1:
+      # vertical gradient
+      image=[_togray((p%width)*2.0/width-1.0) for p in range(width*height)]
+    elif r==2:
+      # diagonal gradient
+      image=[_togray(_diagcontour((p%width)*2.0/width-1.0,(p//width)*2.0/height-1.0)) for p in range(width*height)]
+    elif r==3:
+      # reverse diagonal gradient
+      image=[_togray(_diagcontour((width-1-(p%width))*2.0/width-1.0,(p//width)*2.0/height-1.0)) for p in range(width*height)]
+    grad = randomColorization()
+    ret=[cc for pix in [grad[x] for x in image] for cc in pix]
+    patternDither(ret,width,height,palette)
+    return ret
+
 def _randomdither(image, palette):
     grays = getgrays(palette)
     if len(grays) >= 2 and random.randint(0, 99) < 10:
@@ -2254,28 +2225,43 @@ def randomhatchimage(palette=None):
     pal = palette if palette else classiccolors()
     expandedpal = paletteandhalfhalf(pal)
     if random.randint(0, 99) < 50:
+        # Diagonal hatch
         w = random.randint(40, 96)
         w -= w % 2  # make even
-        image = diagcrosshatch(
-            w,
-            random.randint(0, 16),
-            random.randint(0, 16),
-            bgcolor=random.choice(expandedpal),
-            fgcolor=random.choice(expandedpal),
-        )
-        return _randomdither({"image": image, "width": w, "height": w}, pal)
-    else:
-        hhatch = random.randint(0, 7)
-        vhatch = random.randint(0, 7)
+        r=random.randint(0,2)
+        if r==0:
+           image = _randombrushednoiseimage(w,w,pal)["image"]
+        elif r==1:
+           image = _randomgradientfill(w,w,pal)
+        else:
+           image = blankimage(w, w, random.choice(expandedpal))
+        fgcolor=random.choice(expandedpal)
+        _drawdiagstripe(image, w, w, random.randint(0,16), False, fgcolor=fgcolor)
+        _drawdiagstripe(image, w, w, random.randint(0,16), True, fgcolor=fgcolor)
         return _randomdither(
-            crosshatch(
-                hhatch + random.randint(4, 32),
-                vhatch + random.randint(4, 32),
-                hhatch,
-                vhatch,
-                bgcolor=random.choice(expandedpal),
-                fgcolor=random.choice(expandedpal),
-            ),
+            {"image": image, "width": w, "height": w},
+            pal,
+        )
+    else:
+        # Horizontal and vertical hatch
+        thickx = random.randint(0, 7)
+        thicky = random.randint(0, 7)
+        distx = thickx + random.randint(4, 32)
+        disty = thicky + random.randint(4, 32)
+        w=distx*4
+        h=disty*4
+        r=random.randint(0,2)
+        if r==0:
+           image = _randombrushednoiseimage(w,h,pal)["image"]
+        elif r==1:
+           image = _randomgradientfill(w,h,pal)
+        else:
+           image = blankimage(w, h, random.choice(expandedpal))
+        fgcolor=random.choice(expandedpal)
+        drawhatchcolumns(image,w,h,distx,thickx,fgcolor)
+        drawhatchrows(image,w,h,disty,thicky,fgcolor)
+        return _randomdither(
+            {"image": image, "width": w, "height": h},
             pal,
         )
 
@@ -2292,11 +2278,14 @@ def randomboxesimage(palette=None):
     return _randomdither({"image": image, "width": w, "height": h}, pal)
 
 def randombrushednoiseimage(palette=None):
-    pal = palette if palette else classiccolors()
     w = random.randint(96, 224)
     w -= w % 8  # make divisible by 8
     h = random.randint(96, 224)
     h -= h % 8  # make divisible by 8
+    return _randombrushednoiseimage(w,h,palette)
+
+def _randombrushednoiseimage(w, h, palette=None):
+    pal = palette if palette else classiccolors()
     r = random.randint(0, 2)
     if r == 0:
         image = brushednoise(w, h)
@@ -2323,7 +2312,18 @@ def randomcheckimage(palette=None):
     h = random.randint(16, 128)
     h -= h % 2  # make even
     hatch = None if random.randint(0, 1) == 0 else random.choice(expandedpal)
-    image = blankimage(width, height, random.choice(expandedpal))
+    image=None
+    r=random.randint(0,2)
+    if r==0:
+       w -= w%8 # make divisible by 8
+       h -= h%8 # make divisible by 8
+       image = _randombrushednoiseimage(w,h,pal)["image"]
+    elif r==1:
+       w -= w%8 # make divisible by 8
+       h -= h%8 # make divisible by 8
+       image = _randomgradientfill(w,h,pal)
+    else:
+       image = blankimage(w, h, random.choice(expandedpal))
     checkerboardoverlay(image, w, h, random.choice(expandedpal), hatch)
     return _randomdither({"image": image, "width": w, "height": h}, pal)
 
