@@ -62,6 +62,8 @@ Also welcome would be computer code (released to the public domain or under Crea
 
 meeting the requirements given above.
 
+> **Note:** Photographic images that have an arbitrary number of unique colors, but otherwise meet the requirements given above, are not within the scope of this challenge.  Indeed, such an image can be adapted to have the colors of a limited-color palette (such as the VGA palette, the "web safe" palette, or a 236- or 256-color palette) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.
+
 ## Examples
 
 |  Name  | Made by  |  Colors  |  Size  | License/Notes |
