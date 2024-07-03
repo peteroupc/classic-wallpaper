@@ -19,7 +19,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
     - Up to four colors from the VGA palette.
     - Up to four colors from the canonical CGA palette.
     - Up to eight colors from the VGA palette.
-    - 216-color "web safe" palette (each color component is a multiple of 51).[^3]
+    - 216-color "web safe" palette (each color component is a multiple of 51).[^3] [^7]
     - 216-color "web safe" palette plus VGA palette.[^3]
     - The VGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 98 unique colors (each color component is 0, 64, 128, or 192; or each color component is 0, 128, or 255; or each color component is 96 or 160; or each color component is 96 or 224).
     - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
@@ -173,3 +173,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^5]: Can be generated from `truchet2color` using the following ImageMagick command: `magick truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1x2 gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF-808080` indicates the two colors white and gray, respectively.
 
 [^6]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
+
+[^7]: When the "web safe" palette forms part of a 256-color repertoire, as it usually does, 40 slots are left that can be filled with additional colors. Usually these additional colors include the four legacy Windows colors plus the eight VGA palette colors not already in the "web safe" palette.

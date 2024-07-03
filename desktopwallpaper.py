@@ -925,7 +925,7 @@ def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # that no border is drawn)
     # 'color1' and 'color2' are the dithered
     # versions of the inner color. 'color1' and 'color2' can't be None.
-    if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
+    if x1 < x0 or y1 < y0:
         raise ValueError
     if width <= 0 or height <= 0:
         raise ValueError
@@ -1086,7 +1086,7 @@ def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)
         )
         pos += hatchdist
 
-def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None, offset=0):
+def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
     # 'stripesize' is in pixels
     # reverse=false: stripe runs from top left to bottom
     # right assuming the image's first row is the top row
@@ -1096,28 +1096,35 @@ def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None, off
         raise ValueError
     if fgcolor and len(fgcolor) != 3:
         raise ValueError
+    # default foreground color is black
+    if not fgcolor: fgcolor=[0,0,0]
     xpstart = -(stripesize // 2)
-    for y in range(height):
-        yp = y * width * 3
-        for x in range(stripesize):
-            xp = x + xpstart + offset
-            while xp < 0:
-                xp += width
-            while xp >= width:
-                xp -= width
-            if reverse:  # drawing reverse stripe
-                xp = width - 1 - xp
-            imagepos = yp + xp * 3
-            if fgcolor:
-                image[imagepos] = fgcolor[0] & 0xFF
-                image[imagepos + 1] = fgcolor[1] & 0xFF
-                image[imagepos + 2] = fgcolor[2] & 0xFF
-            else:
-                # default foreground color is black
-                image[imagepos] = 0
-                image[imagepos + 1] = 0
-                image[imagepos + 2] = 0
-        xpstart += 1
+    xpend = xpstart+stripesize
+    xIsLong=width>=height
+    longStart=0
+    shortStart=0
+    longEnd=(width-1) if xIsLong else (height-1)
+    shortEnd=(height-1) if xIsLong else (width-1)
+    u=2*(shortEnd-shortStart)
+    dlong=longEnd-longStart
+    v=u-2*dlong
+    z=u-dlong
+    shortCoord=shortStart
+    for longCoord in range(longStart,longEnd+1):
+      if longCoord==longEnd:
+        shortCoord=shortEnd
+      elif longCoord>longStart:
+       if z<0:
+         z+=u
+       else:
+         shortCoord+=1
+         z+=v
+      if xIsLong:
+        xc=width-1-longCoord if reverse else longCoord
+        simplebox(image,width,height,fgcolor,xc,shortCoord+xpstart,xc+1,shortCoord+xpend)
+      else:
+        xc=width-1-shortCoord if reverse else shortCoord
+        simplebox(image,width,height,fgcolor,xc+xpstart,longCoord,xc+xpend,longCoord+1)
 
 def getgrays(palette):
     grays = 0
@@ -2259,12 +2266,14 @@ def randomhatchimage(palette=None):
         # Diagonal hatch
         w = random.randint(40, 96)
         w -= w % 8  # make divisible by 8
+        h = random.randint(40, 96)
+        h -= h % 8  # make divisible by 8
         fgcolor = random.choice(expandedpal)
-        image = _randombackground(w,w,pal)
-        _drawdiagstripe(image, w, w, random.randint(0, 16), False, fgcolor=fgcolor)
-        _drawdiagstripe(image, w, w, random.randint(0, 16), True, fgcolor=fgcolor)
+        image = _randombackground(w,h,pal)
+        _drawdiagstripe(image, w, h, random.randint(0, 16), False, fgcolor=fgcolor)
+        _drawdiagstripe(image, w, h, random.randint(0, 16), True, fgcolor=fgcolor)
         return _randomdither(
-            {"image": image, "width": w, "height": w},
+            {"image": image, "width": w, "height": h},
             pal,
         )
     else:
