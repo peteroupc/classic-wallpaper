@@ -919,6 +919,77 @@ def shadowedborderedbox(
         )
     borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
 
+def borderedgradientbox(image, width, height, border, gradient, contour, x0, y0, x1, y1):
+    # Draw a wraparound box in a gradient fill on an image.
+    # 'border' is the color of the 1-pixel-thick border. Can be None (so
+    # that no border is drawn)
+    # 'gradient' is a list of 256 colors for mapping the 256 possible shades
+    # of the gradient fill.
+    if x1 < x0 or y1 < y0:
+        raise ValueError
+    if width <= 0 or height <= 0:
+        raise ValueError
+    if (not gradient) or (not image) or (not contour):
+        raise ValueError
+    if x0 == x1 or y0 == y1:
+        return
+    for y in range(y0, y1):
+        ypp = y % height
+        yv = (y-y0)/(y1-y0)
+        yp = ypp * width * 3
+        for x in range(x0, x1):
+            xp = x % width
+            if border and (y == y0 or y == y1 - 1 or x == x0 or x == x1 - 1):
+                # Draw border color
+                image[yp + xp * 3] = border[0]
+                image[yp + xp * 3 + 1] = border[1]
+                image[yp + xp * 3 + 2] = border[2]
+            else:
+                xv = (x-x0)/(x1-x0)
+                c = _togray255(contour(xv, yv))
+                color = gradient[c]
+                image[yp + xp * 3] = color[0]
+                image[yp + xp * 3 + 1] = color[1]
+                image[yp + xp * 3 + 2] = color[2]
+
+def bordereddithergradientbox(image, width, height, border, color1, color2, contour, x0, y0, x1, y1):
+    # Draw a wraparound box in a two-color dithered gradient fill on an image.
+    # 'border' is the color of the 1-pixel-thick border. Can be None (so
+    # that no border is drawn)
+    # 'color1' and 'color2' are the dithered
+    # versions of the inner color. 'color1' and 'color2' can't be None.
+    if x1 < x0 or y1 < y0:
+        raise ValueError
+    if width <= 0 or height <= 0:
+        raise ValueError
+    if (not color1) or (not image) or (not color2) or (not contour):
+        raise ValueError
+    if x0 == x1 or y0 == y1:
+        return
+    for y in range(y0, y1):
+        ypp = y % height
+        yv = (y-y0)/(y1-y0)
+        yp = ypp * width * 3
+        for x in range(x0, x1):
+            xp = x % width
+            if border and (y == y0 or y == y1 - 1 or x == x0 or x == x1 - 1):
+                # Draw border color
+                image[yp + xp * 3] = border[0]
+                image[yp + xp * 3 + 1] = border[1]
+                image[yp + xp * 3 + 2] = border[2]
+            else:
+                xv = (x-x0)/(x1-x0)
+                c = _togray64(contour(xv, yv))
+                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                if bdither < c:
+                   image[yp + xp * 3] = color2[0]
+                   image[yp + xp * 3 + 1] = color2[1]
+                   image[yp + xp * 3 + 2] = color2[2]
+                else:
+                   image[yp + xp * 3] = color1[0]
+                   image[yp + xp * 3 + 1] = color1[1]
+                   image[yp + xp * 3 + 2] = color1[2]
+
 def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # Draw a wraparound dither-colored box on an image.
     # 'border' is the color of the 1-pixel-thick border. Can be None (so
@@ -1000,46 +1071,6 @@ def _nearest_rgb3(pal, r, g, b):
 
 def _nearest_rgb(pal, rgb):
     return _nearest_rgb3(pal, rgb[0], rgb[1], rgb[2])
-
-def randomboxeslightdark(width, height, palette):
-    # Generate two portable pixelmaps (PPM) of a tileable pattern
-    # with random boxes, namely a light version and a dark version,
-    # using only the colors in the given palette.
-    if width <= 0 or int(width) != width:
-        raise ValueError
-    if height <= 0 or int(height) != height:
-        raise ValueError
-    if (not palette) or len(palette) <= 0 or len(palette) > 2000:
-        # too long palette not supported
-        raise ValueError
-    darkest = palette[_nearest_rgb3(palette, 0, 0, 0)]
-    lightimage = blankimage(width, height, darkest)
-    darkimage = blankimage(width, height, darkest)
-    paletteSize = len(palette)
-    darkkeys = [palette[_nearest_rgb(palette, [x // 2 for x in c])] for c in palette]
-    for i in range(45):
-        x0 = random.randint(0, width - 1)
-        x1 = x0 + random.randint(3, max(3, width * 3 // 4))
-        y0 = random.randint(0, height - 1)
-        y1 = y0 + random.randint(3, max(3, height * 3 // 4))
-        border1 = random.randint(0, 5)
-        border2 = random.randint(0, paletteSize - 1)
-        color = random.randint(0, paletteSize - 1)
-        border = border2 if border1 == 0 else 0
-        c1 = palette[color]
-        shadowedborderedbox(
-            lightimage, width, height, darkest, None, c1, c1, x0, y0, x1, y1
-        )
-        c1 = darkkeys[color]
-        shadowedborderedbox(
-            darkimage, width, height, darkest, None, c1, c1, x0, y0, x1, y1
-        )
-    return {"light": lightimage, "dark": darkimage}
-
-def randomboxes(width, height, palette):
-    # Generate a portable pixelmap (PPM) of a tileable pattern with random boxes,
-    # using only the colors in the given palette
-    return randomboxeslightdark(width, height, palette)["light"]
 
 def drawhatchcolumns(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
     # hatchdist - distance from beginning of one vertical hash line to the
@@ -2183,8 +2214,11 @@ def makesvg():
 
 # random wallpaper generation
 
-def _togray(x):
+def _togray255(x):
     return int(abs(max(-1, min(1, x))) * 255.0)
+
+def _togray64(x):
+    return int(abs(max(-1, min(1, x))) * 64.0)
 
 def _diagcontour(x, y):
     if x > 1 or x < -1:
@@ -2194,44 +2228,34 @@ def _diagcontour(x, y):
     c = abs(x + y) % 2.0
     return 2 - c if c > 1.0 else c
 
+def _horizcontour(x, y): return y
+
+def _vertcontour(x, y): return x
+
+def _reversediagcontour(x,y): return _diagcontour(1-x,y)
+
+def _halfandhalf(x, y): return 0.5
+
+def _horizcontourwrap(x, y): return y*2.0-1
+
+def _vertcontourwrap(x, y): return x*2.0-1
+
+def _diagcontourwrap(x,y): return _diagcontour((1-x)*2.0-1,y)
+
+def _reversediagcontourwrap(x,y): return _diagcontourwrap(1-x,y)
+
 def _randomgradientfill(width, height, palette):
-    image = None
-    r = random.randint(0, 3)
-    if r == 0:
-        # horizontal gradient
-        image = [
-            _togray((p // width) * 2.0 / height - 1.0) for p in range(width * height)
-        ]
-    elif r == 1:
-        # vertical gradient
-        image = [
-            _togray((p % width) * 2.0 / width - 1.0) for p in range(width * height)
-        ]
-    elif r == 2:
-        # diagonal gradient
-        image = [
-            _togray(
-                _diagcontour(
-                    (p % width) * 2.0 / width - 1.0, (p // width) * 2.0 / height - 1.0
-                )
-            )
-            for p in range(width * height)
-        ]
-    elif r == 3:
-        # reverse diagonal gradient
-        image = [
-            _togray(
-                _diagcontour(
-                    (width - 1 - (p % width)) * 2.0 / width - 1.0,
-                    (p // width) * 2.0 / height - 1.0,
-                )
-            )
-            for p in range(width * height)
-        ]
+    image = blankimage(width,height)
+    contours=[
+      _horizcontourwrap,
+      _vertcontourwrap,
+      _diagcontourwrap,
+      _reversediagcontourwrap
+    ]
     grad = randomColorization()
-    ret = [cc for pix in [grad[x] for x in image] for cc in pix]
-    patternDither(ret, width, height, palette)
-    return ret
+    borderedgradientbox(image,width,height,None,grad,random.choice(contours),0,0,width,height)
+    patternDither(image, width, height, palette)
+    return image
 
 def _randomdither(image, palette):
     grays = getgrays(palette)
@@ -2300,12 +2324,35 @@ def randomboxesimage(palette=None):
     # (default is the palette in classiccolors)
     pal = palette if palette else classiccolors()
     expandedpal = paletteandhalfhalf(pal)
-    w = random.randint(160, 256)
-    w -= w % 8  # make divisible by 8
-    h = random.randint(140, 256)
-    h -= h % 8  # make divisible by 8
-    image = randomboxes(w, h, expandedpal)
-    return _randomdither({"image": image, "width": w, "height": h}, pal)
+    width = random.randint(160, 256)
+    width -= width % 8  # make divisible by 8
+    height = random.randint(140, 256)
+    height -= height % 8  # make divisible by 8
+    darkest = pal[_nearest_rgb3(pal, 0, 0, 0)]
+    image = blankimage(width,height,darkest)
+    contours=[
+      _horizcontour,
+      _vertcontour,
+      _diagcontour,
+      _reversediagcontour,
+      _horizcontourwrap,
+      _vertcontourwrap,
+      _diagcontourwrap,
+      _reversediagcontourwrap,
+      _halfandhalf,
+      _halfandhalf
+    ]
+    for i in range(45):
+        x0 = random.randint(0, width - 1)
+        x1 = x0 + random.randint(3, max(3, width * 3 // 4))
+        y0 = random.randint(0, height - 1)
+        y1 = y0 + random.randint(3, max(3, height * 3 // 4))
+        c1=random.choice(expandedpal) if random.randint(0,1)==0 else random.choice(pal)
+        c2=random.choice(expandedpal) if random.randint(0,1)==0 else random.choice(pal)
+        bordereddithergradientbox(
+            image, width, height, darkest, c1, c2, random.choice(contours), x0, y0, x1, y1
+        )
+    return _randomdither({"image": image, "width": width, "height": height}, pal)
 
 def randombrushednoiseimage(palette=None):
     w = random.randint(96, 224)
