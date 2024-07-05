@@ -749,6 +749,7 @@ def brushedmetal():
     # Tiger (10.3, 10.4) and other Apple products
     # around the time of either OS's release.
     return [
+        "(","+clone",")",
         "+append",
         "-morphology",
         "Convolve",
@@ -756,10 +757,13 @@ def brushedmetal():
         "+repage",
         "-crop",
         "50%x0+0+0",
+        "+repage",
     ]
 
 def writeppm(f, image, width, height, raiseIfExists=False):
     if not image:
+        raise ValueError
+    if width < 0 or height < 0:
         raise ValueError
     if len(image) != width * height * 3:
         raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
@@ -770,6 +774,8 @@ def writeppm(f, image, width, height, raiseIfExists=False):
 
 def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     if not image:
+        raise ValueError
+    if width < 0 or height < 0:
         raise ValueError
     if len(image) != width * height * (4 if alpha else 3):
         raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
@@ -793,6 +799,160 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(struct.pack(">L", zlib.crc32(chunk)))
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
+
+def writebmp(f, image, width, height, raiseIfExists=False):
+    if not image:
+        raise ValueError
+    if width < 0 or height < 0:
+        raise ValueError
+    if len(image) != width * height * 3:
+        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
+    fd = open(f, "xb" if raiseIfExists else "wb")
+    uniquecolors = {}
+    colortable = [0 for i in range(1024)]
+    numuniques = 0
+    pos = 0
+    for y in range(height * width):
+        c = image[pos] | (image[pos + 1] << 8) | (image[pos + 2] << 16)
+        if c not in uniquecolors:
+            uniquecolors[c] = numuniques
+            if numuniques >= 256:
+                # More than 256 unique colors
+                numuniques += 1
+                break
+            colortable[numuniques * 4] = image[pos + 2]
+            colortable[numuniques * 4 + 1] = image[pos + 1]
+            colortable[numuniques * 4 + 2] = image[pos]
+            colortable[numuniques * 4 + 3] = 0
+            numuniques += 1
+        pos += 3
+    chunk = None
+    bmoffset = 0
+    if numuniques <= 256:
+        bmoffset = 14 + 40 + numuniques * 4
+        if numuniques <= 2:
+            scansize = (width + 7) // 8
+            bmsize = bmoffset + ((scansize + 3) // 4) * 4
+        elif numuniques <= 16:
+            bmsize = bmoffset + ((((width + 1) // 2) + 3) // 4) * 4
+        else:
+            bmsize = bmoffset + ((width + 3) // 4) * 4
+    else:
+        bmoffset = 14 + 40
+        bmsize = bmoffset + (((width * 3) + 3) // 4) * 4
+    chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
+    fd.write(chunk)
+    fd.write(
+        struct.pack(
+            "<LllHHLLllLL",
+            40,
+            width,
+            height,
+            1,
+            (
+                1
+                if numuniques <= 2
+                else (4 if numuniques <= 16 else (8 if numuniques <= 256 else 24))
+            ),
+            0,
+            0,
+            0,
+            0,
+            numuniques if numuniques <= 256 else 0,
+            0,
+        )
+    )
+    newimage = []
+    pos = (height - 1) * width * 3
+    if numuniques <= 256:
+        # Write color table
+        fd.write(bytes([colortable[i] for i in range(numuniques * 4)]))
+        # Write image
+        if numuniques <= 2:
+            scansize = (width + 7) // 8
+            padding = ((scansize + 3) // 4) * 4 - scansize
+            for y in range(height):
+                scan = [0 for i in range(scansize)]
+                for x in range(width // 8):
+                    for i in range(8):
+                        pp = pos + x * 24 + i * 3
+                        scan[x] |= uniquecolors[
+                            image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
+                        ] << (7 - i)
+                if width % 8 != 0:
+                    x = width // 8
+                    for i in range(width % 8):
+                        pp = pos + x * 24 + i * 3
+                        scan[x] |= uniquecolors[
+                            image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
+                        ] << (7 - i)
+                fd.write(bytes([scan[i] for i in range(scansize)]))
+                if padding > 0:
+                    fd.write(bytes([0 for i in range(padding)]))
+                pos -= width * 3
+        elif numuniques <= 16:
+            scansize = (width + 1) // 2
+            padding = ((scansize + 3) // 4) * 4 - scansize
+            scan = [0 for i in range(scansize)]
+            for y in range(height):
+                for x in range(width // 2):
+                    scan[x] = (
+                        uniquecolors[
+                            image[pos + x * 6]
+                            | (image[pos + x * 6 + 1] << 8)
+                            | (image[pos + x * 6 + 2] << 16)
+                        ]
+                        << 4
+                    ) | (
+                        uniquecolors[
+                            image[pos + x * 6 + 3]
+                            | (image[pos + x * 6 + 4] << 8)
+                            | (image[pos + x * 6 + 5] << 16)
+                        ]
+                    )
+                if width % 2 != 0:
+                    x = width // 2
+                    scan[x] = (
+                        uniquecolors[
+                            image[pos + x * 6]
+                            | (image[pos + x * 6 + 1] << 8)
+                            | (image[pos + x * 6 + 2] << 16)
+                        ]
+                        << 4
+                    )
+                fd.write(bytes([scan[i] for i in range(scansize)]))
+                if padding > 0:
+                    fd.write(bytes([0 for i in range(padding)]))
+                pos -= width * 3
+        else:
+            padding = ((width + 3) // 4) * 4 - width
+            for y in range(height):
+                fd.write(
+                    bytes(
+                        [
+                            uniquecolors[
+                                image[pos + x * 3]
+                                | (image[pos + x * 3 + 1] << 8)
+                                | (image[pos + x * 3 + 2] << 16)
+                            ]
+                            for x in range(width)
+                        ]
+                    )
+                )
+                if padding > 0:
+                    fd.write(bytes([0 for i in range(padding)]))
+                pos -= width * 3
+    else:
+        padding = (((width * 3) + 3) // 4) * 4 - (width * 3)
+        for y in range(height):
+            p = pos
+            for x in range(width):
+               fd.write(bytes([image[p+2],image[p+1],image[p]]))
+               p += 3
+            if padding > 0:
+                fd.write(bytes([0 for i in range(padding)]))
+            pos -= width * 3
+        fd.close()
 
 def simplebox(image, width, height, color, x0, y0, x1, y1):
     borderedbox(image, width, height, None, color, color, x0, y0, x1, y1)
@@ -919,7 +1079,9 @@ def shadowedborderedbox(
         )
     borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
 
-def borderedgradientbox(image, width, height, border, gradient, contour, x0, y0, x1, y1):
+def borderedgradientbox(
+    image, width, height, border, gradient, contour, x0, y0, x1, y1
+):
     # Draw a wraparound box in a gradient fill on an image.
     # 'border' is the color of the 1-pixel-thick border. Can be None (so
     # that no border is drawn)
@@ -935,7 +1097,7 @@ def borderedgradientbox(image, width, height, border, gradient, contour, x0, y0,
         return
     for y in range(y0, y1):
         ypp = y % height
-        yv = (y-y0)/(y1-y0)
+        yv = (y - y0) / (y1 - y0)
         yp = ypp * width * 3
         for x in range(x0, x1):
             xp = x % width
@@ -945,14 +1107,16 @@ def borderedgradientbox(image, width, height, border, gradient, contour, x0, y0,
                 image[yp + xp * 3 + 1] = border[1]
                 image[yp + xp * 3 + 2] = border[2]
             else:
-                xv = (x-x0)/(x1-x0)
+                xv = (x - x0) / (x1 - x0)
                 c = _togray255(contour(xv, yv))
                 color = gradient[c]
                 image[yp + xp * 3] = color[0]
                 image[yp + xp * 3 + 1] = color[1]
                 image[yp + xp * 3 + 2] = color[2]
 
-def bordereddithergradientbox(image, width, height, border, color1, color2, contour, x0, y0, x1, y1):
+def bordereddithergradientbox(
+    image, width, height, border, color1, color2, contour, x0, y0, x1, y1
+):
     # Draw a wraparound box in a two-color dithered gradient fill on an image.
     # 'border' is the color of the 1-pixel-thick border. Can be None (so
     # that no border is drawn)
@@ -968,7 +1132,7 @@ def bordereddithergradientbox(image, width, height, border, color1, color2, cont
         return
     for y in range(y0, y1):
         ypp = y % height
-        yv = (y-y0)/(y1-y0)
+        yv = (y - y0) / (y1 - y0)
         yp = ypp * width * 3
         for x in range(x0, x1):
             xp = x % width
@@ -978,17 +1142,17 @@ def bordereddithergradientbox(image, width, height, border, color1, color2, cont
                 image[yp + xp * 3 + 1] = border[1]
                 image[yp + xp * 3 + 2] = border[2]
             else:
-                xv = (x-x0)/(x1-x0)
+                xv = (x - x0) / (x1 - x0)
                 c = _togray64(contour(xv, yv))
                 bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
                 if bdither < c:
-                   image[yp + xp * 3] = color2[0]
-                   image[yp + xp * 3 + 1] = color2[1]
-                   image[yp + xp * 3 + 2] = color2[2]
+                    image[yp + xp * 3] = color2[0]
+                    image[yp + xp * 3 + 1] = color2[1]
+                    image[yp + xp * 3 + 2] = color2[2]
                 else:
-                   image[yp + xp * 3] = color1[0]
-                   image[yp + xp * 3 + 1] = color1[1]
-                   image[yp + xp * 3 + 2] = color1[2]
+                    image[yp + xp * 3] = color1[0]
+                    image[yp + xp * 3 + 1] = color1[1]
+                    image[yp + xp * 3 + 2] = color1[2]
 
 def borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1):
     # Draw a wraparound dither-colored box on an image.
@@ -1117,7 +1281,7 @@ def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)
         )
         pos += hatchdist
 
-def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
+def drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
     # 'stripesize' is in pixels
     # reverse=false: stripe runs from top left to bottom
     # right assuming the image's first row is the top row
@@ -1128,34 +1292,53 @@ def _drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
     if fgcolor and len(fgcolor) != 3:
         raise ValueError
     # default foreground color is black
-    if not fgcolor: fgcolor=[0,0,0]
+    if not fgcolor:
+        fgcolor = [0, 0, 0]
     xpstart = -(stripesize // 2)
-    xpend = xpstart+stripesize
-    xIsLong=width>=height
-    longStart=0
-    shortStart=0
-    longEnd=(width-1) if xIsLong else (height-1)
-    shortEnd=(height-1) if xIsLong else (width-1)
-    u=2*(shortEnd-shortStart)
-    dlong=longEnd-longStart
-    v=u-2*dlong
-    z=u-dlong
-    shortCoord=shortStart
-    for longCoord in range(longStart,longEnd+1):
-      if longCoord==longEnd:
-        shortCoord=shortEnd
-      elif longCoord>longStart:
-       if z<0:
-         z+=u
-       else:
-         shortCoord+=1
-         z+=v
-      if xIsLong:
-        xc=width-1-longCoord if reverse else longCoord
-        simplebox(image,width,height,fgcolor,xc,shortCoord+xpstart,xc+1,shortCoord+xpend)
-      else:
-        xc=width-1-shortCoord if reverse else shortCoord
-        simplebox(image,width,height,fgcolor,xc+xpstart,longCoord,xc+xpend,longCoord+1)
+    xpend = xpstart + stripesize
+    xIsLong = width >= height
+    longStart = 0
+    shortStart = 0
+    longEnd = (width - 1) if xIsLong else (height - 1)
+    shortEnd = (height - 1) if xIsLong else (width - 1)
+    u = 2 * (shortEnd - shortStart)
+    dlong = longEnd - longStart
+    v = u - 2 * dlong
+    z = u - dlong
+    shortCoord = shortStart
+    for longCoord in range(longStart, longEnd + 1):
+        if longCoord == longEnd:
+            shortCoord = shortEnd
+        elif longCoord > longStart:
+            if z < 0:
+                z += u
+            else:
+                shortCoord += 1
+                z += v
+        if xIsLong:
+            xc = width - 1 - longCoord if reverse else longCoord
+            simplebox(
+                image,
+                width,
+                height,
+                fgcolor,
+                xc,
+                shortCoord + xpstart,
+                xc + 1,
+                shortCoord + xpend,
+            )
+        else:
+            xc = width - 1 - shortCoord if reverse else shortCoord
+            simplebox(
+                image,
+                width,
+                height,
+                fgcolor,
+                xc + xpstart,
+                longCoord,
+                xc + xpend,
+                longCoord + 1,
+            )
 
 def getgrays(palette):
     grays = 0
@@ -2228,32 +2411,42 @@ def _diagcontour(x, y):
     c = abs(x + y) % 2.0
     return 2 - c if c > 1.0 else c
 
-def _horizcontour(x, y): return y
+def _horizcontour(x, y):
+    return y
 
-def _vertcontour(x, y): return x
+def _vertcontour(x, y):
+    return x
 
-def _reversediagcontour(x,y): return _diagcontour(1-x,y)
+def _reversediagcontour(x, y):
+    return _diagcontour(1 - x, y)
 
-def _halfandhalf(x, y): return 0.5
+def _halfandhalf(x, y):
+    return 0.5
 
-def _horizcontourwrap(x, y): return y*2.0-1
+def _horizcontourwrap(x, y):
+    return y * 2.0 - 1
 
-def _vertcontourwrap(x, y): return x*2.0-1
+def _vertcontourwrap(x, y):
+    return x * 2.0 - 1
 
-def _diagcontourwrap(x,y): return _diagcontour((1-x)*2.0-1,y)
+def _diagcontourwrap(x, y):
+    return _diagcontour((1 - x) * 2.0 - 1, y)
 
-def _reversediagcontourwrap(x,y): return _diagcontourwrap(1-x,y)
+def _reversediagcontourwrap(x, y):
+    return _diagcontourwrap(1 - x, y)
 
 def _randomgradientfill(width, height, palette):
-    image = blankimage(width,height)
-    contours=[
-      _horizcontourwrap,
-      _vertcontourwrap,
-      _diagcontourwrap,
-      _reversediagcontourwrap
+    image = blankimage(width, height)
+    contours = [
+        _horizcontourwrap,
+        _vertcontourwrap,
+        _diagcontourwrap,
+        _reversediagcontourwrap,
     ]
     grad = randomColorization()
-    borderedgradientbox(image,width,height,None,grad,random.choice(contours),0,0,width,height)
+    borderedgradientbox(
+        image, width, height, None, grad, random.choice(contours), 0, 0, width, height
+    )
     patternDither(image, width, height, palette)
     return image
 
@@ -2273,13 +2466,13 @@ def _randomdither(image, palette):
     return image
 
 def _randombackground(w, h, pal):
-        r = random.randint(0, 2)
-        if r == 0:
-            return _randombrushednoiseimage(w, h, pal)["image"]
-        elif r == 1:
-            return _randomgradientfill(w, h, pal)
-        else:
-            return blankimage(w, h, random.choice(paletteandhalfhalf(pal)))
+    r = random.randint(0, 2)
+    if r == 0:
+        return _randombrushednoiseimage(w, h, pal)["image"]
+    elif r == 1:
+        return _randomgradientfill(w, h, pal)
+    else:
+        return blankimage(w, h, random.choice(paletteandhalfhalf(pal)))
 
 def randomhatchimage(palette=None):
     # Generates a random hatch image using the given palette
@@ -2293,9 +2486,9 @@ def randomhatchimage(palette=None):
         h = random.randint(40, 96)
         h -= h % 8  # make divisible by 8
         fgcolor = random.choice(expandedpal)
-        image = _randombackground(w,h,pal)
-        _drawdiagstripe(image, w, h, random.randint(0, 16), False, fgcolor=fgcolor)
-        _drawdiagstripe(image, w, h, random.randint(0, 16), True, fgcolor=fgcolor)
+        image = _randombackground(w, h, pal)
+        drawdiagstripe(image, w, h, random.randint(0, 16), False, fgcolor=fgcolor)
+        drawdiagstripe(image, w, h, random.randint(0, 16), True, fgcolor=fgcolor)
         return _randomdither(
             {"image": image, "width": w, "height": h},
             pal,
@@ -2310,7 +2503,7 @@ def randomhatchimage(palette=None):
         disty -= disty % 2
         w = distx * 4
         h = disty * 4
-        image = _randombackground(w,h,pal)
+        image = _randombackground(w, h, pal)
         fgcolor = random.choice(expandedpal)
         drawhatchcolumns(image, w, h, distx, thickx, fgcolor)
         drawhatchrows(image, w, h, disty, thicky, fgcolor)
@@ -2329,28 +2522,46 @@ def randomboxesimage(palette=None):
     height = random.randint(140, 256)
     height -= height % 8  # make divisible by 8
     darkest = pal[_nearest_rgb3(pal, 0, 0, 0)]
-    image = blankimage(width,height,darkest)
-    contours=[
-      _horizcontour,
-      _vertcontour,
-      _diagcontour,
-      _reversediagcontour,
-      _horizcontourwrap,
-      _vertcontourwrap,
-      _diagcontourwrap,
-      _reversediagcontourwrap,
-      _halfandhalf,
-      _halfandhalf
+    image = blankimage(width, height, darkest)
+    contours = [
+        _horizcontour,
+        _vertcontour,
+        _diagcontour,
+        _reversediagcontour,
+        _horizcontourwrap,
+        _vertcontourwrap,
+        _diagcontourwrap,
+        _reversediagcontourwrap,
+        _halfandhalf,
+        _halfandhalf,
     ]
     for i in range(45):
         x0 = random.randint(0, width - 1)
         x1 = x0 + random.randint(3, max(3, width * 3 // 4))
         y0 = random.randint(0, height - 1)
         y1 = y0 + random.randint(3, max(3, height * 3 // 4))
-        c1=random.choice(expandedpal) if random.randint(0,1)==0 else random.choice(pal)
-        c2=random.choice(expandedpal) if random.randint(0,1)==0 else random.choice(pal)
+        c1 = (
+            random.choice(expandedpal)
+            if random.randint(0, 1) == 0
+            else random.choice(pal)
+        )
+        c2 = (
+            random.choice(expandedpal)
+            if random.randint(0, 1) == 0
+            else random.choice(pal)
+        )
         bordereddithergradientbox(
-            image, width, height, darkest, c1, c2, random.choice(contours), x0, y0, x1, y1
+            image,
+            width,
+            height,
+            darkest,
+            c1,
+            c2,
+            random.choice(contours),
+            x0,
+            y0,
+            x1,
+            y1,
         )
     return _randomdither({"image": image, "width": width, "height": height}, pal)
 
@@ -2389,7 +2600,7 @@ def randomcheckimage(palette=None):
     h = random.randint(16, 128)
     h -= h % 8  # make divisible by 8
     hatch = None if random.randint(0, 1) == 0 else random.choice(expandedpal)
-    image = _randombackground(w,h,pal)
+    image = _randombackground(w, h, pal)
     checkerboardoverlay(image, w, h, random.choice(expandedpal), hatch)
     return _randomdither({"image": image, "width": w, "height": h}, pal)
 
