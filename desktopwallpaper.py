@@ -425,6 +425,14 @@ def emboss(bgColor=None, fgColor=None, hiltColor=None):
         + [")", "-alpha", "on", "-compose", "DstOver", "-composite"]
     )
 
+def versatileForeground(foregroundImage):
+    return versatilePattern([0, 0, 0]) + [
+        "tile:" + foregroundImage,
+        "-compose",
+        "Atop",
+        "-composite",
+    ]
+
 def versatilePattern(fgcolor, bgcolor=None):
     # ImageMagick command for setting a foreground pattern, whose black parts
     # are set in the given foreground color, on a background that can optionally
@@ -689,7 +697,7 @@ def _rightPadding():
         "transparent",
         "+repage",
         "-gravity",
-        "NorthWest",
+        "NorthEast",
         "-splice",
         "%wx0",
         "+gravity",
@@ -749,7 +757,9 @@ def brushedmetal():
     # Tiger (10.3, 10.4) and other Apple products
     # around the time of either OS's release.
     return [
-        "(","+clone",")",
+        "(",
+        "+clone",
+        ")",
         "+append",
         "-morphology",
         "Convolve",
@@ -947,8 +957,8 @@ def writebmp(f, image, width, height, raiseIfExists=False):
         for y in range(height):
             p = pos
             for x in range(width):
-               fd.write(bytes([image[p+2],image[p+1],image[p]]))
-               p += 3
+                fd.write(bytes([image[p + 2], image[p + 1], image[p]]))
+                p += 3
             if padding > 0:
                 fd.write(bytes([0 for i in range(padding)]))
             pos -= width * 3
@@ -1835,121 +1845,159 @@ class SvgDraw:
     def __str__(self):
         return ("".join(x[3] for x in self.patterns)) + self.svg
 
-
 def _createPenIndirect(color):
-  cref=(color[0]&0xff)|((color[1]&0xff)<<8)|((color[2]&0xff)<<16) \
-     if color else 0
-  return struct.pack("<LHHHHL",8,0x2fa,0 if color else 5,0,0,cref)
+    cref = (
+        (color[0] & 0xFF) | ((color[1] & 0xFF) << 8) | ((color[2] & 0xFF) << 16)
+        if color
+        else 0
+    )
+    return struct.pack("<LHHHHL", 8, 0x2FA, 0 if color else 5, 0, 0, cref)
 
 def _createBrushIndirect(color):
-  cref=(color[0]&0xff)|((color[1]&0xff)<<8)|((color[2]&0xff)<<16) \
-     if color else 0
-  return struct.pack("<LHHLh",7,0x2fc,0 if color else 1,cref,0)
+    cref = (
+        (color[0] & 0xFF) | ((color[1] & 0xFF) << 8) | ((color[2] & 0xFF) << 16)
+        if color
+        else 0
+    )
+    return struct.pack("<LHHLh", 7, 0x2FC, 0 if color else 1, cref, 0)
 
 def _selectObject(index):
-  if index<0 or index>0x7fff: raise ValueError
-  return struct.pack("<LHH",4,0x12d,index&0xFFFF)
+    if index < 0 or index > 0x7FFF:
+        raise ValueError
+    return struct.pack("<LHH", 4, 0x12D, index & 0xFFFF)
 
 def _deleteObject(index):
-  if index<0 or index>0x7fff: raise ValueError
-  return struct.pack("<LHH",4,0x1f0,index&0xFFFF)
+    if index < 0 or index > 0x7FFF:
+        raise ValueError
+    return struct.pack("<LHH", 4, 0x1F0, index & 0xFFFF)
 
 def _polygonMetafile(points):
-  if len(points)>32767: raise ValueError
-  size=4+len(points)*2
-  ret=struct.pack("<LHH",size,0x324,len(points))
-  for pt in points:
-    if pt[0]<-32768 or pt[0]>32767: raise ValueError
-    if pt[1]<-32768 or pt[1]>32767: raise ValueError
-    ret+=struct.pack("<hh",pt[0],pt[1])
-  return ret
+    if len(points) > 32767:
+        raise ValueError
+    size = 4 + len(points) * 2
+    ret = struct.pack("<LHH", size, 0x324, len(points))
+    for pt in points:
+        if pt[0] < -32768 or pt[0] > 32767:
+            raise ValueError
+        if pt[1] < -32768 or pt[1] > 32767:
+            raise ValueError
+        ret += struct.pack("<hh", pt[0], pt[1])
+    return ret
 
-def _rectangleMetafile(x0,y0,x1,y1):
-  if x0<-32768 or x0>32767: raise ValueError
-  if x1<-32768 or x1>32767: raise ValueError
-  if y0<-32768 or y0>32767: raise ValueError
-  if y1<-32768 or y1>32767: raise ValueError
-  if abs(x1-x0)>=32767: raise ValueError
-  if abs(y1-y0)>=32767: raise ValueError
-  if abs(x1-x0)<=2 or abs(y1-y0)<=2:
-    return _polygonMetafile([[x0,y0],[x0,y1],[x1,y1],[x1,y0],[x0,y0]])
-  return struct.pack("<LHhhhh",7,0x41b,y1,x1,y0,x0)
+def _rectangleMetafile(x0, y0, x1, y1):
+    if x0 < -32768 or x0 > 32767:
+        raise ValueError
+    if x1 < -32768 or x1 > 32767:
+        raise ValueError
+    if y0 < -32768 or y0 > 32767:
+        raise ValueError
+    if y1 < -32768 or y1 > 32767:
+        raise ValueError
+    if abs(x1 - x0) >= 32767:
+        raise ValueError
+    if abs(y1 - y0) >= 32767:
+        raise ValueError
+    if abs(x1 - x0) <= 2 or abs(y1 - y0) <= 2:
+        return _polygonMetafile([[x0, y0], [x0, y1], [x1, y1], [x1, y0], [x0, y0]])
+    return struct.pack("<LHhhhh", 7, 0x41B, y1, x1, y0, x0)
 
 class WindowsMetafileDraw:
     def __init__(self):
         self.colorbrushes = {}
-        self.colorpens={}
+        self.colorpens = {}
         self.handles = []
         self.records = []
-        self.selectedPen=-1
-        self.selectedBrush=-1
+        self.selectedPen = -1
+        self.selectedBrush = -1
         self.bbox = None
-        
-    def _tocref(self,color):
-        if not color: return -1
-        return (color[0]&0xff)|((color[1]&0xff)<<8)|((color[2]&0xff)<<16)
 
-    def _ensurePen(self,color):
-        if color and len(color)!=3: raise ValueError
-        cref=self._tocref(color)
+    def _tocref(self, color):
+        if not color:
+            return -1
+        return (color[0] & 0xFF) | ((color[1] & 0xFF) << 8) | ((color[2] & 0xFF) << 16)
+
+    def _ensurePen(self, color):
+        if color and len(color) != 3:
+            raise ValueError
+        cref = self._tocref(color)
         if cref in self.colorpens:
-           sel=self.colorpens[cref]
-           if self.selectedPen!=sel:
-              self.records.append(_selectObject(sel))
+            sel = self.colorpens[cref]
+            if self.selectedPen != sel:
+                self.records.append(_selectObject(sel))
         else:
-           record=_createPenIndirect(color)
-           handle=len(self.handles)
-           self.records.append(record)
-           self.handles.append(record)
-           self.colorpens[cref]=handle
-           self.records.append(_selectObject(handle))
-        self.selectedPen=self.colorpens[cref]
+            record = _createPenIndirect(color)
+            handle = len(self.handles)
+            self.records.append(record)
+            self.handles.append(record)
+            self.colorpens[cref] = handle
+            self.records.append(_selectObject(handle))
+        self.selectedPen = self.colorpens[cref]
 
-    def _ensureBrush(self,color):
-        if color and len(color)!=3: raise ValueError
-        cref=self._tocref(color)
+    def _ensureBrush(self, color):
+        if color and len(color) != 3:
+            raise ValueError
+        cref = self._tocref(color)
         if cref in self.colorbrushes:
-           sel=self.colorbrushes[cref]
-           if self.selectedBrush!=sel:
-              self.records.append(_selectObject(sel))
+            sel = self.colorbrushes[cref]
+            if self.selectedBrush != sel:
+                self.records.append(_selectObject(sel))
         else:
-           record=_createBrushIndirect(color)
-           handle=len(self.handles)
-           self.records.append(record)
-           self.handles.append(record)
-           self.colorbrushes[cref]=handle
-           self.records.append(_selectObject(handle))
-        self.selectedBrush=self.colorbrushes[cref]
+            record = _createBrushIndirect(color)
+            handle = len(self.handles)
+            self.records.append(record)
+            self.handles.append(record)
+            self.colorbrushes[cref] = handle
+            self.records.append(_selectObject(handle))
+        self.selectedBrush = self.colorbrushes[cref]
 
-    def _ensurePoint(self,x,y):
+    def _ensurePoint(self, x, y):
         if not self.bbox:
-           self.bbox=[x,y,x,y]
+            self.bbox = [x, y, x, y]
         else:
-           self.bbox=[min(self.bbox[0],x),min(self.bbox[1],y),
-              max(self.bbox[2],x),max(self.bbox[3],y)]
-
+            self.bbox = [
+                min(self.bbox[0], x),
+                min(self.bbox[1], y),
+                max(self.bbox[2], x),
+                max(self.bbox[3], y),
+            ]
 
     def rect(self, x0, y0, x1, y1, c):
         self._ensurePen(None)
         self._ensureBrush(c)
-        self._ensurePoint(x0,y0)
-        self._ensurePoint(x1,y1)
-        self.records.append(_rectangleMetafile(x0,y0,x1,y1))
-        
+        self._ensurePoint(x0, y0)
+        self._ensurePoint(x1, y1)
+        self.records.append(_rectangleMetafile(x0, y0, x1, y1))
+
     def toMetafile(self):
-       bbox=self.bbox if self.bbox else [0,0,0,0]
-       deletionRecords=[_deleteObject(i) for i in range(len(self.handles))]
-       # Apparently Windows adds the following "final" metafile record to metafiles
-       # it generates
-       deletionRecords.append(struct.pack("<LH",3,0))
-       numRecords=len(self.records+deletionRecords)
-       largestRecord=0 if numRecords==0 else max(len(r) for r in (self.records+deletionRecords))//2
-       size=9+(0 if numRecords==0 else sum(len(r) for r in (self.records+deletionRecords))//2)
-       if size>0xffffffff or largestRecord>0xffffffff or len(self.handles)>0xffff:
-          raise ValueError
-       header=b''
-       header+=struct.pack("<HHHLHLH",1,9,0x300,size,len(self.handles),largestRecord,0)
-       return header+b''.join(self.records+deletionRecords)
+        bbox = self.bbox if self.bbox else [0, 0, 0, 0]
+        deletionRecords = [_deleteObject(i) for i in range(len(self.handles))]
+        # Apparently Windows adds the following "final" metafile record to metafiles
+        # it generates
+        deletionRecords.append(struct.pack("<LH", 3, 0))
+        startingRecords = []
+        # SetMapMode(MM_TEXT)
+        startingRecords.append(struct.pack("<LHh", 4, 0x103, 1))
+        # SetWindowOrg(0,0)
+        startingRecords.append(struct.pack("<LHhh", 5, 0x20B, 0, 0))
+        # SetWindowExt(right,bottom)
+        startingRecords.append(
+            struct.pack("<LHHH", 5, 0x20C, (bbox[3] & 0xFFFF), (bbox[2] & 0xFFFF))
+        )
+        recs = startingRecords + self.records + deletionRecords
+        numRecords = len(recs)
+        largestRecord = 0 if numRecords == 0 else max(len(r) for r in (recs)) // 2
+        size = 9 + (0 if numRecords == 0 else sum(len(r) for r in (recs)) // 2)
+        if (
+            size > 0xFFFFFFFF
+            or largestRecord > 0xFFFFFFFF
+            or len(self.handles) > 0xFFFF
+        ):
+            raise ValueError
+        header = b""
+        header += struct.pack(
+            "<HHHLHLH", 1, 9, 0x300, size, len(self.handles), largestRecord, 0
+        )
+        return header + b"".join(recs)
 
 # helper for upper edge drawing
 def _drawupperedge(helper, x0, y0, x1, y1, color, edgesize=1):
