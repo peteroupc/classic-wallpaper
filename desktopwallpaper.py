@@ -704,6 +704,11 @@ def _rightPadding():
         "+repage",
     ]
 
+def diamondTiledSize(width, height, kind):
+   if kind==1: return (width, height*2)
+   if kind==2: return (width*2, height)
+   return (width+(width//2)*2, height+(height//2)*2)
+
 def diamondTiled(bgcolor=None, kind=0):
     # kind=0: image drawn in middle and padded
     # kind=1: brick drawn at top
@@ -716,14 +721,15 @@ def diamondTiled(bgcolor=None, kind=0):
                 _rightPadding()
                 if kind == 2
                 else [
-                    "-alpha",
-                    "on",
-                    "-mattecolor",
-                    "transparent",
+                    "+repage",
                     "-bordercolor",
                     "transparent",
-                    "-frame",
-                    "50%",
+                    # Don't allow whatever '-compose'
+                    # setting there is to leak into
+                    # the '-border' option
+                    "-compose","Over",
+                    "-border",
+                    "50%x50%",
                     "-bordercolor",
                     "white",
                 ]
@@ -2591,7 +2597,7 @@ def _vertcontourwrap(x, y):
     return x * 2.0 - 1
 
 def _diagcontourwrap(x, y):
-    return _diagcontour((1 - x) * 2.0 - 1, y)
+    return _diagcontour(x * 2.0 - 1, y * 2.0 - 1)
 
 def _reversediagcontourwrap(x, y):
     return _diagcontourwrap(1 - x, y)
@@ -2627,13 +2633,15 @@ def _randomdither(image, palette):
     return image
 
 def _randombackground(w, h, pal):
-    r = random.randint(0, 2)
-    if r == 0:
+    r = random.randint(0, 100)
+    if r < 35:
         return _randombrushednoiseimage(w, h, pal)["image"]
-    elif r == 1:
+    elif r < 80:
         return _randomgradientfill(w, h, pal)
     else:
-        return blankimage(w, h, random.choice(paletteandhalfhalf(pal)))
+        image=blankimage(w,h)
+        borderedbox(image, w, h, None, random.choice(pal), random.choice(pal), 0,0,w,h)
+        return image
 
 def randomhatchimage(palette=None):
     # Generates a random hatch image using the given palette
