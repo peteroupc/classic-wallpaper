@@ -1010,6 +1010,7 @@ def hatchedbox(
     # Either can be set to None to omit pixels of that color in the pattern
     # 'msbfirst' is the bit order for each integer in 'pattern'.  If True,
     # the Windows convention is used; if False, the X pixmap convention is used.
+    # Default is True.
     # 'drawborder' means to draw the box's border with the hatch color;
     # default is False.
     if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
@@ -1093,7 +1094,19 @@ def randomtiles(columns, rows, sourceImages, srcwidth, srcheight):
                 x * srcwidth,
                 y * srcheight,
             )
-    return {"image": image, "width": width, "height": height}
+    return image
+
+def verthatchedbox(image, width, height, color, x0, y0, x1, y1):
+  pattern=[0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA]
+  hatchedbox(
+     image, width, height, color, pattern, x0,y0,x1,y1
+  )
+
+def horizhatchedbox(image, width, height, color, x0, y0, x1, y1):
+  pattern=[0xFF,0,0xFF,0,0xFF,0,0xFF,0]
+  hatchedbox(
+     image, width, height, color, pattern, x0,y0,x1,y1
+  )
 
 def shadowedborderedbox(
     image, width, height, border, shadow, color1, color2, x0, y0, x1, y1
@@ -1232,10 +1245,12 @@ def argyle(image1, image2, width, height):
         for x in range(width):
             xp = (x / width) * 2 - 1
             if abs(xp) + abs(yp) <= 1:
+                # image 1 is inside the diamond
                 ret[pos] = image1[pos]
                 ret[pos + 1] = image1[pos + 1]
                 ret[pos + 2] = image1[pos + 2]
             else:
+                # image 2 is outside the diamond
                 ret[pos] = image2[pos]
                 ret[pos + 1] = image2[pos + 1]
                 ret[pos + 2] = image2[pos + 2]
@@ -1467,7 +1482,7 @@ def patternDither(image, width, height, palette):
     # Dithering for arbitrary color palettes
     # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
     # https://bisqwit.iki.fi/story/howto/dither/jy/
-    candidates = [None for i in range(len(DitherMatrix))]
+    candidates = [[] for i in range(len(DitherMatrix))]
     paletteLum = [
         (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
     ]
@@ -1783,7 +1798,7 @@ def svgimagepattern(idstr, image, width, height, transcolor=None, originX=0, ori
             % (width / 2 - originX, height / 2 - originY)
         )
     )
-    helper = SvgDraw.new()
+    helper = SvgDraw()
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
@@ -2051,15 +2066,15 @@ def _drawupperedge(helper, x0, y0, x1, y1, color, edgesize=1):
 # helper for lower edge drawing
 def _drawloweredge(helper, x0, y0, x1, y1, color, edgesize=1):
     if x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
-        helper.rect(x0, y0, x1, y1, dksh)
+        helper.rect(x0, y0, x1, y1, color)
     elif x1 - x0 < edgesize * 2:  # too narrow
-        helper.rect(x0, y1 - edgesize, x1, y1, dksh)
+        helper.rect(x0, y1 - edgesize, x1, y1, color)
     elif y1 - y0 < edgesize * 2:  # too short
-        helper.rect(x0, y0, x0 + edgesize, y1, dksh)
-        helper.rect(x1 - edgesize, y0, x1, y1, dksh)
+        helper.rect(x0, y0, x0 + edgesize, y1, color)
+        helper.rect(x1 - edgesize, y0, x1, y1, color)
     else:
-        helper.rect(x1 - edgesize, y0, x1, y1, dksh)  # right edge
-        helper.rect(x0, y1 - edgesize, x1 - edgesize, y1, dksh)  # bottom edge
+        helper.rect(x1 - edgesize, y0, x1, y1, color)  # right edge
+        helper.rect(x0, y1 - edgesize, x1 - edgesize, y1, color)  # bottom edge
 
 # helper for button face drawing
 def _drawface(helper, x0, y0, x1, y1, face, edgesize=1):
@@ -2266,10 +2281,7 @@ def monoborder(  # "Monochrome" flat border
             y0,
             x1,
             y1,
-            clientAreaColor,
-            clientAreaColor,
-            clientAreaColor,
-            clientAreaColor,
+            clientAreaColor
         )
 
 def flatborder(  # Flat border
@@ -2288,7 +2300,7 @@ def flatborder(  # Flat border
     )
     if drawFace:
         _drawinnerface(
-            helper, x0, y0, x1, y1, buttonFace, buttonFace, buttonFace, buttonFace
+            helper, x0, y0, x1, y1, buttonFace
         )
 
 def windowborder(
@@ -2311,6 +2323,7 @@ def windowborder(
         _drawinnerface(helper, x0, y0, x1, y1, face)
 
 def buttonup(
+    helper,
     x0,
     y0,
     x1,
@@ -2368,7 +2381,6 @@ def fieldbox(
         _drawinnerface(helper, x0, y0, x1, y1, face)
 
 def wellborder(helper, x0, y0, x1, y1, hilt, windowText):
-    face = face if face else (lt if pressed else hilt)
     drawsunkenouter(helper, x0, y0, x1, y1, hilt, hilt, hilt, hilt)
     drawsunkeninner(
         helper, x0, y0, x1, y1, windowText, windowText, windowText, windowText
@@ -2806,7 +2818,7 @@ def randomPalettedFromThreeGrays(image, width, height, palette=None):
     cc = paletteandhalfhalf(palette)
     endColor = random.choice(palette)  # choose color in 'palette' at random
     r = random.randint(0, 99)
-    colors = [None for i in range(256)]
+    colors = [[] for i in range(256)]
     # Random beginning color
     if r < 40:
         colors[0] = palette[_nearest_rgb(palette, [0, 0, 0])]
@@ -2828,7 +2840,7 @@ def randomColorization(palette=None):
     # Random beginning color.  Palette is optional;
     # if not None (the default), the beginning and end colors are limited
     # to those in the given palette.
-    colors = [None for i in range(256)]
+    colors = [[] for i in range(256)]
     r = random.randint(0, 99)
     if r < 40:
         colors[0] = palette[_nearest_rgb(palette, [0, 0, 0])] if palette else [0, 0, 0]
@@ -2856,7 +2868,7 @@ def randomColorization(palette=None):
 
 def vgaVariantsFromThreeGrays(image, width, height):
     # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
-    colors = [None for i in range(256)]
+    colors = [[] for i in range(256)]
     colors[0] = [0, 0, 0]
     colors[128] = [128, 0, 0]
     colors[255] = [255, 0, 0]
@@ -2962,7 +2974,7 @@ def _colorname(c):
     return cname
 
 def writepalette(f, palette, name=None, checkIfExists=False):
-    if "\n" in name:
+    if name and "\n" in name:
         raise ValueError
     if (not palette) or len(palette) > 512:
         raise ValueError
