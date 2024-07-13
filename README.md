@@ -8,10 +8,9 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 
 - The image is one of the following:
     - It is a raster (bitmap) image with one of the color palettes and one of the pixel dimensions given later.
-    - It is a vector graphic in the SVG format made only of two-dimensional vector paths, each of which has no stroke, a black fill, and any fill opacity from 0 through 100%.  Excessive detail should be avoided.
-        - With this vector format, the image can be scaled to any pixel dimension desired and turned into a grayscale (see later) bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
-    - It is a vector graphic in the SVG format made only of two-dimensional vector paths, each of which has no stroke, has a 100% fill opacity, and is filled with one of up to ten colors from a color palette given later.  Excessive detail should be avoided.
-        - See [_colourlovers.com_](https://www.colourlovers.com/patterns) for examples.
+    - It is a vector graphic in the SVG format made only of two-dimensional vector paths with no stroke.  Excessive detail should be avoided.  Moreover, one of the following is true.
+        - Each path has a black fill and any fill opacity from 0 through 100%.  The image can then be scaled to any pixel dimension desired and turned into a grayscale (see later) bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
+        - Each path has a 100% fill opacity and is filled with one of up to ten colors from a color palette given later.  See [_colourlovers.com_](https://www.colourlovers.com/patterns) for examples.
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
 - The image does not contain text.  Images that contain depictions of people or human faces are not preferred.
 - The image should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
