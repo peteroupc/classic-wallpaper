@@ -1237,14 +1237,23 @@ def blankimage(width, height, color=None):
         simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
-def argyle(image1, image2, width, height):
+def argyle2(image1,image2, width, height, expo = 1):
+  # Generates a tileable argyle pattern from two images of the
+  # same size.  Neither 'image1' nor 'image2' need be tileable.
+  i2=blankimage(width,height)
+  imageblit(i2,width,height,image2,width,height,width//2,height//2)
+  return argyle(image1,i2,width,height,expo)
+
+def argyle(image1, image2, width, height, expo = 1):
+    # Generates a tileable argyle pattern from two images of the
+    # same size.  'image2' must be tileable; 'image1' need not be.
     ret = blankimage(width, height)
     pos = 0
     for y in range(height):
         yp = (y / height) * 2 - 1
         for x in range(width):
             xp = (x / width) * 2 - 1
-            if abs(xp) + abs(yp) <= 1:
+            if abs(xp)**expo + abs(yp)**expo <= 1:
                 # image 1 is inside the diamond
                 ret[pos] = image1[pos]
                 ret[pos + 1] = image1[pos + 1]
