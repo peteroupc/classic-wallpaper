@@ -455,6 +455,12 @@ def versatilePattern(fgcolor, bgcolor=None):
         "shape",
     ] + backgroundColorUnder(bgcolor)
 
+def lightmodePattern():
+    return versatilePattern([192, 192, 192], [255, 255, 255])
+
+def darkmodePattern():
+    return versatilePattern([128, 128, 128], [0, 0, 0])
+
 def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
         raise ValueError
@@ -508,9 +514,6 @@ def magickgradientditherfilterrandom():
             basecolors = [rgb1, rgb2]
     return magickgradientditherfilter(rgb1, rgb2, basecolors, hue=hue)
 
-def _chopBeforeHAppend():
-    return " " + (" ".join(_chopBeforeHAppendArray())) + " "
-
 def _chopBeforeHAppendArray(withFarEnd=True):
     if withFarEnd:
         # Remove the left and right column
@@ -528,9 +531,6 @@ def _chopBeforeHAppendArray(withFarEnd=True):
         ]
     # Remove the left column
     return ["+repage", "-gravity", "West", "-chop", "1x0", "+gravity"]
-
-def _chopBeforeVAppend():
-    return " " + (" ".join(_chopBeforeVAppendArray())) + " "
 
 def _chopBeforeVAppendArray(withFarEnd=True):
     if withFarEnd:
@@ -625,16 +625,39 @@ def groupCmm():
     # last row's and last column's first half is a mirror of its
     # second half.
     return (
-        " \\( +clone -flip \\) -append -write mpr:wpgroup -delete 0 "
-        + "\\( mpr:wpgroup \\( mpr:wpgroup -flop "
-        + _chopBeforeHAppend()
-        + " \\) +append \\) "
-        + "\\( \\( mpr:wpgroup -flop \\) \\( mpr:wpgroup "
-        + _chopBeforeHAppend()
-        + " \\) +append "
-        + _chopBeforeVAppend()
-        + "\\) "
-        + "-append "
+        [
+            "(",
+            "+clone",
+            "-flip",
+            ")",
+            "-append",
+            "-write",
+            "mpr:wpgroup",
+            "-delete",
+            "0",
+            "(",
+            "mpr:wpgroup",
+            "(",
+            "mpr:wpgroup",
+            "-flop",
+        ]
+        + _chopBeforeHAppendArray()
+        + [
+            ")",
+            "+append",
+            ")",
+            "(",
+            "(",
+            "mpr:wpgroup",
+            "-flop",
+            ")",
+            "(",
+            "mpr:wpgroup",
+        ]
+        + _chopBeforeHAppendArray()
+        + [")", "+append"]
+        + _chopBeforeVAppendArray()
+        + [")", "-append"]
     )
 
 def backgroundColorUnder(bgcolor=None):
@@ -748,16 +771,36 @@ def groupPmg():
     # last column's first half is a mirror of its
     # second half.
     return (
-        " -write mpr:wpgroup -delete 0 "
-        + "\\( mpr:wpgroup \\( mpr:wpgroup -flip -flop "
-        + _chopBeforeHAppend()
-        + "\\) +append \\) "
-        + "\\( \\( mpr:wpgroup -flip \\) \\( mpr:wpgroup -flop "
-        + _chopBeforeHAppend()
-        + "\\) +append "
-        + _chopBeforeVAppend()
-        + "\\) "
-        + "-append "
+        [
+            "-write",
+            "mpr:wpgroup",
+            "-delete",
+            "0",
+            "(",
+            "mpr:wpgroup",
+            "(",
+            "mpr:wpgroup",
+            "-flip",
+            "-flop",
+        ]
+        + _chopBeforeHAppendArray()
+        + [
+            ")",
+            "+append",
+            ")",
+            "(",
+            "(",
+            "mpr:wpgroup",
+            "-flip",
+            ")",
+            "(",
+            "mpr:wpgroup",
+            "-flop",
+        ]
+        + _chopBeforeHAppendArray()
+        + [")", "+append"]
+        + _chopBeforeVAppendArray()
+        + [")", "-append"]
     )
 
 def brushedmetal():
@@ -1073,6 +1116,7 @@ def imageblit(
     srcheight,
     x0,
     y0,
+    wraparound=True,
 ):
     # Draw a wraparound copy of an image on another image.
     # 'dstimage' and 'srcimage' are the destination and source images.
@@ -1086,15 +1130,47 @@ def imageblit(
     if srcwidth <= 0 or srcheight <= 0 or dstwidth <= 0 or dstheight <= 0:
         raise ValueError
     for y in range(srcheight):
-        dy = ((y0 + y) % dstheight) * dstwidth * 3
+        dy = y0 + y
+        if wraparound:
+            dy %= dstheight
+        if (not wraparound) and dy < 0 or dy >= dstheight:
+            continue
+        dy = dy * dstwidth * 3
         sy = y * srcwidth * 3
         for x in range(srcwidth):
-            dx = (x0 + x) % dstwidth
+            dx = x0 + x
+            if wraparound:
+                dx %= dstwidth
+            if (not wraparound) and dx < 0 or dx >= dstwidth:
+                continue
             dstpos = dy + dx * 3
             srcpos = sy + x * 3
             dstimage[dstpos] = srcimage[srcpos]
             dstimage[dstpos + 1] = srcimage[srcpos + 1]
             dstimage[dstpos + 2] = srcimage[srcpos + 2]
+
+def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
+    if srcwidth < 0 or srcheight < 0 or dstwidth < 0 or dstheight < 0:
+        raise ValueError
+    image = blankimage(dstwidth, dstheight)
+    if dstheight <= 0 or dstwidth <= 0 or srcwidth <= 0 or srcheight <= 0:
+        return image
+    columns = -((-srcwidth) // dstwidth)  # ceiling trick
+    rows = -((-srcheight) // dstheight)
+    for y in range(rows):
+        for x in range(columns):
+            imageblit(
+                image,
+                width,
+                height,
+                srcimage,
+                srcwidth,
+                srcheight,
+                x * srcwidth,
+                y * srcheight,
+                wraparound=False,
+            )
+    return image
 
 def randomtiles(columns, rows, sourceImages, srcwidth, srcheight):
     if srcwidth <= 0 or srcheight <= 0:
