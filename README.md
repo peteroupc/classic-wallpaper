@@ -54,7 +54,10 @@ The color palettes allowed are as follows.
 - Up to 16 colors from the "web safe" palette.
 - Up to 16 colors from the "web safe" and VGA palettes.
 - Up to 16 colors from those displayable by EGA monitors (each color component is 0, 85, 170, or 255).
+- Up to eight colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
+- Up to 16 colors from those displayable by 15-bit color displays.
 - 5- to 64-color grayscale palette (all color components the same).
+- Not preferred: Up to 16 colors from those displayable by 16-bit color displays (each red and blue component is a multiple of 8; each green, a multiple of 4).
 - Not preferred: Up to 16 colors from those displayable by pure VGA monitors (each color component is a multiple of 4).
 - Not preferred: 65- to 236-color grayscale palette (all color components the same).
 - Not preferred: 237- to 256-color grayscale palette (all color components the same).

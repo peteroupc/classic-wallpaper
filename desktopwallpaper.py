@@ -2767,6 +2767,11 @@ def _horizcontour(x, y):
 def _vertcontour(x, y):
     return x
 
+def _argyle(x,y,v):
+   x=x*2.0-1
+   y=y*2.0-1
+   return min(1, abs(x)**v+abs(x)**v)
+
 def _reversediagcontour(x, y):
     return _diagcontour(1 - x, y)
 
@@ -2799,6 +2804,7 @@ def _randomgradientfillex(width, height, palette, contours):
 
 def _randomgradientfill(width, height, palette, tileable=True):
     contours = []
+    r=random.choice([0.5,2.0/3,1,1.5,2])
     if tileable:
         contours = [
             _horizcontourwrap,
@@ -2817,6 +2823,7 @@ def _randomgradientfill(width, height, palette, tileable=True):
             _horizcontour,
             _vertcontour,
             _diagcontour,
+            lambda x,y:_argyle(x,y,r),
         ]
     return _randomgradientfillex(width, height, palette, contours)
 
