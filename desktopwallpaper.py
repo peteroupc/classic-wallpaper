@@ -426,9 +426,20 @@ def emboss(bgColor=None, fgColor=None, hiltColor=None):
     )
 
 def versatileForeground(foregroundImage):
-    return ["-negate","-write","mpr:vfg","-delete","-1",
-            "tile:" + foregroundImage,"mpr:vfg","-alpha","Off",
-            "-compose","copyopacity","-composite"]
+    return [
+        "-negate",
+        "-write",
+        "mpr:vfg",
+        "-delete",
+        "-1",
+        "tile:" + foregroundImage,
+        "mpr:vfg",
+        "-alpha",
+        "Off",
+        "-compose",
+        "copyopacity",
+        "-composite",
+    ]
 
 def versatilePattern(fgcolor, bgcolor=None):
     # ImageMagick command for setting a foreground pattern, whose black parts
@@ -449,7 +460,7 @@ def versatilePattern(fgcolor, bgcolor=None):
         "-background",
         "#%02x%02x%02x" % (int(fgcolor[0]), int(fgcolor[1]), int(fgcolor[2])),
         "-alpha",
-        "shape"
+        "shape",
     ] + backgroundColorUnder(bgcolor)
 
 def lightmodePattern():
@@ -1549,7 +1560,7 @@ def getgrays(palette):
 
 def dithertograyimage(image, width, height, grays):
     if not grays:
-       return graymap(image,width,height)
+        return graymap(image, width, height)
     if len(grays) < 2:
         raise ValueError
     for i in range(1, len(grays)):
@@ -1601,43 +1612,47 @@ def graymap(image, width, height, colors=None):
                 image[xp] = image[xp + 1] = image[xp + 2] = c
     return image
 
-def _getpixel(image,width,height,x,y):
-  pos=y*width*3+x*3
-  return image[pos:pos+3]
+def _getpixel(image, width, height, x, y):
+    pos = y * width * 3 + x * 3
+    return image[pos : pos + 3]
 
-def _setpixel(image,width,height,x,y,c):
-  pos=y*width*3+x*3
-  image[pos]=c[0]
-  image[pos+1]=c[1]
-  image[pos+2]=c[2]
+def _setpixel(image, width, height, x, y, c):
+    pos = y * width * 3 + x * 3
+    image[pos] = c[0]
+    image[pos + 1] = c[1]
+    image[pos + 2] = c[2]
 
-def _ditherstyle(image,width,height,bgcolor=None):
-  # Create a twice-as-wide image inspired by the style used
-  # to generate MARBLE.BMP
-  image2=dw.blankimage(width*2,height)
-  if not bgcolor: bgcolor=[192,192,192]
-  for y in range(height):
-    for x in range(width):
-      c=_getpixel(image,width,height,x,y)
-      _setpixel(image2,width*2,height,x*2,y,c if y%2==0 else bgcolor)
-      _setpixel(image2,width*2,height,x*2+1,y,bgcolor if y%2==0 else c)
-  return image2
+def _ditherstyle(image, width, height, bgcolor=None):
+    # Create a twice-as-wide image inspired by the style used
+    # to generate MARBLE.BMP
+    image2 = blankimage(width * 2, height)
+    if not bgcolor:
+        bgcolor = [192, 192, 192]
+    for y in range(height):
+        for x in range(width):
+            c = _getpixel(image, width, height, x, y)
+            _setpixel(image2, width * 2, height, x * 2, y, c if y % 2 == 0 else bgcolor)
+            _setpixel(
+                image2, width * 2, height, x * 2 + 1, y, bgcolor if y % 2 == 0 else c
+            )
+    return image2
 
-def tograyditherstyle(image,width,height,palette=None,light=False):
-  im=[x for x in image]
-  graymap(im,width,height)
-  if palette:
-    grays = getgrays(palette)
-    if len(grays)==0: raise ValueError("palette has no gray tones")
-    dithertograyimage(im,width,height,grays)
-  if light:
-    # Variant used in background of WINLOGO.BMP
-    colors=[[i,i,i] for i in range(256)]
-    colors[192]=[255,255,255]
-    colors[128]=[192,192,192]
-    colors[0]=[128,128,128]
-    graymap(im,width,height,colors)
-  return ditherstyle(im,width,height)
+def tograyditherstyle(image, width, height, palette=None, light=False):
+    im = [x for x in image]
+    graymap(im, width, height)
+    if palette:
+        grays = getgrays(palette)
+        if len(grays) == 0:
+            raise ValueError("palette has no gray tones")
+        dithertograyimage(im, width, height, grays)
+    if light:
+        # Variant used in background of WINLOGO.BMP
+        colors = [[i, i, i] for i in range(256)]
+        colors[192] = [255, 255, 255]
+        colors[128] = [192, 192, 192]
+        colors[0] = [128, 128, 128]
+        graymap(im, width, height, colors)
+    return _ditherstyle(im, width, height)
 
 def websafeDither(image, width, height):
     # Dithering for the color palette returned by websafecolors()
@@ -1722,6 +1737,7 @@ def patternDither(image, width, height, palette):
             image[xp] = fcan[0]
             image[xp + 1] = fcan[1]
             image[xp + 2] = fcan[2]
+    return image
 
 def colorgradient(blackColor, whiteColor):
     if (
@@ -2804,10 +2820,10 @@ def _horizcontour(x, y):
 def _vertcontour(x, y):
     return x
 
-def _argyle(x,y,v):
-   x=x*2.0-1
-   y=y*2.0-1
-   return min(1, abs(x)**v+abs(x)**v)
+def _argyle(x, y, v):
+    x = x * 2.0 - 1
+    y = y * 2.0 - 1
+    return min(1, abs(x) ** v + abs(x) ** v)
 
 def _reversediagcontour(x, y):
     return _diagcontour(1 - x, y)
@@ -2837,12 +2853,12 @@ def _randomgradientfillex(width, height, palette, contours):
         image, width, height, None, grad, random.choice(contours), 0, 0, width, height
     )
     if palette:
-       patternDither(image, width, height, palette)
+        patternDither(image, width, height, palette)
     return image
 
 def _randomgradientfill(width, height, palette, tileable=True):
     contours = []
-    r=random.choice([0.5,2.0/3,1,1.5,2])
+    r = random.choice([0.5, 2.0 / 3, 1, 1.5, 2])
     if tileable:
         contours = [
             _horizcontourwrap,
@@ -2861,9 +2877,20 @@ def _randomgradientfill(width, height, palette, tileable=True):
             _horizcontour,
             _vertcontour,
             _diagcontour,
-            lambda x,y:_argyle(x,y,r),
+            lambda x, y: _argyle(x, y, r),
         ]
     return _randomgradientfillex(width, height, palette, contours)
+
+def randommaybemonochrome(image,width,height):
+   r=random.randint(0,99)
+   if r<8:
+      image=dithertograyimage([x for x in image],width,height,[0,128,255])
+      return random.choice([x for x in vgaVariantsFromThreeGrays(image,width,height).values()])
+   elif r<16:
+      image=dithertograyimage([x for x in image],width,height,[0,128,192,255])
+      return random.choice([x for x in vgaVariantsFromFourGrays(image,width,height).values()])
+   else:
+      return image
 
 def _randomdither(image, width, height, palette):
     grays = getgrays(palette) if palette else None
@@ -2882,25 +2909,26 @@ def _randomdither(image, width, height, palette):
 
 def _randombackground(w, h, palette, tileable=True):
     r = random.randint(0, 100)
-    if r < 35:
+    if r < 25:
         return _randombrushednoiseimage(w, h, palette, tileable=tileable)
     elif r < 80:
         return _randomgradientfill(w, h, palette, tileable=tileable)
     else:
         image = blankimage(w, h)
-        c0=[]
-        c1=[]
+        c0 = []
+        c1 = []
         if palette:
-          c0=random.choice(palette)
-          c1=random.choice(palette)
+            c0 = random.choice(palette)
+            c1 = random.choice(palette)
         else:
-          c0=c1=[random.randint(0,255) for i in range(3)]
+            c0 = c1 = [random.randint(0, 255) for i in range(3)]
         borderedbox(
             image,
             w,
             h,
             None,
-            c0,c1,
+            c0,
+            c1,
             0,
             0,
             w,
@@ -2914,7 +2942,11 @@ def randomhatchimage(w, h, palette=None, tileable=True):
     expandedpal = paletteandhalfhalf(palette) if palette else []
     if random.randint(0, 99) < 50:
         # Diagonal hatch
-        fgcolor = random.choice(expandedpal) if palette else [random.randint(0,255) for i in range(3)]
+        fgcolor = (
+            random.choice(expandedpal)
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
         image = _randombackground(w, h, palette, tileable=tileable)
         drawdiagstripe(
             image, w, h, random.randint(0, min(4, w // 8)), False, fgcolor=fgcolor
@@ -2935,7 +2967,11 @@ def randomhatchimage(w, h, palette=None, tileable=True):
         thickx = random.randint(0, min(7, distx))
         thicky = random.randint(0, min(7, disty))
         image = _randombackground(w, h, palette, tileable=tileable)
-        fgcolor = random.choice(expandedpal) if palette else [random.randint(0,255) for i in range(3)]
+        fgcolor = (
+            random.choice(expandedpal)
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
         drawhatchcolumns(image, w, h, distx, thickx, fgcolor)
         drawhatchrows(image, w, h, disty, thicky, fgcolor)
         return _randomdither(
@@ -2949,7 +2985,7 @@ def randomboxesimage(width, height, palette=None, tileable=True):
     # Generates a random boxes image (using the given palette, if any)
     expandedpal = paletteandhalfhalf(palette) if palette else None
     darkest = palette[_nearest_rgb3(palette, 0, 0, 0)] if palette else []
-    image = blankimage(width, height, darkest if palette else [0,0,0])
+    image = blankimage(width, height, darkest if palette else [0, 0, 0])
     contours = [
         _horizcontour,
         _vertcontour,
@@ -2969,44 +3005,47 @@ def randomboxesimage(width, height, palette=None, tileable=True):
         y0 = random.randint(0, height - 1)
         y1 = y0 + random.randint(3, max(3, height * 3 // 4))
         if not palette:
-         borderedgradientbox(
-            image,
-            width,
-            height,
-            [0,0,0],
-            colorgradient([random.randint(0,255) for i in range(3)],[random.randint(0,255) for i in range(3)]),
-            random.choice(contours),
-            x0,
-            y0,
-            x1,
-            y1,
-            wraparound=tileable,
-         )
+            borderedgradientbox(
+                image,
+                width,
+                height,
+                [0, 0, 0],
+                colorgradient(
+                    [random.randint(0, 255) for i in range(3)],
+                    [random.randint(0, 255) for i in range(3)],
+                ),
+                random.choice(contours),
+                x0,
+                y0,
+                x1,
+                y1,
+                wraparound=tileable,
+            )
         else:
-         c1 = (
-            random.choice(expandedpal)
-            if random.randint(0, 1) == 0
-            else random.choice(palette)
-         )
-         c2 = (
-            random.choice(expandedpal)
-            if random.randint(0, 1) == 0
-            else random.choice(palette)
-         )
-         bordereddithergradientbox(
-            image,
-            width,
-            height,
-            darkest,
-            c1,
-            c2,
-            random.choice(contours),
-            x0,
-            y0,
-            x1,
-            y1,
-            wraparound=tileable,
-        )
+            c1 = (
+                random.choice(expandedpal)
+                if random.randint(0, 1) == 0
+                else random.choice(palette)
+            )
+            c2 = (
+                random.choice(expandedpal)
+                if random.randint(0, 1) == 0
+                else random.choice(palette)
+            )
+            bordereddithergradientbox(
+                image,
+                width,
+                height,
+                darkest,
+                c1,
+                c2,
+                random.choice(contours),
+                x0,
+                y0,
+                x1,
+                y1,
+                wraparound=tileable,
+            )
     return _randomdither(image, width, height, palette) if palette else image
 
 def _randombrushednoiseimage(w, h, palette=None, tileable=True):
@@ -3024,30 +3063,44 @@ def _randombrushednoiseimage(w, h, palette=None, tileable=True):
         colorgradient([0, 0, 0], [random.randint(0, 255) for i in range(3)]),
     )
     if palette:
-       patternDither(image, w, h, palette)
+        patternDither(image, w, h, palette)
     return image
 
 def randomcheckimage(w, h, palette=None, tileable=True):
     # Generates a random checkerboard pattern image (using the given palette, if any)
     expandedpal = paletteandhalfhalf(palette) if palette else []
-    hatch = None if random.randint(0, 1) == 0 else (
-      random.choice(expandedpal) if palette else [random.randint(0, 255) for i in range(3)]
+    hatch = (
+        None
+        if random.randint(0, 1) == 0
+        else (
+            random.choice(expandedpal)
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
     )
     image = _randombackground(w, h, palette, tileable=tileable)
-    checkerboardoverlay(image, w, h, (
-      random.choice(expandedpal) if palette else [random.randint(0, 255) for i in range(3)]
-    ), hatch)
+    checkerboardoverlay(
+        image,
+        w,
+        h,
+        (
+            random.choice(expandedpal)
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        ),
+        hatch,
+    )
     return _randomdither(image, w, h, palette)
 
 def randombackgroundimage(w, h, palette=None, tileable=True):
-    r = random.randint(0, 100)
-    if r < 20:
+    r = random.randint(0, 4)
+    if r == 0:
         return randomhatchimage(w, h, palette, tileable=tileable)
-    elif r < 40:
+    elif r == 1:
         return randomcheckimage(w, h, palette, tileable=tileable)
-    elif r < 60:
+    elif r == 2:
         return randomboxesimage(w, h, palette, tileable=tileable)
-    elif r < 80:
+    elif r == 3:
         return _randomgradientfill(w, h, palette, tileable=tileable)
     else:
         return _randombrushednoiseimage(w, h, palette, tileable=tileable)
@@ -3167,7 +3220,7 @@ def vgaVariantsFromFourGrays(image, width, height):
     # Input image uses only four colors: (0,0,0),(128,128,128),(192,192,192),(255,255,255)
     colors = [[] for i in range(256)]
     colors[0] = [0, 0, 0]
-    colors[255] = [255,255,255]
+    colors[255] = [255, 255, 255]
     colors[128] = [128, 0, 0]
     colors[192] = [255, 0, 0]
     red = graymap([x for x in image], width, height, colors)
