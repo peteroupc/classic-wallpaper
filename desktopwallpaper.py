@@ -1373,16 +1373,16 @@ def blankimage(width, height, color=None):
         simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
-def argyle2(image1, image2, width, height, expo=1):
+def argyle2(foregroundImage, backgroundImage, width, height, expo=1):
     # Generates a tileable argyle pattern from two images of the
-    # same size.  Neither 'image1' nor 'image2' need be tileable.
+    # same size.  Neither 'foregroundImage' nor 'backgroundImage' need be tileable.
     i2 = blankimage(width, height)
-    imageblit(i2, width, height, image2, width, height, width // 2, height // 2)
-    return argyle(image1, i2, width, height, expo)
+    imageblit(i2, width, height, backgroundImage, width, height, width // 2, height // 2)
+    return argyle(foregroundImage, i2, width, height, expo)
 
-def argyle(image1, image2, width, height, expo=1):
+def argyle(foregroundImage, backgroundImage, width, height, expo=1):
     # Generates a tileable argyle pattern from two images of the
-    # same size.  'image2' must be tileable; 'image1' need not be.
+    # same size.  'backgroundImage' must be tileable; 'foregroundImage' need not be.
     ret = blankimage(width, height)
     pos = 0
     for y in range(height):
@@ -1391,14 +1391,14 @@ def argyle(image1, image2, width, height, expo=1):
             xp = (x / width) * 2 - 1
             if abs(xp) ** expo + abs(yp) ** expo <= 1:
                 # image 1 is inside the diamond
-                ret[pos] = image1[pos]
-                ret[pos + 1] = image1[pos + 1]
-                ret[pos + 2] = image1[pos + 2]
+                ret[pos] = foregroundImage[pos]
+                ret[pos + 1] = foregroundImage[pos + 1]
+                ret[pos + 2] = foregroundImage[pos + 2]
             else:
                 # image 2 is outside the diamond
-                ret[pos] = image2[pos]
-                ret[pos + 1] = image2[pos + 1]
-                ret[pos + 2] = image2[pos + 2]
+                ret[pos] = backgroundImage[pos]
+                ret[pos + 1] = backgroundImage[pos + 1]
+                ret[pos + 2] = backgroundImage[pos + 2]
             pos += 3
     return ret
 
@@ -3241,7 +3241,7 @@ def vgaVariantsFromFourGrays(image, width, height):
     magenta = graymap([x for x in image], width, height, colors)
     colors[0] = [128, 128, 128]
     colors[128] = [192, 192, 192]
-    colors[128] = [255, 255, 255]
+    colors[192] = [255, 255, 255]
     colors[255] = [255, 255, 255]
     light = graymap([x for x in image], width, height, colors)
     return {
