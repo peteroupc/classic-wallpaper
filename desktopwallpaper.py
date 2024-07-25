@@ -1402,28 +1402,42 @@ def argyle(foregroundImage, backgroundImage, width, height, expo=1):
             pos += 3
     return ret
 
-def checkerboardoverlay(image, width, height, darkcolor, hatchColor=None):
-    simplebox(image, width, height, darkcolor, 0, 0, width // 2, height // 2)
-    simplebox(image, width, height, darkcolor, width // 2, height // 2, width, height)
-    if hatchColor:
-        # hatch=[0x88,0x44,0x22,0x11,0x88,0x44,0x22,0x11] # denser diagonal hatch
-        # revhatch=[0x22,0x44,0x88,0x11,0x22,0x44,0x88,0x11] # denser diagonal hatch
-        hatch = [0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01]
-        revhatch = [0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01]
-        hatchedbox(
-            image, width, height, hatchColor, hatch, 0, 0, width // 2, height // 2
-        )
-        hatchedbox(
-            image,
-            width,
-            height,
-            hatchColor,
-            revhatch,
-            width // 2,
-            height // 2,
-            width,
-            height,
-        )
+def checkerboard(upperLeftImage, otherImage, width, height, columns=2, rows=2):
+    # Generates a tileable checkerboard pattern from two images of the same size.
+    # The two images should be tileable.
+    # The number of columns and of rows must be even and positive.
+    if rows<=0 or columns<=0 or rows%2==1 or columns%2==1: raise ValueError
+    ret = blankimage(width, height)
+    pos = 0
+    for y in range(height):
+        yp = y * rows // height
+        for x in range(width):
+            xp = x * columns // width
+            if (yp+xp)%2 == 0:
+                ret[pos] = upperLeftImage[pos]
+                ret[pos + 1] = upperLeftImage[pos + 1]
+                ret[pos + 2] = upperLeftImage[pos + 2]
+            else:
+                ret[pos] = otherImage[pos]
+                ret[pos + 1] = otherImage[pos + 1]
+                ret[pos + 2] = otherImage[pos + 2]
+            pos += 3
+    return ret
+
+def hatchoverlay(image, width, height, hatchColor, rows=2):
+    if not hatchColor: raise ValueError
+    # hatch=[0x88,0x44,0x22,0x11,0x88,0x44,0x22,0x11] # denser diagonal hatch
+    # revhatch=[0x22,0x44,0x88,0x11,0x22,0x44,0x88,0x11] # denser diagonal hatch
+    hatch = [0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01]
+    revhatch = [0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01]
+    for y in range(rows):
+      y0=height*y//rows
+      y1=height*(y+1)//rows
+      hatchedbox(
+            image, width, height, hatchColor,
+            hatch if y%2==0 else revhatch,
+            0,y0,width,y1
+      )
 
 def _nearest_rgb3(pal, r, g, b):
     best = -1
@@ -2823,7 +2837,12 @@ def _vertcontour(x, y):
 def _argyle(x, y, v):
     x = x * 2.0 - 1
     y = y * 2.0 - 1
-    return min(1, abs(x) ** v + abs(x) ** v)
+    return min(1, abs(x) ** v + abs(y) ** v)
+
+def _square(x, y):
+    x = abs(x * 2.0 - 1)
+    y = abs(y * 2.0 - 1)
+    return min(1, max(x,y))
 
 def _reversediagcontour(x, y):
     return _diagcontour(1 - x, y)
@@ -2866,6 +2885,8 @@ def _randomgradientfill(width, height, palette, tileable=True):
             _diagcontourwrap,
             _reversediagcontourwrap,
             _mindiagwrap,
+            _square,
+            lambda x, y: _argyle(x, y, r),
         ]
     else:
         contours = [
@@ -2877,6 +2898,7 @@ def _randomgradientfill(width, height, palette, tileable=True):
             _horizcontour,
             _vertcontour,
             _diagcontour,
+            _square,
             lambda x, y: _argyle(x, y, r),
         ]
     return _randomgradientfillex(width, height, palette, contours)
@@ -2996,6 +3018,8 @@ def randomboxesimage(width, height, palette=None, tileable=True):
         _diagcontourwrap,
         _reversediagcontourwrap,
         _mindiagwrap,
+        _square,
+        lambda x, y: _argyle(x, y, 1),
         _halfandhalf,
         _halfandhalf,
     ]
@@ -3078,18 +3102,13 @@ def randomcheckimage(w, h, palette=None, tileable=True):
             else [random.randint(0, 255) for i in range(3)]
         )
     )
-    image = _randombackground(w, h, palette, tileable=tileable)
-    checkerboardoverlay(
-        image,
-        w,
-        h,
-        (
-            random.choice(expandedpal)
-            if palette
-            else [random.randint(0, 255) for i in range(3)]
-        ),
-        hatch,
-    )
+    rows=random.choice([2,2,2,4,6,8])
+    columns=random.choice([2,2,2,4,6,8])
+    otherImage = _randombackground(w, h, palette, tileable=tileable)
+    upperLeftImage = _randombackground(w, h, palette, tileable=tileable)
+    if hatch:
+        hatchoverlay(upperLeftImage,w,h,hatch,rows=rows)
+    image = checkerboard(upperLeftImage,otherImage,w,h,rows=rows,columns=columns)
     return _randomdither(image, w, h, palette)
 
 def randombackgroundimage(w, h, palette=None, tileable=True):
