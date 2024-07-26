@@ -3102,8 +3102,12 @@ def randomcheckimage(w, h, palette=None, tileable=True):
             else [random.randint(0, 255) for i in range(3)]
         )
     )
-    rows=random.choice([2,2,2,4,6,8])
-    columns=random.choice([2,2,2,4,6,8])
+    if w>=64 and h>=64:
+      rows=random.choice([2,2,2,4,6,8])
+      columns=random.choice([2,2,2,4,6,8])
+    else:
+      rows=2
+      columns=2
     otherImage = _randombackground(w, h, palette, tileable=tileable)
     upperLeftImage = _randombackground(w, h, palette, tileable=tileable)
     if hatch:
