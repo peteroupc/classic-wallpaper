@@ -249,7 +249,7 @@ def getdithercolors(palette):
     return colors
 
 def halfhalfditherimage(image, width, height, palette):
-    if width <= 0 or height <= 0:
+    if width <= 0 or height <= 0 or not palette:
         raise ValueError
     cdcolors = getdithercolors(palette)
     for y in range(height):
@@ -1373,16 +1373,14 @@ def blankimage(width, height, color=None):
         simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
-def argyle2(foregroundImage, backgroundImage, width, height, expo=1):
+def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg=False):
     # Generates a tileable argyle pattern from two images of the
-    # same size.  Neither 'foregroundImage' nor 'backgroundImage' need be tileable.
-    i2 = blankimage(width, height)
-    imageblit(i2, width, height, backgroundImage, width, height, width // 2, height // 2)
-    return argyle(foregroundImage, i2, width, height, expo)
-
-def argyle(foregroundImage, backgroundImage, width, height, expo=1):
-    # Generates a tileable argyle pattern from two images of the
-    # same size.  'backgroundImage' must be tileable; 'foregroundImage' need not be.
+    # same size.  'backgroundImage' must be tileable if shiftImageBg=False;
+    # 'foregroundImage' need not be tileable.
+    if shiftImageBg:
+       i2 = blankimage(width, height)
+       imageblit(i2, width, height, backgroundImage, width, height, width // 2, height // 2)
+       return argyle(foregroundImage, i2, width, height, expo, shiftImageBg=False)
     ret = blankimage(width, height)
     pos = 0
     for y in range(height):
@@ -1402,8 +1400,24 @@ def argyle(foregroundImage, backgroundImage, width, height, expo=1):
             pos += 3
     return ret
 
+def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=2):
+   # Generates a tileable checkerboard pattern using two images of the same size;
+   # each tile is the whole of one of the source images, and the return value's
+   # width in pixels is width*columns; its height is height*rows.
+   # The two images should be tileable.
+   # The number of columns and of rows must be even and positive.
+   if rows<=0 or columns<=0 or rows%2==1 or columns%2==1: raise ValueError
+   ret = blankimage(width*columns, height*rows)
+   for y in range(height):
+       for x in range(width):
+          imageblit(ret,width*columns,height*rows,
+              upperLeftImage if (y+x)%2==0 else otherImage,
+              width,height,x*width,y*height)
+   return ret
+
 def checkerboard(upperLeftImage, otherImage, width, height, columns=2, rows=2):
-    # Generates a tileable checkerboard pattern from two images of the same size.
+    # Generates a tileable checkerboard pattern made of parts of two images of the same size;
+    # the return value has the same width and height as the source images.
     # The two images should be tileable.
     # The number of columns and of rows must be even and positive.
     if rows<=0 or columns<=0 or rows%2==1 or columns%2==1: raise ValueError
@@ -1869,9 +1883,13 @@ def linedraw(
     if abs(dy) > abs(dx):
         if y1 < y0:
             dy = abs(dy)
+            dx = -dx
             t = y0
             y0 = y1
             y1 = t
+            t = x0
+            x0 = x1
+            x1 = t
         a = abs(dx + dx)
         z = a - dy
         b = z - dy
@@ -1908,6 +1926,10 @@ def linedraw(
     else:
         if x1 < x0:
             dx = abs(dx)
+            dy = -dy
+            t = y0
+            y0 = y1
+            y1 = t
             t = x0
             x0 = x1
             x1 = t
