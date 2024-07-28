@@ -1378,9 +1378,11 @@ def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg
     # same size.  'backgroundImage' must be tileable if shiftImageBg=False;
     # 'foregroundImage' need not be tileable.
     if shiftImageBg:
-       i2 = blankimage(width, height)
-       imageblit(i2, width, height, backgroundImage, width, height, width // 2, height // 2)
-       return argyle(foregroundImage, i2, width, height, expo, shiftImageBg=False)
+        i2 = blankimage(width, height)
+        imageblit(
+            i2, width, height, backgroundImage, width, height, width // 2, height // 2
+        )
+        return argyle(foregroundImage, i2, width, height, expo, shiftImageBg=False)
     ret = blankimage(width, height)
     pos = 0
     for y in range(height):
@@ -1401,33 +1403,42 @@ def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg
     return ret
 
 def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=2):
-   # Generates a tileable checkerboard pattern using two images of the same size;
-   # each tile is the whole of one of the source images, and the return value's
-   # width in pixels is width*columns; its height is height*rows.
-   # The two images should be tileable.
-   # The number of columns and of rows must be even and positive.
-   if rows<=0 or columns<=0 or rows%2==1 or columns%2==1: raise ValueError
-   ret = blankimage(width*columns, height*rows)
-   for y in range(height):
-       for x in range(width):
-          imageblit(ret,width*columns,height*rows,
-              upperLeftImage if (y+x)%2==0 else otherImage,
-              width,height,x*width,y*height)
-   return ret
+    # Generates a tileable checkerboard pattern using two images of the same size;
+    # each tile is the whole of one of the source images, and the return value's
+    # width in pixels is width*columns; its height is height*rows.
+    # The two images should be tileable.
+    # The number of columns and of rows must be even and positive.
+    if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
+        raise ValueError
+    ret = blankimage(width * columns, height * rows)
+    for y in range(height):
+        for x in range(width):
+            imageblit(
+                ret,
+                width * columns,
+                height * rows,
+                upperLeftImage if (y + x) % 2 == 0 else otherImage,
+                width,
+                height,
+                x * width,
+                y * height,
+            )
+    return ret
 
 def checkerboard(upperLeftImage, otherImage, width, height, columns=2, rows=2):
     # Generates a tileable checkerboard pattern made of parts of two images of the same size;
     # the return value has the same width and height as the source images.
     # The two images should be tileable.
     # The number of columns and of rows must be even and positive.
-    if rows<=0 or columns<=0 or rows%2==1 or columns%2==1: raise ValueError
+    if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
+        raise ValueError
     ret = blankimage(width, height)
     pos = 0
     for y in range(height):
         yp = y * rows // height
         for x in range(width):
             xp = x * columns // width
-            if (yp+xp)%2 == 0:
+            if (yp + xp) % 2 == 0:
                 ret[pos] = upperLeftImage[pos]
                 ret[pos + 1] = upperLeftImage[pos + 1]
                 ret[pos + 2] = upperLeftImage[pos + 2]
@@ -1438,20 +1449,50 @@ def checkerboard(upperLeftImage, otherImage, width, height, columns=2, rows=2):
             pos += 3
     return ret
 
+def simpleargyle(fgcolor, bgcolor, linecolor, w, h):
+    fg = blankimage(w, h, fgcolor)
+    bg = blankimage(w, h, bgcolor)
+    bg = argyle(fg, bg, w, h)
+    linedraw(bg, w, h, linecolor, 0, 0, w, h)
+    linedraw(bg, w, h, linecolor, 0, h, w, 0)
+    return bg
+
+def doubleargyle(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h):
+    f1 = simpleargyle(fgcolor1, bgcolor, linecolor1, w, h)
+    f2 = simpleargyle(fgcolor2, bgcolor, linecolor2, w, h)
+    return checkerboardtile(f1, f2, w, h)
+
+def simpleargyle2(fgcolor, bgcolor, linecolor, w, h):
+    fg = blankimage(w, h, fgcolor)
+    bg = blankimage(w, h, bgcolor)
+    bg = argyle(fg, bg, w, h)
+    linedraw(bg, w, h, linecolor, 2, 0, w + 2, h, wraparound=True)
+    linedraw(bg, w, h, linecolor, -2, 0, w - 2, h, wraparound=True)
+    linedraw(bg, w, h, linecolor, 2, h, w + 2, 0, wraparound=True)
+    linedraw(bg, w, h, linecolor, -2, h, w - 2, 0, wraparound=True)
+    return bg
+
 def hatchoverlay(image, width, height, hatchColor, rows=2):
-    if not hatchColor: raise ValueError
+    if not hatchColor:
+        raise ValueError
     # hatch=[0x88,0x44,0x22,0x11,0x88,0x44,0x22,0x11] # denser diagonal hatch
     # revhatch=[0x22,0x44,0x88,0x11,0x22,0x44,0x88,0x11] # denser diagonal hatch
     hatch = [0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01]
     revhatch = [0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01]
     for y in range(rows):
-      y0=height*y//rows
-      y1=height*(y+1)//rows
-      hatchedbox(
-            image, width, height, hatchColor,
-            hatch if y%2==0 else revhatch,
-            0,y0,width,y1
-      )
+        y0 = height * y // rows
+        y1 = height * (y + 1) // rows
+        hatchedbox(
+            image,
+            width,
+            height,
+            hatchColor,
+            hatch if y % 2 == 0 else revhatch,
+            0,
+            y0,
+            width,
+            y1,
+        )
 
 def _nearest_rgb3(pal, r, g, b):
     best = -1
@@ -2864,7 +2905,7 @@ def _argyle(x, y, v):
 def _square(x, y):
     x = abs(x * 2.0 - 1)
     y = abs(y * 2.0 - 1)
-    return min(1, max(x,y))
+    return min(1, max(x, y))
 
 def _reversediagcontour(x, y):
     return _diagcontour(1 - x, y)
@@ -2925,16 +2966,20 @@ def _randomgradientfill(width, height, palette, tileable=True):
         ]
     return _randomgradientfillex(width, height, palette, contours)
 
-def randommaybemonochrome(image,width,height):
-   r=random.randint(0,99)
-   if r<8:
-      image=dithertograyimage([x for x in image],width,height,[0,128,255])
-      return random.choice([x for x in vgaVariantsFromThreeGrays(image,width,height).values()])
-   elif r<16:
-      image=dithertograyimage([x for x in image],width,height,[0,128,192,255])
-      return random.choice([x for x in vgaVariantsFromFourGrays(image,width,height).values()])
-   else:
-      return image
+def randommaybemonochrome(image, width, height):
+    r = random.randint(0, 99)
+    if r < 8:
+        image = dithertograyimage([x for x in image], width, height, [0, 128, 255])
+        return random.choice(
+            [x for x in vgaVariantsFromThreeGrays(image, width, height).values()]
+        )
+    elif r < 16:
+        image = dithertograyimage([x for x in image], width, height, [0, 128, 192, 255])
+        return random.choice(
+            [x for x in vgaVariantsFromFourGrays(image, width, height).values()]
+        )
+    else:
+        return image
 
 def _randomdither(image, width, height, palette):
     grays = getgrays(palette) if palette else None
@@ -3025,7 +3070,7 @@ def randomhatchimage(w, h, palette=None, tileable=True):
             palette,
         )
 
-def randomboxesimage(width, height, palette=None, tileable=True):
+def _randomboxesimage(width, height, palette=None, tileable=True, fancy=True):
     # Generates a random boxes image (using the given palette, if any)
     expandedpal = paletteandhalfhalf(palette) if palette else None
     darkest = palette[_nearest_rgb3(palette, 0, 0, 0)] if palette else []
@@ -3050,34 +3095,54 @@ def randomboxesimage(width, height, palette=None, tileable=True):
         x1 = x0 + random.randint(3, max(3, width * 3 // 4))
         y0 = random.randint(0, height - 1)
         y1 = y0 + random.randint(3, max(3, height * 3 // 4))
+        c1 = (
+            (
+                random.choice(expandedpal)
+                if random.randint(0, 1) == 0
+                else random.choice(palette)
+            )
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
+        c2 = (
+            (
+                random.choice(expandedpal)
+                if random.randint(0, 1) == 0
+                else random.choice(palette)
+            )
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
         if not palette:
-            borderedgradientbox(
-                image,
-                width,
-                height,
-                [0, 0, 0],
-                colorgradient(
-                    [random.randint(0, 255) for i in range(3)],
-                    [random.randint(0, 255) for i in range(3)],
-                ),
-                random.choice(contours),
-                x0,
-                y0,
-                x1,
-                y1,
-                wraparound=tileable,
-            )
+            if fancy:
+                borderedgradientbox(
+                    image,
+                    width,
+                    height,
+                    [0, 0, 0],
+                    colorgradient(c1, c2),
+                    random.choice(contours),
+                    x0,
+                    y0,
+                    x1,
+                    y1,
+                    wraparound=tileable,
+                )
+            else:
+                borderedbox(
+                    image,
+                    width,
+                    height,
+                    [0, 0, 0],
+                    c1,
+                    c1,
+                    x0,
+                    y0,
+                    x1,
+                    y1,
+                    wraparound=tileable,
+                )
         else:
-            c1 = (
-                random.choice(expandedpal)
-                if random.randint(0, 1) == 0
-                else random.choice(palette)
-            )
-            c2 = (
-                random.choice(expandedpal)
-                if random.randint(0, 1) == 0
-                else random.choice(palette)
-            )
             bordereddithergradientbox(
                 image,
                 width,
@@ -3085,7 +3150,7 @@ def randomboxesimage(width, height, palette=None, tileable=True):
                 darkest,
                 c1,
                 c2,
-                random.choice(contours),
+                random.choice(contours) if fancy else _halfandhalf,
                 x0,
                 y0,
                 x1,
@@ -3093,6 +3158,43 @@ def randomboxesimage(width, height, palette=None, tileable=True):
                 wraparound=tileable,
             )
     return _randomdither(image, width, height, palette) if palette else image
+
+def _randomshadedboxesimage(w, h, palette=None, tileable=True):
+    r = 0
+    if w <= 32 or h <= 32:
+        r = random.randint(2, 4)
+    else:
+        r = random.randint(4, 7)  # number of rows and number of columns
+    image = blankimage(w, h)
+    origColor = [random.randint(0, 255) for i in range(3)]
+    for y in range(r):
+        for x in range(r):
+            x0 = x * w // r
+            x1 = (x + 1) * w // r
+            y0 = y * h // r
+            y1 = (y + 1) * h // r
+            cr = random.randint(0, 128) - 64
+            newColor = []
+            if cr < 0:
+                newColor = [x - x * abs(cr) // 255 for x in origColor]
+            else:
+                newColor = [x + (255 - x) * abs(cr) // 255 for x in origColor]
+            borderedbox(
+                image,
+                w,
+                h,
+                None,
+                newColor,
+                newColor,
+                x0,
+                y0,
+                x1,
+                y1,
+                wraparound=tileable,
+            )
+    if palette:
+        patternDither(image, w, h, palette)
+    return image
 
 def _randombrushednoiseimage(w, h, palette=None, tileable=True):
     r = random.randint(0, 2)
@@ -3124,29 +3226,57 @@ def randomcheckimage(w, h, palette=None, tileable=True):
             else [random.randint(0, 255) for i in range(3)]
         )
     )
-    if w>=64 and h>=64:
-      rows=random.choice([2,2,2,4,6,8])
-      columns=random.choice([2,2,2,4,6,8])
+    if w >= 64 and h >= 64:
+        rows = random.choice([2, 2, 2, 4, 6, 8])
+        columns = random.choice([2, 2, 2, 4, 6, 8])
     else:
-      rows=2
-      columns=2
+        rows = 2
+        columns = 2
     otherImage = _randombackground(w, h, palette, tileable=tileable)
     upperLeftImage = _randombackground(w, h, palette, tileable=tileable)
     if hatch:
-        hatchoverlay(upperLeftImage,w,h,hatch,rows=rows)
-    image = checkerboard(upperLeftImage,otherImage,w,h,rows=rows,columns=columns)
+        hatchoverlay(upperLeftImage, w, h, hatch, rows=rows)
+    image = checkerboard(upperLeftImage, otherImage, w, h, rows=rows, columns=columns)
     return _randomdither(image, w, h, palette)
 
+def _randomsimpleargyle(w, h, palette, tileable=True):
+    expandedpal = paletteandhalfhalf(palette) if palette else []
+    bg = (
+        random.choice(expandedpal)
+        if palette
+        else [random.randint(0, 255) for i in range(3)]
+    )
+    fg = (
+        random.choice(expandedpal)
+        if palette
+        else [random.randint(0, 255) for i in range(3)]
+    )
+    linecolor = (
+        random.choice(expandedpal)
+        if palette
+        else [random.randint(0, 255) for i in range(3)]
+    )
+    image3 = simpleargyle(fg, bg, linecolor, w, h)
+    if palette:
+        halfhalfditherimage(image3, w, h, palette)
+    return image3
+
 def randombackgroundimage(w, h, palette=None, tileable=True):
-    r = random.randint(0, 4)
+    r = random.randint(0, 6)
     if r == 0:
         return randomhatchimage(w, h, palette, tileable=tileable)
     elif r == 1:
         return randomcheckimage(w, h, palette, tileable=tileable)
     elif r == 2:
-        return randomboxesimage(w, h, palette, tileable=tileable)
+        return _randomboxesimage(
+            w, h, palette, tileable=tileable, fancy=(random.randint(0, 3) != 0)
+        )
     elif r == 3:
         return _randomgradientfill(w, h, palette, tileable=tileable)
+    elif r == 4:
+        return _randomsimpleargyle(w, h, palette, tileable=tileable)
+    elif r == 5:
+        return _randomshadedboxesimage(w, h, palette, tileable=tileable)
     else:
         return _randombrushednoiseimage(w, h, palette, tileable=tileable)
 
