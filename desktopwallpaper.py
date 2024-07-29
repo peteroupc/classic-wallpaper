@@ -1411,8 +1411,8 @@ def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=
     if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
         raise ValueError
     ret = blankimage(width * columns, height * rows)
-    for y in range(height):
-        for x in range(width):
+    for y in range(rows):
+        for x in range(columns):
             imageblit(
                 ret,
                 width * columns,
@@ -2913,6 +2913,9 @@ def _reversediagcontour(x, y):
 def _halfandhalf(x, y):
     return 0.5
 
+def _whole(x, y):
+    return 1.0
+
 def _horizcontourwrap(x, y):
     return y * 2.0 - 1
 
@@ -2928,17 +2931,17 @@ def _reversediagcontourwrap(x, y):
 def _mindiagwrap(x, y):
     return min(_diagcontourwrap(x, y), _reversediagcontourwrap(x, y))
 
-def _randomgradientfillex(width, height, palette, contours):
+def _randomgradientfillex(width, height, palette, contour):
     image = blankimage(width, height)
     grad = randomColorization()
     borderedgradientbox(
-        image, width, height, None, grad, random.choice(contours), 0, 0, width, height
+        image, width, height, None, grad, contour, 0, 0, width, height
     )
     if palette:
         patternDither(image, width, height, palette)
     return image
 
-def _randomgradientfill(width, height, palette, tileable=True):
+def _randomcontour(tileable=True, includeWhole=False):
     contours = []
     r = random.choice([0.5, 2.0 / 3, 1, 1.5, 2])
     if tileable:
@@ -2964,7 +2967,11 @@ def _randomgradientfill(width, height, palette, tileable=True):
             _square,
             lambda x, y: _argyle(x, y, r),
         ]
-    return _randomgradientfillex(width, height, palette, contours)
+    if includeWhole: contours.append(_whole)
+    return random.choice(contours)
+
+def _randomgradientfill(width, height, palette, tileable=True):
+    return _randomgradientfillex(width, height, palette, _randomcontour(tileable))
 
 def randommaybemonochrome(image, width, height):
     r = random.randint(0, 99)
@@ -3162,18 +3169,23 @@ def _randomboxesimage(width, height, palette=None, tileable=True, fancy=True):
 def _randomshadedboxesimage(w, h, palette=None, tileable=True):
     r = 0
     if w <= 32 or h <= 32:
-        r = random.randint(2, 4)
+        r = random.randint(3, 6)
     else:
-        r = random.randint(4, 7)  # number of rows and number of columns
+        r = random.randint(6, 10)  # number of rows and number of columns
     image = blankimage(w, h)
     origColor = [random.randint(0, 255) for i in range(3)]
+    contour = _randomcontour(tileable=tileable, includeWhole=True)
     for y in range(r):
         for x in range(r):
             x0 = x * w // r
             x1 = (x + 1) * w // r
             y0 = y * h // r
             y1 = (y + 1) * h // r
+            gx = (x0+(x1-x0)//2)*1.0/w
+            gy = (y0+(y1-y0)//2)*1.0/h
             cr = random.randint(0, 128) - 64
+            cont = _togray64(contour(gx,gy))
+            cr = cr * cont // 64
             newColor = []
             if cr < 0:
                 newColor = [x - x * abs(cr) // 255 for x in origColor]
