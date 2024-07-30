@@ -57,6 +57,9 @@ The color palettes allowed are as follows.
 - Up to eight colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - Up to 16 colors from those displayable by 15-bit color displays.
 - 5- to 64-color grayscale palette (all color components the same).
+- An 8-color palette where each color component is 0 or 255.
+- A 27-color palette where each color component is 0, 128, or 255.
+- A 125-color palette where each color component is 0, 64, 128, 192, or 255.
 - Not preferred: Up to 16 colors from those displayable by 16-bit color displays (each red and blue component is a multiple of 8; each green, a multiple of 4).
 - Not preferred: Up to 16 colors from those displayable by pure VGA monitors (each color component is a multiple of 4).
 - Not preferred: 65- to 236-color grayscale palette (all color components the same).
