@@ -16,6 +16,8 @@
 # 2. In Windows, if both an 8x8 monochrome pattern and a centered wallpaper
 # are set as the desktop background, both the pattern and the wallpaper
 # will be drawn on the desktop, the latter appearing above the former.
+# The nonblack areas of the monochrome pattern are filled with the desktop
+# color.
 # 3. I would welcome it if readers could contribute computer code (released
 # to the public domain or under Creative Commons Zero) to generate tileable—
 # - noise,
@@ -2054,6 +2056,103 @@ def brushednoise3(width, height, tileable=True):
             )
             linedraw(image, width, height, [c, c, c], x, y, x1, y1, wraparound=tileable)
     return image
+
+def imagerotatecolumn(image, width, height, x, offset=0):
+   # Rotates a column of the image by the given downward offset in pixels, which may be negative or not.
+   if x<0 or x>=width or width<0 or height<0: raise ValueError
+   if height==0 or width==0: return image
+   offset%=height
+   if offset==0: return image
+   pixels=[image[(y*width+x)*3:(y*width+x+1)*3] for y in range(height)]
+   y=0
+   for i in range(height-offset,height):
+      image[(y*width+x)*3:(y*width+x+1)*3]=pixels[i]
+      y+=1
+   for i in range(0,height-offset):
+      image[(y*width+x)*3:(y*width+x+1)*3]=pixels[i]
+      y+=1
+   return image
+
+def imagerotaterow(image, width, height, y, offset=0):
+   # Rotates a row of the image by the given rightward offset in pixels, which may be negative or not.
+   if y<0 or y>=height or width<0 or height<0: raise ValueError
+   if height==0 or width==0: return image
+   offset%=width
+   if offset==0: return image
+   image[y*width*3:(y+1)*width*3]=image[(y*width+(width-offset))*3:(y+1)*width*3] + \
+       image[y*width*3:(y*width+(width-offset))*3]
+   return image
+
+def imagereversecolumnorder(image,width,height):
+   for y in range(height):
+      pixels=[image[(y*width+x)*3:(y*width+x+1)*3] for x in range(width)]
+      pixels.reverse()
+      image[y*width*3:(y+1)*width*3]=[c for pixel in pixels for c in pixel]
+   return image
+
+def imagereverseroworder(image,width,height):
+   halfHeight=height//2 # floor of half height; don't care about middle row
+   for y in range(halfHeight):
+      row=image[y*width*3:(y+1)*width*3]
+      otherRow=image[(height-1-y)*width*3:(height-y)*width*3]
+      image[y*width*3:(y+1)*width*3]=otherRow
+      image[(height-1-y)*width*3:(height-y)*width*3]=row
+   return image
+
+def endingColumnsAreMirrored(image,width,height):
+  # Returns True if width or height is 0 or if:
+  # - The image's first column's first half is a mirror
+  # of its second half, and...
+  # - The image's last column's first half is a mirror
+  # of its second half.
+  if width<0 or height<0: raise ValueError
+  if width==0 or height==0: return True
+  halfHeight=(height+1)//2 # ceiling of half height
+  stride=width*3
+  lastPixel=stride-3
+  for i in range(halfHeight):
+    oi=height-1-i # other 'i'
+    if image[i*stride]!=image[oi*stride] or\
+       image[i*stride+1]!=image[oi*stride+1] or\
+       image[i*stride+2]!=image[oi*stride+2]:
+     return False
+    if image[i*stride+lastPixel]!=image[oi*stride+lastPixel] or\
+       image[i*stride+lastPixel+1]!=image[oi*stride+lastPixel+1] or\
+       image[i*stride+lastPixel+2]!=image[oi*stride+lastPixel+2]:
+     return False
+  return True
+
+def endingRowsAreMirrored(image,width,height):
+  # Returns True if width or height is 0 or if:
+  # - The image's first row's first half is a mirror
+  # of its second half, and...
+  # - The image's last row's first half is a mirror
+  # of its second half.
+  if width<0 or height<0: raise ValueError
+  if width==0 or height==0: return True
+  halfWidth=(width+1)//2 # ceiling of half width
+  lastRow=(height-1)*width*3
+  for i in range(halfWidth):
+    oi=width-1-i # other 'i'
+    if image[i*3]!=image[oi*3] or\
+       image[i*3+1]!=image[oi*3+1] or\
+       image[i*3+2]!=image[oi*3+2]:
+     return False
+    if image[i*3+lastRow]!=image[oi*3+lastRow] or\
+       image[i*3+lastRow+1]!=image[oi*3+lastRow+1] or\
+       image[i*3+lastRow+2]!=image[oi*3+lastRow+2]:
+     return False
+  return True
+
+def randomTruchetTiles(image, width, height, columns, rows):
+  if endingRowsAreMirrored(image,width,height):
+     altImage=imagereversecolumnorder([x for x in image],width,height)
+     return randomtiles(columns,rows,[image,altImage],width,height)
+  elif endingColumnsAreMirrored(image,width,height):
+     altImage=imagereverseroworder([x for x in image],width,height)
+     return randomtiles(columns,rows,[image,altImage],width,height)
+  else:
+     raise ValueError("ending rows and ending columns are not mirrored")
 
 # What follows are methods for generating scalable vector graphics (SVGs)
 # and raster graphics of classic OS style borders and button controls.

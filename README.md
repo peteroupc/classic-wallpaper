@@ -28,7 +28,7 @@ meeting the requirements given above.
 > **Notes:**
 >
 > 1. If a wallpaper image is _monochrome_, then a _grayscale_ version of the image is preferred, since then the image could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/). Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.  (_Grayscale_ means having no colors other than gray tones, black, or white.  _Monochrome_ means the image is grayscale or its colors are of the same hue and the same chroma or "saturation".) If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "web safe" gray tones, or the full VGA palette) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
-> 2. Photographic images are not within the scope of this challenge.  Indeed, if the image has more than 256 colors and otherwise meets the requirements above, it can be adapted to have the colors of a limited-color palette (such as the VGA palette, the "web safe" palette, or a 236- or 256-color palette) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two non-tileable images of the same size.
+> 2. Photographic images are not within the scope of this challenge.  Indeed, if the image has more than 256 colors and otherwise meets the requirements above, it can be adapted to have the colors of a limited-color palette (such as the VGA palette, the "web safe" palette, or a 236- or 256-color palette) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
 
 ## Color Palettes
 
@@ -120,7 +120,10 @@ colors = dw.randomColorization()
 # Create a colorized version of the image
 image = [cc for pix in [colors[x] for x in image] for cc in pix]
 # Draw a checkerboard overlay over the image
-dw.checkerboardoverlay(image, width, height, [random.randint(0, 255) for i in range(3)])
+image = dw.checkerboard(
+  dw.blankimage(width,height,[random.randint(0, 255) for i in range(3)]),
+  image,
+  width, height)
 # Dither the image
 image2 = [x for x in image]  # copy image for dithering
 dw.patternDither(image, width, height, dw.classiccolors())
@@ -144,9 +147,9 @@ Another challenge, related to classic user-interface style, this time relating t
 
 - Window border, field border, status field border, and grouping border.
 - Buttons and default buttons:
-    - Unpressed, pressed, mixed value, unavailable.
+    - Unpressed, pressed, mixed value ("indeterminate"), unavailable ("disabled").
 - Toolbar buttons:
-    - Unpressed, hover, pressed, unavailable.
+    - Unpressed, hover, pressed, mixed value, unavailable.
 - Buttons, default buttons, and toolbar buttons in the option-set style:
     - Unpressed, unavailable.
 - Checkboxes when set, checkboxes when unset:
