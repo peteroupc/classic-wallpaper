@@ -409,23 +409,31 @@ def shiftwrap(xOrigin, yOrigin):
         % ("+" if xOrigin >= 0 else "", xOrigin, "+" if yOrigin >= 0 else "", yOrigin),
     ]
 
-def emboss(bgColor=None, fgColor=None, hiltColor=None):
-    # Emboss a two-color black and white image into a 3-color (black/gray/white) image
+def unavailable(bgColor=None, buttonShadow=None, buttonHighlight=None, drawShiftedImageOver=False):
+    # Emboss an input image described in 'versatilePattern' for an unavailable appearance
     if not bgColor:
-        bgColor = [128, 128, 128]
-    if not fgColor:
-        fgColor = [0, 0, 0]
-    if not hiltColor:
-        hiltColor = [255, 255, 255]
+        bgColor = [192,192,192]
+    if not buttonShadow:
+        buttonShadow = [128,128,128]
+    if not buttonHighlight:
+        buttonHighlight = [255, 255, 255]
     mpre = "mpr:emboss"
     return (
-        ["-write", mpre, "-delete", "0", "(", mpre]
-        + versatilePattern(fgColor, None)
+        ["-grayscale","Rec709Luma","-write", mpre, "-delete", "0", "(", mpre]
+        + versatilePattern(buttonHighlight, None)
         + [")", "(", mpre]
-        + versatilePattern(hiltColor, bgColor)
+        + versatilePattern(buttonShadow, None)
         + shiftwrap(1, 1)
-        + [")", "-alpha", "on", "-compose", "DstOver", "-composite"]
+        + [")", "-alpha", "on", "-compose", "DstOver" if drawShiftedImageOver else "Over", "-composite"]
+        + backgroundColorUnder(bgColor)
     )
+
+
+def emboss(bgColor=None, fgColor=None, hiltColor=None):
+    # Emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image
+    return unavailable(bgColor if bgColor else [128,128,128],
+       hiltColor if hiltColor else [255,255,255],
+       fgColor if fgColor else [0,0,0], True)
 
 def versatileForeground(foregroundImage):
     return [
