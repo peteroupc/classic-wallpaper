@@ -3543,11 +3543,17 @@ def vgaVariantsFromFourGrays(image, width, height):
 
 # palette generation
 
-def _writeu16(ff, x):
+def _writeu16(ff, x): # big endian write of 16-bit value
     ff.write(bytes([(x >> 8) & 0xFF, (x) & 0xFF]))
 
-def _writeu32(ff, x):
+def _writeu32(ff, x): # big endian write of 32-bit value
     ff.write(bytes([(x >> 24) & 0xFF, (x >> 16) & 0xFF, (x >> 8) & 0xFF, (x) & 0xFF]))
+
+def _writeu16le(ff, x): # little endian write of 16-bit value
+    ff.write(bytes([(x) & 0xFF, (x >> 8) & 0xFF]))
+
+def _writeu32le(ff, x): # big endian write of 32-bit value
+    ff.write(bytes([(x) & 0xFF, (x >> 8) & 0xFF, (x >> 16) & 0xFF, (x >> 24) & 0xFF]))
 
 def _writef32(ff, x):
     ff.write(struct.pack(">f", x))
@@ -3606,20 +3612,19 @@ def writepalette(f, palette, name=None, checkIfExists=False):
         raise ValueError
     if (not palette) or len(palette) > 512:
         raise ValueError
-    # GIMP palette
-    ff = open(f + ".gpl", "xb" if checkIfExists else "wb")
-    ff.write(bytes("GIMP Palette\n", "utf-8"))
-    if name:
-        ff.write(bytes("Name: %s\n" % (name), "utf-8"))
-    ff.write(bytes("Columns: %d\n" % (min(16, len(palette))), "utf-8"))
-    ff.write(bytes("# Colors: %d\n" % (len(palette)), "utf-8"))
+    # Microsoft palette
+    ff = open(f + ".pal", "xb" if checkIfExists else "wb")
+    ff.write(bytes("RIFF", "utf-8"))
+    size=4*len(palette)+0x10
+    _writeu32le(ff, size)
+    ff.write(bytes("PAL ", "utf-8"))
+    ff.write(bytes("data", "utf-8"))
+    size=4*len(palette)+4
+    _writeu32le(ff, size)
+    _writeu16le(ff,0x300)
+    _writeu16le(ff,len(palette))
     for c in palette:
-        ff.write(
-            bytes(
-                "%d %d %d %s\n" % (c[0], c[1], c[2], _colorname(c)),
-                "utf-8",
-            )
-        )
+      ff.write(bytes([c[0]&0xff,c[1]&0xff,c[2]&0xff,2]))
     ff.close()
     # Adobe color swatch format
     ff = open(f + ".aco", "xb" if checkIfExists else "wb")

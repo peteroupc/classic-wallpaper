@@ -84,6 +84,7 @@ The pixel dimensions allowed are as follows.
 | dzigzag.png | peteroupc | Black and white | 64x32 | CC0 [^2] |
 | dzigzagcyan.png | peteroupc | Two colors (cyan and teal) | 64x32 | CC0 |
 | truchet2color.png | peteroupc | Black and white | 32x32 | CC0 |
+| truchet2colorthick.png | peteroupc | Black and white | 32x32 | CC0 |
 | truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
 | smallslant.png | peteroupc | Four tones | 8x8 | CC0 |
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
