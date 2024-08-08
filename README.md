@@ -1,6 +1,6 @@
 # Classic Tiled Wallpaper Challenge
 
-This repository is intended to hold public-domain wallpaper images and source code for the following challenge.
+This repository is intended to hold open-source wallpaper images and source code for the following challenge.
 
 Given that desktop backgrounds today tend to cover the full computer screen, to employ thousands of colors, and to have a high-definition resolution (1920&times;1080 or larger), rendering tileable backgrounds with limited colors and pixel size ever harder to find, I make the following challenge.
 
@@ -14,10 +14,10 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
 - The image does not contain text.  Images that contain depictions of people or human faces are not preferred.
 - The image should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
-- The image is in the public domain or licensed under Creative Commons Zero (CC0) or Attribution (CC-BY) or, less preferably, another open-source license.
+- The image is in the public domain or licensed under the [Unlicense](https://unlicense.org/) or, less preferably, another open-source license approved by the Open Source Initiative.
 - The image was not produced by artificial intelligence tools or with their help.
 
-Also welcome would be computer code (released to the public domain or under Creative Commons Zero) to generate tileable&mdash;
+Also welcome would be computer code (released to the public domain or licensed under the Unlicense) to generate tileable&mdash;
 
 - noise,
 - procedural textures or patterns, or
@@ -80,19 +80,19 @@ The pixel dimensions allowed are as follows.
 
 |  Name  | Made by  |  Colors  |  Size  | License/Notes |
   --- | --- | --- | -- | --- |
-| dstripe.png | peteroupc | Black and white | 32x32 | CC0 |
-| dzigzag.png | peteroupc | Black and white | 64x32 | CC0 [^2] |
-| dzigzagcyan.png | peteroupc | Two colors (cyan and teal) | 64x32 | CC0 |
-| truchet2color.png | peteroupc | Black and white | 32x32 | CC0 |
-| truchet2colorthick.png | peteroupc | Black and white | 32x32 | CC0 |
-| truchet3color.png | peteroupc | Black/gray/white | 32x32 | CC0 [^5] |
-| smallslant.png | peteroupc | Four tones | 8x8 | CC0 |
-| truchetff5500vga.png | peteroupc | VGA palette | 32x32 | CC0 [^4] |
-| boxes.png | peteroupc | VGA palette | 128x128 | CC0 |
-| circlec.png | peteroupc | VGA palette | 128x128 | CC0 |
-| circlews.png | peteroupc | "Web safe" palette | 128x128 | CC0 |
-| check.png | peteroupc | VGA palette | 96x96 | CC0 |
-| brushed.png | peteroupc | VGA palette | 96x96 | CC0 |
+| dstripe.png | peteroupc | Black and white | 32x32 | Unlicense |
+| dzigzag.png | peteroupc | Black and white | 64x32 | Unlicense [^2] |
+| dzigzagcyan.png | peteroupc | Two colors (cyan and teal) | 64x32 | Unlicense |
+| truchet2color.png | peteroupc | Black and white | 32x32 | Unlicense |
+| truchet2colorthick.png | peteroupc | Black and white | 32x32 | Unlicense |
+| truchet3color.png | peteroupc | Black/gray/white | 32x32 | Unlicense [^5] |
+| smallslant.png | peteroupc | Four tones | 8x8 | Unlicense |
+| truchetff5500vga.png | peteroupc | VGA palette | 32x32 | Unlicense [^4] |
+| boxes.png | peteroupc | VGA palette | 128x128 | Unlicense |
+| circlec.png | peteroupc | VGA palette | 128x128 | Unlicense |
+| circlews.png | peteroupc | "Web safe" palette | 128x128 | Unlicense |
+| check.png | peteroupc | VGA palette | 96x96 | Unlicense |
+| brushed.png | peteroupc | VGA palette | 96x96 | Unlicense |
 | [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100x100 | MIT License |
 
 ## Sample Wallpaper Generation Code
@@ -144,7 +144,7 @@ def contouring(x,y,z):
 
 ## Button and Border Styles
 
-Another challenge, related to classic user-interface style, this time relating to user interface elements.  Write computer code (released to the public domain or under Creative Commons Zero) to draw the following border and button styles:
+Another challenge, related to classic user-interface style, this time relating to user interface elements.  Write computer code (released to the public domain or licensed under the Unlicense) to draw the following border and button styles:
 
 - Window border, field border, status field border, and grouping border.
 - Buttons and default buttons:
@@ -176,7 +176,7 @@ The _desktopwallpaper.py_ file contains some example code for border and button 
 
 ## License
 
-Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under [**Creative Commons Zero**](https://creativecommons.org/publicdomain/zero/1.0/).  Software and source code in this repository and on this page is licensed under the [Unlicense](https://unlicense.org).
+Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
 
 [^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.  Many tileable wallpapers are _seamless_, but not all (consider a pattern of bricks or square floor tiles).  Images that can be tiled in one dimension only, such as those depicting horizontal or vertical borders with an "infinitely" extending background, are not tileable for purposes of this challenge.
 

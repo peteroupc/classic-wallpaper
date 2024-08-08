@@ -5,7 +5,7 @@
 # patterns, especially with dimensions 256x256 or smaller.
 #
 # This script is released to the public domain; in case that is not possible, the
-# file is also licensed under Creative Commons Zero (CC0).
+# file is also licensed under the Unlicense: https://unlicense.org/
 #
 # NOTES:
 #
