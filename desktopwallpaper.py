@@ -428,7 +428,6 @@ def unavailable(bgColor=None, buttonShadow=None, buttonHighlight=None, drawShift
         + backgroundColorUnder(bgColor)
     )
 
-
 def emboss(bgColor=None, fgColor=None, hiltColor=None):
     # Emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image
     return unavailable(bgColor if bgColor else [128,128,128],
@@ -1173,14 +1172,14 @@ def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
     image = blankimage(dstwidth, dstheight)
     if dstheight <= 0 or dstwidth <= 0 or srcwidth <= 0 or srcheight <= 0:
         return image
-    columns = -((-srcwidth) // dstwidth)  # ceiling trick
-    rows = -((-srcheight) // dstheight)
+    columns = -((-dstwidth) // srcwidth)  # ceiling trick
+    rows = -((-dstheight) // srcheight)
     for y in range(rows):
         for x in range(columns):
             imageblit(
                 image,
-                width,
-                height,
+                dstwidth,
+                dstheight,
                 srcimage,
                 srcwidth,
                 srcheight,
@@ -2161,6 +2160,51 @@ def randomTruchetTiles(image, width, height, columns, rows):
      return randomtiles(columns,rows,[image,altImage],width,height)
   else:
      raise ValueError("ending rows and ending columns are not mirrored")
+
+import math
+
+def affine(dstimage,dstwidth,dstheight,srcimage,srcwidth,srcheight,m1,m2,m3,m4):
+  for y in range(dstheight):
+    yp=y/srcheight
+    for x in range(dstwidth):
+      xp=x/srcwidth
+      tx=int((xp*m1+yp*m2)*srcwidth)%srcwidth
+      ty=int((xp*m3+yp*m4)*srcheight)%srcheight
+      dstindex=(y*dstwidth+x)*3
+      srcindex=(ty*srcwidth+tx)*3
+      if dstindex<0 or dstindex>len(dstimage): raise ValueError([x,y,tx,ty])
+      if srcindex<0 or srcindex>len(srcimage): raise ValueError([x,y,tx,ty])
+      dstimage[dstindex:dstindex+3]=srcimage[srcindex:srcindex+3]
+  return dstimage
+
+def horizskew(image,width,height,skew):
+  if skew<-1 or skew>1: raise ValueError
+  for i in range(height):
+     p=(i/height)
+     imagerotaterow(image,width,height,i,int(skew*p*width))
+  return image
+
+def vertskew(image,width,height,skew):
+  if skew<-1 or skew>1: raise ValueError
+  for i in range(width):
+     p=(i/width)
+     imagerotatecolumn(image,width,height,i,int(skew*p*height))
+  return image
+
+def randomRotated(image, width, height):
+ if random.randint(0,1)==0:
+   return [image,width,height]
+ stretch=2 # must be an integer
+ slant=int(math.hypot(width*stretch,height))
+ size = width
+ image2width=int(slant*(width/size))
+ image2height=int(slant*(height/size))
+ image2=blankimage(image2width,image2height)
+ r1=random.choice([1,-1]) # normally 1
+ r2=random.choice([-1,1]) # normally -1
+ return [affine(image2,image2width,image2height,image,width,height,
+  (size*stretch/slant),r1*(size/slant),
+  r2*(size/slant),(size*stretch/slant)),image2width,image2height]
 
 # What follows are methods for generating scalable vector graphics (SVGs)
 # and raster graphics of classic OS style borders and button controls.
