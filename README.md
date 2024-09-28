@@ -72,6 +72,7 @@ The color palettes allowed are as follows.
 The pixel dimensions allowed are as follows.
 
 - Preferred: 8&times;8, 16&times;16, 32&times;32, 64&times;64, 64&times;32, 32&times;64, 96&times;96, 128&times;128, 256&times;256.
+- 32&times;32 or 64&times;64, where the second, fourth, etc. column is the same as the previous column (each logical pixel is 2&times;1).
 - Not preferred: 320&times;240, 320&times;200.
 - Not preferred: Custom size up to 96&times;96.
 - Not preferred: Custom size up to 256&times;256.

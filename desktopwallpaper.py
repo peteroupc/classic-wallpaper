@@ -409,30 +409,42 @@ def shiftwrap(xOrigin, yOrigin):
         % ("+" if xOrigin >= 0 else "", xOrigin, "+" if yOrigin >= 0 else "", yOrigin),
     ]
 
-def unavailable(bgColor=None, buttonShadow=None, buttonHighlight=None, drawShiftedImageOver=False):
+def unavailable(
+    bgColor=None, buttonShadow=None, buttonHighlight=None, drawShiftedImageOver=False
+):
     # Emboss an input image described in 'versatilePattern' for an unavailable appearance
     if not bgColor:
-        bgColor = [192,192,192]
+        bgColor = [192, 192, 192]
     if not buttonShadow:
-        buttonShadow = [128,128,128]
+        buttonShadow = [128, 128, 128]
     if not buttonHighlight:
         buttonHighlight = [255, 255, 255]
     mpre = "mpr:emboss"
     return (
-        ["-grayscale","Rec709Luma","-write", mpre, "-delete", "0", "(", mpre]
+        ["-grayscale", "Rec709Luma", "-write", mpre, "-delete", "0", "(", mpre]
         + versatilePattern(buttonHighlight, None)
         + [")", "(", mpre]
         + versatilePattern(buttonShadow, None)
         + shiftwrap(1, 1)
-        + [")", "-alpha", "on", "-compose", "DstOver" if drawShiftedImageOver else "Over", "-composite"]
+        + [
+            ")",
+            "-alpha",
+            "on",
+            "-compose",
+            "DstOver" if drawShiftedImageOver else "Over",
+            "-composite",
+        ]
         + backgroundColorUnder(bgColor)
     )
 
 def emboss(bgColor=None, fgColor=None, hiltColor=None):
     # Emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image
-    return unavailable(bgColor if bgColor else [128,128,128],
-       hiltColor if hiltColor else [255,255,255],
-       fgColor if fgColor else [0,0,0], True)
+    return unavailable(
+        bgColor if bgColor else [128, 128, 128],
+        hiltColor if hiltColor else [255, 255, 255],
+        fgColor if fgColor else [0, 0, 0],
+        True,
+    )
 
 def versatileForeground(foregroundImage):
     return [
@@ -1690,15 +1702,22 @@ def graymap(image, width, height, colors=None):
                 image[xp] = image[xp + 1] = image[xp + 2] = c
     return image
 
-def _getpixel(image, width, height, x, y):
+def getpixel(image, width, height, x, y):
     pos = y * width * 3 + x * 3
     return image[pos : pos + 3]
 
-def _setpixel(image, width, height, x, y, c):
+def setpixel(image, width, height, x, y, c):
     pos = y * width * 3 + x * 3
     image[pos] = c[0]
     image[pos + 1] = c[1]
     image[pos + 2] = c[2]
+
+def imagetranspose(image,width,height):
+   image2=blankimage(height,width)
+   for y in range(height):
+     for x in range(width):
+       setpixel(image2,height,width,y,x,getpixel(image,width,height,x,y))
+   return image2
 
 def _ditherstyle(image, width, height, bgcolor=None):
     # Create a twice-as-wide image inspired by the style used
@@ -1708,9 +1727,9 @@ def _ditherstyle(image, width, height, bgcolor=None):
         bgcolor = [192, 192, 192]
     for y in range(height):
         for x in range(width):
-            c = _getpixel(image, width, height, x, y)
-            _setpixel(image2, width * 2, height, x * 2, y, c if y % 2 == 0 else bgcolor)
-            _setpixel(
+            c = getpixel(image, width, height, x, y)
+            setpixel(image2, width * 2, height, x * 2, y, c if y % 2 == 0 else bgcolor)
+            setpixel(
                 image2, width * 2, height, x * 2 + 1, y, bgcolor if y % 2 == 0 else c
             )
     return image2
@@ -2065,146 +2084,226 @@ def brushednoise3(width, height, tileable=True):
     return image
 
 def imagerotatecolumn(image, width, height, x, offset=0):
-   # Rotates a column of the image by the given downward offset in pixels, which may be negative or not.
-   if x<0 or x>=width or width<0 or height<0: raise ValueError
-   if height==0 or width==0: return image
-   offset%=height
-   if offset==0: return image
-   pixels=[image[(y*width+x)*3:(y*width+x+1)*3] for y in range(height)]
-   y=0
-   for i in range(height-offset,height):
-      image[(y*width+x)*3:(y*width+x+1)*3]=pixels[i]
-      y+=1
-   for i in range(0,height-offset):
-      image[(y*width+x)*3:(y*width+x+1)*3]=pixels[i]
-      y+=1
-   return image
+    # Rotates a column of the image by the given downward offset in pixels, which may be negative or not.
+    if x < 0 or x >= width or width < 0 or height < 0:
+        raise ValueError
+    if height == 0 or width == 0:
+        return image
+    offset %= height
+    if offset == 0:
+        return image
+    pixels = [
+        image[(y * width + x) * 3 : (y * width + x + 1) * 3] for y in range(height)
+    ]
+    y = 0
+    for i in range(height - offset, height):
+        image[(y * width + x) * 3 : (y * width + x + 1) * 3] = pixels[i]
+        y += 1
+    for i in range(0, height - offset):
+        image[(y * width + x) * 3 : (y * width + x + 1) * 3] = pixels[i]
+        y += 1
+    return image
 
 def imagerotaterow(image, width, height, y, offset=0):
-   # Rotates a row of the image by the given rightward offset in pixels, which may be negative or not.
-   if y<0 or y>=height or width<0 or height<0: raise ValueError
-   if height==0 or width==0: return image
-   offset%=width
-   if offset==0: return image
-   image[y*width*3:(y+1)*width*3]=image[(y*width+(width-offset))*3:(y+1)*width*3] + \
-       image[y*width*3:(y*width+(width-offset))*3]
-   return image
+    # Rotates a row of the image by the given rightward offset in pixels, which may be negative or not.
+    if y < 0 or y >= height or width < 0 or height < 0:
+        raise ValueError
+    if height == 0 or width == 0:
+        return image
+    offset %= width
+    if offset == 0:
+        return image
+    image[y * width * 3 : (y + 1) * width * 3] = (
+        image[(y * width + (width - offset)) * 3 : (y + 1) * width * 3]
+        + image[y * width * 3 : (y * width + (width - offset)) * 3]
+    )
+    return image
 
-def imagereversecolumnorder(image,width,height):
-   for y in range(height):
-      pixels=[image[(y*width+x)*3:(y*width+x+1)*3] for x in range(width)]
-      pixels.reverse()
-      image[y*width*3:(y+1)*width*3]=[c for pixel in pixels for c in pixel]
-   return image
+def imagereversecolumnorder(image, width, height):
+    for y in range(height):
+        pixels = [
+            image[(y * width + x) * 3 : (y * width + x + 1) * 3] for x in range(width)
+        ]
+        pixels.reverse()
+        image[y * width * 3 : (y + 1) * width * 3] = [
+            c for pixel in pixels for c in pixel
+        ]
+    return image
 
-def imagereverseroworder(image,width,height):
-   halfHeight=height//2 # floor of half height; don't care about middle row
-   for y in range(halfHeight):
-      row=image[y*width*3:(y+1)*width*3]
-      otherRow=image[(height-1-y)*width*3:(height-y)*width*3]
-      image[y*width*3:(y+1)*width*3]=otherRow
-      image[(height-1-y)*width*3:(height-y)*width*3]=row
-   return image
+def imagereverseroworder(image, width, height):
+    halfHeight = height // 2  # floor of half height; don't care about middle row
+    for y in range(halfHeight):
+        row = image[y * width * 3 : (y + 1) * width * 3]
+        otherRow = image[(height - 1 - y) * width * 3 : (height - y) * width * 3]
+        image[y * width * 3 : (y + 1) * width * 3] = otherRow
+        image[(height - 1 - y) * width * 3 : (height - y) * width * 3] = row
+    return image
 
-def endingColumnsAreMirrored(image,width,height):
-  # Returns True if width or height is 0 or if:
-  # - The image's first column's first half is a mirror
-  # of its second half, and...
-  # - The image's last column's first half is a mirror
-  # of its second half.
-  if width<0 or height<0: raise ValueError
-  if width==0 or height==0: return True
-  halfHeight=(height+1)//2 # ceiling of half height
-  stride=width*3
-  lastPixel=stride-3
-  for i in range(halfHeight):
-    oi=height-1-i # other 'i'
-    if image[i*stride]!=image[oi*stride] or\
-       image[i*stride+1]!=image[oi*stride+1] or\
-       image[i*stride+2]!=image[oi*stride+2]:
-     return False
-    if image[i*stride+lastPixel]!=image[oi*stride+lastPixel] or\
-       image[i*stride+lastPixel+1]!=image[oi*stride+lastPixel+1] or\
-       image[i*stride+lastPixel+2]!=image[oi*stride+lastPixel+2]:
-     return False
-  return True
+def endingColumnsAreMirrored(image, width, height):
+    # Returns True if width or height is 0 or if:
+    # - The image's first column's first half is a mirror
+    # of its second half, and...
+    # - The image's last column's first half is a mirror
+    # of its second half.
+    if width < 0 or height < 0:
+        raise ValueError
+    if width == 0 or height == 0:
+        return True
+    halfHeight = (height + 1) // 2  # ceiling of half height
+    stride = width * 3
+    lastPixel = stride - 3
+    for i in range(halfHeight):
+        oi = height - 1 - i  # other 'i'
+        if (
+            image[i * stride] != image[oi * stride]
+            or image[i * stride + 1] != image[oi * stride + 1]
+            or image[i * stride + 2] != image[oi * stride + 2]
+        ):
+            return False
+        if (
+            image[i * stride + lastPixel] != image[oi * stride + lastPixel]
+            or image[i * stride + lastPixel + 1] != image[oi * stride + lastPixel + 1]
+            or image[i * stride + lastPixel + 2] != image[oi * stride + lastPixel + 2]
+        ):
+            return False
+    return True
 
-def endingRowsAreMirrored(image,width,height):
-  # Returns True if width or height is 0 or if:
-  # - The image's first row's first half is a mirror
-  # of its second half, and...
-  # - The image's last row's first half is a mirror
-  # of its second half.
-  if width<0 or height<0: raise ValueError
-  if width==0 or height==0: return True
-  halfWidth=(width+1)//2 # ceiling of half width
-  lastRow=(height-1)*width*3
-  for i in range(halfWidth):
-    oi=width-1-i # other 'i'
-    if image[i*3]!=image[oi*3] or\
-       image[i*3+1]!=image[oi*3+1] or\
-       image[i*3+2]!=image[oi*3+2]:
-     return False
-    if image[i*3+lastRow]!=image[oi*3+lastRow] or\
-       image[i*3+lastRow+1]!=image[oi*3+lastRow+1] or\
-       image[i*3+lastRow+2]!=image[oi*3+lastRow+2]:
-     return False
-  return True
+def endingRowsAreMirrored(image, width, height):
+    # Returns True if width or height is 0 or if:
+    # - The image's first row's first half is a mirror
+    # of its second half, and...
+    # - The image's last row's first half is a mirror
+    # of its second half.
+    if width < 0 or height < 0:
+        raise ValueError
+    if width == 0 or height == 0:
+        return True
+    halfWidth = (width + 1) // 2  # ceiling of half width
+    lastRow = (height - 1) * width * 3
+    for i in range(halfWidth):
+        oi = width - 1 - i  # other 'i'
+        if (
+            image[i * 3] != image[oi * 3]
+            or image[i * 3 + 1] != image[oi * 3 + 1]
+            or image[i * 3 + 2] != image[oi * 3 + 2]
+        ):
+            return False
+        if (
+            image[i * 3 + lastRow] != image[oi * 3 + lastRow]
+            or image[i * 3 + lastRow + 1] != image[oi * 3 + lastRow + 1]
+            or image[i * 3 + lastRow + 2] != image[oi * 3 + lastRow + 2]
+        ):
+            return False
+    return True
 
 def randomTruchetTiles(image, width, height, columns, rows):
-  if endingRowsAreMirrored(image,width,height):
-     altImage=imagereversecolumnorder([x for x in image],width,height)
-     return randomtiles(columns,rows,[image,altImage],width,height)
-  elif endingColumnsAreMirrored(image,width,height):
-     altImage=imagereverseroworder([x for x in image],width,height)
-     return randomtiles(columns,rows,[image,altImage],width,height)
-  else:
-     raise ValueError("ending rows and ending columns are not mirrored")
+    # "Truchet" means Sébastien Truchet
+    if endingRowsAreMirrored(image, width, height):
+        altImage = imagereversecolumnorder([x for x in image], width, height)
+        return randomtiles(columns, rows, [image, altImage], width, height)
+    elif endingColumnsAreMirrored(image, width, height):
+        altImage = imagereverseroworder([x for x in image], width, height)
+        return randomtiles(columns, rows, [image, altImage], width, height)
+    else:
+        raise ValueError("ending rows and ending columns are not mirrored")
 
 import math
 
-def affine(dstimage,dstwidth,dstheight,srcimage,srcwidth,srcheight,m1,m2,m3,m4):
-  for y in range(dstheight):
-    yp=y/srcheight
-    for x in range(dstwidth):
-      xp=x/srcwidth
-      tx=int((xp*m1+yp*m2)*srcwidth)%srcwidth
-      ty=int((xp*m3+yp*m4)*srcheight)%srcheight
-      dstindex=(y*dstwidth+x)*3
-      srcindex=(ty*srcwidth+tx)*3
-      if dstindex<0 or dstindex>len(dstimage): raise ValueError([x,y,tx,ty])
-      if srcindex<0 or srcindex>len(srcimage): raise ValueError([x,y,tx,ty])
-      dstimage[dstindex:dstindex+3]=srcimage[srcindex:srcindex+3]
-  return dstimage
+def affine(
+    dstimage, dstwidth, dstheight, srcimage, srcwidth, srcheight, m1, m2, m3, m4
+):
+    for y in range(dstheight):
+        yp = y / srcheight
+        for x in range(dstwidth):
+            xp = x / srcwidth
+            tx = int((xp * m1 + yp * m2) * srcwidth) % srcwidth
+            ty = int((xp * m3 + yp * m4) * srcheight) % srcheight
+            dstindex = (y * dstwidth + x) * 3
+            srcindex = (ty * srcwidth + tx) * 3
+            if dstindex < 0 or dstindex > len(dstimage):
+                raise ValueError([x, y, tx, ty])
+            if srcindex < 0 or srcindex > len(srcimage):
+                raise ValueError([x, y, tx, ty])
+            dstimage[dstindex : dstindex + 3] = srcimage[srcindex : srcindex + 3]
+    return dstimage
 
-def horizskew(image,width,height,skew):
-  if skew<-1 or skew>1: raise ValueError
-  for i in range(height):
-     p=(i/height)
-     imagerotaterow(image,width,height,i,int(skew*p*width))
-  return image
+def horizskew(image, width, height, skew):
+    if skew < -1 or skew > 1:
+        raise ValueError
+    for i in range(height):
+        p = i / height
+        imagerotaterow(image, width, height, i, int(skew * p * width))
+    return image
 
-def vertskew(image,width,height,skew):
-  if skew<-1 or skew>1: raise ValueError
-  for i in range(width):
-     p=(i/width)
-     imagerotatecolumn(image,width,height,i,int(skew*p*height))
-  return image
+def vertskew(image, width, height, skew):
+    if skew < -1 or skew > 1:
+        raise ValueError
+    for i in range(width):
+        p = i / width
+        imagerotatecolumn(image, width, height, i, int(skew * p * height))
+    return image
 
 def randomRotated(image, width, height):
- if random.randint(0,1)==0:
-   return [image,width,height]
- stretch=2 # must be an integer
- slant=int(math.hypot(width*stretch,height))
- size = width
- image2width=int(slant*(width/size))
- image2height=int(slant*(height/size))
- image2=blankimage(image2width,image2height)
- r1=random.choice([1,-1]) # normally 1
- r2=random.choice([-1,1]) # normally -1
- return [affine(image2,image2width,image2height,image,width,height,
-  (size*stretch/slant),r1*(size/slant),
-  r2*(size/slant),(size*stretch/slant)),image2width,image2height]
+    # Do the rotation rarely
+    if random.randint(0, 6) > 0:
+        return [image, width, height]
+    # A rotated but still tileable version of the given image
+    stretch = 2  # must be an integer
+    slant = int(math.hypot(width * stretch, height))
+    size = width
+    image2width = int(slant * (width / size))
+    image2height = int(slant * (height / size))
+    image2 = blankimage(image2width, image2height)
+    r1 = random.choice([1, -1])  # normally 1
+    r2 = random.choice([-1, 1])  # normally -1
+    return [
+        affine(
+            image2,
+            image2width,
+            image2height,
+            image,
+            width,
+            height,
+            (size * stretch / slant),
+            r1 * (size / slant),
+            r2 * (size / slant),
+            (size * stretch / slant),
+        ),
+        image2width,
+        image2height,
+    ]
+
+def _radialmask(width, height, x, y):
+    vx = abs((x / width) * 2.0 - 1.0)
+    vy = abs((y / height) * 2.0 - 1.0)
+    return min(1, (vx**2 + vy**2) ** 0.5)
+
+def _linearmask(width, height, x, y):
+    vx = abs((x / width) * 2.0 - 1.0)
+    vy = abs((y / height) * 2.0 - 1.0)
+    return max(vx, vy)
+
+def maketileable(image, width, height):
+    # Use tiling method described by Paul Bourke,
+    # Tiling Textures on the Plane (Part 1)
+    # https://paulbourke.net/geometry/tiling/
+    ret = blankimage(width, height)
+    for y in range(height):
+        yp = (y + height // 2) % height
+        for x in range(width):
+            xp = (x + width // 2) % width
+            m1 = 1 - _linearmask(width, height, x, y)
+            m2 = 1 - _linearmask(width, height, xp, yp)
+            m1 = max(0.001, m1)
+            m2 = max(0.001, m2)
+            o1 = getpixel(image, width, height, x, y)
+            o2 = getpixel(image, width, height, xp, yp)
+            t = [
+                m1 * ov1 / (m1 + m2) + m2 * ov2 / (m1 + m2) for ov1, ov2 in zip(o1, o2)
+            ]
+            t = [max(0, min(255, int(v))) for v in t]
+            setpixel(ret, width, height, x, y, t)
+    return ret
 
 # What follows are methods for generating scalable vector graphics (SVGs)
 # and raster graphics of classic OS style borders and button controls.
@@ -3085,9 +3184,7 @@ def _mindiagwrap(x, y):
 def _randomgradientfillex(width, height, palette, contour):
     image = blankimage(width, height)
     grad = randomColorization()
-    borderedgradientbox(
-        image, width, height, None, grad, contour, 0, 0, width, height
-    )
+    borderedgradientbox(image, width, height, None, grad, contour, 0, 0, width, height)
     if palette:
         patternDither(image, width, height, palette)
     return image
@@ -3118,7 +3215,8 @@ def _randomcontour(tileable=True, includeWhole=False):
             _square,
             lambda x, y: _argyle(x, y, r),
         ]
-    if includeWhole: contours.append(_whole)
+    if includeWhole:
+        contours.append(_whole)
     return random.choice(contours)
 
 def _randomgradientfill(width, height, palette, tileable=True):
@@ -3332,10 +3430,10 @@ def _randomshadedboxesimage(w, h, palette=None, tileable=True):
             x1 = (x + 1) * w // r
             y0 = y * h // r
             y1 = (y + 1) * h // r
-            gx = (x0+(x1-x0)//2)*1.0/w
-            gy = (y0+(y1-y0)//2)*1.0/h
+            gx = (x0 + (x1 - x0) // 2) * 1.0 / w
+            gy = (y0 + (y1 - y0) // 2) * 1.0 / h
             cr = random.randint(0, 128) - 64
-            cont = _togray64(contour(gx,gy))
+            cont = _togray64(contour(gx, gy))
             cr = cr * cont // 64
             newColor = []
             if cr < 0:
@@ -3360,13 +3458,18 @@ def _randomshadedboxesimage(w, h, palette=None, tileable=True):
     return image
 
 def _randombrushednoiseimage(w, h, palette=None, tileable=True):
+    transpose = random.randint(0,1)==0
+    ww=h if transpose else w
+    hh=w if transpose else h
     r = random.randint(0, 2)
     if r == 0:
-        image = brushednoise(w, h, tileable=tileable)
+        image = brushednoise(ww, hh, tileable=tileable)
     elif r == 1:
-        image = brushednoise2(w, h, tileable=tileable)
+        image = brushednoise2(ww, hh, tileable=tileable)
     else:
-        image = brushednoise3(w, h, tileable=tileable)
+        image = brushednoise3(ww, hh, tileable=tileable)
+    if transpose:
+        image = imagetranspose(image,ww,hh)
     graymap(
         image,
         w,
@@ -3595,16 +3698,16 @@ def vgaVariantsFromFourGrays(image, width, height):
 
 # palette generation
 
-def _writeu16(ff, x): # big endian write of 16-bit value
+def _writeu16(ff, x):  # big endian write of 16-bit value
     ff.write(bytes([(x >> 8) & 0xFF, (x) & 0xFF]))
 
-def _writeu32(ff, x): # big endian write of 32-bit value
+def _writeu32(ff, x):  # big endian write of 32-bit value
     ff.write(bytes([(x >> 24) & 0xFF, (x >> 16) & 0xFF, (x >> 8) & 0xFF, (x) & 0xFF]))
 
-def _writeu16le(ff, x): # little endian write of 16-bit value
+def _writeu16le(ff, x):  # little endian write of 16-bit value
     ff.write(bytes([(x) & 0xFF, (x >> 8) & 0xFF]))
 
-def _writeu32le(ff, x): # big endian write of 32-bit value
+def _writeu32le(ff, x):  # big endian write of 32-bit value
     ff.write(bytes([(x) & 0xFF, (x >> 8) & 0xFF, (x >> 16) & 0xFF, (x >> 24) & 0xFF]))
 
 def _writef32(ff, x):
@@ -3667,16 +3770,16 @@ def writepalette(f, palette, name=None, checkIfExists=False):
     # Microsoft palette
     ff = open(f + ".pal", "xb" if checkIfExists else "wb")
     ff.write(bytes("RIFF", "utf-8"))
-    size=4*len(palette)+0x10
+    size = 4 * len(palette) + 0x10
     _writeu32le(ff, size)
     ff.write(bytes("PAL ", "utf-8"))
     ff.write(bytes("data", "utf-8"))
-    size=4*len(palette)+4
+    size = 4 * len(palette) + 4
     _writeu32le(ff, size)
-    _writeu16le(ff,0x300)
-    _writeu16le(ff,len(palette))
+    _writeu16le(ff, 0x300)
+    _writeu16le(ff, len(palette))
     for c in palette:
-      ff.write(bytes([c[0]&0xff,c[1]&0xff,c[2]&0xff,2]))
+        ff.write(bytes([c[0] & 0xFF, c[1] & 0xFF, c[2] & 0xFF, 2]))
     ff.close()
     # Adobe color swatch format
     ff = open(f + ".aco", "xb" if checkIfExists else "wb")
