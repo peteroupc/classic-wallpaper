@@ -905,13 +905,13 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     fps = 20
     aviheader = struct.pack(
         "<LLLLLLLLLLLLLL",
-        1000 // fps,  # ms per frame
-        width * height * 3 * fps + 256,  # maximum date rate in bytes
+        1000000 // fps,  # microseconds per frame
+        width * height * 4 * fps + 256,  # maximum data rate in bytes
         0,
         0x10,  # AVIF_HASINDEX
         len(images),
         0,  # not needed for noninterleaved AVIs
-        1,  # number of streams
+        1,  # number of streams (one video stream)
         max(256, width * height * 3 + 16),  # suggested buffer size to read the file
         width,
         height,
@@ -1080,8 +1080,8 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                                 for x in range(width)
                             ]
                         )
-                    )
-                ) + ( (bytes([0 for i in range(padding)])) if padding>0 and not writeavi else b''))
+                    ) + (bytes([0 for i in range(padding)]) if padding>0 and not writeavi else b'')
+                )
                 pos -= width * 3
         else:
             for y in range(height):
@@ -1097,7 +1097,10 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                 pos -= width * 3
         if writeavi:
             newbytes = b""
+            firstRow=True
             for imagebytes in imagescans:
+                if not firstRow: newbytes += bytes([0, 0])
+                firstRow=False
                 lastbyte = -1
                 lastIndex = 0
                 lastRun = 0
@@ -1110,7 +1113,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                         else:
                             for j in range(lastIndex, i):
                                 newbytes += bytes([1, imagebytes[j]])
-                    elif imagebytes[i] != lastbyte or (lastIndex - i) >= 254:
+                    elif False:#imagebytes[i] != lastbyte or (lastIndex - i) >= 254:
                         if isConsecutive and (i - lastIndex) >= 3:
                             newbytes += bytes([i - lastIndex, lastbyte])
                             lastIndex = i
@@ -1138,14 +1141,17 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                         lastRun = i
                     if i < len(imagebytes):
                         lastbyte = imagebytes[i]
-                newbytes += bytes([0, 0])
+                #print(imagebytes)
+                #print(newbytes)
             newbytes += bytes([0, 1])
-            print([len(imagebytes), len(newbytes)])
+            #print([len(imagebytes), len(newbytes)])
             ipadding = ((len(newbytes) + 3) // 4) * 4 - len(newbytes)
-            # if (ipadding) > 0:
+            #if (ipadding) > 0:
             #     newbytes+=(bytes([0 for i in range(ipadding)]))
+            #newbytes=b''.join(imagescans)
             frameindex.append([indexpos, len(newbytes)])
             indexpos += len(newbytes) + 8
+            #imagedatas.append(b"00db" + struct.pack("<L", len(newbytes)) + newbytes)
             imagedatas.append(b"00dc" + struct.pack("<L", len(newbytes)) + newbytes)
         else:
             fd.write(b"".join(imagescans))
