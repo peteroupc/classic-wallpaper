@@ -891,37 +891,64 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
 
-def writebmp(f, image, width, height, raiseIfExists=False):
-    if not image:
+def writeavi(f, images, width, height, raiseIfExists=False):
+    if not images:
         raise ValueError
-    if width < 0 or height < 0:
+    if width < 0 or height < 0 or width > 0x7FFF or height > 0x7FFF:
         raise ValueError
-    if len(image) != width * height * 3:
-        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
+    for image in images:
+        if not image:
+            raise ValueError
+        if len(image) != width * height * 3:
+            raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
     fd = open(f, "xb" if raiseIfExists else "wb")
+    fps = 20
+    aviheader = struct.pack(
+        "<LLLLLLLLLLLLLL",
+        1000 // fps,  # ms per frame
+        width * height * 3 * fps + 256,  # maximum date rate in bytes
+        0,
+        0x10,  # AVIF_HASINDEX
+        len(images),
+        0,  # not needed for noninterleaved AVIs
+        1,  # number of streams
+        max(256, width * height * 3 + 16),  # suggested buffer size to read the file
+        width,
+        height,
+        0,
+        0,
+        0,
+        0,
+    )
+    aviheader = b"avih" + struct.pack("<L", len(aviheader)) + aviheader
+    streamheader = b"vidsRLE " + struct.pack(
+        "<LLLLLLLLLLhhhh", 0, 0, 0, 1, fps, 0, len(images), 0, 0, 0, 0, 0, width, height
+    )
+    streamheader = b"strh" + struct.pack("<L", len(streamheader)) + streamheader
     uniquecolors = {}
     colortable = [0 for i in range(1024)]
     numuniques = 0
-    pos = 0
-    for y in range(height * width):
-        c = image[pos] | (image[pos + 1] << 8) | (image[pos + 2] << 16)
-        if c not in uniquecolors:
-            uniquecolors[c] = numuniques
-            if numuniques >= 256:
-                # More than 256 unique colors
+    for image in images:
+        pos = 0
+        for y in range(height * width):
+            c = image[pos] | (image[pos + 1] << 8) | (image[pos + 2] << 16)
+            if c not in uniquecolors:
+                uniquecolors[c] = numuniques
+                if numuniques >= 256:
+                    # More than 256 unique colors
+                    numuniques += 1
+                    break
+                colortable[numuniques * 4] = image[pos + 2]
+                colortable[numuniques * 4 + 1] = image[pos + 1]
+                colortable[numuniques * 4 + 2] = image[pos]
+                colortable[numuniques * 4 + 3] = 0
                 numuniques += 1
-                break
-            colortable[numuniques * 4] = image[pos + 2]
-            colortable[numuniques * 4 + 1] = image[pos + 1]
-            colortable[numuniques * 4 + 2] = image[pos]
-            colortable[numuniques * 4 + 3] = 0
-            numuniques += 1
-        pos += 3
-    chunk = None
-    bmoffset = 0
-    # For compatibility reasons, support writing two-color BMPs only if no colors
+            pos += 3
+    # For compatibility reasons, support writing two-color BMPs/AVIs only if no colors
     # other than black and white are in the color table
-    support2color = (
+    bmoffset = 0
+    writeavi = len(images) > 1
+    support2color = (not writeavi) and (
         numuniques == 0
         or (
             numuniques == 1
@@ -939,49 +966,53 @@ def writebmp(f, image, width, height, raiseIfExists=False):
             and (colortable[3] == 0 or colortable[3] == 255)
         )
     )
-    if numuniques <= 256:
-        bmoffset = 14 + 40 + numuniques * 4
-        if support2color and numuniques <= 2:
-            scansize = (width + 7) // 8
-            bmsize = bmoffset + ((scansize + 3) // 4) * 4 * height
-        elif numuniques <= 16:
-            bmsize = bmoffset + ((((width + 1) // 2) + 3) // 4) * 4 * height
-        else:
-            bmsize = bmoffset + ((width + 3) // 4) * 4 * height
+    scansize = 0
+    if support2color and numuniques <= 2:
+        scansize = (width + 7) // 8
+    elif numuniques <= 16 and (not writeavi):
+        scansize = (width + 1) // 2
+    elif numuniques <= 256:
+        scansize = width
     else:
-        bmoffset = 14 + 40
-        bmsize = bmoffset + (((width * 3) + 3) // 4) * 4 * height
-    chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
-    fd.write(chunk)
-    fd.write(
-        struct.pack(
-            "<LllHHLLllLL",
-            40,
-            width,
-            height,
-            1,
-            (
-                1
-                if support2color and numuniques <= 2
-                else (4 if numuniques <= 16 else (8 if numuniques <= 256 else 24))
-            ),
-            0,
-            0,
-            0,
-            0,
-            numuniques if numuniques <= 256 else 0,
-            numuniques if numuniques <= 256 else 0,
-        )
+        scansize = width * 3
+    padding = ((scansize + 3) // 4) * 4 - scansize
+    bitmapinfo = struct.pack(
+        "<LllHHLLllLL",
+        40,
+        width,
+        height,
+        1,
+        (
+            1
+            if support2color and numuniques <= 2
+            else (
+                4
+                if numuniques <= 16 and (not writeavi)
+                else (8 if numuniques <= 256 else 24)
+            )
+        ),
+        1 if writeavi else 0,
+        0,
+        0,
+        0,
+        numuniques if numuniques <= 256 else 0,
+        numuniques if numuniques <= 256 else 0,
     )
-    newimage = []
-    pos = (height - 1) * width * 3
     if numuniques <= 256:
-        # Write color table
-        fd.write(bytes([colortable[i] for i in range(numuniques * 4)]))
-        # Write image
+        bitmapinfo += bytes([colortable[i] for i in range(numuniques * 4)])
+    if not writeavi:
+        bmsize = 14 + len(bitmapinfo) + ((scansize + padding) * height)
+        bmoffset = 14 + len(bitmapinfo)
+        chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
+        fd.write(chunk)
+        fd.write(bitmapinfo)
+    imagedatas = []
+    frameindex = []
+    indexpos = 4
+    for image in images:
+        pos = width * (height - 1) * 3  # Reference the bottom row first
+        imagescans = []
         if support2color and numuniques <= 2:
-            scansize = (width + 7) // 8
-            padding = ((scansize + 3) // 4) * 4 - scansize
             for y in range(height):
                 scan = [0 for i in range(scansize)]
                 for x in range(width // 8):
@@ -997,13 +1028,12 @@ def writebmp(f, image, width, height, raiseIfExists=False):
                         scan[x] |= uniquecolors[
                             image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
                         ] << (7 - i)
-                fd.write(bytes([scan[i] for i in range(scansize)]))
-                if padding > 0:
-                    fd.write(bytes([0 for i in range(padding)]))
+                imagescans.append(
+                    (bytes([scan[i] for i in range(scansize)]))
+                    + ((bytes([0 for i in range(padding)])) if padding > 0 else b"")
+                )
                 pos -= width * 3
-        elif numuniques <= 16:
-            scansize = (width + 1) // 2
-            padding = ((scansize + 3) // 4) * 4 - scansize
+        elif numuniques <= 16 and (not writeavi):
             scan = [0 for i in range(scansize)]
             for y in range(height):
                 for x in range(width // 2):
@@ -1031,39 +1061,122 @@ def writebmp(f, image, width, height, raiseIfExists=False):
                         ]
                         << 4
                     )
-                fd.write(bytes([scan[i] for i in range(scansize)]))
-                if padding > 0:
-                    fd.write(bytes([0 for i in range(padding)]))
+                imagescans.append(
+                    (bytes([scan[i] for i in range(scansize)]))
+                    + ((bytes([0 for i in range(padding)])) if padding > 0 else b"")
+                )
+                pos -= width * 3
+        elif numuniques <= 256:
+            for y in range(height):
+                imagescans.append(
+                    (
+                        bytes(
+                            [
+                                uniquecolors[
+                                    image[pos + x * 3]
+                                    | (image[pos + x * 3 + 1] << 8)
+                                    | (image[pos + x * 3 + 2] << 16)
+                                ]
+                                for x in range(width)
+                            ]
+                        )
+                    )
+                ) + ( (bytes([0 for i in range(padding)])) if padding>0 and not writeavi else b''))
                 pos -= width * 3
         else:
-            padding = ((width + 3) // 4) * 4 - width
             for y in range(height):
-                fd.write(
-                    bytes(
-                        [
-                            uniquecolors[
-                                image[pos + x * 3]
-                                | (image[pos + x * 3 + 1] << 8)
-                                | (image[pos + x * 3 + 2] << 16)
-                            ]
-                            for x in range(width)
-                        ]
-                    )
+                p = pos
+                imagescan = b""
+                for x in range(width):
+                    imagescan += bytes([image[p + 2], image[p + 1], image[p]])
+                    p += 3
+                imagescan += (
+                    (bytes([0 for i in range(padding)])) if padding > 0 and not writeavi else b""
                 )
-                if padding > 0:
-                    fd.write(bytes([0 for i in range(padding)]))
+                imagescans.append(imagescan)
                 pos -= width * 3
-    else:
-        padding = (((width * 3) + 3) // 4) * 4 - (width * 3)
-        for y in range(height):
-            p = pos
-            for x in range(width):
-                fd.write(bytes([image[p + 2], image[p + 1], image[p]]))
-                p += 3
-            if padding > 0:
-                fd.write(bytes([0 for i in range(padding)]))
-            pos -= width * 3
-        fd.close()
+        if writeavi:
+            newbytes = b""
+            for imagebytes in imagescans:
+                lastbyte = -1
+                lastIndex = 0
+                lastRun = 0
+                isConsecutive = True
+                for i in range(len(imagebytes) + 1):
+                    if i == len(imagebytes):
+                        if i - lastIndex >= 3:
+                            newbytes += bytes([0, i - lastIndex])
+                            newbytes += imagebytes[lastIndex:i]
+                        else:
+                            for j in range(lastIndex, i):
+                                newbytes += bytes([1, imagebytes[j]])
+                    elif imagebytes[i] != lastbyte or (lastIndex - i) >= 254:
+                        if isConsecutive and (i - lastIndex) >= 3:
+                            newbytes += bytes([i - lastIndex, lastbyte])
+                            lastIndex = i
+                            isConsecutive = False
+                        else:
+                            isConsecutive = False
+                        """
+               elif isConsecutive and (i-lastIndex)<3:
+                  isConsecutive=False
+               elif (not isConsecutive) and (i-lastRun)<3:
+                  pass
+               elif (not isConsecutive) and i-lastRun>=3:
+                  if i-lastRun>=4:
+                      print([i-lastRun,"lR",lastRun,"lI",lastIndex,lastbyte,imagebytes[i],isConsecutive])
+                  if lastRun-lastIndex>=3:
+                     newbytes+=(bytes([0,lastRun-lastIndex]))
+                     newbytes+=(imagebytes[lastIndex:lastRun])
+                  else:
+                     for j in range(lastIndex,lastRun):
+                        newbytes+=bytes([1,imagebytes[j]])
+                  newbytes+=(bytes([i-lastRun,lastbyte]))
+                  lastIndex=i
+                  isConsecutive=True
+               """
+                        lastRun = i
+                    if i < len(imagebytes):
+                        lastbyte = imagebytes[i]
+                newbytes += bytes([0, 0])
+            newbytes += bytes([0, 1])
+            print([len(imagebytes), len(newbytes)])
+            ipadding = ((len(newbytes) + 3) // 4) * 4 - len(newbytes)
+            # if (ipadding) > 0:
+            #     newbytes+=(bytes([0 for i in range(ipadding)]))
+            frameindex.append([indexpos, len(newbytes)])
+            indexpos += len(newbytes) + 8
+            imagedatas.append(b"00dc" + struct.pack("<L", len(newbytes)) + newbytes)
+        else:
+            fd.write(b"".join(imagescans))
+    if writeavi:
+        bitmapinfo = b"strf" + struct.pack("<L", len(bitmapinfo)) + bitmapinfo
+        streamlist = b"strl" + streamheader + bitmapinfo
+        aviheaderlist = (
+            b"hdrl"
+            + aviheader
+            + b"LIST"
+            + struct.pack("<L", len(streamlist))
+            + streamlist
+        )
+        aviheaderlist = b"LIST" + struct.pack("<L", len(aviheaderlist)) + aviheaderlist
+        movilist = sum(len(img) for img in imagedatas) + 4
+        fullriff = (movilist + 8) + len(aviheaderlist) + 4
+        indexinfo = b"".join(
+            [b"00dc" + struct.pack("<LLL", 0, x, y) for x, y in frameindex]
+        )
+        indexinfo = b"idx1" + struct.pack("<L", len(indexinfo)) + indexinfo
+        fullriff += len(indexinfo)
+        fd.write(b"RIFF" + struct.pack("<L", fullriff) + b"AVI ")
+        fd.write(aviheaderlist)
+        fd.write(b"LIST" + struct.pack("<L", movilist) + b"movi")
+        for img in imagedatas:
+            fd.write(img)
+        fd.write(indexinfo)
+    fd.close()
+
+def writebmp(f, image, width, height, raiseIfExists=False):
+    return writeavi(f, [image], width, height, raiseIfExists=raiseIfExists)
 
 def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
     borderedbox(
@@ -1136,6 +1249,41 @@ def hatchedbox(
                 image[yp + xp * 3 + 1] = cg
                 image[yp + xp * 3 + 2] = cb
 
+def _applyrop(a, b, rop):
+    if rop == 12:
+        return b
+    elif rop == 0:
+        return 0
+    elif rop == 1:
+        return (a | b) ^ 0xFF
+    elif rop == 2:
+        return a & (b ^ 0xFF)
+    elif rop == 3:
+        return b ^ 0xFF
+    elif rop == 4:
+        return b & (a ^ 0xFF)
+    elif rop == 5:
+        return a ^ 0xFF
+    elif rop == 6:
+        return a ^ b
+    elif rop == 7:
+        return (a & b) ^ 0xFF
+    elif rop == 8:
+        return a & b
+    elif rop == 9:
+        return (a ^ b) ^ 0xFF
+    elif rop == 10:
+        return a
+    elif rop == 11:
+        return (b & (a ^ 0xFF)) ^ 0xFF
+    elif rop == 13:
+        return (a & (b ^ 0xFF)) ^ 0xFF
+    elif rop == 14:
+        return a | b
+    elif rop == 15:
+        return 0xFF
+    return 0
+
 def imageblit(
     dstimage,
     dstwidth,
@@ -1146,18 +1294,23 @@ def imageblit(
     x0,
     y0,
     wraparound=True,
+    rasterOp=12,
 ):
     # Draw a wraparound copy of an image on another image.
     # 'dstimage' and 'srcimage' are the destination and source images.
     # 'srcwidth' must not exceed 'dstwidth'; and 'srcheight', 'dstheight'.
     # 'x0' and 'y0' are offsets from the destination image's top left corner
     # where the source image's top left corner will be drawn.
+    # 'rasterOp' is a binary raster operation between the bits of the
+    # destination and those of the source.
     if x0 < 0 or y0 < 0:
         raise ValueError
     if srcwidth > dstwidth or srcheight > dstheight:
         raise ValueError
     if srcwidth <= 0 or srcheight <= 0 or dstwidth <= 0 or dstheight <= 0:
         raise ValueError
+    if rasterOp == 10:
+        return
     for y in range(srcheight):
         dy = y0 + y
         if wraparound:
@@ -1174,9 +1327,17 @@ def imageblit(
                 continue
             dstpos = dy + dx * 3
             srcpos = sy + x * 3
-            dstimage[dstpos] = srcimage[srcpos]
-            dstimage[dstpos + 1] = srcimage[srcpos + 1]
-            dstimage[dstpos + 2] = srcimage[srcpos + 2]
+            s1 = srcimage[srcpos]
+            s2 = srcimage[srcpos + 1]
+            s3 = srcimage[srcpos + 2]
+            if rasterOp == 12:
+                dstimage[dstpos] = s1
+                dstimage[dstpos + 1] = s2
+                dstimage[dstpos + 2] = s3
+            else:
+                dstimage[dstpos] = _applyrop(dstimage[dstpos], s1, rasterOp)
+                dstimage[dstpos + 1] = _applyrop(dstimage[dstpos + 1], s2, rasterOp)
+                dstimage[dstpos + 2] = _applyrop(dstimage[dstpos + 2], s3, rasterOp)
 
 def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
     if srcwidth < 0 or srcheight < 0 or dstwidth < 0 or dstheight < 0:
@@ -1712,12 +1873,12 @@ def setpixel(image, width, height, x, y, c):
     image[pos + 1] = c[1]
     image[pos + 2] = c[2]
 
-def imagetranspose(image,width,height):
-   image2=blankimage(height,width)
-   for y in range(height):
-     for x in range(width):
-       setpixel(image2,height,width,y,x,getpixel(image,width,height,x,y))
-   return image2
+def imagetranspose(image, width, height):
+    image2 = blankimage(height, width)
+    for y in range(height):
+        for x in range(width):
+            setpixel(image2, height, width, y, x, getpixel(image, width, height, x, y))
+    return image2
 
 def _ditherstyle(image, width, height, bgcolor=None):
     # Create a twice-as-wide image inspired by the style used
@@ -3458,9 +3619,9 @@ def _randomshadedboxesimage(w, h, palette=None, tileable=True):
     return image
 
 def _randombrushednoiseimage(w, h, palette=None, tileable=True):
-    transpose = random.randint(0,1)==0
-    ww=h if transpose else w
-    hh=w if transpose else h
+    transpose = random.randint(0, 1) == 0
+    ww = h if transpose else w
+    hh = w if transpose else h
     r = random.randint(0, 2)
     if r == 0:
         image = brushednoise(ww, hh, tileable=tileable)
@@ -3469,7 +3630,7 @@ def _randombrushednoiseimage(w, h, palette=None, tileable=True):
     else:
         image = brushednoise3(ww, hh, tileable=tileable)
     if transpose:
-        image = imagetranspose(image,ww,hh)
+        image = imagetranspose(image, ww, hh)
     graymap(
         image,
         w,
