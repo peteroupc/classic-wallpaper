@@ -947,8 +947,8 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     # For compatibility reasons, support writing two-color BMPs/AVIs only if no colors
     # other than black and white are in the color table
     bmoffset = 0
-    writeavi = len(images) > 1
-    support2color = (not writeavi) and (
+    dowriteavi = len(images) > 1
+    support2color = (not dowriteavi) and (
         numuniques == 0
         or (
             numuniques == 1
@@ -966,10 +966,11 @@ def writeavi(f, images, width, height, raiseIfExists=False):
             and (colortable[3] == 0 or colortable[3] == 255)
         )
     )
+    rle4 = False  # numuniques<=16 and dowriteavi
     scansize = 0
     if support2color and numuniques <= 2:
         scansize = (width + 7) // 8
-    elif numuniques <= 16 and (not writeavi):
+    elif numuniques <= 16 and (rle4 or not dowriteavi):
         scansize = (width + 1) // 2
     elif numuniques <= 256:
         scansize = width
@@ -985,13 +986,9 @@ def writeavi(f, images, width, height, raiseIfExists=False):
         (
             1
             if support2color and numuniques <= 2
-            else (
-                4
-                if numuniques <= 16 and (not writeavi)
-                else (8 if numuniques <= 256 else 24)
-            )
+            else (4 if numuniques <= 16 else (8 if numuniques <= 256 else 24))
         ),
-        1 if writeavi else 0,
+        2 if rle4 else (1 if dowriteavi else 0),
         0,
         0,
         0,
@@ -1000,7 +997,10 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     )
     if numuniques <= 256:
         bitmapinfo += bytes([colortable[i] for i in range(numuniques * 4)])
-    if not writeavi:
+    if dowriteavi and numuniques > 256:
+        print("AVI writing in more than 256 colors is not supported")
+        return
+    if not dowriteavi:
         bmsize = 14 + len(bitmapinfo) + ((scansize + padding) * height)
         bmoffset = 14 + len(bitmapinfo)
         chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
@@ -1033,7 +1033,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                     + ((bytes([0 for i in range(padding)])) if padding > 0 else b"")
                 )
                 pos -= width * 3
-        elif numuniques <= 16 and (not writeavi):
+        elif numuniques <= 16 and (rle4 or not dowriteavi):
             scan = [0 for i in range(scansize)]
             for y in range(height):
                 for x in range(width // 2):
@@ -1063,7 +1063,11 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                     )
                 imagescans.append(
                     (bytes([scan[i] for i in range(scansize)]))
-                    + ((bytes([0 for i in range(padding)])) if padding > 0 else b"")
+                    + (
+                        (bytes([0 for i in range(padding)]))
+                        if padding > 0 and not dowriteavi
+                        else b""
+                    )
                 )
                 pos -= width * 3
         elif numuniques <= 256:
@@ -1080,7 +1084,12 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                                 for x in range(width)
                             ]
                         )
-                    ) + (bytes([0 for i in range(padding)]) if padding>0 and not writeavi else b'')
+                    )
+                    + (
+                        bytes([0 for i in range(padding)])
+                        if padding > 0 and not dowriteavi
+                        else b""
+                    )
                 )
                 pos -= width * 3
         else:
@@ -1090,72 +1099,119 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                 for x in range(width):
                     imagescan += bytes([image[p + 2], image[p + 1], image[p]])
                     p += 3
-                imagescan += (
-                    (bytes([0 for i in range(padding)])) if padding > 0 and not writeavi else b""
-                )
+                if padding > 0 and not dowriteavi:
+                    imagescan += bytes([0 for i in range(padding)])
                 imagescans.append(imagescan)
                 pos -= width * 3
-        if writeavi:
+        if dowriteavi:
             newbytes = b""
-            firstRow=True
+            firstRow = True
             for imagebytes in imagescans:
-                if not firstRow: newbytes += bytes([0, 0])
-                firstRow=False
+                if not firstRow:
+                    newbytes += bytes([0, 0])
                 lastbyte = -1
                 lastIndex = 0
                 lastRun = 0
                 isConsecutive = True
+                maxRun = 127 if rle4 else 255
+                minRun = 2 if rle4 else 3
+                runMult = 2 if rle4 else 1
                 for i in range(len(imagebytes) + 1):
                     if i == len(imagebytes):
-                        if i - lastIndex >= 3:
-                            newbytes += bytes([0, i - lastIndex])
-                            newbytes += imagebytes[lastIndex:i]
+                        nb = b""
+                        if isConsecutive and i - lastIndex >= minRun:
+                            cnt = i - lastIndex
+                            cnt = cnt * runMult
+                            if width % 2 == 1 and rle4:
+                                cnt -= 1
+                            while cnt > 0:
+                                nb += bytes([min(cnt, 255), lastbyte])
+                                cnt -= min(cnt, 255)
                         else:
-                            for j in range(lastIndex, i):
-                                newbytes += bytes([1, imagebytes[j]])
-                    elif False:#imagebytes[i] != lastbyte or (lastIndex - i) >= 254:
-                        if isConsecutive and (i - lastIndex) >= 3:
-                            newbytes += bytes([i - lastIndex, lastbyte])
+                            cnt = i - lastIndex
+                            if width % 2 == 1 and rle4:
+                                cnt -= 1
+                            if cnt < 0:
+                                raise ValueError
+                            cntpos = lastIndex
+                            while cnt >= minRun:
+                                realcnt = min(cnt, maxRun)
+                                nb += bytes([0, realcnt * runMult])
+                                nb += imagebytes[cntpos : cntpos + realcnt]
+                                # padding
+                                if (len(nb) & 1) == 1:
+                                    nb += bytes([0])
+                                cnt -= realcnt
+                                cntpos += realcnt
+                            for j in range(0, cnt):
+                                nb += bytes([runMult, imagebytes[cntpos + j]])
+                            if (len(nb) & 1) != 0:
+                                raise ValueError
+                            if width % 2 == 1 and rle4:
+                                nb += bytes([1, imagebytes[i - 1]])
+                            if firstRow:
+                                print(len(imagebytes))
+                            if firstRow:
+                                print(["origEnd", imagebytes[lastIndex:i]])
+                            if firstRow:
+                                print(["newEnd", nb])
+                            newbytes += nb
+                    elif imagebytes[i] != lastbyte:
+                        if isConsecutive and (i - lastIndex) >= minRun:
+                            cnt = i - lastIndex
+                            while cnt > 0:
+                                newbytes += bytes(
+                                    [min(cnt, maxRun) * runMult, lastbyte]
+                                )
+                                cnt -= min(cnt, maxRun)
                             lastIndex = i
                             isConsecutive = False
-                        else:
+                        elif isConsecutive:
                             isConsecutive = False
-                        """
-               elif isConsecutive and (i-lastIndex)<3:
-                  isConsecutive=False
-               elif (not isConsecutive) and (i-lastRun)<3:
-                  pass
-               elif (not isConsecutive) and i-lastRun>=3:
-                  if i-lastRun>=4:
-                      print([i-lastRun,"lR",lastRun,"lI",lastIndex,lastbyte,imagebytes[i],isConsecutive])
-                  if lastRun-lastIndex>=3:
-                     newbytes+=(bytes([0,lastRun-lastIndex]))
-                     newbytes+=(imagebytes[lastIndex:lastRun])
-                  else:
-                     for j in range(lastIndex,lastRun):
-                        newbytes+=bytes([1,imagebytes[j]])
-                  newbytes+=(bytes([i-lastRun,lastbyte]))
-                  lastIndex=i
-                  isConsecutive=True
-               """
+                        elif (not isConsecutive) and (i - lastRun) < minRun:
+                            pass
+                        elif not isConsecutive:
+                            cnt = lastRun - lastIndex
+                            cntpos = lastIndex
+                            nb = b""
+                            while cnt >= minRun:
+                                realcnt = min(cnt, maxRun)
+                                nb += bytes([0, realcnt * runMult])
+                                nb += imagebytes[cntpos : cntpos + realcnt]
+                                # padding
+                                if (len(nb) & 1) == 1:
+                                    nb += bytes([0])
+                                cnt -= realcnt
+                                cntpos += realcnt
+                            for j in range(0, cnt):
+                                nb += bytes([runMult, imagebytes[cntpos + j]])
+                            cnt = i - lastRun
+                            while cnt > 0:
+                                nb += bytes([min(cnt, maxRun) * runMult, lastbyte])
+                                cnt -= min(cnt, maxRun)
+                            if (len(nb) & 1) != 0:
+                                raise ValueError
+                            if firstRow:
+                                print(["orig", imagebytes[lastIndex:i]])
+                            if firstRow:
+                                print(["new", nb])
+                            newbytes += nb
+                            lastIndex = i
+                            isConsecutive = True
                         lastRun = i
                     if i < len(imagebytes):
                         lastbyte = imagebytes[i]
-                #print(imagebytes)
-                #print(newbytes)
+                firstRow = False
             newbytes += bytes([0, 1])
-            #print([len(imagebytes), len(newbytes)])
-            ipadding = ((len(newbytes) + 3) // 4) * 4 - len(newbytes)
-            #if (ipadding) > 0:
-            #     newbytes+=(bytes([0 for i in range(ipadding)]))
-            #newbytes=b''.join(imagescans)
+            # print([len(imagebytes), len(newbytes)])
+            newbytes = b"".join(imagescans)
             frameindex.append([indexpos, len(newbytes)])
             indexpos += len(newbytes) + 8
-            #imagedatas.append(b"00db" + struct.pack("<L", len(newbytes)) + newbytes)
+            # imagedatas.append(b"00db" + struct.pack("<L", len(newbytes)) + newbytes)
             imagedatas.append(b"00dc" + struct.pack("<L", len(newbytes)) + newbytes)
         else:
             fd.write(b"".join(imagescans))
-    if writeavi:
+    if dowriteavi:
         bitmapinfo = b"strf" + struct.pack("<L", len(bitmapinfo)) + bitmapinfo
         streamlist = b"strl" + streamheader + bitmapinfo
         aviheaderlist = (
