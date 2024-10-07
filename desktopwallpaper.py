@@ -901,7 +901,6 @@ def writeavi(f, images, width, height, raiseIfExists=False):
             raise ValueError
         if len(image) != width * height * 3:
             raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
-    fd = open(f, "xb" if raiseIfExists else "wb")
     fps = 20
     aviheader = struct.pack(
         "<LLLLLLLLLLLLLL",
@@ -944,11 +943,14 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                 colortable[numuniques * 4 + 3] = 0
                 numuniques += 1
             pos += 3
-    # For compatibility reasons, support writing two-color BMPs/AVIs only if no colors
-    # other than black and white are in the color table
     bmoffset = 0
     dowriteavi = len(images) > 1
-    support2color = (not dowriteavi) and (
+    rle4 = numuniques<=16 and not dowriteavi
+    rle8 = (numuniques>16 and numuniques<=256) or (dowriteavi and numuniques<=16)
+    compressionMode = 2 if rle4 else (1 if rle8 else 0)
+    # For compatibility reasons, support writing two-color BMPs/AVIs only if no colors
+    # other than black and white are in the color table and if uncompressed
+    support2color = (compressionMode==0) and (
         numuniques == 0
         or (
             numuniques == 1
@@ -966,22 +968,22 @@ def writeavi(f, images, width, height, raiseIfExists=False):
             and (colortable[3] == 0 or colortable[3] == 255)
         )
     )
-    rle4 = False # numuniques<=16 and dowriteavi
     scansize = 0
     bpp = 24
     if support2color and numuniques <= 2:
         scansize = (width + 7) // 8
         bpp=1
-    elif numuniques <= 16 and (rle4 or not dowriteavi):
+    elif rle4:
         scansize = (width + 1) // 2
         bpp=4
-    elif numuniques <= 256:
+    elif numuniques <= 256 or rle8:
         scansize = width
         bpp=8
     else:
         scansize = width * 3
         bpp=24
     padding = ((scansize + 3) // 4) * 4 - scansize
+    sizeImage = (scansize + padding) * height
     bitmapinfo = struct.pack(
         "<LllHHLLllLL",
         40,
@@ -989,8 +991,8 @@ def writeavi(f, images, width, height, raiseIfExists=False):
         height,
         1,
         bpp,
-        2 if rle4 else (1 if dowriteavi else 0),
-        0,
+        compressionMode,
+        sizeImage if (rle4 or rle8) and not dowriteavi else 0,
         0,
         0,
         numuniques if numuniques <= 256 else 0,
@@ -1001,8 +1003,9 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     if dowriteavi and numuniques > 256:
         print("AVI writing in more than 256 colors is not supported")
         return
-    if not dowriteavi:
-        bmsize = 14 + len(bitmapinfo) + ((scansize + padding) * height)
+    fd = open(f, "xb" if raiseIfExists else "wb")
+    if compressionMode==0 and not dowriteavi:
+        bmsize = 14 + len(bitmapinfo) + sizeImage
         bmoffset = 14 + len(bitmapinfo)
         chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
         fd.write(chunk)
@@ -1010,6 +1013,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     imagedatas = []
     frameindex = []
     indexpos = 4
+    paddingBytes=bytes([0 for i in range(padding)]) if padding > 0 else b""
     for image in images:
         pos = width * (height - 1) * 3  # Reference the bottom row first
         imagescans = []
@@ -1029,10 +1033,9 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                         scan[x] |= uniquecolors[
                             image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
                         ] << (7 - i)
-                imagescans.append(
-                    (bytes([scan[i] for i in range(scansize)]))
-                    + ((bytes([0 for i in range(padding)])) if padding > 0 else b"")
-                )
+                if compressionMode==0:
+                    fd.write(scan); fd.write(paddingBytes)
+                else: imagescans.append(bytes([scan[i] for i in range(scansize)]))
                 pos -= width * 3
         elif bpp==4:
             scan = [0 for i in range(scansize)]
@@ -1062,18 +1065,13 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                         ]
                         << 4
                     )
-                imagescans.append(
-                    (bytes([scan[i] for i in range(scansize)]))
-                    + (
-                        (bytes([0 for i in range(padding)]))
-                        if padding > 0 and not dowriteavi
-                        else b""
-                    )
-                )
+                if compressionMode==0:
+                    fd.write(scan); fd.write(paddingBytes)
+                else: imagescans.append(bytes([scan[i] for i in range(scansize)]))
                 pos -= width * 3
         elif bpp==8:
             for y in range(height):
-                imagescans.append(
+                scan=(
                     (
                         bytes(
                             [
@@ -1086,12 +1084,10 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                             ]
                         )
                     )
-                    + (
-                        bytes([0 for i in range(padding)])
-                        if padding > 0 and not dowriteavi
-                        else b""
-                    )
                 )
+                if compressionMode==0:
+                    fd.write(scan); fd.write(paddingBytes)
+                else: imagescans.append(scan)
                 pos -= width * 3
         else:
             for y in range(height):
@@ -1100,11 +1096,11 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                 for x in range(width):
                     imagescan += bytes([image[p + 2], image[p + 1], image[p]])
                     p += 3
-                if padding > 0 and not dowriteavi:
-                    imagescan += bytes([0 for i in range(padding)])
-                imagescans.append(imagescan)
+                if compressionMode==0:
+                    fd.write(imagescan); fd.write(paddingBytes)
+                else: imagescans.append(imagescan)
                 pos -= width * 3
-        if dowriteavi:
+        if rle4 or rle8:
             newbytes = b""
             firstRow = True
             for imagebytes in imagescans:
@@ -1166,8 +1162,6 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                                 cnt -= realcnt
                             if (len(nb) & 1) != 0:
                                 raise ValueError
-                            if False and firstRow:
-                                print([lastIndex,lastRun,i,"nblen",len(nb)])
                             newbytes += nb
                             lastIndex = i
                             isConsecutive = True
@@ -1176,11 +1170,9 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                         lastbyte = imagebytes[i]
                 firstRow = False
             newbytes += bytes([0, 1])
-            #print([len(b"".join(imagescans)), len(newbytes)])
             frameindex.append([indexpos, len(newbytes)])
             indexpos += len(newbytes) + 8
-            # imagedatas.append(b"00db" + struct.pack("<L", len(newbytes)) + newbytes)
-            imagedatas.append(b"00dc" + struct.pack("<L", len(newbytes)) + newbytes)
+            imagedatas.append(newbytes)
         else:
             fd.write(b"".join(imagescans))
     if dowriteavi:
@@ -1194,7 +1186,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
             + streamlist
         )
         aviheaderlist = b"LIST" + struct.pack("<L", len(aviheaderlist)) + aviheaderlist
-        movilist = sum(len(img) for img in imagedatas) + 4
+        movilist = sum(len(img)+8 for img in imagedatas) + 4
         fullriff = (movilist + 8) + len(aviheaderlist) + 4
         indexinfo = b"".join(
             [b"00dc" + struct.pack("<LLL", 0, x, y) for x, y in frameindex]
@@ -1205,8 +1197,18 @@ def writeavi(f, images, width, height, raiseIfExists=False):
         fd.write(aviheaderlist)
         fd.write(b"LIST" + struct.pack("<L", movilist) + b"movi")
         for img in imagedatas:
+            fd.write(b"00dc")
+            fd.write(struct.pack("<L", len(img)))
             fd.write(img)
         fd.write(indexinfo)
+    elif rle4 or rle8:
+        bmsize = 14 + len(bitmapinfo) + sum(len(img) for img in imagedatas)
+        bmoffset = 14 + len(bitmapinfo)
+        chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
+        fd.write(chunk)
+        fd.write(bitmapinfo)
+        for img in imagedatas:
+            fd.write(img)
     fd.close()
 
 def writebmp(f, image, width, height, raiseIfExists=False):
@@ -1536,6 +1538,19 @@ def bordereddithergradientbox(
                     image[yp + xp * 3] = color1[0]
                     image[yp + xp * 3 + 1] = color1[1]
                     image[yp + xp * 3 + 2] = color1[2]
+
+def ditheralpha(image, width, height):
+   # Dither 256-level alpha channel to two levels (opaque
+   # and transparent)
+   i=0
+   for y in range(height):
+      for x in range(width):
+         a=image[i+3]
+         if a!=0 and a!=255:
+           bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+           a = 255 if bdither < a * 64 // 255 else 0
+           image[i+3]=a
+         i+=4
 
 def borderedbox(
     image, width, height, border, color1, color2, x0, y0, x1, y1, wraparound=True
