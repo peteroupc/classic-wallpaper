@@ -83,7 +83,7 @@ An image can be adapted for displays with logical resolutions that differ from V
 
 For example, EGA and CGA displays have nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such displays are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for EGA displays, becomes a shrunken 300&times;225 image.
 
-A table of logical resolutions (per inch) for different devices is found in the [OpenType specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions).
+A table of logical resolutions (per inch) for different devices is found in the [OpenType 1.8 specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions) (the most recent version doesn't have this table).
 
 Logical resolutions also include the special case of _pixel depth_, or a factor to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Pixel depths include the factors 1.25 (IBM 8514/a), 2, and 3.
 

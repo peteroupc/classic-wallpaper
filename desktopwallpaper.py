@@ -1318,8 +1318,11 @@ def hatchedbox(
                 image[yp + xp * 3 + 2] = cb
 
 def _applyrop(a, b, rop):
+    # apply a binary raster operation
     if rop == 12:
         return b
+    elif rop == 10:
+        return a
     elif rop == 0:
         return 0
     elif rop == 1:
@@ -1340,8 +1343,6 @@ def _applyrop(a, b, rop):
         return a & b
     elif rop == 9:
         return (a ^ b) ^ 0xFF
-    elif rop == 10:
-        return a
     elif rop == 11:
         return (b & (a ^ 0xFF)) ^ 0xFF
     elif rop == 13:
@@ -1351,6 +1352,187 @@ def _applyrop(a, b, rop):
     elif rop == 15:
         return 0xFF
     return 0
+
+def imageblitex(
+    dstimage,
+    dstwidth,
+    dstheight,
+    x0,
+    y0,
+    x1,
+    y1,
+    srcimage,
+    srcwidth,
+    srcheight,
+    x0src=0,
+    y0src=0,
+    patternimage=None,
+    patternwidth=0,
+    patternheight=0,
+    patternOrgX=0,
+    patternOrgY=0,
+    maskimage=None,
+    maskwidth=0,
+    maskheight=0,
+    x0mask=0,
+    y0mask=0,
+    ropForeground=0xCC,
+    ropBackground=0xAA,
+    wraparound=True
+):
+    # Draw a wraparound copy of an image on another image.
+    # 'dstimage' and 'srcimage' are the destination and source images.
+    # 'x0' and 'y0' are offsets from the destination image's top left corner
+    # where the source image's top left corner will be drawn.
+    # 'ropForeground' is a foreground ternary raster operation between the bits of the
+    # destination and those of the source; the low 4 bits is the binary raster
+    # operation used where the pattern bit is 0; the high 4 bits, where the pattern
+    # bit is 1. 'ropForeground' is used where the mask bit is 1 or there is no mask
+    # or an empty mask. 'ropBackground' is the same as 'ropForeground', but for the
+    # background (used where the mask bit is 0 rather than 1).
+    # 'maskimage' is ideally a monochrome image (every pixel is either all zeros
+    # (black) or all ones (white), but it doesn't have to be.
+    if ropForeground<0 or ropForeground>=256: raise ValueError
+    if ropBackground<0 or ropBackground>=256: raise ValueError
+    if ropForeground==ropBackground or maskwidth==0 or maskheight==0: maskimage=None
+    if (((ropForeground>>4)&15)==((ropForeground)&15) and\
+       ((ropBackground>>4)&15)==((ropBackground)&15)) or\
+       patternwidth==0 or patternheight==0: patternimage=None
+    if maskimage!=None and (maskwidth<0 or maskheight<0): raise ValueError
+    if patternimage!=None and (patternwidth<0 or patternheight<0): raise ValueError
+    if dstimage==None or dstwidth<0 or dstheight<0: raise ValueError
+    if x0>x1 or y0>y1: raise ValueError
+    x1src=x0src+(x1-x0)
+    y1src=y0src+(y1-y0)
+    x1mask=x0mask+(x1-x0)
+    y1mask=y0mask+(y1-y0)
+    if maskimage and (x0mask<0 or x0mask>maskwidth or\
+       y0mask<0 or y0mask>maskheight or\
+       x1mask<0 or x1mask>maskwidth or\
+       y1mask<0 or y1mask>maskheight): raise ValueError
+    if srcimage and (x0src<0 or x0src>srcwidth or\
+       y0src<0 or y0src>srcheight or\
+       x1src<0 or x1src>srcwidth or\
+       y1src<0 or y1src>srcheight): raise ValueError
+    if not maskImage: ropBackground=ropForeground
+    if ropForeground==0xAA and ropBackground==0xAA: return
+    for y in range(y1-y0):
+        dy = y0 + y
+        if wraparound:
+            dy %= dstheight
+        if (not wraparound) and dy < 0 or dy >= dstheight:
+            continue
+        dy = dy * dstwidth * 3
+        sy = (y0src + y) * srcwidth * 3 if srcimage else 0
+        paty = ((dy + patternOrgY)%patternheight) * patternwidth * 3 if patternimage else 0
+        masky = (y0mask + y) * maskwidth * 3 if maskimage else 0
+        for x in range(x1-x0):
+            dx = x0 + x
+            if wraparound:
+                dx %= dstwidth
+            if (not wraparound) and dx < 0 or dx >= dstwidth:
+                continue
+            dstpos = dy + dx * 3
+            srcpos = sy + x * 3
+            patpos = paty + ((dx + patternOrgX)%patternwidth) * 3 if patternimage else 0
+            maskpos = masky + (x0mask + y) * 3 if maskimage else 0
+            for i in range(3):
+              s1 = srcimage[srcpos+i] if srcimage else 0
+              d1 = dstimage[dstpos+i] if dstimage else 0
+              p1 = patternimage[patpos+i] if patternimage else 0
+              m1 = maskimage[maskpos+i] if maskimage else 0
+              sdl = _applyrop(d1, s1, ropForeground&0xF)
+              sdh = _applyrop(d1, s1, (ropForeground>>8)&0xF)
+              sdp = (p1&sdh)^((~p1)&sdl)
+              if maskimage:
+                 sdl = _applyrop(d1, s1, ropBackground&0xF)
+                 sdh = _applyrop(d1, s1, (ropBackground>>8)&0xF)
+                 sdpb = (p1&sdh)^((~p1)&sdl)
+                 sdp = (m1&sdp)^((~m1)&sdpb)
+              dstimage[dstpos + i] = sdp
+
+def imagetransblit(
+    dstimage,
+    dstwidth,
+    dstheight,
+    x0,
+    y0,
+    x1,
+    y1,
+    srcimage,
+    srcwidth,
+    srcheight,
+    x0src=0,
+    y0src=0,
+    transcolor=None,
+    patternimage=None,
+    patternwidth=0,
+    patternheight=0,
+    patternOrgX=0,
+    patternOrgY=0,
+    ropForeground=0xCC,
+    ropBackground=0xAA,
+    wraparound=True
+):
+    # 'ropForeground' and 'ropBackground' are as in imageblitex, except that
+    # 'ropForeground' is used where the source color is not 'transcolor' or if
+    # 'transcolor' is None; 'ropBackground' is used elsewhere.
+    if transcolor==None:
+       imageblitex(dstimage,dstwidth,dstheight,x0,y0,x1,y1,srcimage,srcwidth,
+            srcheight,x0src,y0src,patternimage,patternwidth,patternheight,
+            patternOrgX=patternOrgX,patternOrgY=patternOrgY,
+            ropForeground=ropForeground,ropBackground=ropBackground,
+            wraparound=wraparound)
+    if ropForeground<0 or ropForeground>=256: raise ValueError
+    if ropBackground<0 or ropBackground>=256: raise ValueError
+    if len(transcolor)<3: raise ValueError
+    if ropForeground==ropBackground: maskimage=None
+    if (((ropForeground>>4)&15)==((ropForeground)&15) and\
+       ((ropBackground>>4)&15)==((ropBackground)&15)) or\
+       patternwidth==0 or patternheight==0: patternimage=None
+    if patternimage!=None and (patternwidth<0 or patternheight<0): raise ValueError
+    if dstimage==None or dstwidth<0 or dstheight<0: raise ValueError
+    if x0>x1 or y0>y1: raise ValueError
+    x1src=x0src+(x1-x0)
+    y1src=y0src+(y1-y0)
+    if srcimage and (x0src<0 or x0src>srcwidth or\
+       y0src<0 or y0src>srcheight or\
+       x1src<0 or x1src>srcwidth or\
+       y1src<0 or y1src>srcheight): raise ValueError
+    if ropForeground==0xAA and ropBackground==0xAA: return
+    for y in range(y1-y0):
+        dy = y0 + y
+        if wraparound:
+            dy %= dstheight
+        if (not wraparound) and dy < 0 or dy >= dstheight:
+            continue
+        dy = dy * dstwidth * 3
+        sy = (y0src + y) * srcwidth * 3
+        paty = ((dy + patternOrgY)%patternheight) * 3 if patternimage else 0
+        for x in range(x1-x0):
+            dx = x0 + x
+            if wraparound:
+                dx %= dstwidth
+            if (not wraparound) and dx < 0 or dx >= dstwidth:
+                continue
+            dstpos = dy + dx * 3
+            srcpos = sy + x * 3
+            patpos = paty + ((dx + patternOrgX)%patternwidth) * 3 if patternimage else 0
+            m1 = 0x00 if (srcimage[srcpos]==transcolor[0] and\
+                 srcimage[srcpos+1]==transcolor[1] and\
+                 srcimage[srcpos+2]==transcolor[2]) else 0xFF
+            for i in range(3):
+              s1 = srcimage[srcpos+i] if srcimage else 0
+              d1 = dstimage[dstpos+i] if dstimage else 0
+              p1 = patternimage[patpos+i] if patternimage else 0
+              sdl = _applyrop(d1, s1, ropForeground&0xF)
+              sdh = _applyrop(d1, s1, (ropForeground>>8)&0xF)
+              sdp = (p1&sdh)^((~p1)&sdl)
+              sdl = _applyrop(d1, s1, ropBackground&0xF)
+              sdh = _applyrop(d1, s1, (ropBackground>>8)&0xF)
+              sdpb = (p1&sdh)^((~p1)&sdl)
+              sdp = (m1&sdp)^((~m1)&sdpb)
+              dstimage[dstpos + i] = sdp
 
 def imageblit(
     dstimage,
@@ -1364,48 +1546,12 @@ def imageblit(
     wraparound=True,
     rasterOp=12,
 ):
-    # Draw a wraparound copy of an image on another image.
-    # 'dstimage' and 'srcimage' are the destination and source images.
-    # 'srcwidth' must not exceed 'dstwidth'; and 'srcheight', 'dstheight'.
-    # 'x0' and 'y0' are offsets from the destination image's top left corner
-    # where the source image's top left corner will be drawn.
     # 'rasterOp' is a binary raster operation between the bits of the
     # destination and those of the source.
-    if x0 < 0 or y0 < 0:
-        raise ValueError
-    if srcwidth > dstwidth or srcheight > dstheight:
-        raise ValueError
-    if srcwidth <= 0 or srcheight <= 0 or dstwidth <= 0 or dstheight <= 0:
-        raise ValueError
-    if rasterOp == 10:
-        return
-    for y in range(srcheight):
-        dy = y0 + y
-        if wraparound:
-            dy %= dstheight
-        if (not wraparound) and dy < 0 or dy >= dstheight:
-            continue
-        dy = dy * dstwidth * 3
-        sy = y * srcwidth * 3
-        for x in range(srcwidth):
-            dx = x0 + x
-            if wraparound:
-                dx %= dstwidth
-            if (not wraparound) and dx < 0 or dx >= dstwidth:
-                continue
-            dstpos = dy + dx * 3
-            srcpos = sy + x * 3
-            s1 = srcimage[srcpos]
-            s2 = srcimage[srcpos + 1]
-            s3 = srcimage[srcpos + 2]
-            if rasterOp == 12:
-                dstimage[dstpos] = s1
-                dstimage[dstpos + 1] = s2
-                dstimage[dstpos + 2] = s3
-            else:
-                dstimage[dstpos] = _applyrop(dstimage[dstpos], s1, rasterOp)
-                dstimage[dstpos + 1] = _applyrop(dstimage[dstpos + 1], s2, rasterOp)
-                dstimage[dstpos + 2] = _applyrop(dstimage[dstpos + 2], s3, rasterOp)
+    if rasterOp<0 or rasterOp>=16: raise ValueError
+    return imageblitex(dstimage,dstwidth,dstheight,0,0,srcwidth,srcheight,
+         srcimage,srcwidth,srcheight,0,0,wraparound=wraparound,
+         ropForeground=rasterOp|(rasterOp<<4))
 
 def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
     if srcwidth < 0 or srcheight < 0 or dstwidth < 0 or dstheight < 0:
