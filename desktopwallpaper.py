@@ -1382,8 +1382,22 @@ def imageblitex(
 ):
     # Draw a wraparound copy of an image on another image.
     # 'dstimage' and 'srcimage' are the destination and source images.
-    # 'x0' and 'y0' are offsets from the destination image's top left corner
+    # 'pattern' is a brush pattern image.
+    # 'srcimage', 'maskimage', and 'patternimage' are optional.
+    # All images are flat arrays with the same format returned by the blankimage
+    # function.  Thus none of them can include transparency in whole or in part.
+    # (Windows's graphical device interface [GDI] supports transparent
+    # parts in brush patterns only for brushes
+    # with predefined hatch patterns, and then only if the background mode is
+    # transparent and only in the gaps between hatch marks.)
+    # 'patternOrgX' and 'patternOrgY' are offsets from the destination's top left
+    # corner where the top left corner of the brush pattern image would
+    # be drawn if a repetition of the brush pattern were to be drawn across the
+    # whole destination image.  The default for both parameters is 0.
+    # 'x0src' and 'y0src' are offsets from the destination image's top left corner
     # where the source image's top left corner will be drawn.
+    # 'x0mask' and 'y0mask' are offsets from the source image's top left corner
+    # and correspond to pixels in the source image.
     # 'ropForeground' is a foreground ternary raster operation between the bits of the
     # destination and those of the source; the low 4 bits is the binary raster
     # operation used where the pattern bit is 0; the high 4 bits, where the pattern
@@ -1424,7 +1438,7 @@ def imageblitex(
             continue
         dy = dy * dstwidth * 3
         sy = (y0src + y) * srcwidth * 3 if srcimage else 0
-        paty = ((dy + patternOrgY)%patternheight) * patternwidth * 3 if patternimage else 0
+        paty = ((dy - patternOrgY)%patternheight) * patternwidth * 3 if patternimage else 0
         masky = (y0mask + y) * maskwidth * 3 if maskimage else 0
         for x in range(x1-x0):
             dx = x0 + x
@@ -1434,7 +1448,7 @@ def imageblitex(
                 continue
             dstpos = dy + dx * 3
             srcpos = sy + x * 3
-            patpos = paty + ((dx + patternOrgX)%patternwidth) * 3 if patternimage else 0
+            patpos = paty + ((dx - patternOrgX)%patternwidth) * 3 if patternimage else 0
             maskpos = masky + (x0mask + y) * 3 if maskimage else 0
             for i in range(3):
               s1 = srcimage[srcpos+i] if srcimage else 0
