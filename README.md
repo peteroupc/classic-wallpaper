@@ -42,7 +42,9 @@ The color palettes allowed are as follows.
     - Allows for hue shifting to, say, a black-to-red palette.
 - 16-color [**canonical CGA palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
 - 16-color VGA palette (light gray; or each color component is 0 or 255; or each color component is 0 or 128).[^3]
+- A 16-color palette where each color is one of the following: each color component is 0 or 255; or each color component is 0 or 128 except for (128, 128, 128); or the color is (64, 64, 64).
 - The VGA palette plus the following four colors set by legacy versions of Windows: (192,220,192), (160,160,164), (255,251,240), (166,202,240).
+- An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
 - Up to four colors from the VGA palette.
 - Up to four colors from the canonical CGA palette.
 - Up to eight colors from the VGA palette.
@@ -57,7 +59,6 @@ The color palettes allowed are as follows.
 - Up to eight colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - Up to 16 colors from those displayable by 15-bit color displays.
 - 5- to 64-color grayscale palette (all color components the same).
-- An 8-color palette where each color component is 0 or 255.
 - A 27-color palette where each color component is 0, 128, or 255.
 - A 125-color palette where each color component is 0, 64, 128, 192, or 255.
 - Not preferred: Up to 16 colors from those displayable by 16-bit color displays (each red and blue component is a multiple of 8; each green, a multiple of 4).
@@ -182,6 +183,19 @@ Using only the following colors and with some pixels allowed to be transparent:
 It is allowed to use dithering to simulate the appearance of more colors using these six colors.
 
 The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
+
+## Icons and Cursors
+
+An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
+
+- The same icon should be available in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component.  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255.
+- The same icon should be drawn in the dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64.
+- All icons can include transparent parts, but should have no translucent parts except for 8-bit-per-color-component icons.
+
+Cursors (mouse pointer graphics) can follow the guidelines given above as well, but most cursors are traditionally drawn&mdash;
+
+- in a single size, generally 32&times;32, except to account for [logical display resolution](#Logical_Display_Resolutions), and
+- in two colors (black and white) or in grayscale, in either case with optional transparency.
 
 <a id=License></a>
 

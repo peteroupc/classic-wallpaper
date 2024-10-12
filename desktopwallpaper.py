@@ -923,11 +923,20 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     streamheader = b"vids" + struct.pack(
         "<LLLLLLLLLLL" + "hhhh",
         0,
-        0, 0, 0, 1, fps, 0, len(images),
-        width * height * 4 * fps + 256, # suggested buffer size
-        0xFFFFFFFF, # quality
-        0, # sample size (here, variable)
-        0, 0, width, height
+        0,
+        0,
+        0,
+        1,
+        fps,
+        0,
+        len(images),
+        width * height * 4 * fps + 256,  # suggested buffer size
+        0xFFFFFFFF,  # quality
+        0,  # sample size (here, variable)
+        0,
+        0,
+        width,
+        height,
     )
     streamheader = b"strh" + struct.pack("<L", len(streamheader)) + streamheader
     uniquecolors = {}
@@ -952,16 +961,16 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     bmoffset = 0
     dowriteavi = len(images) > 1
     if dowriteavi:
-      if numuniques > 256:
-        print("AVI writing in more than 256 colors is not supported")
-        return
-      numuniques=256 # Apparently needed for GStreamer compatibility
-    rle4 = numuniques<=16 and not dowriteavi
-    rle8 = (numuniques>16 and numuniques<=256) or (dowriteavi and numuniques<=16)
+        if numuniques > 256:
+            print("AVI writing in more than 256 colors is not supported")
+            return
+        numuniques = 256  # Apparently needed for GStreamer compatibility
+    rle4 = numuniques <= 16 and not dowriteavi
+    rle8 = (numuniques > 16 and numuniques <= 256) or (dowriteavi and numuniques <= 16)
     compressionMode = 2 if rle4 else (1 if rle8 else 0)
     # For compatibility reasons, support writing two-color BMPs/AVIs only if no colors
     # other than black and white are in the color table and if uncompressed
-    support2color = (compressionMode==0) and (
+    support2color = (compressionMode == 0) and (
         numuniques == 0
         or (
             numuniques == 1
@@ -983,16 +992,16 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     bpp = 24
     if support2color and numuniques <= 2:
         scansize = (width + 7) // 8
-        bpp=1
+        bpp = 1
     elif rle4:
         scansize = (width + 1) // 2
-        bpp=4
+        bpp = 4
     elif numuniques <= 256 or rle8:
         scansize = width
-        bpp=8
+        bpp = 8
     else:
         scansize = width * 3
-        bpp=24
+        bpp = 24
     padding = ((scansize + 3) // 4) * 4 - scansize
     sizeImage = (scansize + padding) * height
     bitmapinfo = struct.pack(
@@ -1009,10 +1018,10 @@ def writeavi(f, images, width, height, raiseIfExists=False):
         numuniques if numuniques <= 256 else 0,
         0,
     )
-    if bpp<=8:
+    if bpp <= 8:
         bitmapinfo += bytes([colortable[i] for i in range(numuniques * 4)])
     fd = open(f, "xb" if raiseIfExists else "wb")
-    if compressionMode==0 and not dowriteavi:
+    if compressionMode == 0 and not dowriteavi:
         bmsize = 14 + len(bitmapinfo) + sizeImage
         bmoffset = 14 + len(bitmapinfo)
         chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
@@ -1021,15 +1030,15 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     imagedatas = []
     frameindex = []
     indexpos = 4
-    paddingBytes=bytes([0 for i in range(padding)]) if padding > 0 else b""
-    for index in range(len(images)): #for image in images:
-        image=images[index]
-        #if dowriteavi: image=images[min(len(images)-1,index-index%3+2)]
-        #if dowriteavi:
+    paddingBytes = bytes([0 for i in range(padding)]) if padding > 0 else b""
+    for index in range(len(images)):  # for image in images:
+        image = images[index]
+        # if dowriteavi: image=images[min(len(images)-1,index-index%3+2)]
+        # if dowriteavi:
         #    image=images[14];
         pos = width * (height - 1) * 3  # Reference the bottom row first
         imagescans = []
-        if bpp==2:
+        if bpp == 2:
             for y in range(height):
                 scan = [0 for i in range(scansize)]
                 for x in range(width // 8):
@@ -1045,11 +1054,13 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                         scan[x] |= uniquecolors[
                             image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
                         ] << (7 - i)
-                if compressionMode==0:
-                    fd.write(scan); fd.write(paddingBytes)
-                else: imagescans.append(bytes([scan[i] for i in range(scansize)]))
+                if compressionMode == 0:
+                    fd.write(scan)
+                    fd.write(paddingBytes)
+                else:
+                    imagescans.append(bytes([scan[i] for i in range(scansize)]))
                 pos -= width * 3
-        elif bpp==4:
+        elif bpp == 4:
             scan = [0 for i in range(scansize)]
             for y in range(height):
                 for x in range(width // 2):
@@ -1077,25 +1088,29 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                         ]
                         << 4
                     )
-                if compressionMode==0:
-                    fd.write(scan); fd.write(paddingBytes)
-                else: imagescans.append(bytes([scan[i] for i in range(scansize)]))
+                if compressionMode == 0:
+                    fd.write(scan)
+                    fd.write(paddingBytes)
+                else:
+                    imagescans.append(bytes([scan[i] for i in range(scansize)]))
                 pos -= width * 3
-        elif bpp==8:
+        elif bpp == 8:
             for y in range(height):
-                scan=bytes(
-                            [
-                                uniquecolors[
-                                    image[pos + x * 3]
-                                    | (image[pos + x * 3 + 1] << 8)
-                                    | (image[pos + x * 3 + 2] << 16)
-                                ]
-                                for x in range(width)
-                            ]
-                        )
-                if compressionMode==0:
-                    fd.write(scan); fd.write(paddingBytes)
-                else: imagescans.append(scan)
+                scan = bytes(
+                    [
+                        uniquecolors[
+                            image[pos + x * 3]
+                            | (image[pos + x * 3 + 1] << 8)
+                            | (image[pos + x * 3 + 2] << 16)
+                        ]
+                        for x in range(width)
+                    ]
+                )
+                if compressionMode == 0:
+                    fd.write(scan)
+                    fd.write(paddingBytes)
+                else:
+                    imagescans.append(scan)
                 pos -= width * 3
         else:
             for y in range(height):
@@ -1104,15 +1119,17 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                 for x in range(width):
                     imagescan += bytes([image[p + 2], image[p + 1], image[p]])
                     p += 3
-                if compressionMode==0:
-                    fd.write(imagescan); fd.write(paddingBytes)
-                else: imagescans.append(imagescan)
+                if compressionMode == 0:
+                    fd.write(imagescan)
+                    fd.write(paddingBytes)
+                else:
+                    imagescans.append(imagescan)
                 pos -= width * 3
         if rle4 or rle8:
             newbytes = b""
             firstRow = True
-            for sindex in range(len(imagescans)): # imagebytes in imagescans:
-                imagebytes=imagescans[sindex]
+            for sindex in range(len(imagescans)):  # imagebytes in imagescans:
+                imagebytes = imagescans[sindex]
                 if not firstRow:
                     newbytes += bytes([0, 0])
                 lastbyte = -1
@@ -1121,48 +1138,58 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                 isConsecutive = True
                 minRun = 2 if rle4 else 3
                 runMult = 2 if rle4 else 1
-                scanPixelCount=0
-                nbindex=len(newbytes)
+                scanPixelCount = 0
+                nbindex = len(newbytes)
                 for i in range(len(imagebytes) + 1):
                     if i == len(imagebytes) or imagebytes[i] != lastbyte:
                         if isConsecutive and (i - lastIndex) >= minRun:
                             cnt = i - lastIndex
                             cnt = cnt * runMult
-                            if width % 2 == 1 and rle4 and i==len(imagebytes):
+                            if width % 2 == 1 and rle4 and i == len(imagebytes):
                                 cnt -= 1
                             while cnt > 0:
-                                realcnt=min(cnt, 255)
+                                realcnt = min(cnt, 255)
                                 # make even, in RLE4 case, to avoid problems
-                                if rle4 and realcnt>=255: realcnt=254
-                                if rle4 and cnt!=realcnt and realcnt%2!=0: raise ValueError
+                                if rle4 and realcnt >= 255:
+                                    realcnt = 254
+                                if rle4 and cnt != realcnt and realcnt % 2 != 0:
+                                    raise ValueError
                                 newbytes += bytes([realcnt, lastbyte])
-                                scanPixelCount+=realcnt
-                                #if index==0 and sindex==height-1: print(["cnt",bytes([realcnt, lastbyte])])
+                                scanPixelCount += realcnt
+                                # if index==0 and sindex==height-1: print(["cnt",bytes([realcnt, lastbyte])])
                                 cnt -= realcnt
                             lastIndex = i
                             isConsecutive = False
-                        elif isConsecutive and i<len(imagebytes):
-                            if i>0:
-                               isConsecutive = False
-                        elif (not isConsecutive) and (i - lastRun) < minRun and i<len(imagebytes):
+                        elif isConsecutive and i < len(imagebytes):
+                            if i > 0:
+                                isConsecutive = False
+                        elif (
+                            (not isConsecutive)
+                            and (i - lastRun) < minRun
+                            and i < len(imagebytes)
+                        ):
                             pass
                         else:
                             cnt = lastRun - lastIndex
-                            if lastRun>=i: raise ValueError
-                            if i-lastRun==1 and (rle8 or i<len(imagebytes) or width%2==0):
-                               lastRun=i
-                               cnt+=1
+                            if lastRun >= i:
+                                raise ValueError
+                            if i - lastRun == 1 and (
+                                rle8 or i < len(imagebytes) or width % 2 == 0
+                            ):
+                                lastRun = i
+                                cnt += 1
                             cntpos = lastIndex
                             nb = b""
                             while cnt >= minRun:
                                 realcnt = min(cnt, 127 if rle4 else 255)
                                 nb += bytes([0, realcnt * runMult])
-                                scanPixelCount+=realcnt * runMult
-                                rc=imagebytes[cntpos : cntpos + realcnt]
-                                #if index==0 and sindex==height-1:
+                                scanPixelCount += realcnt * runMult
+                                rc = imagebytes[cntpos : cntpos + realcnt]
+                                # if index==0 and sindex==height-1:
                                 #  print(rc)
                                 #  print([realcnt*runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
-                                if len(rc)!=realcnt: raise ValueError
+                                if len(rc) != realcnt:
+                                    raise ValueError
                                 nb += rc
                                 # padding
                                 if (len(nb) & 1) == 1:
@@ -1171,35 +1198,43 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                                 cntpos += realcnt
                             for j in range(0, cnt):
                                 nb += bytes([runMult, imagebytes[cntpos + j]])
-                                scanPixelCount+=runMult
-                                #if index==0 and sindex==height-1: print([runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
+                                scanPixelCount += runMult
+                                # if index==0 and sindex==height-1: print([runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
                             cnt = i - lastRun
                             cnt = cnt * runMult
-                            if cnt>0 and width % 2 == 1 and rle4 and i==len(imagebytes):
+                            if (
+                                cnt > 0
+                                and width % 2 == 1
+                                and rle4
+                                and i == len(imagebytes)
+                            ):
                                 cnt -= 1
                             while cnt > 0:
-                                realcnt=min(cnt, 255)
+                                realcnt = min(cnt, 255)
                                 # make even, in RLE4 case, to avoid problems
-                                if rle4 and realcnt>=255: realcnt=254
-                                if rle4 and cnt!=realcnt and realcnt%2!=0: raise ValueError
+                                if rle4 and realcnt >= 255:
+                                    realcnt = 254
+                                if rle4 and cnt != realcnt and realcnt % 2 != 0:
+                                    raise ValueError
                                 nb += bytes([realcnt, lastbyte])
-                                #if index==0 and sindex==height-1: print(bytes([realcnt, lastbyte]))
-                                scanPixelCount+=realcnt
-                                #if index==0 and sindex==height-1: print(["run",realcnt, "spc", scanPixelCount,"i", i,"li",lastIndex,"lr", lastRun])
+                                # if index==0 and sindex==height-1: print(bytes([realcnt, lastbyte]))
+                                scanPixelCount += realcnt
+                                # if index==0 and sindex==height-1: print(["run",realcnt, "spc", scanPixelCount,"i", i,"li",lastIndex,"lr", lastRun])
                                 cnt -= realcnt
                             if (len(nb) & 1) != 0:
                                 raise ValueError
-                            #if index==0 and sindex==height-1: print(nb)
+                            # if index==0 and sindex==height-1: print(nb)
                             newbytes += nb
                             lastIndex = i
                             isConsecutive = True
                         lastRun = i
                     if i < len(imagebytes):
                         lastbyte = imagebytes[i]
-                #if index==0 and sindex==height-1:
+                # if index==0 and sindex==height-1:
                 #   print(imagebytes)
                 #   print(newbytes[nbindex:len(newbytes)])
-                if scanPixelCount!=width: raise ValueError(str([scanPixelCount,width]))
+                if scanPixelCount != width:
+                    raise ValueError(str([scanPixelCount, width]))
                 firstRow = False
             newbytes += bytes([0, 1])
             frameindex.append([indexpos, len(newbytes)])
@@ -1218,7 +1253,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
             + streamlist
         )
         aviheaderlist = b"LIST" + struct.pack("<L", len(aviheaderlist)) + aviheaderlist
-        movilist = sum(len(img)+8 for img in imagedatas) + 4
+        movilist = sum(len(img) + 8 for img in imagedatas) + 4
         fullriff = (movilist + 8) + len(aviheaderlist) + 4
         indexinfo = b"".join(
             [b"00dc" + struct.pack("<LLL", 0x00, x, y) for x, y in frameindex]
@@ -1378,7 +1413,7 @@ def imageblitex(
     y0mask=0,
     ropForeground=0xCC,
     ropBackground=0xAA,
-    wraparound=True
+    wraparound=True,
 ):
     # Draw a wraparound copy of an image on another image.
     # 'dstimage' and 'srcimage' are the destination and source images.
@@ -1406,31 +1441,60 @@ def imageblitex(
     # background (used where the mask bit is 0 rather than 1).
     # 'maskimage' is ideally a monochrome image (every pixel is either all zeros
     # (black) or all ones (white), but it doesn't have to be.
-    if ropForeground<0 or ropForeground>=256: raise ValueError
-    if ropBackground<0 or ropBackground>=256: raise ValueError
-    if ropForeground==ropBackground or maskwidth==0 or maskheight==0: maskimage=None
-    if (((ropForeground>>4)&15)==((ropForeground)&15) and\
-       ((ropBackground>>4)&15)==((ropBackground)&15)) or\
-       patternwidth==0 or patternheight==0: patternimage=None
-    if maskimage!=None and (maskwidth<0 or maskheight<0): raise ValueError
-    if patternimage!=None and (patternwidth<0 or patternheight<0): raise ValueError
-    if dstimage==None or dstwidth<0 or dstheight<0: raise ValueError
-    if x0>x1 or y0>y1: raise ValueError
-    x1src=x0src+(x1-x0)
-    y1src=y0src+(y1-y0)
-    x1mask=x0mask+(x1-x0)
-    y1mask=y0mask+(y1-y0)
-    if maskimage and (x0mask<0 or x0mask>maskwidth or\
-       y0mask<0 or y0mask>maskheight or\
-       x1mask<0 or x1mask>maskwidth or\
-       y1mask<0 or y1mask>maskheight): raise ValueError
-    if srcimage and (x0src<0 or x0src>srcwidth or\
-       y0src<0 or y0src>srcheight or\
-       x1src<0 or x1src>srcwidth or\
-       y1src<0 or y1src>srcheight): raise ValueError
-    if not maskImage: ropBackground=ropForeground
-    if ropForeground==0xAA and ropBackground==0xAA: return
-    for y in range(y1-y0):
+    if ropForeground < 0 or ropForeground >= 256:
+        raise ValueError
+    if ropBackground < 0 or ropBackground >= 256:
+        raise ValueError
+    if ropForeground == ropBackground or maskwidth == 0 or maskheight == 0:
+        maskimage = None
+    if (
+        (
+            ((ropForeground >> 4) & 15) == ((ropForeground) & 15)
+            and ((ropBackground >> 4) & 15) == ((ropBackground) & 15)
+        )
+        or patternwidth == 0
+        or patternheight == 0
+    ):
+        patternimage = None
+    if maskimage != None and (maskwidth < 0 or maskheight < 0):
+        raise ValueError
+    if patternimage != None and (patternwidth < 0 or patternheight < 0):
+        raise ValueError
+    if dstimage == None or dstwidth < 0 or dstheight < 0:
+        raise ValueError
+    if x0 > x1 or y0 > y1:
+        raise ValueError
+    x1src = x0src + (x1 - x0)
+    y1src = y0src + (y1 - y0)
+    x1mask = x0mask + (x1 - x0)
+    y1mask = y0mask + (y1 - y0)
+    if maskimage and (
+        x0mask < 0
+        or x0mask > maskwidth
+        or y0mask < 0
+        or y0mask > maskheight
+        or x1mask < 0
+        or x1mask > maskwidth
+        or y1mask < 0
+        or y1mask > maskheight
+    ):
+        raise ValueError
+    if srcimage and (
+        x0src < 0
+        or x0src > srcwidth
+        or y0src < 0
+        or y0src > srcheight
+        or x1src < 0
+        or x1src > srcwidth
+        or y1src < 0
+        or y1src > srcheight
+    ):
+        raise ValueError
+    if not maskimage:
+        ropBackground = ropForeground
+    if ropForeground == 0xAA and ropBackground == 0xAA:
+        return
+    for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:
             dy %= dstheight
@@ -1438,9 +1502,13 @@ def imageblitex(
             continue
         dy = dy * dstwidth * 3
         sy = (y0src + y) * srcwidth * 3 if srcimage else 0
-        paty = ((dy - patternOrgY)%patternheight) * patternwidth * 3 if patternimage else 0
+        paty = (
+            ((dy - patternOrgY) % patternheight) * patternwidth * 3
+            if patternimage
+            else 0
+        )
         masky = (y0mask + y) * maskwidth * 3 if maskimage else 0
-        for x in range(x1-x0):
+        for x in range(x1 - x0):
             dx = x0 + x
             if wraparound:
                 dx %= dstwidth
@@ -1448,22 +1516,24 @@ def imageblitex(
                 continue
             dstpos = dy + dx * 3
             srcpos = sy + x * 3
-            patpos = paty + ((dx - patternOrgX)%patternwidth) * 3 if patternimage else 0
+            patpos = (
+                paty + ((dx - patternOrgX) % patternwidth) * 3 if patternimage else 0
+            )
             maskpos = masky + (x0mask + y) * 3 if maskimage else 0
             for i in range(3):
-              s1 = srcimage[srcpos+i] if srcimage else 0
-              d1 = dstimage[dstpos+i] if dstimage else 0
-              p1 = patternimage[patpos+i] if patternimage else 0
-              m1 = maskimage[maskpos+i] if maskimage else 0
-              sdl = _applyrop(d1, s1, ropForeground&0xF)
-              sdh = _applyrop(d1, s1, (ropForeground>>8)&0xF)
-              sdp = (p1&sdh)^((~p1)&sdl)
-              if maskimage:
-                 sdl = _applyrop(d1, s1, ropBackground&0xF)
-                 sdh = _applyrop(d1, s1, (ropBackground>>8)&0xF)
-                 sdpb = (p1&sdh)^((~p1)&sdl)
-                 sdp = (m1&sdp)^((~m1)&sdpb)
-              dstimage[dstpos + i] = sdp
+                s1 = srcimage[srcpos + i] if srcimage else 0
+                d1 = dstimage[dstpos + i] if dstimage else 0
+                p1 = patternimage[patpos + i] if patternimage else 0
+                m1 = maskimage[maskpos + i] if maskimage else 0
+                sdl = _applyrop(d1, s1, ropForeground & 0xF)
+                sdh = _applyrop(d1, s1, (ropForeground >> 8) & 0xF)
+                sdp = (p1 & sdh) ^ ((~p1) & sdl)
+                if maskimage:
+                    sdl = _applyrop(d1, s1, ropBackground & 0xF)
+                    sdh = _applyrop(d1, s1, (ropBackground >> 8) & 0xF)
+                    sdpb = (p1 & sdh) ^ ((~p1) & sdl)
+                    sdp = (m1 & sdp) ^ ((~m1) & sdpb)
+                dstimage[dstpos + i] = sdp
 
 def imagetransblit(
     dstimage,
@@ -1486,35 +1556,73 @@ def imagetransblit(
     patternOrgY=0,
     ropForeground=0xCC,
     ropBackground=0xAA,
-    wraparound=True
+    wraparound=True,
 ):
     # 'ropForeground' and 'ropBackground' are as in imageblitex, except that
     # 'ropForeground' is used where the source color is not 'transcolor' or if
     # 'transcolor' is None; 'ropBackground' is used elsewhere.
-    if transcolor==None:
-       imageblitex(dstimage,dstwidth,dstheight,x0,y0,x1,y1,srcimage,srcwidth,
-            srcheight,x0src,y0src,patternimage,patternwidth,patternheight,
-            patternOrgX=patternOrgX,patternOrgY=patternOrgY,
-            ropForeground=ropForeground,ropBackground=ropBackground,
-            wraparound=wraparound)
-    if ropForeground<0 or ropForeground>=256: raise ValueError
-    if ropBackground<0 or ropBackground>=256: raise ValueError
-    if len(transcolor)<3: raise ValueError
-    if ropForeground==ropBackground: maskimage=None
-    if (((ropForeground>>4)&15)==((ropForeground)&15) and\
-       ((ropBackground>>4)&15)==((ropBackground)&15)) or\
-       patternwidth==0 or patternheight==0: patternimage=None
-    if patternimage!=None and (patternwidth<0 or patternheight<0): raise ValueError
-    if dstimage==None or dstwidth<0 or dstheight<0: raise ValueError
-    if x0>x1 or y0>y1: raise ValueError
-    x1src=x0src+(x1-x0)
-    y1src=y0src+(y1-y0)
-    if srcimage and (x0src<0 or x0src>srcwidth or\
-       y0src<0 or y0src>srcheight or\
-       x1src<0 or x1src>srcwidth or\
-       y1src<0 or y1src>srcheight): raise ValueError
-    if ropForeground==0xAA and ropBackground==0xAA: return
-    for y in range(y1-y0):
+    if transcolor == None:
+        imageblitex(
+            dstimage,
+            dstwidth,
+            dstheight,
+            x0,
+            y0,
+            x1,
+            y1,
+            srcimage,
+            srcwidth,
+            srcheight,
+            x0src,
+            y0src,
+            patternimage,
+            patternwidth,
+            patternheight,
+            patternOrgX=patternOrgX,
+            patternOrgY=patternOrgY,
+            ropForeground=ropForeground,
+            ropBackground=ropBackground,
+            wraparound=wraparound,
+        )
+    if ropForeground < 0 or ropForeground >= 256:
+        raise ValueError
+    if ropBackground < 0 or ropBackground >= 256:
+        raise ValueError
+    if len(transcolor) < 3:
+        raise ValueError
+    if ropForeground == ropBackground:
+        maskimage = None
+    if (
+        (
+            ((ropForeground >> 4) & 15) == ((ropForeground) & 15)
+            and ((ropBackground >> 4) & 15) == ((ropBackground) & 15)
+        )
+        or patternwidth == 0
+        or patternheight == 0
+    ):
+        patternimage = None
+    if patternimage != None and (patternwidth < 0 or patternheight < 0):
+        raise ValueError
+    if dstimage == None or dstwidth < 0 or dstheight < 0:
+        raise ValueError
+    if x0 > x1 or y0 > y1:
+        raise ValueError
+    x1src = x0src + (x1 - x0)
+    y1src = y0src + (y1 - y0)
+    if srcimage and (
+        x0src < 0
+        or x0src > srcwidth
+        or y0src < 0
+        or y0src > srcheight
+        or x1src < 0
+        or x1src > srcwidth
+        or y1src < 0
+        or y1src > srcheight
+    ):
+        raise ValueError
+    if ropForeground == 0xAA and ropBackground == 0xAA:
+        return
+    for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:
             dy %= dstheight
@@ -1522,8 +1630,8 @@ def imagetransblit(
             continue
         dy = dy * dstwidth * 3
         sy = (y0src + y) * srcwidth * 3
-        paty = ((dy + patternOrgY)%patternheight) * 3 if patternimage else 0
-        for x in range(x1-x0):
+        paty = ((dy + patternOrgY) % patternheight) * 3 if patternimage else 0
+        for x in range(x1 - x0):
             dx = x0 + x
             if wraparound:
                 dx %= dstwidth
@@ -1531,22 +1639,30 @@ def imagetransblit(
                 continue
             dstpos = dy + dx * 3
             srcpos = sy + x * 3
-            patpos = paty + ((dx + patternOrgX)%patternwidth) * 3 if patternimage else 0
-            m1 = 0x00 if (srcimage[srcpos]==transcolor[0] and\
-                 srcimage[srcpos+1]==transcolor[1] and\
-                 srcimage[srcpos+2]==transcolor[2]) else 0xFF
+            patpos = (
+                paty + ((dx + patternOrgX) % patternwidth) * 3 if patternimage else 0
+            )
+            m1 = (
+                0x00
+                if (
+                    srcimage[srcpos] == transcolor[0]
+                    and srcimage[srcpos + 1] == transcolor[1]
+                    and srcimage[srcpos + 2] == transcolor[2]
+                )
+                else 0xFF
+            )
             for i in range(3):
-              s1 = srcimage[srcpos+i] if srcimage else 0
-              d1 = dstimage[dstpos+i] if dstimage else 0
-              p1 = patternimage[patpos+i] if patternimage else 0
-              sdl = _applyrop(d1, s1, ropForeground&0xF)
-              sdh = _applyrop(d1, s1, (ropForeground>>8)&0xF)
-              sdp = (p1&sdh)^((~p1)&sdl)
-              sdl = _applyrop(d1, s1, ropBackground&0xF)
-              sdh = _applyrop(d1, s1, (ropBackground>>8)&0xF)
-              sdpb = (p1&sdh)^((~p1)&sdl)
-              sdp = (m1&sdp)^((~m1)&sdpb)
-              dstimage[dstpos + i] = sdp
+                s1 = srcimage[srcpos + i] if srcimage else 0
+                d1 = dstimage[dstpos + i] if dstimage else 0
+                p1 = patternimage[patpos + i] if patternimage else 0
+                sdl = _applyrop(d1, s1, ropForeground & 0xF)
+                sdh = _applyrop(d1, s1, (ropForeground >> 8) & 0xF)
+                sdp = (p1 & sdh) ^ ((~p1) & sdl)
+                sdl = _applyrop(d1, s1, ropBackground & 0xF)
+                sdh = _applyrop(d1, s1, (ropBackground >> 8) & 0xF)
+                sdpb = (p1 & sdh) ^ ((~p1) & sdl)
+                sdp = (m1 & sdp) ^ ((~m1) & sdpb)
+                dstimage[dstpos + i] = sdp
 
 def imageblit(
     dstimage,
@@ -1562,10 +1678,24 @@ def imageblit(
 ):
     # 'rasterOp' is a binary raster operation between the bits of the
     # destination and those of the source.
-    if rasterOp<0 or rasterOp>=16: raise ValueError
-    return imageblitex(dstimage,dstwidth,dstheight,0,0,srcwidth,srcheight,
-         srcimage,srcwidth,srcheight,0,0,wraparound=wraparound,
-         ropForeground=rasterOp|(rasterOp<<4))
+    if rasterOp < 0 or rasterOp >= 16:
+        raise ValueError
+    return imageblitex(
+        dstimage,
+        dstwidth,
+        dstheight,
+        x0,
+        y0,
+        x0 + srcwidth,
+        y0 + srcheight,
+        srcimage,
+        srcwidth,
+        srcheight,
+        0,
+        0,
+        wraparound=wraparound,
+        ropForeground=rasterOp | (rasterOp << 4),
+    )
 
 def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
     if srcwidth < 0 or srcheight < 0 or dstwidth < 0 or dstheight < 0:
@@ -1732,17 +1862,17 @@ def bordereddithergradientbox(
                     image[yp + xp * 3 + 2] = color1[2]
 
 def ditheralpha(image, width, height):
-   # Dither 256-level alpha channel to two levels (opaque
-   # and transparent)
-   i=0
-   for y in range(height):
-      for x in range(width):
-         a=image[i+3]
-         if a!=0 and a!=255:
-           bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-           a = 255 if bdither < a * 64 // 255 else 0
-           image[i+3]=a
-         i+=4
+    # Dither 256-level alpha channel to two levels (opaque
+    # and transparent)
+    i = 0
+    for y in range(height):
+        for x in range(width):
+            a = image[i + 3]
+            if a != 0 and a != 255:
+                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                a = 255 if bdither < a * 64 // 255 else 0
+                image[i + 3] = a
+            i += 4
 
 def borderedbox(
     image, width, height, border, color1, color2, x0, y0, x1, y1, wraparound=True
@@ -2954,8 +3084,7 @@ class WindowsMetafileDraw:
     def toMetafile(self):
         bbox = self.bbox if self.bbox else [0, 0, 0, 0]
         deletionRecords = [_deleteObject(i) for i in range(len(self.handles))]
-        # Apparently Windows adds the following "final" metafile record to metafiles
-        # it generates
+        # Windows adds the following "final" metafile record to metafiles it generates
         deletionRecords.append(struct.pack("<LH", 3, 0))
         startingRecords = []
         # SetMapMode(MM_TEXT)
