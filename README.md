@@ -56,6 +56,7 @@ The color palettes allowed are as follows.
 - Up to 16 colors from the "web safe" palette.
 - Up to 16 colors from the "web safe" and VGA palettes.
 - Up to 16 colors from those displayable by EGA monitors (each color component is 0, 85, 170, or 255).
+- Up to 16 colors from those displayable by 12-bit color displays (each color component is a multiple of 17).
 - Up to eight colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - Up to 16 colors from those displayable by 15-bit color displays.
 - 5- to 64-color grayscale palette (all color components the same).
@@ -77,16 +78,6 @@ The pixel dimensions allowed are as follows.
 - Not preferred: 320&times;240, 320&times;200.
 - Not preferred: Custom size up to 96&times;96.
 - Not preferred: Custom size up to 256&times;256.
-
-## Logical Display Resolutions
-
-An image can be adapted for displays with logical resolutions that differ from VGA (96 horizontal and vertical pixels per inch) by scaling the image's width and height.
-
-For example, EGA and CGA displays have nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such displays are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for EGA displays, becomes a shrunken 300&times;225 image.
-
-A table of logical resolutions (per inch) for different devices is found in the [OpenType 1.8 specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions) (the most recent version doesn't have this table).
-
-Logical resolutions also include the special case of _pixel depth_, or a factor to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Pixel depths include the factors 1.25 (IBM 8514/a), 2, and 3.
 
 ## Examples
 
@@ -154,7 +145,21 @@ def contouring(x,y,z):
    c=abs(x+y)%2.0; return 2-c if c > 1.0 else c
 ```
 
-## Button and Border Styles
+## Other User Interface Graphics
+
+This section discusses additional aspects of the traditional design of user interface graphics, such as button and border styles, icons, and cursors.
+
+### Logical Display Resolutions
+
+An image can be adapted for displays with logical resolutions that differ from VGA (96 horizontal and vertical pixels per inch) by scaling the image's width and height.
+
+For example, EGA and CGA displays have nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such displays are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for EGA displays, becomes a shrunken 300&times;225 image.
+
+A table of logical resolutions (per inch) for different devices is found in the [OpenType 1.8 specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions) (the most recent version doesn't have this table).
+
+Logical resolutions also include the special case of _pixel depth_, or a factor to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Pixel depths include the factors 1.25 (IBM 8514/a), 2, and 3.
+
+### Button and Border Styles
 
 Another challenge, related to classic user-interface style, this time relating to user interface elements.  Write computer code (released to the public domain or licensed under the Unlicense) to draw the following border and button styles:
 
@@ -184,17 +189,19 @@ It is allowed to use dithering to simulate the appearance of more colors using t
 
 The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
 
-## Icons and Cursors
+### Icons and Cursors
 
 An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
 
-- The same icon should be available in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component.  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255.
-- The same icon should be drawn in the dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64.
-- All icons can include transparent parts, but should have no translucent parts except for 8-bit-per-color-component icons.
+- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component.  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255.
+- The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). (Modern guidelines recommend a 256&times;256 icon as well.)
+- All icons can include transparent pixels, but should have no translucent pixels except for 8-bit-per-color-component icons.
+
+Of these variations, 32&times;32 icons with the VGA palette are traditionally the main icon variation.
 
 Cursors (mouse pointer graphics) can follow the guidelines given above as well, but most cursors are traditionally drawn&mdash;
 
-- in a single size, generally 32&times;32, except to account for [logical display resolution](#Logical_Display_Resolutions), and
+- in a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions), and
 - in two colors (black and white) or in grayscale, in either case with optional transparency.
 
 <a id=License></a>

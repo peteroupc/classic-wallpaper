@@ -891,9 +891,10 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
 
-def writeavi(f, images, width, height, raiseIfExists=False):
+def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False):
     if not images:
         raise ValueError
+    if len(images)==0: raise ValueError
     if width < 0 or height < 0 or width > 0x7FFF or height > 0x7FFF:
         raise ValueError
     for image in images:
@@ -901,7 +902,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
             raise ValueError
         if len(image) != width * height * 3:
             raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
-    fps = 20
+    fps = 20 # 20 fps is adequate for fluid animations
     aviheader = struct.pack(
         "<LLLLLLLLLLLLLL",
         1000000 // fps,  # microseconds per frame
@@ -959,7 +960,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
                 numuniques += 1
             pos += 3
     bmoffset = 0
-    dowriteavi = len(images) > 1
+    dowriteavi = len(images) > 1 or not singleFrameAsBmp
     if dowriteavi:
         if numuniques > 256:
             print("AVI writing in more than 256 colors is not supported")
@@ -1279,7 +1280,7 @@ def writeavi(f, images, width, height, raiseIfExists=False):
     fd.close()
 
 def writebmp(f, image, width, height, raiseIfExists=False):
-    return writeavi(f, [image], width, height, raiseIfExists=raiseIfExists)
+    return writeavi(f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True)
 
 def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
     borderedbox(
