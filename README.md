@@ -204,6 +204,10 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 - in a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions), and
 - in two colors (black and white) or in grayscale, in either case with optional transparency.
 
+### Animations
+
+Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files in the AVI format without sound, this control appears to be rarely used.  More usually, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `desktopwallpaper.py` under the method `writeavi`.
+
 <a id=License></a>
 
 ## License
