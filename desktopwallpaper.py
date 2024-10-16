@@ -1494,6 +1494,7 @@ def imageblitex(
     if not maskimage:
         ropBackground = ropForeground
     if ropForeground == 0xAA and ropBackground == 0xAA:
+        # Destination left unchanged
         return
     for y in range(y1 - y0):
         dy = y0 + y
@@ -1501,14 +1502,14 @@ def imageblitex(
             dy %= dstheight
         if (not wraparound) and dy < 0 or dy >= dstheight:
             continue
-        dy = dy * dstwidth * 3
         sy = (y0src + y) * srcwidth * 3 if srcimage else 0
         paty = (
-            ((dy - patternOrgY) % patternheight) * patternwidth * 3
+            (((dy - patternOrgY) % patternheight) * patternwidth * 3)
             if patternimage
             else 0
         )
         masky = (y0mask + y) * maskwidth * 3 if maskimage else 0
+        dy = dy * dstwidth * 3
         for x in range(x1 - x0):
             dx = x0 + x
             if wraparound:
@@ -1518,20 +1519,20 @@ def imageblitex(
             dstpos = dy + dx * 3
             srcpos = sy + (x0src + x) * 3
             patpos = (
-                paty + ((dx - patternOrgX) % patternwidth) * 3 if patternimage else 0
+                (paty + ((dx - patternOrgX) % patternwidth) * 3) if patternimage else 0
             )
-            maskpos = masky + (x0mask + y) * 3 if maskimage else 0
+            maskpos = masky + (x0mask + x) * 3 if maskimage else 0
             for i in range(3):
                 s1 = srcimage[srcpos + i] if srcimage else 0
                 d1 = dstimage[dstpos + i] if dstimage else 0
                 p1 = patternimage[patpos + i] if patternimage else 0
                 m1 = maskimage[maskpos + i] if maskimage else 0
                 sdl = _applyrop(d1, s1, ropForeground & 0xF)
-                sdh = _applyrop(d1, s1, (ropForeground >> 8) & 0xF)
+                sdh = _applyrop(d1, s1, (ropForeground >> 4) & 0xF)
                 sdp = (p1 & sdh) ^ ((~p1) & sdl)
                 if maskimage:
                     sdl = _applyrop(d1, s1, ropBackground & 0xF)
-                    sdh = _applyrop(d1, s1, (ropBackground >> 8) & 0xF)
+                    sdh = _applyrop(d1, s1, (ropBackground >> 4) & 0xF)
                     sdpb = (p1 & sdh) ^ ((~p1) & sdl)
                     sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
@@ -1622,6 +1623,7 @@ def imagetransblit(
     ):
         raise ValueError
     if ropForeground == 0xAA and ropBackground == 0xAA:
+        # Destination left unchanged
         return
     for y in range(y1 - y0):
         dy = y0 + y
@@ -1629,9 +1631,9 @@ def imagetransblit(
             dy %= dstheight
         if (not wraparound) and dy < 0 or dy >= dstheight:
             continue
-        dy = dy * dstwidth * 3
         sy = (y0src + y) * srcwidth * 3
         paty = ((dy + patternOrgY) % patternheight) * 3 if patternimage else 0
+        dy = dy * dstwidth * 3
         for x in range(x1 - x0):
             dx = x0 + x
             if wraparound:
@@ -1657,10 +1659,10 @@ def imagetransblit(
                 d1 = dstimage[dstpos + i] if dstimage else 0
                 p1 = patternimage[patpos + i] if patternimage else 0
                 sdl = _applyrop(d1, s1, ropForeground & 0xF)
-                sdh = _applyrop(d1, s1, (ropForeground >> 8) & 0xF)
+                sdh = _applyrop(d1, s1, (ropForeground >> 4) & 0xF)
                 sdp = (p1 & sdh) ^ ((~p1) & sdl)
                 sdl = _applyrop(d1, s1, ropBackground & 0xF)
-                sdh = _applyrop(d1, s1, (ropBackground >> 8) & 0xF)
+                sdh = _applyrop(d1, s1, (ropBackground >> 4) & 0xF)
                 sdpb = (p1 & sdh) ^ ((~p1) & sdl)
                 sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
@@ -3370,6 +3372,33 @@ def drawsunkenbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSiz
         x1 -= 1
         y1 -= 1
 
+# Raised border where neither edge "dominates"
+def drawraisedbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
+    for i in range(borderSize):
+        edgesize=1
+        _drawloweredge(helper,x0,y0,x1-edgesize,y1-edgesize,hilt,edgesize=edgesize)
+        _drawupperedge(helper,x0+edgesize,y0+edgesize,x1,y1,sh,edgesize=edgesize)
+        _drawpositiverect(helper,x1-edgesize,y0,x1,y0+edgesize,lt)
+        _drawpositiverect(helper,x1,y1-edgesize,x1+edgesize,y1,lt)
+        x0 += 1
+        y0 += 1
+        x1 -= 1
+        y1 -= 1
+
+# Sunken border where neither edge "dominates"
+def drawsunkenbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
+    for i in range(borderSize):
+        edgesize=1
+        _drawloweredge(helper,x0,y0,x1-edgesize,y1-edgesize,hilt,edgesize=edgesize)
+        _drawupperedge(helper,x0+edgesize,y0+edgesize,x1,y1,sh,edgesize=edgesize)
+        _drawpositiverect(helper,x1-edgesize,y0,x1,y0+edgesize,lt)
+        _drawpositiverect(helper,x1,y1-edgesize,x1+edgesize,y1,lt)
+        x0 += 1
+        y0 += 1
+        x1 -= 1
+        y1 -= 1
+
+# Raised border where the "bottom right dominates"
 def drawraisedborder(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
     for i in range(borderSize):
         _drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh)
@@ -3378,6 +3407,7 @@ def drawraisedborder(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
         x1 -= 1
         y1 -= 1
 
+# Sunken border where the "bottom right dominates"
 def drawsunkenborder(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
     for i in range(borderSize):
         _drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt)
