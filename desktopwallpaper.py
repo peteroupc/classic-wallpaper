@@ -894,7 +894,8 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
 def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False):
     if not images:
         raise ValueError
-    if len(images)==0: raise ValueError
+    if len(images) == 0:
+        raise ValueError
     if width < 0 or height < 0 or width > 0x7FFF or height > 0x7FFF:
         raise ValueError
     for image in images:
@@ -902,7 +903,7 @@ def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=Fal
             raise ValueError
         if len(image) != width * height * 3:
             raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
-    fps = 20 # 20 fps is adequate for fluid animations
+    fps = 20  # 20 fps is adequate for fluid animations
     aviheader = struct.pack(
         "<LLLLLLLLLLLLLL",
         1000000 // fps,  # microseconds per frame
@@ -1280,7 +1281,9 @@ def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=Fal
     fd.close()
 
 def writebmp(f, image, width, height, raiseIfExists=False):
-    return writeavi(f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True)
+    return writeavi(
+        f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True
+    )
 
 def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
     borderedbox(
@@ -1424,8 +1427,12 @@ def imageblitex(
     # function.  Thus none of them can include transparency in whole or in part.
     # (Windows's graphical device interface [GDI] supports transparent
     # parts in brush patterns only for brushes
-    # with predefined hatch patterns, and then only if the background mode is
-    # transparent and only in the gaps between hatch marks.)
+    # with predefined hatch patterns and only in the gaps between hatch marks; in
+    # bit block transfer operations such as BitBlt, these transparent pixels are
+    # filled with the background color whether the background mode is
+    # transparent or opaque; in line and shape drawing operations (which this
+    # method doesn't belong in), if the background mode is transparent, only
+    # the nontransparent pixels are drawn and affected by raster operations.)
     # 'patternOrgX' and 'patternOrgY' are offsets from the destination's top left
     # corner where the top left corner of the brush pattern image would
     # be drawn if a repetition of the brush pattern were to be drawn across the
@@ -1877,19 +1884,19 @@ def ditheralpha(image, width, height):
                 image[i + 3] = a
             i += 4
 
-def splitmask(image,width,height):
-   # splits a 32-bit-per pixel image (four elements per pixel) into a
-   # color mask and an (inverted) alpha mask, in that order.
-   img=[0 for _ in range(width*height*3)]
-   mask=[0 for _ in range(width*height*3)]
-   for i in range(width*height):
-     img[i*3]=image[i*4]
-     img[i*3+1]=image[i*4+1]
-     img[i*3+2]=image[i*4+2]
-     # Invert alpha channel to ease the alpha mask's use as an AND mask
-     # (when every pixel in the mask is all zeros or all ones)
-     mask[i*3]=mask[i*3+1]=mask[i*3+2]=255-image[i*4+3]
-   return [img,mask]
+def splitmask(image, width, height):
+    # splits a 32-bit-per pixel image (four elements per pixel) into a
+    # color mask and an (inverted) alpha mask, in that order.
+    img = [0 for _ in range(width * height * 3)]
+    mask = [0 for _ in range(width * height * 3)]
+    for i in range(width * height):
+        img[i * 3] = image[i * 4]
+        img[i * 3 + 1] = image[i * 4 + 1]
+        img[i * 3 + 2] = image[i * 4 + 2]
+        # Invert alpha channel to ease the alpha mask's use as an AND mask
+        # (when every pixel in the mask is all zeros or all ones)
+        mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
+    return [img, mask]
 
 def borderedbox(
     image, width, height, border, color1, color2, x0, y0, x1, y1, wraparound=True
@@ -2439,8 +2446,10 @@ def whitenoiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    if not bgcolor: bgcolor=[255,255,255]
-    if not noisecolor: noisecolor=[0,0,0]
+    if not bgcolor:
+        bgcolor = [255, 255, 255]
+    if not noisecolor:
+        noisecolor = [0, 0, 0]
     image = []
     for y in range(height):
         row = [0 for i in range(width * 3)]
@@ -3148,8 +3157,8 @@ class WindowsMetafileDraw:
         return header + b"".join(recs)
 
 # helper for upper edge drawing
-def _drawupperedge(helper, x0, y0, x1, y1, color, edgesize=1):
-    if x1>x0 or y1>y0: # empty or negative
+def _drawupperedgecore(helper, x0, y0, x1, y1, color, edgesize=1):
+    if (not color) or x1 > x0 or y1 > y0:  # empty or negative
         return
     elif x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
         helper.rect(x0, y0, x1, y1, color)
@@ -3166,8 +3175,8 @@ def _drawupperedge(helper, x0, y0, x1, y1, color, edgesize=1):
         helper.rect(x0 + edgesize, y0, x1, y0 + edgesize, color)
 
 # helper for lower edge drawing
-def _drawloweredge(helper, x0, y0, x1, y1, color, edgesize=1):
-    if x1>x0 or y1>y0: # empty or negative
+def _drawloweredgecore(helper, x0, y0, x1, y1, color, edgesize=1):
+    if (not color) or x1 > x0 or y1 > y0:  # empty or negative
         return
     elif x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
         helper.rect(x0, y0, x1, y1, color)
@@ -3182,239 +3191,197 @@ def _drawloweredge(helper, x0, y0, x1, y1, color, edgesize=1):
         # bottom edge (includes bottom left "pixel")
         helper.rect(x0, y1 - edgesize, x1 - edgesize, y1, color)
 
-def drawpositiverect(helper, x0, y0, x1, y1, face):
-    if x1>x0 or y1>y0: # empty or negative
-        return
-    helper.rect(x0,y0,x1,y1, face)
-
-# helper for button face drawing
-def _drawface(helper, x0, y0, x1, y1, face, edgesize=1):
-    if x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
-        return
-    elif x1 - x0 < edgesize * 2:  # too narrow
-        helper.rect(x0, y0 + edgesize, x1, y0 - edgesize, face)
-    elif y1 - y0 < edgesize * 2:  # too short
-        helper.rect(x0 + edgesize, y0, x1 - edgesize, y1, face)
-    else:
-        helper.rect(x0 + edgesize, y0 + edgesize, x1 - edgesize, y1 - edgesize, face)
-
-# helper for edge drawing (upper left edge "dominates")
-def _drawedgetopdom(helper, x0, y0, x1, y1, upper, lower=None, edgesize=1):
-   _drawloweredge(helper,x0,y0,x1,y1,upper,edgesize=edgesize)
-   _drawupperedge(helper,x0+edgesize,y0+edgesize,x1,y1,upper,edgesize=edgesize)
-
-# helper for edge drawing (bottom right edge "dominates")
 # hilt = upper part of edge, dksh = lower part of edge
-def _drawedgebotdom(helper, x0, y0, x1, y1, hilt, dksh=None, edgesize=1):
-    if hilt and (dksh is None):
-        dksh = hilt
-    if dksh and (hilt is None):
-        hilt = dksh
-    if x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
-        helper.rect(x0, y0, x1, y1, dksh)
-    elif x1 - x0 < edgesize * 2:  # too narrow
-        helper.rect(x0, y0, x1, y0 + edgesize, hilt)
-        helper.rect(x0, y0 + edgesize, x1, y1 - edgesize, hilt)
-        helper.rect(x0, y1 - edgesize, x1, y1, dksh)
-    elif y1 - y0 < edgesize * 2:  # too short
-        helper.rect(x0, y0, x0 + edgesize, y1, dksh)
-        helper.rect(x0 + edgesize, y0, x1 - edgesize, y1, hilt)
-        helper.rect(x1 - edgesize, y0, x1, y1, dksh)
-    else:
-        helper.rect(x0, y0, x0 + edgesize, y1 - edgesize, hilt)  # left edge
-        helper.rect(x0 + edgesize, y0, x1 - edgesize, y0 + edgesize, hilt)  # top edge
-        helper.rect(x1 - edgesize, y0, x1, y1, dksh)  # right edge
-        helper.rect(x0, y1 - edgesize, x1 - edgesize, y1, dksh)  # bottom edge
-
-# hilt = upper part of edge, dksh = lower part of edge
-def _drawroundedge(helper, x0, y0, x1, y1, hilt, dksh=None, edgesize=1):
-    if hilt and (dksh is None):
-        dksh = hilt
-    if dksh and (hilt is None):
-        hilt = dksh
+def _drawroundedgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=1):
     if x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
         return
     elif x1 - x0 < edgesize * 2:  # too narrow
-        helper.rect(x0, y0 + edgesize, x1, y0 - edgesize, hilt)
+        helper.rect(x0, y0 + edgesize, x1, y0 - edgesize, upper)
     elif y1 - y0 < edgesize * 2:  # too short
-        helper.rect(x0 + edgesize, y0, x1 - edgesize, y1, hilt)
+        helper.rect(x0 + edgesize, y0, x1 - edgesize, y1, upper)
     else:
-        helper.rect(x0, y0 + edgesize, x0 + edgesize, y1 - edgesize, hilt)  # left edge
-        helper.rect(x0 + edgesize, y0, x1 - edgesize, y0 + edgesize, hilt)  # top edge
+        helper.rect(x0, y0 + edgesize, x0 + edgesize, y1 - edgesize, upper)  # left edge
+        helper.rect(x0 + edgesize, y0, x1 - edgesize, y0 + edgesize, upper)  # top edge
         helper.rect(
             x1 - edgesize,
             y0 + edgesize,
             x1,
             y1 - edgesize,
-            hilt if dksh is None else dksh,
+            lower,
         )  # right edge
         helper.rect(
             x0 + edgesize,
             y1 - edgesize,
             x1 - edgesize,
             y1,
-            hilt if dksh is None else dksh,
+            lower,
         )  # bottom edge
 
-def _drawinnerface(helper, x0, y0, x1, y1, face):
-    if face:
-        edgesize = 1
-        _drawface(
-            helper,
-            x0 + edgesize,
-            y0 + edgesize,
-            x1 - edgesize,
-            y1 - edgesize,
-            face,
-            edgesize=edgesize,
+def drawpositiverect(helper, x0, y0, x1, y1, face):
+    if x1 > x0 or y1 > y0:  # empty or negative
+        return
+    helper.rect(x0, y0, x1, y1, face)
+
+def drawupperedge(helper, x0, y0, x1, y1, upper, edgesize=1, bordersize=1):
+    for i in range(bordersize):
+        _drawupperedgecore(helper, x0, y0, x1, y1, upper, edgesize=edgesize)
+        x0 += edgesize
+        y0 += edgesize
+
+def drawloweredge(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1):
+    for i in range(bordersize):
+        drawupperedgecore(helper, x0, y0, x1, y1, lower, edgesize=edgesize)
+        x1 -= edgesize
+        y1 -= edgesize
+
+# helper for edge drawing (upper left edge "dominates")
+def drawroundededge(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
+    for i in range(bordersize):
+        _drawroundededgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=edgesize)
+        x0 += edgesize
+        y0 += edgesize
+        x1 -= edgesize
+        y1 -= edgesize
+
+# helper for edge drawing (upper left edge "dominates")
+def drawedgetopdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
+    for i in range(bordersize):
+        drawloweredge(helper, x0, y0, x1, y1, upper, edgesize=edgesize)
+        drawupperedge(
+            helper, x0 + edgesize, y0 + edgesize, x1, y1, upper, edgesize=edgesize
         )
+        x0 += edgesize
+        y0 += edgesize
+        x1 -= edgesize
+        y1 -= edgesize
+
+# helper for edge drawing (bottom right edge "dominates")
+def drawedgebotdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
+    for i in range(bordersize):
+        drawloweredge(
+            helper, x0, y0, x1 - edgesize, y1 - edgesize, upper, edgesize=edgesize
+        )
+        drawupperedge(helper, x0, y0, x1, y1, upper, edgesize=edgesize)
+        x0 += edgesize
+        y0 += edgesize
+        x1 -= edgesize
+        y1 -= edgesize
+
+# helper for edge drawing (neither edge "dominates")
+def drawedgenodom(
+    helper, x0, y0, x1, y1, upper, lower, corner, edgesize=1, bordersize=1
+):
+    for i in range(bordersize):
+        drawloweredge(
+            helper, x0, y0, x1 - edgesize, y1 - edgesize, upper, edgesize=edgesize
+        )
+        drawupperedge(
+            helper, x0 + edgesize, y0 + edgesize, x1, y1, upper, edgesize=edgesize
+        )
+        drawpositiverect(helper, x1 - edgesize, y0, x1, y0 + edgesize, corner)
+        drawpositiverect(helper, x1, y1 - edgesize, x1 + edgesize, y1, corner)
+        x0 += edgesize
+        y0 += edgesize
+        x1 -= edgesize
+        y1 -= edgesize
 
 def drawindentborder(
-    helper, x0, y0, x1, y1, hilt, sh, frame, outerBorderSize=1, innerBorderSize=1
+    helper, x0, y0, x1, y1, hilt, sh, frame, outerbordersize=1, innerbordersize=1
 ):
-    if innerBorderSize < 0:
+    if innerbordersize < 0:
         raise ValueError
-    if outerBorderSize < 0: raise ValueError
-    _drawsunkenborder(helper, x0, y1, x1, y1, hilt, None, sh, None)
-    _drawedgebotdom(helper, x0 + outerBorderSize, y1 + outerBorderSize, x1 - outerBorderSize, y1 - outerBorderSize, frame, frame)
-    _drawraisedborder(helper, x0 + outerBorderSize+1, y1 + outerBorderSize+1, x1-outerBorderSize-1, y1-outerBorderSize-1, hilt, None, sh, None)
+    if outerbordersize < 0:
+        raise ValueError
+    drawsunkenborderbotdom(
+        helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize
+    )
+    drawedgebotdom(
+        helper,
+        x0 + outerbordersize,
+        y1 + outerbordersize,
+        x1 - outerbordersize,
+        y1 - outerbordersize,
+        frame,
+        frame,
+    )
+    drawraisedborderbotdom(
+        helper,
+        x0 + outerbordersize + 1,
+        y1 + outerbordersize + 1,
+        x1 - outerbordersize - 1,
+        y1 - outerbordersize - 1,
+        hilt,
+        None,
+        sh,
+        None,
+        bordersize=innerbordersize,
+    )
+    c = 1 + outerbordersize + innerbordersize
+    return [x0 + c, y0 + c, x0 - c, y0 - c]
 
 # The following four functions draw window edges
 # in raised or sunken style
-def drawraisedouter(helper, x0, y0, x1, y1,
-  hilt, # highlight color
-  lt, # light color
-  sh, # shadow color
-  dksh # dark shadow color
+def drawraisedouterwindow(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt,  # highlight color
+    lt,  # light color
+    sh,  # shadow color
+    dksh,  # dark shadow color
 ):
-    _drawedgebotdom(helper, x0, y0, x1, y1, lt, dksh)
+    drawedgebotdom(helper, x0, y0, x1, y1, lt, dksh)
 
-def drawraisedinner(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    edgesize = 1
-    _drawedgebotdom(
-        helper,
-        x0 + edgesize,
-        y0 + edgesize,
-        x1 - edgesize,
-        y1 - edgesize,
-        hilt,  # draw the "upper part" with this color
-        sh,  # draw the "lower part" with this color
-        edgesize=edgesize,
-    )
+def drawraisedinnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh)
 
-def drawsunkenouter(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    return _drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt)
+def drawsunkenouterwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt)
 
-def drawsunkeninner(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    edgesize = 1
-    return _drawedgebotdom(
-        helper,
-        x0 + edgesize,
-        y0 + edgesize,
-        x1 - edgesize,
-        y1 - edgesize,
-        dksh,  # draw the "upper part" with this color
-        lt,  # draw the "lower part" with this color
-        edgesize=edgesize,
-    )
+def drawsunkeninnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, dksh, lt)
 
 # The following four functions draw button edges (also known as "soft" edges)
 # in raised or sunken style
-def drawraisedouterbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    return _drawedgebotdom(helper, x0, y0, x1, y1, hilt, dksh)
+def drawraisedouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0, y0, x1, y1, hilt, dksh)
 
-def drawraisedinnerbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    edgesize = 1
-    return _drawedgebotdom(
-        helper,
-        x0 + edgesize,
-        y0 + edgesize,
-        x1 - edgesize,
-        y1 - edgesize,
-        lt,  # draw the "upper part" with this color
-        sh,  # draw the "lower part" with this color
-        edgesize=edgesize,
-    )
+def drawraisedinnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, lt, sh)
 
-def drawsunkenouterbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    return _drawedgebotdom(helper, x0, y0, x1, y1, dksh, hilt)
+def drawsunkenouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0, y0, x1, y1, dksh, hilt)
 
-def drawsunkeninnerbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    edgesize = 1
-    return _drawedgebotdom(
-        helper,
-        x0 + edgesize,
-        y0 + edgesize,
-        x1 - edgesize,
-        y1 - edgesize,
-        sh,  # draw the "upper part" with this color
-        lt,  # draw the "lower part" with this color
-        edgesize=edgesize,
-    )
+def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, lt)
 
 ####
 
 # Raised border where the "top left dominates"
-def drawraisedbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
-    for i in range(borderSize):
-        _drawedgetopdom(helper, x0, y0, x1, y1, hilt, sh)
-        x0 += 1
-        y0 += 1
-        x1 -= 1
-        y1 -= 1
+def drawraisedbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
+    drawedgetopdom(helper, x0, y0, x1, y1, hilt, sh, bordersize=bordersize)
 
 # Sunken border where the "top left dominates"
-def drawsunkenbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
-    for i in range(borderSize):
-        _drawedgetopdom(helper, x0, y0, x1, y1, sh, hilt)
-        x0 += 1
-        y0 += 1
-        x1 -= 1
-        y1 -= 1
+def drawsunkenbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
+    drawedgetopdom(helper, x0, y0, x1, y1, sh, hilt, bordersize=bordersize)
 
 # Raised border where neither edge "dominates"
-def drawraisedbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
-    for i in range(borderSize):
-        edgesize=1
-        _drawloweredge(helper,x0,y0,x1-edgesize,y1-edgesize,hilt,edgesize=edgesize)
-        _drawupperedge(helper,x0+edgesize,y0+edgesize,x1,y1,sh,edgesize=edgesize)
-        _drawpositiverect(helper,x1-edgesize,y0,x1,y0+edgesize,lt)
-        _drawpositiverect(helper,x1,y1-edgesize,x1+edgesize,y1,lt)
-        x0 += 1
-        y0 += 1
-        x1 -= 1
-        y1 -= 1
+def drawraisedbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
+    drawedgenodom(helper, x0, y0, x1, y1, hilt, sh, lt, bordersize=bordersize)
 
 # Sunken border where neither edge "dominates"
-def drawsunkenbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
-    for i in range(borderSize):
-        edgesize=1
-        _drawloweredge(helper,x0,y0,x1-edgesize,y1-edgesize,hilt,edgesize=edgesize)
-        _drawupperedge(helper,x0+edgesize,y0+edgesize,x1,y1,sh,edgesize=edgesize)
-        _drawpositiverect(helper,x1-edgesize,y0,x1,y0+edgesize,lt)
-        _drawpositiverect(helper,x1,y1-edgesize,x1+edgesize,y1,lt)
-        x0 += 1
-        y0 += 1
-        x1 -= 1
-        y1 -= 1
+def drawsunkenbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
+    drawedgenodom(helper, x0, y0, x1, y1, sh, hilt, lt, bordersize=bordersize)
 
 # Raised border where the "bottom right dominates"
-def drawraisedborder(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
-    for i in range(borderSize):
-        _drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh)
-        x0 += 1
-        y0 += 1
-        x1 -= 1
-        y1 -= 1
+def drawraisedborderbotdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
+    drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh, bordersize=bordersize)
 
 # Sunken border where the "bottom right dominates"
-def drawsunkenborder(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, borderSize=1):
-    for i in range(borderSize):
-        _drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt)
-        x0 += 1
-        y0 += 1
-        x1 -= 1
-        y1 -= 1
+def drawsunkenborderbotdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
+    drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt, bordersize=bordersize)
 
 ####
 
@@ -3426,32 +3393,14 @@ def monoborder(  # "Monochrome" flat border
     y1,
     clientAreaColor,  # draw the inner and middle parts with this color
     windowFrameColor,  # draw the outer parts with this color
-    drawFace=True,
 ):
-    drawraisedouter(  # upper and lower outer parts
-        helper,
-        x0,
-        y0,
-        x1,
-        y1,
-        windowFrameColor,
-        windowFrameColor,
-        windowFrameColor,
-        windowFrameColor,
+    drawedgebotdom(helper, x0, y0, x1, y1, windowFrameColor, windowFrameColor)
+    drawedgebotdom(
+        helper, x0 + 1, y0 + 1, x1 + 1, y1 + 1, clientAreaColor, clientAreaColor
     )
-    drawraisedinner(  # upper and lower inner parts
-        helper,
-        x0,
-        y0,
-        x1,
-        y1,
-        clientAreaColor,
-        clientAreaColor,
-        clientAreaColor,
-        clientAreaColor,
-    )
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, clientAreaColor)  # middle
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, clientAreaColor]
 
 def flatborder(  # Flat border
     helper,
@@ -3461,14 +3410,12 @@ def flatborder(  # Flat border
     y1,
     sh,  # draw the outer parts with this color
     buttonFace,  # draw the inner and middle parts with this color
-    drawFace=True,
 ):
-    drawraisedouter(helper, x0, y0, x1, y1, sh, sh, sh, sh)
-    drawraisedinner(
-        helper, x0, y0, x1, y1, buttonFace, buttonFace, buttonFace, buttonFace
-    )
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, buttonFace)
+    drawedgebotdom(helper, x0, y0, x1, y1, sh, sh)
+    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 + 1, y1 + 1, buttonFace, buttonFace)
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, buttonFace]
 
 def windowborder(
     helper,
@@ -3481,15 +3428,15 @@ def windowborder(
     sh,  # shadow color
     dksh,  # dark shadow color
     face=None,  # face color
-    drawFace=True,
 ):
     # NOTE: Window border style is also used to draw Windows Help's
     # ">>" and "purple arrow" buttons within Help topics.
     face = face if face else lt
-    drawraisedouter(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    drawraisedinner(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, face)
+    drawraisedouterwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    drawraisedinnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, face]
 
 def buttonup(
     helper,
@@ -3502,13 +3449,13 @@ def buttonup(
     sh,
     dksh,
     face=None,
-    drawFace=True,
 ):
     face = face if face else lt
-    drawraisedouterbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    drawraisedinnerbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, face)
+    drawraisedouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    drawraisedinnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, face]
 
 def buttondown(
     helper,
@@ -3521,13 +3468,13 @@ def buttondown(
     sh,
     dksh,
     face=None,
-    drawFace=True,
 ):
     face = face if face else lt
-    drawsunkenouterbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    drawsunkeninnerbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, face)
+    drawsunkenouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, face]
 
 def fieldbox(
     helper,
@@ -3541,20 +3488,20 @@ def fieldbox(
     dksh,
     face=None,  # Usually the textbox face color if unpressed, button face if pressed
     pressed=False,
-    drawFace=True,
 ):
     face = face if face else (lt if pressed else hilt)
-    drawsunkenouter(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    drawsunkeninner(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, face)
+    drawsunkenouterwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    drawsunkeninnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, face]
 
 def wellborder(helper, x0, y0, x1, y1, hilt, windowText):
-    drawsunkenouter(helper, x0, y0, x1, y1, hilt, hilt, hilt, hilt)
-    drawsunkeninner(
+    drawsunkenouterwindow(helper, x0, y0, x1, y1, hilt, hilt, hilt, hilt)
+    drawsunkeninnerwindow(
         helper, x0, y0, x1, y1, windowText, windowText, windowText, windowText
     )
-    drawsunkenouter(
+    drawsunkenouterwindow(
         helper,
         x0 - 1,
         y0 - 1,
@@ -3565,6 +3512,8 @@ def wellborder(helper, x0, y0, x1, y1, hilt, windowText):
         windowText,
         windowText,
     )
+    # Return upper left and lower right coordinates of button face rectangle
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2]
 
 def groupingbox(
     helper,
@@ -3577,13 +3526,13 @@ def groupingbox(
     sh,
     dksh,
     face=None,
-    drawFace=True,
 ):
     face = face if face else lt
-    drawsunkenouter(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    drawraisedinner(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, face)
+    drawsunkenouterwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    drawraisedinnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, face]
 
 def statusfieldbox(
     helper,
@@ -3596,18 +3545,18 @@ def statusfieldbox(
     sh,
     dksh,
     face=None,
-    drawFace=True,
 ):
     face = face if face else lt
-    drawsunkenouter(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
-    if drawFace:
-        _drawinnerface(helper, x0, y0, x1, y1, face)
+    drawsunkenouterwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)
+    # Return upper left and lower right coordinates of button face rectangle
+    # along with the face background color
+    return [x0 + 1, y0 + 1, x1 - 1, y1 - 1, face]
 
-def _drawRoundOrSquareEdge(helper, x0, y0, x1, y1, lt, sh, squareFrame=False):
+def drawRoundOrSquareEdge(helper, x0, y0, x1, y1, lt, sh, squareFrame=False):
     if squareFrame:
-        _drawedgebotdom(helper, x0, y0, x1, y1, lt, sh)
+        drawedgebotdom(helper, x0, y0, x1, y1, lt, sh)
     else:
-        _drawroundedge(helper, x0, y0, x1, y1, lt, sh)
+        drawroundedge(helper, x0, y0, x1, y1, lt, sh)
 
 def drawbuttonpush(
     helper,
@@ -3623,20 +3572,20 @@ def drawbuttonpush(
     frame,
     squareFrame=True,  # whether to draw a square frame or a rounded frame
     isDefault=False,  # whether the button is a default button
-    drawFace=True,
 ):
     if lt == None:
         lt = btn
     if dksh == None:
         dksh = sh
     if isDefault:
-        _drawedgebotdom(helper, x0, y0, x1, y1, frame, frame)
-        _drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, sh)
-        if drawFace:
-            _drawinnerface(helper, x0 + 2, y0 + 2, x1 - 2, y1 - 2, btn)
+        drawedgebotdom(helper, x0, y0, x1, y1, frame, frame)
+        drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, sh)
+        # Return upper left and lower right coordinates of button face rectangle
+        # along with the face background color
+        return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, btn]
     else:
         edge = 1 if isDefault else 0
-        buttondown(
+        return buttondown(
             helper,
             x0 + edge,
             y0 + edge,
@@ -3647,7 +3596,6 @@ def drawbuttonpush(
             sh,
             dksh,
             btn,
-            drawFace=drawFace,
         )
 
 def drawbutton(
@@ -3664,7 +3612,6 @@ def drawbutton(
     frame,
     squareFrame=True,
     isDefault=False,  # whether the button is a default button
-    drawFace=True,
 ):
     if lt == None:
         lt = btn
@@ -3672,7 +3619,7 @@ def drawbutton(
         dksh = sh
     # If isDefault is True, no frame is drawn and no room is left for the frame
     edge = 1 if isDefault else 0
-    buttonup(
+    ret = buttonup(
         helper,
         x0 + edge,
         y0 + edge,
@@ -3683,10 +3630,10 @@ def drawbutton(
         sh,
         dksh,
         btn,
-        drawFace=drawFace,
     )
     if isDefault:
-        _drawRoundOrSquareEdge(helper, x0, y0, x1, y1, frame, frame, squareFrame)
+        drawRoundOrSquareEdge(helper, x0, y0, x1, y1, frame, frame, squareFrame)
+    return ret
 
 # Draws a pressed button in 16-bit style
 def draw16buttonpush(
@@ -3701,17 +3648,15 @@ def draw16buttonpush(
     frame=None,  # optional frame color
     squareFrame=False,
     isDefault=False,  # whether the button is a default button
-    drawFace=True,
 ):
     # Leave 1-pixel room for the frame even if 'frame' is None
     edge = 2 if isDefault else 1
-    _drawupperedge(helper, x0 + edge, y0 + edge, x1 - edge, y1 - edge, sh)
-    if drawFace:
-        helper.rect(x0 + edge + 1, y0 + edge + 1, x1 - edge, y1 - edge, btn)
     if frame:
-        _drawRoundOrSquareEdge(helper, x0, y0, x1, y1, frame, frame, squareFrame)
+        drawRoundOrSquareEdge(helper, x0, y0, x1, y1, frame, frame, squareFrame)
         if isDefault:
-            _drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
+            drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
+    drawupperedge(helper, x0 + edge, y0 + edge, x1 - edge, y1 - edge, sh)
+    return [x0 + edge + 1, y0 + edge + 1, x1 - edge, y1 - edge, btn]
 
 # Draws a button in 16-bit style
 def draw16button(
@@ -3726,20 +3671,18 @@ def draw16button(
     frame=None,  # optional frame color
     squareFrame=False,
     isDefault=False,
-    drawFace=True,
 ):
     # Leave 1-pixel room for the frame even if 'frame' is None
     edge = 2 if isDefault else 1
-    _drawedgebotdom(helper, x0 + edge, y0 + edge, x1 - edge, y1 - edge, hilt, sh)
-    _drawedgebotdom(
+    drawedgebotdom(helper, x0 + edge, y0 + edge, x1 - edge, y1 - edge, hilt, sh)
+    drawedgebotdom(
         helper, x0 + edge + 1, y0 + edge + 1, x1 - edge - 1, y1 - edge - 1, hilt, sh
     )
-    if drawFace:
-        helper.rect(x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn)
     if frame:
-        _drawRoundOrSquareEdge(helper, x0, y0, x1, y1, frame, frame, squareFrame)
+        drawRoundOrSquareEdge(helper, x0, y0, x1, y1, frame, frame, squareFrame)
         if isDefault:
-            _drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
+            drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
+    return [x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn]
 
 def makesvg():
     image = blankimage(64, 64)
@@ -3755,7 +3698,6 @@ def makesvg():
         [192, 192, 192],
         [0, 0, 0],
         squareFrame=True,
-        drawFace=False,
     )
     draw16button(
         helper,
@@ -3768,7 +3710,6 @@ def makesvg():
         [192, 192, 192],
         [0, 0, 0],
         squareFrame=True,
-        drawFace=False,
     )
     return image
 

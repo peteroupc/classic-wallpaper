@@ -36,36 +36,41 @@ The color palettes allowed are as follows.
 
 - Two colors only.
     - Such as black and white, which allows for hue shifting to, say, a black-to-red or gray-to-blue palette.
+- 16-color VGA palette (light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).[^3]
+- 216-color "web safe" palette (each color component is a multiple of 51).[^3] [^7]
+- 216-color "web safe" palette plus VGA palette.[^3]
+- A subset of a color palette given earlier.
+
+Any 16-color or 256-color palette that was used in a significant volume of application and video game graphics before the year 2000 is also allowed.
+
+Additional color palettes allowed are as follows.
+
 - Three gray tones: black (0, 0, 0), gray (128, 128, 128), white (255, 255, 255).
     - Allows for hue shifting to, say, a black-to-red palette.
 - Four gray tones: black, gray (128, 128, 128), light gray (192, 192, 192), white.
     - Allows for hue shifting to, say, a black-to-red palette.
-- 16-color [**canonical CGA palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
-- 16-color VGA palette (light gray; or each color component is 0 or 255; or each color component is 0 or 128).[^3]
-- A 16-color palette where each color is one of the following: each color component is 0 or 255; or each color component is 0 or 128 except for (128, 128, 128); or the color is (64, 64, 64).
 - The VGA palette plus the following four colors set by legacy versions of Windows: (192,220,192), (160,160,164), (255,251,240), (166,202,240).
-- An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
-- Up to four colors from the VGA palette.
-- Up to four colors from the canonical CGA palette.
-- Up to eight colors from the VGA palette.
-- 216-color "web safe" palette (each color component is a multiple of 51).[^3] [^7]
-- 216-color "web safe" palette plus VGA palette.[^3]
 - The VGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 98 unique colors (each color component is 0, 64, 128, or 192; or each color component is 0, 128, or 255; or each color component is 96 or 160; or each color component is 96 or 224).
+- 16-color [**canonical CGA palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
+- An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
+- A 16-color palette where each color is one of the following: each color component is 0 or 255; or each color component is 0 or 128 except for (128, 128, 128); or the color is (64, 64, 64).
 - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
 - The 64 colors displayable by EGA monitors (each color component is 0, 85, 170, or 255).[^3]
-- Up to 16 colors from the "web safe" palette.
-- Up to 16 colors from the "web safe" and VGA palettes.
-- Up to 16 colors from those displayable by EGA monitors (each color component is 0, 85, 170, or 255).
 - Up to 16 colors from those displayable by 12-bit color displays (each color component is a multiple of 17).
-- Up to eight colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
-- Up to 16 colors from those displayable by 15-bit color displays.
+- Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - 5- to 64-color grayscale palette (all color components the same).
 - A 27-color palette where each color component is 0, 128, or 255.
 - A 125-color palette where each color component is 0, 64, 128, 192, or 255.
-- Not preferred: Up to 16 colors from those displayable by 16-bit color displays (each red and blue component is a multiple of 8; each green, a multiple of 4).
-- Not preferred: Up to 16 colors from those displayable by pure VGA monitors (each color component is a multiple of 4).
-- Not preferred: 65- to 236-color grayscale palette (all color components the same).
-- Not preferred: 237- to 256-color grayscale palette (all color components the same).
+- Up to four colors from a palette mentioned earlier in this section.
+- Up to eight colors from a palette mentioned earlier in this section.
+- Up to 16 colors from a palette mentioned earlier in this section.
+
+The following color palettes are allowed, but not preferred:
+
+- Up to 16 colors from those displayable by 16-bit color displays (each red and blue component is a multiple of 8; each green, a multiple of 4).
+- Up to 16 colors from those displayable by pure VGA monitors (each color component is a multiple of 4).
+- 65- to 236-color grayscale palette (all color components the same).
+- 237- to 256-color grayscale palette (all color components the same).
 
 > **Note:**  The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in software programs for drawing, especially those devoted to pixel art.
 
@@ -165,7 +170,7 @@ Another challenge, related to classic user-interface style, this time relating t
 
 - Window border, field border, status field border, and grouping border.
 - Buttons and default buttons:
-    - Unpressed, pressed, mixed value ("indeterminate"), unavailable ("disabled").
+    - Unpressed, pressed, mixed value ("indeterminate" or "third state"), unavailable ("disabled").
 - Toolbar buttons:
     - Unpressed, hover, pressed, mixed value, unavailable.
 - Buttons, default buttons, and toolbar buttons in the option-set style:
@@ -189,11 +194,37 @@ It is allowed to use dithering to simulate the appearance of more colors using t
 
 The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
 
+The following terms are used to describe the traditional appearance of ordinary buttons:
+
+- The _button label_ consists of the text and icons within the button.
+- The _button face_ is the inner background of the button.
+- _Monochrome appearance_: The button label is drawn using the button shadow color instead of its normal colors, but with transparency and opacity in the label preserved.
+- _Embossed appearance_: The button label is drawn&mdash;
+
+    - using the button highlight color instead of its normal colors, then
+    - using the button shadow color instead of its normal colors and offset
+      1 pixel upward and 1 pixel to the left,
+
+    in each case with transparency and opacity in the label preserved.
+- _Unavailable appearance_: The button label has an _embossed appearance_, is drawn
+  with 50% opacity, or is masked with a pattern of alternating black
+  and white pixels.
+- _Mixed value appearance_: The button face is drawn as a dither pattern of the button face color and the button highlight color, or as a color that's a mixture of those two colors.
+
+Traditionally, to draw buttons, default buttons, and toolbar buttons:
+
+- For the pressed button style, the button label is shifted one pixel to the right and one pixel down, compared to the unpressed style.
+- The mixed value style tends to be drawn as the unpressed variant, except the button label has a _monochrome appearance_ and the button face has a _mixed value appearance_.
+- The unavailable style tends to be drawn as the unpressed variant, except the button label has an _unavailable appearance_.
+- For the option-set style, the button tends to be drawn as the normal pressed variant, except:
+    - For the unpressed style, the button face has a _mixed value appearance_.
+    - For the unavailable style, the button label has an _unavailable appearance_. This variant overrides the unpressed and pressed variants.
+
 ### Icons and Cursors
 
 An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
 
-- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component.  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255.
+- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255.
 - The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). (Modern guidelines recommend a 256&times;256 icon as well.)
 - All icons can include transparent pixels, but should have no translucent pixels except for 8-bit-per-color-component icons.
 
@@ -206,7 +237,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 
 ### Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files in the AVI format without sound, this control appears to be rarely used.  More usually, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `desktopwallpaper.py` under the method `writeavi`.
+Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files in the AVI format without sound, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `desktopwallpaper.py` under the method `writeavi`.
 
 <a id=License></a>
 
