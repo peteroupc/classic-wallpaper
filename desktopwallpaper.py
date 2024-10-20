@@ -19,7 +19,7 @@
 # The nonblack areas of the monochrome pattern are filled with the desktop
 # color.
 # 3. I would welcome it if readers could contribute computer code (released
-# to the public domain or under Creative Commons Zero) to generate tileable—
+# to the public domain or under the Unlicense) to generate tileable—
 # - noise,
 # - procedural textures or patterns, or
 # - arrangements of symbols or small images with partial transparency,
@@ -135,8 +135,8 @@ def websafecolors():
                 colors.append([r * 51, g * 51, b * 51])
     return colors
 
+# Returns an array of the 64 colors displayable by EGA (extended graphics adapter) displays
 def egacolors():
-    # 64 colors displayable by EGA displays
     colors = []
     for r in range(4):
         for g in range(4):
@@ -144,9 +144,9 @@ def egacolors():
                 colors.append([r * 85, g * 85, b * 85])
     return colors
 
+# Canonical 16-color CGA palette
+# see also: https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/
 def cgacolors():
-    # Canonical 16-color CGA palette
-    # see also: https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/
     return [
         [0, 0, 0],
         [0, 0, 170],
@@ -168,8 +168,8 @@ def cgacolors():
         [255, 255, 255],
     ]
 
+# 16-color VGA palette
 def classiccolors():
-    # 16-color VGA palette
     return [
         [0, 0, 0],
         [128, 128, 128],
@@ -189,8 +189,8 @@ def classiccolors():
         [255, 255, 255],
     ]
 
+# colors in classiccolors() and their "half-and-half" versions
 def classiccolors2():
-    # colors in classiccolors() and their "half-and-half" versions
     colors = []
     for a in [0, 64, 128, 192]:
         for b in [0, 64, 128, 192]:
@@ -226,8 +226,8 @@ def paletteandhalfhalf(palette):
     ret.sort()
     return ret
 
+# Gets the "half-and half" versions of colors in the given palette.
 def getdithercolors(palette):
-    # Gets the "half-and half" versions of colors in the given palette.
     if (not palette) or (len(palette) > 256):  # too long palettes not supported
         raise ValueError
     colors = {}
@@ -462,20 +462,20 @@ def versatileForeground(foregroundImage):
         "-composite",
     ]
 
+# ImageMagick command for setting a foreground pattern, whose black parts
+# are set in the given foreground color, on a background that can optionally
+# be colored.
+# 'fgcolor' and 'bgcolor' are the foreground and background color, respectively.
+# The input image this command will be applied to is assumed to be an SVG file
+# which must be black in the nontransparent areas (given that ImageMagick renders the
+# SVG on a white background by default) or a raster image with only
+# gray tones, where the blacker, the less transparent.
+# 'bgcolor' can be None so that an alpha
+# background is used.  Each color is a
+# 3-item array of the red, green, and blue components in that order; e.g.,
+# [2,10,255] where each component is from 0 through 255.
+# Inspired by the technique for generating backgrounds in heropatterns.com.
 def versatilePattern(fgcolor, bgcolor=None):
-    # ImageMagick command for setting a foreground pattern, whose black parts
-    # are set in the given foreground color, on a background that can optionally
-    # be colored.
-    # 'fgcolor' and 'bgcolor' are the foreground and background color, respectively.
-    # The input image this command will be applied to is assumed to be an SVG file
-    # which must be black in the nontransparent areas (given that ImageMagick renders the
-    # SVG on a white background by default) or a raster image with only
-    # gray tones, where the blacker, the less transparent.
-    # 'bgcolor' can be None so that an alpha
-    # background is used.  Each color is a
-    # 3-item array of the red, green, and blue components in that order; e.g.,
-    # [2,10,255] where each component is from 0 through 255.
-    # Inspired by the technique for generating backgrounds in heropatterns.com.
     return [
         "-negate",
         "-background",
@@ -579,12 +579,12 @@ def _chopBeforeVAppendArray(withFarEnd=True):
     # Remove the top row
     return ["+repage", "-gravity", "North", "-chop", "0x1", "+gravity"]
 
+# ImageMagick command to generate a Pmm wallpaper group tiling pattern.
+# This command can be applied to arbitrary images to render them
+# tileable.
+# NOTE: "-append" is a vertical append; "+append" is a horizontal append;
+# "-flip" reverses the row order; "-flop" reverses the column order.
 def tileable():
-    # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
-    # This command can be applied to arbitrary images to render them
-    # tileable.
-    # NOTE: "-append" is a vertical append; "+append" is a horizontal append;
-    # "-flip" reverses the row order; "-flop" reverses the column order.
     return (
         ["(", "+clone", "-flip"]
         + _chopBeforeVAppendArray()
@@ -593,29 +593,29 @@ def tileable():
         + [")", "+append"]
     )
 
+# ImageMagick command to generate a P2 wallpaper group tiling pattern.
+# For best results, the command should be applied to images whose
+# last row's first half is a mirror of its second half.
 def groupP2():
-    # ImageMagick command to generate a P2 wallpaper group tiling pattern.
-    # For best results, the command should be applied to images whose
-    # last row's first half is a mirror of its second half.
     return (
         ["(", "+clone", "-flip", "-flop"] + _chopBeforeVAppendArray() + [")", "-append"]
     )
 
+# ImageMagick command to generate a Pm wallpaper group tiling pattern.
 def groupPm():
-    # ImageMagick command to generate a Pm wallpaper group tiling pattern.
     return ["(", "+clone", "-flop"] + _chopBeforeHAppendArray() + [")", "+append"]
 
+# ImageMagick command to generate a Pg wallpaper group tiling pattern.
+# For best results, the command should be applied to images whose
+# last column's first half is a mirror of its second half.
 def groupPg():
-    # ImageMagick command to generate a Pg wallpaper group tiling pattern.
-    # For best results, the command should be applied to images whose
-    # last column's first half is a mirror of its second half.
     return ["(", "+clone", "-flip"] + _chopBeforeVAppendArray() + [")", "-append"]
 
+# ImageMagick command to generate a Pgg wallpaper group tiling pattern.
+# For best results, the command should be applied to images whose
+# last row's and last column's first half is a mirror of its
+# second half.
 def groupPgg():
-    # ImageMagick command to generate a Pgg wallpaper group tiling pattern.
-    # For best results, the command should be applied to images whose
-    # last row's and last column's first half is a mirror of its
-    # second half.
     return (
         [
             "-write",
@@ -648,11 +648,11 @@ def groupPgg():
         + [")", "-append"]
     )
 
+# ImageMagick command to generate a Cmm wallpaper group tiling pattern.
+# For best results, the command should be applied to images whose
+# last row's and last column's first half is a mirror of its
+# second half.
 def groupCmm():
-    # ImageMagick command to generate a Cmm wallpaper group tiling pattern.
-    # For best results, the command should be applied to images whose
-    # last row's and last column's first half is a mirror of its
-    # second half.
     return (
         [
             "(",
@@ -689,11 +689,11 @@ def groupCmm():
         + [")", "-append"]
     )
 
+# 'bgcolor' is the background color,
+# either None or a 3-item array of the red,
+# green, and blue components in that order; e.g., [2,10,255] where each
+# component is from 0 through 255; default is None, or no background color.
 def backgroundColorUnder(bgcolor=None):
-    # 'bgcolor' is the background color,
-    # either None or a 3-item array of the red,
-    # green, and blue components in that order; e.g., [2,10,255] where each
-    # component is from 0 through 255; default is None, or no background color.
     return (
         solid(bgcolor)
         + [
@@ -705,11 +705,11 @@ def backgroundColorUnder(bgcolor=None):
         else []
     )
 
+# ImageMagick command to generate a diamond tiling pattern (or a brick tiling
+# pattern if the image the command is applied to has only its top half
+# or its bottom half drawn).  For best results, the command should be applied
+# to images with an even width and height.
 def diamondTiling():
-    # ImageMagick command to generate a diamond tiling pattern (or a brick tiling
-    # pattern if the image the command is applied to has only its top half
-    # or its bottom half drawn).  For best results, the command should be applied
-    # to images with an even width and height.
     ret = [
         "(",
         "+clone",
@@ -763,10 +763,10 @@ def diamondTiledSize(width, height, kind):
         return (width * 2, height)
     return (width + (width // 2) * 2, height + (height // 2) * 2)
 
+# kind=0: image drawn in middle and padded
+# kind=1: brick drawn at top
+# kind=2: brick drawn at left
 def diamondTiled(bgcolor=None, kind=0):
-    # kind=0: image drawn in middle and padded
-    # kind=1: brick drawn at top
-    # kind=2: brick drawn at left
     return (
         (
             _bottomPadding()
@@ -794,11 +794,11 @@ def diamondTiled(bgcolor=None, kind=0):
         + backgroundColorUnder(bgcolor)
     )
 
+# ImageMagick command to generate a Pmg wallpaper group tiling pattern.
+# For best results, the command should be applied to images whose
+# last column's first half is a mirror of its
+# second half.
 def groupPmg():
-    # ImageMagick command to generate a Pmg wallpaper group tiling pattern.
-    # For best results, the command should be applied to images whose
-    # last column's first half is a mirror of its
-    # second half.
     return (
         [
             "-write",
@@ -832,11 +832,11 @@ def groupPmg():
         + [")", "-append"]
     )
 
+# ImageMagick command to generate a brushed metal texture from a noise image.
+# A brushed metal texture was featured in Mac OS X Panther and
+# Tiger (10.3, 10.4) and other Apple products
+# around the time of either OS's release.
 def brushedmetal():
-    # ImageMagick command to generate a brushed metal texture from a noise image.
-    # A brushed metal texture was featured in Mac OS X Panther and
-    # Tiger (10.3, 10.4) and other Apple products
-    # around the time of either OS's release.
     return [
         "(",
         "+clone",
@@ -1201,7 +1201,7 @@ def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=Fal
                             for j in range(0, cnt):
                                 nb += bytes([runMult, imagebytes[cntpos + j]])
                                 scanPixelCount += runMult
-                                # if index==0 and sindex==height-1: print([runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
+                            # if index==0 and sindex==height-1: print([runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
                             cnt = i - lastRun
                             cnt = cnt * runMult
                             if (
@@ -1290,6 +1290,22 @@ def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
         image, width, height, None, color, color, x0, y0, x1, y1, wraparound=wraparound
     )
 
+# Draw a wraparound hatched box on an image.
+# 'color' is the color of the hatch, drawn on every "black" pixel
+# in the pattern's tiling.
+# 'pattern' is an 8-item array with integers in the interval [0,255].
+# The first integer represents the first row from the top;
+# the second, the second row, etc.
+# For each integer, the eight bits from most to least significant represent
+# the column from left to right (right to left if 'msbfirst' is False).
+# If a bit is set, the corresponding position
+# in the pattern is a "black" pixel; if clear, a "white" pixel.
+# Either can be set to None to omit pixels of that color in the pattern
+# 'msbfirst' is the bit order for each integer in 'pattern'.  If True,
+# the Windows convention is used; if False, the X pixmap convention is used.
+# Default is True.
+# 'drawborder' means to draw the box's border with the hatch color;
+# default is False.
 def hatchedbox(
     image,
     width,
@@ -1304,22 +1320,6 @@ def hatchedbox(
     drawborder=False,
     wraparound=True,
 ):
-    # Draw a wraparound hatched box on an image.
-    # 'color' is the color of the hatch, drawn on every "black" pixel
-    # in the pattern's tiling.
-    # 'pattern' is an 8-item array with integers in the interval [0,255].
-    # The first integer represents the first row from the top;
-    # the second, the second row, etc.
-    # For each integer, the eight bits from most to least significant represent
-    # the column from left to right (right to left if 'msbfirst' is False).
-    # If a bit is set, the corresponding position
-    # in the pattern is a "black" pixel; if clear, a "white" pixel.
-    # Either can be set to None to omit pixels of that color in the pattern
-    # 'msbfirst' is the bit order for each integer in 'pattern'.  If True,
-    # the Windows convention is used; if False, the X pixmap convention is used.
-    # Default is True.
-    # 'drawborder' means to draw the box's border with the hatch color;
-    # default is False.
     if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
         raise ValueError
     if width <= 0 or height <= 0:
@@ -1392,6 +1392,36 @@ def _applyrop(a, b, rop):
         return 0xFF
     return 0
 
+# Draw a wraparound copy of an image on another image.
+# 'dstimage' and 'srcimage' are the destination and source images.
+# 'pattern' is a brush pattern image.
+# 'srcimage', 'maskimage', and 'patternimage' are optional.
+# All images are flat arrays with the same format returned by the blankimage
+# function.  Thus none of them can include transparency in whole or in part.
+# (Windows's graphical device interface [GDI] supports transparent
+# parts in brush patterns only for brushes
+# with predefined hatch patterns and only in the gaps between hatch marks; in
+# bit block transfer operations such as BitBlt, these transparent pixels are
+# filled with the background color whether the background mode is
+# transparent or opaque; in line and shape drawing operations (which this
+# method doesn't belong in), if the background mode is transparent, only
+# the nontransparent pixels are drawn and affected by raster operations.)
+# 'patternOrgX' and 'patternOrgY' are offsets from the destination's top left
+# corner where the top left corner of the brush pattern image would
+# be drawn if a repetition of the brush pattern were to be drawn across the
+# whole destination image.  The default for both parameters is 0.
+# 'x0src' and 'y0src' are offsets from the destination image's top left corner
+# where the source image's top left corner will be drawn.
+# 'x0mask' and 'y0mask' are offsets from the source image's top left corner
+# and correspond to pixels in the source image.
+# 'ropForeground' is a foreground ternary raster operation between the bits of the
+# destination and those of the source; the low 4 bits is the binary raster
+# operation used where the pattern bit is 0; the high 4 bits, where the pattern
+# bit is 1. 'ropForeground' is used where the mask bit is 1 or there is no mask
+# or an empty mask. 'ropBackground' is the same as 'ropForeground', but for the
+# background (used where the mask bit is 0 rather than 1).
+# 'maskimage' is ideally a monochrome image (every pixel is either all zeros
+# (black) or all ones (white), but it doesn't have to be.
 def imageblitex(
     dstimage,
     dstwidth,
@@ -1419,36 +1449,6 @@ def imageblitex(
     ropBackground=0xAA,
     wraparound=True,
 ):
-    # Draw a wraparound copy of an image on another image.
-    # 'dstimage' and 'srcimage' are the destination and source images.
-    # 'pattern' is a brush pattern image.
-    # 'srcimage', 'maskimage', and 'patternimage' are optional.
-    # All images are flat arrays with the same format returned by the blankimage
-    # function.  Thus none of them can include transparency in whole or in part.
-    # (Windows's graphical device interface [GDI] supports transparent
-    # parts in brush patterns only for brushes
-    # with predefined hatch patterns and only in the gaps between hatch marks; in
-    # bit block transfer operations such as BitBlt, these transparent pixels are
-    # filled with the background color whether the background mode is
-    # transparent or opaque; in line and shape drawing operations (which this
-    # method doesn't belong in), if the background mode is transparent, only
-    # the nontransparent pixels are drawn and affected by raster operations.)
-    # 'patternOrgX' and 'patternOrgY' are offsets from the destination's top left
-    # corner where the top left corner of the brush pattern image would
-    # be drawn if a repetition of the brush pattern were to be drawn across the
-    # whole destination image.  The default for both parameters is 0.
-    # 'x0src' and 'y0src' are offsets from the destination image's top left corner
-    # where the source image's top left corner will be drawn.
-    # 'x0mask' and 'y0mask' are offsets from the source image's top left corner
-    # and correspond to pixels in the source image.
-    # 'ropForeground' is a foreground ternary raster operation between the bits of the
-    # destination and those of the source; the low 4 bits is the binary raster
-    # operation used where the pattern bit is 0; the high 4 bits, where the pattern
-    # bit is 1. 'ropForeground' is used where the mask bit is 1 or there is no mask
-    # or an empty mask. 'ropBackground' is the same as 'ropForeground', but for the
-    # background (used where the mask bit is 0 rather than 1).
-    # 'maskimage' is ideally a monochrome image (every pixel is either all zeros
-    # (black) or all ones (white), but it doesn't have to be.
     if ropForeground < 0 or ropForeground >= 256:
         raise ValueError
     if ropBackground < 0 or ropBackground >= 256:
@@ -1544,6 +1544,9 @@ def imageblitex(
                     sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
 
+# 'ropForeground' and 'ropBackground' are as in imageblitex, except that
+# 'ropForeground' is used where the source color is not 'transcolor' or if
+# 'transcolor' is None; 'ropBackground' is used elsewhere.
 def imagetransblit(
     dstimage,
     dstwidth,
@@ -1567,9 +1570,6 @@ def imagetransblit(
     ropBackground=0xAA,
     wraparound=True,
 ):
-    # 'ropForeground' and 'ropBackground' are as in imageblitex, except that
-    # 'ropForeground' is used where the source color is not 'transcolor' or if
-    # 'transcolor' is None; 'ropBackground' is used elsewhere.
     if transcolor == None:
         imageblitex(
             dstimage,
@@ -1674,6 +1674,8 @@ def imagetransblit(
                 sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
 
+# 'rasterOp' is a binary raster operation between the bits of the
+# destination and those of the source.
 def imageblit(
     dstimage,
     dstwidth,
@@ -1686,8 +1688,6 @@ def imageblit(
     wraparound=True,
     rasterOp=12,
 ):
-    # 'rasterOp' is a binary raster operation between the bits of the
-    # destination and those of the source.
     if rasterOp < 0 or rasterOp >= 16:
         raise ValueError
     return imageblitex(
@@ -1763,22 +1763,19 @@ def horizhatchedbox(image, width, height, color, x0, y0, x1, y1):
 def shadowedborderedbox(
     image, width, height, border, shadow, color1, color2, x0, y0, x1, y1
 ):
-    if shadow:
-        # Draw box's shadow
-        pattern = [0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55]
-        hatchedbox(
-            image, width, height, shadow, pattern, x0 + 4, y0 + 4, x1 + 4, y1 + 4
-        )
+    # Draw box's shadow
+    pattern = [0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55]
+    hatchedbox(image, width, height, shadow, pattern, x0 + 4, y0 + 4, x1 + 4, y1 + 4)
     borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
 
+# Draw a wraparound box in a gradient fill on an image.
+# 'border' is the color of the 1-pixel-thick border. Can be None (so
+# that no border is drawn)
+# 'gradient' is a list of 256 colors for mapping the 256 possible shades
+# of the gradient fill.
 def borderedgradientbox(
     image, width, height, border, gradient, contour, x0, y0, x1, y1, wraparound=True
 ):
-    # Draw a wraparound box in a gradient fill on an image.
-    # 'border' is the color of the 1-pixel-thick border. Can be None (so
-    # that no border is drawn)
-    # 'gradient' is a list of 256 colors for mapping the 256 possible shades
-    # of the gradient fill.
     if x1 < x0 or y1 < y0:
         raise ValueError
     if width <= 0 or height <= 0:
@@ -1813,6 +1810,11 @@ def borderedgradientbox(
                 image[yp + xp * 3 + 1] = color[1]
                 image[yp + xp * 3 + 2] = color[2]
 
+# Draw a wraparound box in a two-color dithered gradient fill on an image.
+# 'border' is the color of the 1-pixel-thick border. Can be None (so
+# that no border is drawn)
+# 'color1' and 'color2' are the dithered
+# versions of the inner color. 'color1' and 'color2' can't be None.
 def bordereddithergradientbox(
     image,
     width,
@@ -1827,11 +1829,6 @@ def bordereddithergradientbox(
     y1,
     wraparound=True,
 ):
-    # Draw a wraparound box in a two-color dithered gradient fill on an image.
-    # 'border' is the color of the 1-pixel-thick border. Can be None (so
-    # that no border is drawn)
-    # 'color1' and 'color2' are the dithered
-    # versions of the inner color. 'color1' and 'color2' can't be None.
     if x1 < x0 or y1 < y0:
         raise ValueError
     if width <= 0 or height <= 0:
@@ -1871,9 +1868,10 @@ def bordereddithergradientbox(
                     image[yp + xp * 3 + 1] = color1[1]
                     image[yp + xp * 3 + 2] = color1[2]
 
+# Dither 256-level alpha channel to two levels (opaque
+# and transparent).  Image is a 32-bit-per pixel image
+# (four elements per pixel).
 def ditheralpha(image, width, height):
-    # Dither 256-level alpha channel to two levels (opaque
-    # and transparent)
     i = 0
     for y in range(height):
         for x in range(width):
@@ -1884,9 +1882,9 @@ def ditheralpha(image, width, height):
                 image[i + 3] = a
             i += 4
 
+# Splits a 32-bit-per pixel image (four elements per pixel) into a
+# color mask and an (inverted) alpha mask, in that order.
 def splitmask(image, width, height):
-    # splits a 32-bit-per pixel image (four elements per pixel) into a
-    # color mask and an (inverted) alpha mask, in that order.
     img = [0 for _ in range(width * height * 3)]
     mask = [0 for _ in range(width * height * 3)]
     for i in range(width * height):
@@ -1898,14 +1896,14 @@ def splitmask(image, width, height):
         mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
     return [img, mask]
 
+# Draw a wraparound dither-colored box on an image.
+# 'border' is the color of the 1-pixel-thick border. Can be None (so
+# that no border is drawn)
+# 'color1' and 'color2' are the dithered
+# versions of the inner color. 'color1' and 'color2' can't be None.
 def borderedbox(
     image, width, height, border, color1, color2, x0, y0, x1, y1, wraparound=True
 ):
-    # Draw a wraparound dither-colored box on an image.
-    # 'border' is the color of the 1-pixel-thick border. Can be None (so
-    # that no border is drawn)
-    # 'color1' and 'color2' are the dithered
-    # versions of the inner color. 'color1' and 'color2' can't be None.
     if x1 < x0 or y1 < y0:
         raise ValueError
     if width <= 0 or height <= 0:
@@ -1950,10 +1948,10 @@ def blankimage(width, height, color=None):
         simplebox(image, width, height, color, 0, 0, width, height)
     return image
 
+# Generates a tileable argyle pattern from two images of the
+# same size.  'backgroundImage' must be tileable if shiftImageBg=False;
+# 'foregroundImage' need not be tileable.
 def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg=False):
-    # Generates a tileable argyle pattern from two images of the
-    # same size.  'backgroundImage' must be tileable if shiftImageBg=False;
-    # 'foregroundImage' need not be tileable.
     if shiftImageBg:
         i2 = blankimage(width, height)
         imageblit(
@@ -1979,12 +1977,12 @@ def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg
             pos += 3
     return ret
 
+# Generates a tileable checkerboard pattern using two images of the same size;
+# each tile is the whole of one of the source images, and the return value's
+# width in pixels is width*columns; its height is height*rows.
+# The two images should be tileable.
+# The number of columns and of rows must be even and positive.
 def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=2):
-    # Generates a tileable checkerboard pattern using two images of the same size;
-    # each tile is the whole of one of the source images, and the return value's
-    # width in pixels is width*columns; its height is height*rows.
-    # The two images should be tileable.
-    # The number of columns and of rows must be even and positive.
     if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
         raise ValueError
     ret = blankimage(width * columns, height * rows)
@@ -2002,11 +2000,11 @@ def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=
             )
     return ret
 
+# Generates a tileable checkerboard pattern made of parts of two images of the same size;
+# the return value has the same width and height as the source images.
+# The two images should be tileable.
+# The number of columns and of rows must be even and positive.
 def checkerboard(upperLeftImage, otherImage, width, height, columns=2, rows=2):
-    # Generates a tileable checkerboard pattern made of parts of two images of the same size;
-    # the return value has the same width and height as the source images.
-    # The two images should be tileable.
-    # The number of columns and of rows must be even and positive.
     if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
         raise ValueError
     ret = blankimage(width, height)
@@ -2049,28 +2047,6 @@ def simpleargyle2(fgcolor, bgcolor, linecolor, w, h):
     linedraw(bg, w, h, linecolor, -2, h, w - 2, 0, wraparound=True)
     return bg
 
-def hatchoverlay(image, width, height, hatchColor, rows=2):
-    if not hatchColor:
-        raise ValueError
-    # hatch=[0x88,0x44,0x22,0x11,0x88,0x44,0x22,0x11] # denser diagonal hatch
-    # revhatch=[0x22,0x44,0x88,0x11,0x22,0x44,0x88,0x11] # denser diagonal hatch
-    hatch = [0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01]
-    revhatch = [0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01]
-    for y in range(rows):
-        y0 = height * y // rows
-        y1 = height * (y + 1) // rows
-        hatchedbox(
-            image,
-            width,
-            height,
-            hatchColor,
-            hatch if y % 2 == 0 else revhatch,
-            0,
-            y0,
-            width,
-            y1,
-        )
-
 def _nearest_rgb3(pal, r, g, b):
     best = -1
     ret = 0
@@ -2087,10 +2063,10 @@ def _nearest_rgb3(pal, r, g, b):
 def _nearest_rgb(pal, rgb):
     return _nearest_rgb3(pal, rgb[0], rgb[1], rgb[2])
 
+# hatchdist - distance from beginning of one vertical hash line to the
+# beginning of the next, in pixels.
+# hatchthick - thickness in pixels of each vertical hash line.
 def drawhatchcolumns(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
-    # hatchdist - distance from beginning of one vertical hash line to the
-    # beginning of the next, in pixels.
-    # hatchthick - thickness in pixels of each vertical hash line.
     if hatchdist <= 0 or hatchthick < 0 or hatchthick > hatchdist:
         raise ValueError
     if fgcolor and len(fgcolor) != 3:
@@ -2132,12 +2108,12 @@ def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)
         )
         pos += hatchdist
 
+# 'stripesize' is in pixels
+# reverse=false: stripe runs from top left to bottom
+# right assuming the image's first row is the top row
+# reverse=true: stripe runs from top right to bottom
+# left
 def drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
-    # 'stripesize' is in pixels
-    # reverse=false: stripe runs from top left to bottom
-    # right assuming the image's first row is the top row
-    # reverse=true: stripe runs from top right to bottom
-    # left
     if stripesize > max(width, height) or stripesize < 0:
         raise ValueError
     if fgcolor and len(fgcolor) != 3:
@@ -2232,10 +2208,10 @@ def dithertograyimage(image, width, height, grays):
             image[xp] = image[xp + 1] = image[xp + 2] = r
     return image
 
+# Converts the image to grayscale and maps the resulting gray tones
+# to colors in the given colors array.  If 'colors' is None (the default),
+# the mapping step is skipped.
 def graymap(image, width, height, colors=None):
-    # Converts the image to grayscale and maps the resulting gray tones
-    # to colors in the given colors array.  If 'colors' is None, the default,
-    # the mapping step is skipped.
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
@@ -2275,9 +2251,9 @@ def imagetranspose(image, width, height):
             setpixel(image2, height, width, y, x, getpixel(image, width, height, x, y))
     return image2
 
+# Create a twice-as-wide image inspired by the style used
+# to generate MARBLE.BMP
 def _ditherstyle(image, width, height, bgcolor=None):
-    # Create a twice-as-wide image inspired by the style used
-    # to generate MARBLE.BMP
     image2 = blankimage(width * 2, height)
     if not bgcolor:
         bgcolor = [192, 192, 192]
@@ -2307,8 +2283,8 @@ def tograyditherstyle(image, width, height, palette=None, light=False):
         graymap(im, width, height, colors)
     return _ditherstyle(im, width, height)
 
+# Dithering for the color palette returned by websafecolors()
 def websafeDither(image, width, height):
-    # Dithering for the color palette returned by websafecolors()
     for y in range(height):
         yp = y * width * 3
         for x in range(width):
@@ -2320,10 +2296,10 @@ def websafeDither(image, width, height):
                 image[xp + i] = (c - cm) + 51 if bdither < cm * 64 // 51 else c - cm
     return image
 
+# Dithering for arbitrary color palettes
+# Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
+# https://bisqwit.iki.fi/story/howto/dither/jy/
 def patternDither(image, width, height, palette):
-    # Dithering for arbitrary color palettes
-    # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
-    # https://bisqwit.iki.fi/story/howto/dither/jy/
     candidates = [[] for i in range(len(DitherMatrix))]
     paletteLum = [
         (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
@@ -3218,7 +3194,7 @@ def _drawroundedgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=1):
         )  # bottom edge
 
 def drawpositiverect(helper, x0, y0, x1, y1, face):
-    if x1 > x0 or y1 > y0:  # empty or negative
+    if x1 >= x0 or y1 >= y0:  # empty or negative
         return
     helper.rect(x0, y0, x1, y1, face)
 
@@ -4068,8 +4044,28 @@ def _randombrushednoiseimage(w, h, palette=None, tileable=True):
         patternDither(image, w, h, palette)
     return image
 
+def _hatchoverlay(image, width, height, hatchColor, rows=2):
+    if not hatchColor:
+        raise ValueError
+    hatch = [0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01]
+    revhatch = [0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01]
+    for y in range(rows):
+        y0 = height * y // rows
+        y1 = height * (y + 1) // rows
+        hatchedbox(
+            image,
+            width,
+            height,
+            hatchColor,
+            hatch if y % 2 == 0 else revhatch,
+            0,
+            y0,
+            width,
+            y1,
+        )
+
+# Generates a random checkerboard pattern image (using the given palette, if any)
 def randomcheckimage(w, h, palette=None, tileable=True):
-    # Generates a random checkerboard pattern image (using the given palette, if any)
     expandedpal = paletteandhalfhalf(palette) if palette else []
     hatch = (
         None
@@ -4089,7 +4085,7 @@ def randomcheckimage(w, h, palette=None, tileable=True):
     otherImage = _randombackground(w, h, palette, tileable=tileable)
     upperLeftImage = _randombackground(w, h, palette, tileable=tileable)
     if hatch:
-        hatchoverlay(upperLeftImage, w, h, hatch, rows=rows)
+        _hatchoverlay(upperLeftImage, w, h, hatch, rows=rows)
     image = checkerboard(upperLeftImage, otherImage, w, h, rows=rows, columns=columns)
     return _randomdither(image, w, h, palette)
 
@@ -4134,16 +4130,16 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
     else:
         return _randombrushednoiseimage(w, h, palette, tileable=tileable)
 
+# Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
+# Turns the image into a black-and-white image, with middle gray dithered.
 def monochromeFromThreeGrays(image, width, height):
-    # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
-    # Turns the image into a black-and-white image, with middle gray dithered.
     image = [x for x in image]
     dithertograyimage(image, width, height, [0, 255])
     return image
 
+# Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
+# Default for palette is VGA palette (classiccolors())
 def randomPalettedFromThreeGrays(image, width, height, palette=None):
-    # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
-    # Default for palette is VGA palette (classiccolors())
     image = [x for x in image]
     if not palette:
         palette = classiccolors()
@@ -4167,11 +4163,11 @@ def randomPalettedFromThreeGrays(image, width, height, palette=None):
     halfhalfditherimage(image, width, height, palette)
     return image
 
+# Generates a random colorization gradient
+# Random beginning color.  Palette is optional;
+# if not None (the default), the beginning and end colors are limited
+# to those in the given palette.
 def randomColorization(palette=None):
-    # Generates a random colorization gradient
-    # Random beginning color.  Palette is optional;
-    # if not None (the default), the beginning and end colors are limited
-    # to those in the given palette.
     colors = [[] for i in range(256)]
     r = random.randint(0, 99)
     if r < 40:
@@ -4198,8 +4194,8 @@ def randomColorization(palette=None):
         colors[i] = [a + ((b - a) * i // 255) for a, b in zip(colors[0], colors[255])]
     return colors
 
+# Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
 def vgaVariantsFromThreeGrays(image, width, height):
-    # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
     colors = [[] for i in range(256)]
     colors[0] = [0, 0, 0]
     colors[128] = [128, 0, 0]
@@ -4245,8 +4241,8 @@ def vgaVariantsFromThreeGrays(image, width, height):
         "dark": dark,
     }
 
+# Input image uses only four colors: (0,0,0),(128,128,128),(192,192,192),(255,255,255)
 def vgaVariantsFromFourGrays(image, width, height):
-    # Input image uses only four colors: (0,0,0),(128,128,128),(192,192,192),(255,255,255)
     colors = [[] for i in range(256)]
     colors[0] = [0, 0, 0]
     colors[255] = [255, 255, 255]
@@ -4350,13 +4346,13 @@ def _colorname(c):
         return _rgba_to_colorname_hash[cname] + " " + cname
     return cname
 
-def writepalette(f, palette, name=None, checkIfExists=False):
+def writepalette(f, palette, name=None, raiseIfExists=False):
     if name and "\n" in name:
         raise ValueError
     if (not palette) or len(palette) > 512:
         raise ValueError
     # Microsoft palette
-    ff = open(f + ".pal", "xb" if checkIfExists else "wb")
+    ff = open(f + ".pal", "xb" if raiseIfExists else "wb")
     ff.write(bytes("RIFF", "utf-8"))
     size = 4 * len(palette) + 0x10
     _writeu32le(ff, size)
@@ -4370,7 +4366,7 @@ def writepalette(f, palette, name=None, checkIfExists=False):
         ff.write(bytes([c[0] & 0xFF, c[1] & 0xFF, c[2] & 0xFF, 2]))
     ff.close()
     # Adobe color swatch format
-    ff = open(f + ".aco", "xb" if checkIfExists else "wb")
+    ff = open(f + ".aco", "xb" if raiseIfExists else "wb")
     _writeu16(ff, 1)
     _writeu16(ff, len(palette))
     for i in range(len(palette)):
@@ -4392,7 +4388,7 @@ def writepalette(f, palette, name=None, checkIfExists=False):
         _writeutf16(ff, _colorname(c))
     ff.close()
     # Adobe swatch exchange format
-    ff = open(f + ".ase", "xb" if checkIfExists else "wb")
+    ff = open(f + ".ase", "xb" if raiseIfExists else "wb")
     ff.write(bytes("ASEF", "utf-8"))
     _writeu16(ff, 1)
     _writeu16(ff, 0)

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module desktopwallpaper</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">desktopwallpaper</strong></td>
+<td class="extra"><a href=".">index</a><br></td></tr></table>
+    <p><span class="code">#&nbsp;This&nbsp;Python&nbsp;script&nbsp;helps&nbsp;generate&nbsp;interesting&nbsp;variations&nbsp;on&nbsp;desktop<br>
+#&nbsp;wallpapers&nbsp;based&nbsp;on&nbsp;existing&nbsp;image&nbsp;files.&nbsp;&nbsp;Because&nbsp;they&nbsp;run&nbsp;on&nbsp;the&nbsp;CPU<br>
+#&nbsp;and&nbsp;are&nbsp;implemented&nbsp;in&nbsp;pure&nbsp;Python,&nbsp;the&nbsp;methods&nbsp;are&nbsp;intended&nbsp;for<br>
+#&nbsp;relatively&nbsp;small&nbsp;images&nbsp;that&nbsp;are&nbsp;suitable&nbsp;as&nbsp;tileable&nbsp;desktop&nbsp;wallpaper<br>
+#&nbsp;patterns,&nbsp;especially&nbsp;with&nbsp;dimensions&nbsp;256x256&nbsp;or&nbsp;smaller.<br>
+#<br>
+#&nbsp;This&nbsp;script&nbsp;is&nbsp;released&nbsp;to&nbsp;the&nbsp;public&nbsp;domain;&nbsp;in&nbsp;case&nbsp;that&nbsp;is&nbsp;not&nbsp;possible,&nbsp;the<br>
+#&nbsp;file&nbsp;is&nbsp;also&nbsp;licensed&nbsp;under&nbsp;the&nbsp;Unlicense:&nbsp;<a href="https://unlicense.org/">https://unlicense.org/</a><br>
+#<br>
+#&nbsp;NOTES:<br>
+#<br>
+#&nbsp;1.&nbsp;Animation&nbsp;of&nbsp;tilings&nbsp;composed&nbsp;from&nbsp;a&nbsp;wallpaper&nbsp;image&nbsp;can&nbsp;be&nbsp;implemented&nbsp;by<br>
+#&nbsp;shifting,&nbsp;with&nbsp;each&nbsp;frame,&nbsp;the&nbsp;starting&nbsp;position&nbsp;for&nbsp;drawing&nbsp;the&nbsp;top&nbsp;left<br>
+#&nbsp;corner&nbsp;of&nbsp;the&nbsp;wallpaper&nbsp;tiling&nbsp;(e.g.,&nbsp;from&nbsp;the&nbsp;top&nbsp;left&nbsp;corner&nbsp;of&nbsp;the&nbsp;image<br>
+#&nbsp;to&nbsp;some&nbsp;other&nbsp;position&nbsp;in&nbsp;the&nbsp;image).<br>
+#&nbsp;2.&nbsp;In&nbsp;Windows,&nbsp;if&nbsp;both&nbsp;an&nbsp;8x8&nbsp;monochrome&nbsp;pattern&nbsp;and&nbsp;a&nbsp;centered&nbsp;wallpaper<br>
+#&nbsp;are&nbsp;set&nbsp;as&nbsp;the&nbsp;desktop&nbsp;background,&nbsp;both&nbsp;the&nbsp;pattern&nbsp;and&nbsp;the&nbsp;wallpaper<br>
+#&nbsp;will&nbsp;be&nbsp;drawn&nbsp;on&nbsp;the&nbsp;desktop,&nbsp;the&nbsp;latter&nbsp;appearing&nbsp;above&nbsp;the&nbsp;former.<br>
+#&nbsp;The&nbsp;nonblack&nbsp;areas&nbsp;of&nbsp;the&nbsp;monochrome&nbsp;pattern&nbsp;are&nbsp;filled&nbsp;with&nbsp;the&nbsp;desktop<br>
+#&nbsp;color.<br>
+#&nbsp;3.&nbsp;I&nbsp;would&nbsp;welcome&nbsp;it&nbsp;if&nbsp;readers&nbsp;could&nbsp;contribute&nbsp;computer&nbsp;code&nbsp;(released<br>
+#&nbsp;to&nbsp;the&nbsp;public&nbsp;domain&nbsp;or&nbsp;under&nbsp;the&nbsp;Unlicense)&nbsp;to&nbsp;generate&nbsp;tileable—<br>
+#&nbsp;-&nbsp;noise,<br>
+#&nbsp;-&nbsp;procedural&nbsp;textures&nbsp;or&nbsp;patterns,&nbsp;or<br>
+#&nbsp;-&nbsp;arrangements&nbsp;of&nbsp;symbols&nbsp;or&nbsp;small&nbsp;images&nbsp;with&nbsp;partial&nbsp;transparency,<br>
+#&nbsp;without&nbsp;artificial&nbsp;intelligence,&nbsp;with&nbsp;a&nbsp;limited&nbsp;color&nbsp;palette&nbsp;and&nbsp;a&nbsp;small<br>
+#&nbsp;resolution,&nbsp;as&nbsp;long&nbsp;as&nbsp;the&nbsp;resulting&nbsp;images&nbsp;do&nbsp;not&nbsp;employ<br>
+#&nbsp;trademarks&nbsp;and&nbsp;are&nbsp;suitable&nbsp;for&nbsp;all&nbsp;ages.&nbsp;&nbsp;For&nbsp;details&nbsp;on&nbsp;the&nbsp;color&nbsp;and<br>
+#&nbsp;resolution&nbsp;options&nbsp;as&nbsp;well&nbsp;as&nbsp;a&nbsp;broader&nbsp;challenge&nbsp;to&nbsp;generate&nbsp;tileable<br>
+#&nbsp;classic&nbsp;wallpapers,&nbsp;see:<br>
+#<br>
+#&nbsp;<a href="https://github.com/peteroupc/classic-wallpaper">https://github.com/peteroupc/classic-wallpaper</a><br>
+#</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="math.html">math</a><br>
+<a href="os.html">os</a><br>
+</td><td class="multicolumn"><a href="random.html">random</a><br>
+<a href="struct.html">struct</a><br>
+</td><td class="multicolumn"><a href="zlib.html">zlib</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="desktopwallpaper.html#ImageWraparoundDraw">ImageWraparoundDraw</a>
+</dt><dt class="heading-text"><a href="desktopwallpaper.html#SvgDraw">SvgDraw</a>
+</dt><dt class="heading-text"><a href="desktopwallpaper.html#WindowsMetafileDraw">WindowsMetafileDraw</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="ImageWraparoundDraw">class <strong>ImageWraparoundDraw</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#ImageWraparoundDraw">ImageWraparoundDraw</a>(image,&nbsp;width,&nbsp;height)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="ImageWraparoundDraw-__init__"><strong>__init__</strong></a>(self, image, width, height)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="ImageWraparoundDraw-rect"><strong>rect</strong></a>(self, x0, y0, x1, y1, c)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="SvgDraw">class <strong>SvgDraw</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+
+<tr><td class="decor title-decor"><span class="code">&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="SvgDraw-__init__"><strong>__init__</strong></a>(self)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="SvgDraw-__str__"><strong>__str__</strong></a>(self)</dt><dd><span class="code">Return&nbsp;str(self).</span></dd></dl>
+
+<dl><dt><a name="SvgDraw-rect"><strong>rect</strong></a>(self, x0, y0, x1, y1, c)</dt></dl>
+
+<dl><dt><a name="SvgDraw-toSvg"><strong>toSvg</strong></a>(self, width, height)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="WindowsMetafileDraw">class <strong>WindowsMetafileDraw</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+
+<tr><td class="decor title-decor"><span class="code">&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="WindowsMetafileDraw-__init__"><strong>__init__</strong></a>(self)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="WindowsMetafileDraw-rect"><strong>rect</strong></a>(self, x0, y0, x1, y1, c)</dt></dl>
+
+<dl><dt><a name="WindowsMetafileDraw-toMetafile"><strong>toMetafile</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-affine"><strong>affine</strong></a>(
+    dstimage,
+    dstwidth,
+    dstheight,
+    srcimage,
+    srcwidth,
+    srcheight,
+    m1,
+    m2,
+    m3,
+    m4
+)</dt></dl>
+ <dl><dt><a name="-argyle"><strong>argyle</strong></a>(
+    foregroundImage,
+    backgroundImage,
+    width,
+    height,
+    expo=1,
+    shiftImageBg=False
+)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;argyle&nbsp;pattern&nbsp;from&nbsp;two&nbsp;images&nbsp;of&nbsp;the<br>
+#&nbsp;same&nbsp;size.&nbsp;&nbsp;'backgroundImage'&nbsp;must&nbsp;be&nbsp;tileable&nbsp;if&nbsp;shiftImageBg=False;<br>
+#&nbsp;'foregroundImage'&nbsp;need&nbsp;not&nbsp;be&nbsp;tileable.</span></dd></dl>
+ <dl><dt><a name="-backgroundColorUnder"><strong>backgroundColorUnder</strong></a>(bgcolor=None)</dt><dd><span class="code">#&nbsp;'bgcolor'&nbsp;is&nbsp;the&nbsp;background&nbsp;color,<br>
+#&nbsp;either&nbsp;None&nbsp;or&nbsp;a&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255;&nbsp;default&nbsp;is&nbsp;None,&nbsp;or&nbsp;no&nbsp;background&nbsp;color.</span></dd></dl>
+ <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt></dl>
+ <dl><dt><a name="-blankimage"><strong>blankimage</strong></a>(width, height, color=None)</dt></dl>
+ <dl><dt><a name="-borderedbox"><strong>borderedbox</strong></a>(
+    image,
+    width,
+    height,
+    border,
+    color1,
+    color2,
+    x0,
+    y0,
+    x1,
+    y1,
+    wraparound=True
+)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;dither-colored&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
+#&nbsp;'border'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;1-pixel-thick&nbsp;border.&nbsp;Can&nbsp;be&nbsp;None&nbsp;(so<br>
+#&nbsp;that&nbsp;no&nbsp;border&nbsp;is&nbsp;drawn)<br>
+#&nbsp;'color1'&nbsp;and&nbsp;'color2'&nbsp;are&nbsp;the&nbsp;dithered<br>
+#&nbsp;versions&nbsp;of&nbsp;the&nbsp;inner&nbsp;color.&nbsp;'color1'&nbsp;and&nbsp;'color2'&nbsp;can't&nbsp;be&nbsp;None.</span></dd></dl>
+ <dl><dt><a name="-bordereddithergradientbox"><strong>bordereddithergradientbox</strong></a>(
+    image,
+    width,
+    height,
+    border,
+    color1,
+    color2,
+    contour,
+    x0,
+    y0,
+    x1,
+    y1,
+    wraparound=True
+)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;box&nbsp;in&nbsp;a&nbsp;two-color&nbsp;dithered&nbsp;gradient&nbsp;fill&nbsp;on&nbsp;an&nbsp;image.<br>
+#&nbsp;'border'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;1-pixel-thick&nbsp;border.&nbsp;Can&nbsp;be&nbsp;None&nbsp;(so<br>
+#&nbsp;that&nbsp;no&nbsp;border&nbsp;is&nbsp;drawn)<br>
+#&nbsp;'color1'&nbsp;and&nbsp;'color2'&nbsp;are&nbsp;the&nbsp;dithered<br>
+#&nbsp;versions&nbsp;of&nbsp;the&nbsp;inner&nbsp;color.&nbsp;'color1'&nbsp;and&nbsp;'color2'&nbsp;can't&nbsp;be&nbsp;None.</span></dd></dl>
+ <dl><dt><a name="-borderedgradientbox"><strong>borderedgradientbox</strong></a>(
+    image,
+    width,
+    height,
+    border,
+    gradient,
+    contour,
+    x0,
+    y0,
+    x1,
+    y1,
+    wraparound=True
+)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;box&nbsp;in&nbsp;a&nbsp;gradient&nbsp;fill&nbsp;on&nbsp;an&nbsp;image.<br>
+#&nbsp;'border'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;1-pixel-thick&nbsp;border.&nbsp;Can&nbsp;be&nbsp;None&nbsp;(so<br>
+#&nbsp;that&nbsp;no&nbsp;border&nbsp;is&nbsp;drawn)<br>
+#&nbsp;'gradient'&nbsp;is&nbsp;a&nbsp;list&nbsp;of&nbsp;256&nbsp;colors&nbsp;for&nbsp;mapping&nbsp;the&nbsp;256&nbsp;possible&nbsp;shades<br>
+#&nbsp;of&nbsp;the&nbsp;gradient&nbsp;fill.</span></dd></dl>
+ <dl><dt><a name="-brushedmetal"><strong>brushedmetal</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;brushed&nbsp;metal&nbsp;texture&nbsp;from&nbsp;a&nbsp;noise&nbsp;image.<br>
+#&nbsp;A&nbsp;brushed&nbsp;metal&nbsp;texture&nbsp;was&nbsp;featured&nbsp;in&nbsp;Mac&nbsp;OS&nbsp;X&nbsp;Panther&nbsp;and<br>
+#&nbsp;Tiger&nbsp;(10.3,&nbsp;10.4)&nbsp;and&nbsp;other&nbsp;Apple&nbsp;products<br>
+#&nbsp;around&nbsp;the&nbsp;time&nbsp;of&nbsp;either&nbsp;OS's&nbsp;release.</span></dd></dl>
+ <dl><dt><a name="-brushednoise"><strong>brushednoise</strong></a>(width, height, tileable=True)</dt></dl>
+ <dl><dt><a name="-brushednoise2"><strong>brushednoise2</strong></a>(width, height, tileable=True)</dt></dl>
+ <dl><dt><a name="-brushednoise3"><strong>brushednoise3</strong></a>(width, height, tileable=True)</dt></dl>
+ <dl><dt><a name="-buttondown"><strong>buttondown</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
+ <dl><dt><a name="-buttonup"><strong>buttonup</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
+ <dl><dt><a name="-cgacolors"><strong>cgacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Canonical&nbsp;16-color&nbsp;CGA&nbsp;palette<br>
+#&nbsp;see&nbsp;also:&nbsp;<a href="https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/">https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/</a></span></dd></dl>
+ <dl><dt><a name="-checkerboard"><strong>checkerboard</strong></a>(upperLeftImage, otherImage, width, height, columns=2, rows=2)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;checkerboard&nbsp;pattern&nbsp;made&nbsp;of&nbsp;parts&nbsp;of&nbsp;two&nbsp;images&nbsp;of&nbsp;the&nbsp;same&nbsp;size;<br>
+#&nbsp;the&nbsp;return&nbsp;value&nbsp;has&nbsp;the&nbsp;same&nbsp;width&nbsp;and&nbsp;height&nbsp;as&nbsp;the&nbsp;source&nbsp;images.<br>
+#&nbsp;The&nbsp;two&nbsp;images&nbsp;should&nbsp;be&nbsp;tileable.<br>
+#&nbsp;The&nbsp;number&nbsp;of&nbsp;columns&nbsp;and&nbsp;of&nbsp;rows&nbsp;must&nbsp;be&nbsp;even&nbsp;and&nbsp;positive.</span></dd></dl>
+ <dl><dt><a name="-checkerboardtile"><strong>checkerboardtile</strong></a>(upperLeftImage, otherImage, width, height, columns=2, rows=2)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;checkerboard&nbsp;pattern&nbsp;using&nbsp;two&nbsp;images&nbsp;of&nbsp;the&nbsp;same&nbsp;size;<br>
+#&nbsp;each&nbsp;tile&nbsp;is&nbsp;the&nbsp;whole&nbsp;of&nbsp;one&nbsp;of&nbsp;the&nbsp;source&nbsp;images,&nbsp;and&nbsp;the&nbsp;return&nbsp;value's<br>
+#&nbsp;width&nbsp;in&nbsp;pixels&nbsp;is&nbsp;width*columns;&nbsp;its&nbsp;height&nbsp;is&nbsp;height*rows.<br>
+#&nbsp;The&nbsp;two&nbsp;images&nbsp;should&nbsp;be&nbsp;tileable.<br>
+#&nbsp;The&nbsp;number&nbsp;of&nbsp;columns&nbsp;and&nbsp;of&nbsp;rows&nbsp;must&nbsp;be&nbsp;even&nbsp;and&nbsp;positive.</span></dd></dl>
+ <dl><dt><a name="-circledraw"><strong>circledraw</strong></a>(image, width, height, c, cx, cy, r, wraparound=True)</dt></dl>
+ <dl><dt><a name="-classiccolors"><strong>classiccolors</strong></a>()</dt><dd><span class="code">#&nbsp;16-color&nbsp;VGA&nbsp;palette</span></dd></dl>
+ <dl><dt><a name="-classiccolors2"><strong>classiccolors2</strong></a>()</dt><dd><span class="code">#&nbsp;colors&nbsp;in&nbsp;<a href="#-classiccolors">classiccolors</a>()&nbsp;and&nbsp;their&nbsp;"half-and-half"&nbsp;versions</span></dd></dl>
+ <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt></dl>
+ <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt></dl>
+ <dl><dt><a name="-diamondTiled"><strong>diamondTiled</strong></a>(bgcolor=None, kind=0)</dt><dd><span class="code">#&nbsp;kind=0:&nbsp;image&nbsp;drawn&nbsp;in&nbsp;middle&nbsp;and&nbsp;padded<br>
+#&nbsp;kind=1:&nbsp;brick&nbsp;drawn&nbsp;at&nbsp;top<br>
+#&nbsp;kind=2:&nbsp;brick&nbsp;drawn&nbsp;at&nbsp;left</span></dd></dl>
+ <dl><dt><a name="-diamondTiledSize"><strong>diamondTiledSize</strong></a>(width, height, kind)</dt></dl>
+ <dl><dt><a name="-diamondTiling"><strong>diamondTiling</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;diamond&nbsp;tiling&nbsp;pattern&nbsp;(or&nbsp;a&nbsp;brick&nbsp;tiling<br>
+#&nbsp;pattern&nbsp;if&nbsp;the&nbsp;image&nbsp;the&nbsp;command&nbsp;is&nbsp;applied&nbsp;to&nbsp;has&nbsp;only&nbsp;its&nbsp;top&nbsp;half<br>
+#&nbsp;or&nbsp;its&nbsp;bottom&nbsp;half&nbsp;drawn).&nbsp;&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied<br>
+#&nbsp;to&nbsp;images&nbsp;with&nbsp;an&nbsp;even&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
+ <dl><dt><a name="-ditheralpha"><strong>ditheralpha</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Dither&nbsp;256-level&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;two&nbsp;levels&nbsp;(opaque<br>
+#&nbsp;and&nbsp;transparent).&nbsp;&nbsp;Image&nbsp;is&nbsp;a&nbsp;32-bit-per&nbsp;pixel&nbsp;image<br>
+#&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel).</span></dd></dl>
+ <dl><dt><a name="-dithertograyimage"><strong>dithertograyimage</strong></a>(image, width, height, grays)</dt></dl>
+ <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h)</dt></dl>
+ <dl><dt><a name="-draw16button"><strong>draw16button</strong></a>(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt,
+    sh,
+    btn,
+    frame=None,
+    squareFrame=False,
+    isDefault=False
+)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;button&nbsp;in&nbsp;16-bit&nbsp;style</span></dd></dl>
+ <dl><dt><a name="-draw16buttonpush"><strong>draw16buttonpush</strong></a>(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt,
+    sh,
+    btn,
+    frame=None,
+    squareFrame=False,
+    isDefault=False
+)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;pressed&nbsp;button&nbsp;in&nbsp;16-bit&nbsp;style</span></dd></dl>
+ <dl><dt><a name="-drawRoundOrSquareEdge"><strong>drawRoundOrSquareEdge</strong></a>(helper, x0, y0, x1, y1, lt, sh, squareFrame=False)</dt></dl>
+ <dl><dt><a name="-drawbutton"><strong>drawbutton</strong></a>(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt,
+    lt,
+    sh,
+    dksh,
+    btn,
+    frame,
+    squareFrame=True,
+    isDefault=False
+)</dt></dl>
+ <dl><dt><a name="-drawbuttonpush"><strong>drawbuttonpush</strong></a>(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt,
+    lt,
+    sh,
+    dksh,
+    btn,
+    frame,
+    squareFrame=True,
+    isDefault=False
+)</dt></dl>
+ <dl><dt><a name="-drawdiagstripe"><strong>drawdiagstripe</strong></a>(image, width, height, stripesize, reverse, fgcolor=None)</dt><dd><span class="code">#&nbsp;'stripesize'&nbsp;is&nbsp;in&nbsp;pixels<br>
+#&nbsp;reverse=false:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;top&nbsp;left&nbsp;to&nbsp;bottom<br>
+#&nbsp;right&nbsp;assuming&nbsp;the&nbsp;image's&nbsp;first&nbsp;row&nbsp;is&nbsp;the&nbsp;top&nbsp;row<br>
+#&nbsp;reverse=true:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;top&nbsp;right&nbsp;to&nbsp;bottom<br>
+#&nbsp;left</span></dd></dl>
+ <dl><dt><a name="-drawedgebotdom"><strong>drawedgebotdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(bottom&nbsp;right&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawedgenodom"><strong>drawedgenodom</strong></a>(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    upper,
+    lower,
+    corner,
+    edgesize=1,
+    bordersize=1
+)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(neither&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
+#&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
+#&nbsp;hatchthick&nbsp;-&nbsp;thickness&nbsp;in&nbsp;pixels&nbsp;of&nbsp;each&nbsp;vertical&nbsp;hash&nbsp;line.</span></dd></dl>
+ <dl><dt><a name="-drawhatchrows"><strong>drawhatchrows</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt></dl>
+ <dl><dt><a name="-drawindentborder"><strong>drawindentborder</strong></a>(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt,
+    sh,
+    frame,
+    outerbordersize=1,
+    innerbordersize=1
+)</dt></dl>
+ <dl><dt><a name="-drawloweredge"><strong>drawloweredge</strong></a>(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1)</dt></dl>
+ <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
+ <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"bottom&nbsp;right&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
+ <dl><dt><a name="-drawraisedbordertopdom"><strong>drawraisedbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"top&nbsp;left&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawraisedinnerwindow"><strong>drawraisedinnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
+ <dl><dt><a name="-drawraisedinnerwindowbutton"><strong>drawraisedinnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
+ <dl><dt><a name="-drawraisedouterwindow"><strong>drawraisedouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;The&nbsp;following&nbsp;four&nbsp;functions&nbsp;draw&nbsp;window&nbsp;edges<br>
+#&nbsp;in&nbsp;raised&nbsp;or&nbsp;sunken&nbsp;style</span></dd></dl>
+ <dl><dt><a name="-drawraisedouterwindowbutton"><strong>drawraisedouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;The&nbsp;following&nbsp;four&nbsp;functions&nbsp;draw&nbsp;button&nbsp;edges&nbsp;(also&nbsp;known&nbsp;as&nbsp;"soft"&nbsp;edges)<br>
+#&nbsp;in&nbsp;raised&nbsp;or&nbsp;sunken&nbsp;style</span></dd></dl>
+ <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"bottom&nbsp;right&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawsunkenbordernodom"><strong>drawsunkenbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
+ <dl><dt><a name="-drawsunkenbordertopdom"><strong>drawsunkenbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"top&nbsp;left&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawsunkeninnerwindow"><strong>drawsunkeninnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
+ <dl><dt><a name="-drawsunkeninnerwindowbutton"><strong>drawsunkeninnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
+ <dl><dt><a name="-drawsunkenouterwindow"><strong>drawsunkenouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
+ <dl><dt><a name="-drawsunkenouterwindowbutton"><strong>drawsunkenouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
+ <dl><dt><a name="-drawupperedge"><strong>drawupperedge</strong></a>(helper, x0, y0, x1, y1, upper, edgesize=1, bordersize=1)</dt></dl>
+ <dl><dt><a name="-egacolors"><strong>egacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;64&nbsp;colors&nbsp;displayable&nbsp;by&nbsp;EGA&nbsp;(extended&nbsp;graphics&nbsp;adapter)&nbsp;displays</span></dd></dl>
+ <dl><dt><a name="-emboss"><strong>emboss</strong></a>(bgColor=None, fgColor=None, hiltColor=None)</dt></dl>
+ <dl><dt><a name="-endingColumnsAreMirrored"><strong>endingColumnsAreMirrored</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-endingRowsAreMirrored"><strong>endingRowsAreMirrored</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-fieldbox"><strong>fieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None, pressed=False)</dt></dl>
+ <dl><dt><a name="-flatborder"><strong>flatborder</strong></a>(helper, x0, y0, x1, y1, sh, buttonFace)</dt></dl>
+ <dl><dt><a name="-getdithercolors"><strong>getdithercolors</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Gets&nbsp;the&nbsp;"half-and&nbsp;half"&nbsp;versions&nbsp;of&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette.</span></dd></dl>
+ <dl><dt><a name="-getgrays"><strong>getgrays</strong></a>(palette)</dt></dl>
+ <dl><dt><a name="-getpixel"><strong>getpixel</strong></a>(image, width, height, x, y)</dt></dl>
+ <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
+#&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
+#&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.</span></dd></dl>
+ <dl><dt><a name="-groupCmm"><strong>groupCmm</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Cmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
+#&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
+#&nbsp;last&nbsp;row's&nbsp;and&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its<br>
+#&nbsp;second&nbsp;half.</span></dd></dl>
+ <dl><dt><a name="-groupP2"><strong>groupP2</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;P2&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
+#&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
+#&nbsp;last&nbsp;row's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its&nbsp;second&nbsp;half.</span></dd></dl>
+ <dl><dt><a name="-groupPg"><strong>groupPg</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pg&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
+#&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
+#&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its&nbsp;second&nbsp;half.</span></dd></dl>
+ <dl><dt><a name="-groupPgg"><strong>groupPgg</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pgg&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
+#&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
+#&nbsp;last&nbsp;row's&nbsp;and&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its<br>
+#&nbsp;second&nbsp;half.</span></dd></dl>
+ <dl><dt><a name="-groupPm"><strong>groupPm</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.</span></dd></dl>
+ <dl><dt><a name="-groupPmg"><strong>groupPmg</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmg&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
+#&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
+#&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its<br>
+#&nbsp;second&nbsp;half.</span></dd></dl>
+ <dl><dt><a name="-groupingbox"><strong>groupingbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
+ <dl><dt><a name="-halfhalfditherimage"><strong>halfhalfditherimage</strong></a>(image, width, height, palette)</dt></dl>
+ <dl><dt><a name="-hatchedbox"><strong>hatchedbox</strong></a>(
+    image,
+    width,
+    height,
+    color,
+    pattern,
+    x0,
+    y0,
+    x1,
+    y1,
+    msbfirst=True,
+    drawborder=False,
+    wraparound=True
+)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;hatched&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
+#&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;hatch,&nbsp;drawn&nbsp;on&nbsp;every&nbsp;"black"&nbsp;pixel<br>
+#&nbsp;in&nbsp;the&nbsp;pattern's&nbsp;tiling.<br>
+#&nbsp;'pattern'&nbsp;is&nbsp;an&nbsp;8-item&nbsp;array&nbsp;with&nbsp;integers&nbsp;in&nbsp;the&nbsp;interval&nbsp;[0,255].<br>
+#&nbsp;The&nbsp;first&nbsp;integer&nbsp;represents&nbsp;the&nbsp;first&nbsp;row&nbsp;from&nbsp;the&nbsp;top;<br>
+#&nbsp;the&nbsp;second,&nbsp;the&nbsp;second&nbsp;row,&nbsp;etc.<br>
+#&nbsp;For&nbsp;each&nbsp;integer,&nbsp;the&nbsp;eight&nbsp;bits&nbsp;from&nbsp;most&nbsp;to&nbsp;least&nbsp;significant&nbsp;represent<br>
+#&nbsp;the&nbsp;column&nbsp;from&nbsp;left&nbsp;to&nbsp;right&nbsp;(right&nbsp;to&nbsp;left&nbsp;if&nbsp;'msbfirst'&nbsp;is&nbsp;False).<br>
+#&nbsp;If&nbsp;a&nbsp;bit&nbsp;is&nbsp;set,&nbsp;the&nbsp;corresponding&nbsp;position<br>
+#&nbsp;in&nbsp;the&nbsp;pattern&nbsp;is&nbsp;a&nbsp;"black"&nbsp;pixel;&nbsp;if&nbsp;clear,&nbsp;a&nbsp;"white"&nbsp;pixel.<br>
+#&nbsp;Either&nbsp;can&nbsp;be&nbsp;set&nbsp;to&nbsp;None&nbsp;to&nbsp;omit&nbsp;pixels&nbsp;of&nbsp;that&nbsp;color&nbsp;in&nbsp;the&nbsp;pattern<br>
+#&nbsp;'msbfirst'&nbsp;is&nbsp;the&nbsp;bit&nbsp;order&nbsp;for&nbsp;each&nbsp;integer&nbsp;in&nbsp;'pattern'.&nbsp;&nbsp;If&nbsp;True,<br>
+#&nbsp;the&nbsp;Windows&nbsp;convention&nbsp;is&nbsp;used;&nbsp;if&nbsp;False,&nbsp;the&nbsp;X&nbsp;pixmap&nbsp;convention&nbsp;is&nbsp;used.<br>
+#&nbsp;Default&nbsp;is&nbsp;True.<br>
+#&nbsp;'drawborder'&nbsp;means&nbsp;to&nbsp;draw&nbsp;the&nbsp;box's&nbsp;border&nbsp;with&nbsp;the&nbsp;hatch&nbsp;color;<br>
+#&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
+ <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt></dl>
+ <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt></dl>
+ <dl><dt><a name="-horizskew"><strong>horizskew</strong></a>(image, width, height, skew)</dt></dl>
+ <dl><dt><a name="-imageblit"><strong>imageblit</strong></a>(
+    dstimage,
+    dstwidth,
+    dstheight,
+    srcimage,
+    srcwidth,
+    srcheight,
+    x0,
+    y0,
+    wraparound=True,
+    rasterOp=12
+)</dt><dd><span class="code">#&nbsp;'rasterOp'&nbsp;is&nbsp;a&nbsp;binary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
+#&nbsp;destination&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;source.</span></dd></dl>
+ <dl><dt><a name="-imageblitex"><strong>imageblitex</strong></a>(
+    dstimage,
+    dstwidth,
+    dstheight,
+    x0,
+    y0,
+    x1,
+    y1,
+    srcimage,
+    srcwidth,
+    srcheight,
+    x0src=0,
+    y0src=0,
+    patternimage=None,
+    patternwidth=0,
+    patternheight=0,
+    patternOrgX=0,
+    patternOrgY=0,
+    maskimage=None,
+    maskwidth=0,
+    maskheight=0,
+    x0mask=0,
+    y0mask=0,
+    ropForeground=204,
+    ropBackground=170,
+    wraparound=True
+)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;copy&nbsp;of&nbsp;an&nbsp;image&nbsp;on&nbsp;another&nbsp;image.<br>
+#&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;are&nbsp;the&nbsp;destination&nbsp;and&nbsp;source&nbsp;images.<br>
+#&nbsp;'pattern'&nbsp;is&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;image.<br>
+#&nbsp;'srcimage',&nbsp;'maskimage',&nbsp;and&nbsp;'patternimage'&nbsp;are&nbsp;optional.<br>
+#&nbsp;All&nbsp;images&nbsp;are&nbsp;flat&nbsp;arrays&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;blankimage<br>
+#&nbsp;function.&nbsp;&nbsp;Thus&nbsp;none&nbsp;of&nbsp;them&nbsp;can&nbsp;include&nbsp;transparency&nbsp;in&nbsp;whole&nbsp;or&nbsp;in&nbsp;part.<br>
+#&nbsp;(Windows's&nbsp;graphical&nbsp;device&nbsp;interface&nbsp;[GDI]&nbsp;supports&nbsp;transparent<br>
+#&nbsp;parts&nbsp;in&nbsp;brush&nbsp;patterns&nbsp;only&nbsp;for&nbsp;brushes<br>
+#&nbsp;with&nbsp;predefined&nbsp;hatch&nbsp;patterns&nbsp;and&nbsp;only&nbsp;in&nbsp;the&nbsp;gaps&nbsp;between&nbsp;hatch&nbsp;marks;&nbsp;in<br>
+#&nbsp;bit&nbsp;block&nbsp;transfer&nbsp;operations&nbsp;such&nbsp;as&nbsp;BitBlt,&nbsp;these&nbsp;transparent&nbsp;pixels&nbsp;are<br>
+#&nbsp;filled&nbsp;with&nbsp;the&nbsp;background&nbsp;color&nbsp;whether&nbsp;the&nbsp;background&nbsp;mode&nbsp;is<br>
+#&nbsp;transparent&nbsp;or&nbsp;opaque;&nbsp;in&nbsp;line&nbsp;and&nbsp;shape&nbsp;drawing&nbsp;operations&nbsp;(which&nbsp;this<br>
+#&nbsp;method&nbsp;doesn't&nbsp;belong&nbsp;in),&nbsp;if&nbsp;the&nbsp;background&nbsp;mode&nbsp;is&nbsp;transparent,&nbsp;only<br>
+#&nbsp;the&nbsp;nontransparent&nbsp;pixels&nbsp;are&nbsp;drawn&nbsp;and&nbsp;affected&nbsp;by&nbsp;raster&nbsp;operations.)<br>
+#&nbsp;'patternOrgX'&nbsp;and&nbsp;'patternOrgY'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination's&nbsp;top&nbsp;left<br>
+#&nbsp;corner&nbsp;where&nbsp;the&nbsp;top&nbsp;left&nbsp;corner&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;would<br>
+#&nbsp;be&nbsp;drawn&nbsp;if&nbsp;a&nbsp;repetition&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;were&nbsp;to&nbsp;be&nbsp;drawn&nbsp;across&nbsp;the<br>
+#&nbsp;whole&nbsp;destination&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;for&nbsp;both&nbsp;parameters&nbsp;is&nbsp;0.<br>
+#&nbsp;'x0src'&nbsp;and&nbsp;'y0src'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner<br>
+#&nbsp;where&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner&nbsp;will&nbsp;be&nbsp;drawn.<br>
+#&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner<br>
+#&nbsp;and&nbsp;correspond&nbsp;to&nbsp;pixels&nbsp;in&nbsp;the&nbsp;source&nbsp;image.<br>
+#&nbsp;'ropForeground'&nbsp;is&nbsp;a&nbsp;foreground&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
+#&nbsp;destination&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;source;&nbsp;the&nbsp;low&nbsp;4&nbsp;bits&nbsp;is&nbsp;the&nbsp;binary&nbsp;raster<br>
+#&nbsp;operation&nbsp;used&nbsp;where&nbsp;the&nbsp;pattern&nbsp;bit&nbsp;is&nbsp;0;&nbsp;the&nbsp;high&nbsp;4&nbsp;bits,&nbsp;where&nbsp;the&nbsp;pattern<br>
+#&nbsp;bit&nbsp;is&nbsp;1.&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;mask&nbsp;bit&nbsp;is&nbsp;1&nbsp;or&nbsp;there&nbsp;is&nbsp;no&nbsp;mask<br>
+#&nbsp;or&nbsp;an&nbsp;empty&nbsp;mask.&nbsp;'ropBackground'&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;'ropForeground',&nbsp;but&nbsp;for&nbsp;the<br>
+#&nbsp;background&nbsp;(used&nbsp;where&nbsp;the&nbsp;mask&nbsp;bit&nbsp;is&nbsp;0&nbsp;rather&nbsp;than&nbsp;1).<br>
+#&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;monochrome&nbsp;image&nbsp;(every&nbsp;pixel&nbsp;is&nbsp;either&nbsp;all&nbsp;zeros<br>
+#&nbsp;(black)&nbsp;or&nbsp;all&nbsp;ones&nbsp;(white),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.</span></dd></dl>
+ <dl><dt><a name="-imagereversecolumnorder"><strong>imagereversecolumnorder</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-imagereverseroworder"><strong>imagereverseroworder</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-imagerotatecolumn"><strong>imagerotatecolumn</strong></a>(image, width, height, x, offset=0)</dt></dl>
+ <dl><dt><a name="-imagerotaterow"><strong>imagerotaterow</strong></a>(image, width, height, y, offset=0)</dt></dl>
+ <dl><dt><a name="-imagetransblit"><strong>imagetransblit</strong></a>(
+    dstimage,
+    dstwidth,
+    dstheight,
+    x0,
+    y0,
+    x1,
+    y1,
+    srcimage,
+    srcwidth,
+    srcheight,
+    x0src=0,
+    y0src=0,
+    transcolor=None,
+    patternimage=None,
+    patternwidth=0,
+    patternheight=0,
+    patternOrgX=0,
+    patternOrgY=0,
+    ropForeground=204,
+    ropBackground=170,
+    wraparound=True
+)</dt><dd><span class="code">#&nbsp;'ropForeground'&nbsp;and&nbsp;'ropBackground'&nbsp;are&nbsp;as&nbsp;in&nbsp;imageblitex,&nbsp;except&nbsp;that<br>
+#&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;source&nbsp;color&nbsp;is&nbsp;not&nbsp;'transcolor'&nbsp;or&nbsp;if<br>
+#&nbsp;'transcolor'&nbsp;is&nbsp;None;&nbsp;'ropBackground'&nbsp;is&nbsp;used&nbsp;elsewhere.</span></dd></dl>
+ <dl><dt><a name="-imagetranspose"><strong>imagetranspose</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt></dl>
+ <dl><dt><a name="-linedraw"><strong>linedraw</strong></a>(
+    image,
+    width,
+    height,
+    c,
+    x0,
+    y0,
+    x1,
+    y1,
+    drawEndPoint=False,
+    wraparound=True
+)</dt></dl>
+ <dl><dt><a name="-magickgradientditherfilter"><strong>magickgradientditherfilter</strong></a>(
+    rgb1=None,
+    rgb2=None,
+    basecolors=None,
+    hue=0,
+    dither=True
+)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;ImageMagick&nbsp;filter&nbsp;string&nbsp;to&nbsp;generate&nbsp;a&nbsp;desktop&nbsp;background&nbsp;from&nbsp;an&nbsp;image,&nbsp;in&nbsp;three&nbsp;steps.<br>
+#&nbsp;1.&nbsp;If&nbsp;rgb1&nbsp;and&nbsp;rgb2&nbsp;are&nbsp;not&nbsp;nil,&nbsp;converts&nbsp;the&nbsp;input&nbsp;image&nbsp;to&nbsp;grayscale,&nbsp;then&nbsp;translates&nbsp;the&nbsp;grayscale<br>
+#&nbsp;palette&nbsp;to&nbsp;a&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;rgb1&nbsp;for&nbsp;black&nbsp;(a&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255)&nbsp;and&nbsp;ending&nbsp;at&nbsp;rgb2&nbsp;for&nbsp;white&nbsp;(same&nbsp;format&nbsp;as&nbsp;rgb1).<br>
+#&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;rgb1&nbsp;or&nbsp;rgb2&nbsp;has&nbsp;a&nbsp;length&nbsp;less&nbsp;than&nbsp;3.<br>
+#&nbsp;The&nbsp;output&nbsp;image&nbsp;is&nbsp;the&nbsp;input&nbsp;for&nbsp;the&nbsp;next&nbsp;step.<br>
+#&nbsp;2.&nbsp;If&nbsp;hue&nbsp;is&nbsp;not&nbsp;0,&nbsp;performs&nbsp;a&nbsp;hue&nbsp;shift,&nbsp;in&nbsp;degrees&nbsp;(-180&nbsp;to&nbsp;180),&nbsp;of&nbsp;the&nbsp;input&nbsp;image.<br>
+#&nbsp;The&nbsp;output&nbsp;image&nbsp;is&nbsp;the&nbsp;input&nbsp;for&nbsp;the&nbsp;next&nbsp;step.<br>
+#&nbsp;3.&nbsp;If&nbsp;basecolors&nbsp;is&nbsp;not&nbsp;nil,&nbsp;ensures&nbsp;that&nbsp;that&nbsp;the&nbsp;image&nbsp;used&nbsp;only&nbsp;the&nbsp;colors<br>
+#&nbsp;given&nbsp;in&nbsp;'basecolors',&nbsp;which&nbsp;is&nbsp;a&nbsp;list<br>
+#&nbsp;of&nbsp;colors&nbsp;(each&nbsp;color&nbsp;is&nbsp;of&nbsp;the&nbsp;same&nbsp;format&nbsp;as&nbsp;rgb1&nbsp;and&nbsp;rgb2).&nbsp;&nbsp;If&nbsp;'dither'&nbsp;is&nbsp;also&nbsp;True,&nbsp;the<br>
+#&nbsp;image's&nbsp;colors&nbsp;are&nbsp;then&nbsp;scattered&nbsp;so&nbsp;that&nbsp;they&nbsp;appear&nbsp;close&nbsp;to&nbsp;the&nbsp;original&nbsp;colors.<br>
+#&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;'basecolors'&nbsp;has&nbsp;a&nbsp;length&nbsp;greater&nbsp;than&nbsp;256.</span></dd></dl>
+ <dl><dt><a name="-magickgradientditherfilterrandom"><strong>magickgradientditherfilterrandom</strong></a>()</dt></dl>
+ <dl><dt><a name="-makesvg"><strong>makesvg</strong></a>()</dt></dl>
+ <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-monoborder"><strong>monoborder</strong></a>(helper, x0, y0, x1, y1, clientAreaColor, windowFrameColor)</dt></dl>
+ <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)<br>
+#&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.</span></dd></dl>
+ <dl><dt><a name="-noiseimage"><strong>noiseimage</strong></a>(width=64, height=64)</dt></dl>
+ <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt></dl>
+ <dl><dt><a name="-patternDither"><strong>patternDither</strong></a>(image, width, height, palette)</dt><dd><span class="code">#&nbsp;Dithering&nbsp;for&nbsp;arbitrary&nbsp;color&nbsp;palettes<br>
+#&nbsp;Derived&nbsp;from&nbsp;Adobe's&nbsp;pattern&nbsp;dithering&nbsp;algorithm,&nbsp;described&nbsp;by&nbsp;J.&nbsp;Yliluoma&nbsp;at:<br>
+#&nbsp;<a href="https://bisqwit.iki.fi/story/howto/dither/jy/">https://bisqwit.iki.fi/story/howto/dither/jy/</a></span></dd></dl>
+ <dl><dt><a name="-randomColorization"><strong>randomColorization</strong></a>(palette=None)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;colorization&nbsp;gradient<br>
+#&nbsp;Random&nbsp;beginning&nbsp;color.&nbsp;&nbsp;Palette&nbsp;is&nbsp;optional;<br>
+#&nbsp;if&nbsp;not&nbsp;None&nbsp;(the&nbsp;default),&nbsp;the&nbsp;beginning&nbsp;and&nbsp;end&nbsp;colors&nbsp;are&nbsp;limited<br>
+#&nbsp;to&nbsp;those&nbsp;in&nbsp;the&nbsp;given&nbsp;palette.</span></dd></dl>
+ <dl><dt><a name="-randomPalettedFromThreeGrays"><strong>randomPalettedFromThreeGrays</strong></a>(image, width, height, palette=None)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)<br>
+#&nbsp;Default&nbsp;for&nbsp;palette&nbsp;is&nbsp;VGA&nbsp;palette&nbsp;(<a href="#-classiccolors">classiccolors</a>())</span></dd></dl>
+ <dl><dt><a name="-randomRotated"><strong>randomRotated</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-randomTruchetTiles"><strong>randomTruchetTiles</strong></a>(image, width, height, columns, rows)</dt></dl>
+ <dl><dt><a name="-randombackgroundimage"><strong>randombackgroundimage</strong></a>(w, h, palette=None, tileable=True)</dt></dl>
+ <dl><dt><a name="-randomcheckimage"><strong>randomcheckimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;checkerboard&nbsp;pattern&nbsp;image&nbsp;(using&nbsp;the&nbsp;given&nbsp;palette,&nbsp;if&nbsp;any)</span></dd></dl>
+ <dl><dt><a name="-randomhatchimage"><strong>randomhatchimage</strong></a>(w, h, palette=None, tileable=True)</dt></dl>
+ <dl><dt><a name="-randommaybemonochrome"><strong>randommaybemonochrome</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight)</dt></dl>
+ <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt></dl>
+ <dl><dt><a name="-shadowedborderedbox"><strong>shadowedborderedbox</strong></a>(
+    image,
+    width,
+    height,
+    border,
+    shadow,
+    color1,
+    color2,
+    x0,
+    y0,
+    x1,
+    y1
+)</dt></dl>
+ <dl><dt><a name="-shiftwrap"><strong>shiftwrap</strong></a>(xOrigin, yOrigin)</dt></dl>
+ <dl><dt><a name="-simpleargyle"><strong>simpleargyle</strong></a>(fgcolor, bgcolor, linecolor, w, h)</dt></dl>
+ <dl><dt><a name="-simpleargyle2"><strong>simpleargyle2</strong></a>(fgcolor, bgcolor, linecolor, w, h)</dt></dl>
+ <dl><dt><a name="-simplebox"><strong>simplebox</strong></a>(image, width, height, color, x0, y0, x1, y1, wraparound=True)</dt></dl>
+ <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt></dl>
+ <dl><dt><a name="-solidfill"><strong>solidfill</strong></a>(bg=[192, 192, 192])</dt></dl>
+ <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;32-bit-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
+#&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-statusfieldbox"><strong>statusfieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
+ <dl><dt><a name="-svgimagepattern"><strong>svgimagepattern</strong></a>(
+    idstr,
+    image,
+    width,
+    height,
+    transcolor=None,
+    originX=0,
+    originY=0
+)</dt></dl>
+ <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
+#&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
+#&nbsp;tileable.<br>
+#&nbsp;NOTE:&nbsp;"-append"&nbsp;is&nbsp;a&nbsp;vertical&nbsp;append;&nbsp;"+append"&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;append;<br>
+#&nbsp;"-flip"&nbsp;reverses&nbsp;the&nbsp;row&nbsp;order;&nbsp;"-flop"&nbsp;reverses&nbsp;the&nbsp;column&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-tiledImage"><strong>tiledImage</strong></a>(srcimage, srcwidth, srcheight, dstwidth, dstheight)</dt></dl>
+ <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False)</dt></dl>
+ <dl><dt><a name="-unavailable"><strong>unavailable</strong></a>(
+    bgColor=None,
+    buttonShadow=None,
+    buttonHighlight=None,
+    drawShiftedImageOver=False
+)</dt></dl>
+ <dl><dt><a name="-versatileForeground"><strong>versatileForeground</strong></a>(foregroundImage)</dt></dl>
+ <dl><dt><a name="-versatilePattern"><strong>versatilePattern</strong></a>(fgcolor, bgcolor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;foreground&nbsp;pattern,&nbsp;whose&nbsp;black&nbsp;parts<br>
+#&nbsp;are&nbsp;set&nbsp;in&nbsp;the&nbsp;given&nbsp;foreground&nbsp;color,&nbsp;on&nbsp;a&nbsp;background&nbsp;that&nbsp;can&nbsp;optionally<br>
+#&nbsp;be&nbsp;colored.<br>
+#&nbsp;'fgcolor'&nbsp;and&nbsp;'bgcolor'&nbsp;are&nbsp;the&nbsp;foreground&nbsp;and&nbsp;background&nbsp;color,&nbsp;respectively.<br>
+#&nbsp;The&nbsp;input&nbsp;image&nbsp;this&nbsp;command&nbsp;will&nbsp;be&nbsp;applied&nbsp;to&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;an&nbsp;SVG&nbsp;file<br>
+#&nbsp;which&nbsp;must&nbsp;be&nbsp;black&nbsp;in&nbsp;the&nbsp;nontransparent&nbsp;areas&nbsp;(given&nbsp;that&nbsp;ImageMagick&nbsp;renders&nbsp;the<br>
+#&nbsp;SVG&nbsp;on&nbsp;a&nbsp;white&nbsp;background&nbsp;by&nbsp;default)&nbsp;or&nbsp;a&nbsp;raster&nbsp;image&nbsp;with&nbsp;only<br>
+#&nbsp;gray&nbsp;tones,&nbsp;where&nbsp;the&nbsp;blacker,&nbsp;the&nbsp;less&nbsp;transparent.<br>
+#&nbsp;'bgcolor'&nbsp;can&nbsp;be&nbsp;None&nbsp;so&nbsp;that&nbsp;an&nbsp;alpha<br>
+#&nbsp;background&nbsp;is&nbsp;used.&nbsp;&nbsp;Each&nbsp;color&nbsp;is&nbsp;a<br>
+#&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,<br>
+#&nbsp;[2,10,255]&nbsp;where&nbsp;each&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255.<br>
+#&nbsp;Inspired&nbsp;by&nbsp;the&nbsp;technique&nbsp;for&nbsp;generating&nbsp;backgrounds&nbsp;in&nbsp;heropatterns.com.</span></dd></dl>
+ <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt></dl>
+ <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew)</dt></dl>
+ <dl><dt><a name="-vgaVariantsFromFourGrays"><strong>vgaVariantsFromFourGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;four&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(192,192,192),(255,255,255)</span></dd></dl>
+ <dl><dt><a name="-vgaVariantsFromThreeGrays"><strong>vgaVariantsFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)</span></dd></dl>
+ <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Dithering&nbsp;for&nbsp;the&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>()</span></dd></dl>
+ <dl><dt><a name="-websafecolors"><strong>websafecolors</strong></a>()</dt></dl>
+ <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
+ <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt></dl>
+ <dl><dt><a name="-whitenoiseimage2"><strong>whitenoiseimage2</strong></a>(width=64, height=64, bgcolor=None, noisecolor=None)</dt></dl>
+ <dl><dt><a name="-windowborder"><strong>windowborder</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
+ <dl><dt><a name="-writeavi"><strong>writeavi</strong></a>(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False)</dt></dl>
+ <dl><dt><a name="-writebmp"><strong>writebmp</strong></a>(f, image, width, height, raiseIfExists=False)</dt></dl>
+ <dl><dt><a name="-writepalette"><strong>writepalette</strong></a>(f, palette, name=None, raiseIfExists=False)</dt></dl>
+ <dl><dt><a name="-writepng"><strong>writepng</strong></a>(f, image, width, height, raiseIfExists=False, alpha=False)</dt></dl>
+ <dl><dt><a name="-writeppm"><strong>writeppm</strong></a>(f, image, width, height, raiseIfExists=False)</dt></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>DitherMatrix</strong> = [0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, ...]<br>
+<strong>DitherMatrix4x4</strong> = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]</td></tr></table>
+</body></html>

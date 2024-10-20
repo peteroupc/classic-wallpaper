@@ -10,7 +10,7 @@ For example, EGA and CGA displays have nonsquare pixels (nominally 96 horizontal
 
 A table of logical resolutions (per inch) for different devices is found in the [OpenType 1.8 specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions) (the most recent version doesn't have this table).
 
-Logical resolutions also include the special case of _pixel depth_, or a factor to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Pixel depths include the factors 1.25 (IBM 8514/a), 2, and 3.
+Logical resolutions also include the special case of _pixel depth_, or a factor to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Pixel depths include the factors 1.25 (IBM 8514/a), 2, and 3.  More generally, units similar to pixels may be employed as units of measure for user interface elements, for design purposes to promote right-sized user interfaces.  Examples include [_dialog box units_](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [_effective pixels_](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display, its size, and its resolution).
 
 ## Button and Border Styles
 
@@ -85,7 +85,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files in the AVI format without sound, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `desktopwallpaper.py` under the method `writeavi`.
+Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files in the AVI format without sound, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `_desktopwallpaper.py`_ under the method ``writeavi`.
 
 ## License
 
