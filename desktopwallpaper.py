@@ -1357,40 +1357,42 @@ def hatchedbox(
                 image[yp + xp * 3 + 2] = cb
 
 def _applyrop(a, b, rop):
-    # apply a binary raster operation
-    if rop == 12:
+  # apply a binary raster operation
+  match rop:
+    case 12:
         return b
-    elif rop == 10:
+    case 10:
         return a
-    elif rop == 0:
+    case 0:
         return 0
-    elif rop == 1:
+    case 1:
         return (a | b) ^ 0xFF
-    elif rop == 2:
+    case 2:
         return a & (b ^ 0xFF)
-    elif rop == 3:
+    case 3:
         return b ^ 0xFF
-    elif rop == 4:
+    case 4:
         return b & (a ^ 0xFF)
-    elif rop == 5:
+    case 5:
         return a ^ 0xFF
-    elif rop == 6:
+    case 6:
         return a ^ b
-    elif rop == 7:
+    case 7:
         return (a & b) ^ 0xFF
-    elif rop == 8:
+    case 8:
         return a & b
-    elif rop == 9:
+    case 9:
         return (a ^ b) ^ 0xFF
-    elif rop == 11:
+    case 11:
         return (b & (a ^ 0xFF)) ^ 0xFF
-    elif rop == 13:
+    case 13:
         return (a & (b ^ 0xFF)) ^ 0xFF
-    elif rop == 14:
+    case 14:
         return a | b
-    elif rop == 15:
+    case 15:
         return 0xFF
-    return 0
+    case _:
+        return 0
 
 # Draw a wraparound copy of an image on another image.
 # 'dstimage' and 'srcimage' are the destination and source images.
