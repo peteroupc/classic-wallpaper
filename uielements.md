@@ -4,9 +4,9 @@ This section discusses aspects of the traditional design of user interface graph
 
 ## Logical Display Resolutions
 
-An image can be adapted for displays with logical resolutions that differ from VGA (96 horizontal and vertical pixels per inch) by scaling the image's width and height.
+An image can be adapted for displays with logical resolutions that differ from VGA (video graphics array; 96 horizontal and vertical pixels per inch) by scaling the image's width and height.
 
-For example, EGA and CGA displays have nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such displays are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for EGA displays, becomes a shrunken 300&times;225 image.
+For example, displays compatible with the IBM Extended Graphics Adapter (EGA) or IBM Color/Graphics Adapter (CGA) have nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such displays are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for EGA displays, becomes a shrunken 300&times;225 image.
 
 A table of logical resolutions (per inch) for different devices is found in the [OpenType 1.8 specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions) (the most recent version doesn't have this table).
 
@@ -78,10 +78,10 @@ An icon (a small graphic representing a computer program) should be present in a
 
 Of these variations, 32&times;32 icons with the VGA palette are traditionally the main icon variation.
 
-Cursors (mouse pointer graphics) can follow the guidelines given above as well, but most cursors are traditionally drawn&mdash;
+Cursors (mouse pointer graphics) can follow the guidelines given above as well, but most cursors are traditionally drawn:
 
-- in a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions), and
-- in two colors (black and white) or in grayscale, in either case with optional transparency.
+- In a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions).
+- in two colors (black and white) or in grayscale, in either case with optional transparency.  In the two-color case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
 ## Animations
 

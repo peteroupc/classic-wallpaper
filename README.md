@@ -8,7 +8,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 
 - The image is one of the following:
     - It is a raster (bitmap) image with one of the color palettes and one of the pixel dimensions given later.
-    - It is a vector graphic in the SVG format made only of two-dimensional vector paths with no stroke.  Excessive detail should be avoided.  Moreover, one of the following is true.
+    - It is a vector graphic in the Scalable Vector Graphics (SVG) format made only of two-dimensional vector paths with no stroke.  Excessive detail should be avoided.  Moreover, one of the following is true.
         - Each path has a black fill and any fill opacity from 0 through 100%.  The image can then be scaled to any pixel dimension desired and turned into a grayscale (see later) bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).
         - Each path has a 100% fill opacity and is filled with one of up to ten colors from a color palette given later.  See [_colourlovers.com_](https://www.colourlovers.com/patterns) for examples.
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
@@ -36,7 +36,7 @@ The color palettes allowed are as follows.
 
 - Two colors only.
     - Such as black and white, which allows for hue shifting to, say, a black-to-red or gray-to-blue palette.
-- 16-color VGA palette (light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).[^3]
+- 16-color VGA (video graphics array) palette (light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).[^3]
 - 216-color "web safe" palette (each color component is a multiple of 51).[^3] [^7]
 - 216-color "web safe" palette plus VGA palette.[^3]
 - A subset of a color palette given earlier.
@@ -51,11 +51,11 @@ Additional color palettes allowed are as follows.
     - Allows for hue shifting to, say, a black-to-red palette.
 - The VGA palette plus the following four colors set by legacy versions of Windows: (192,220,192), (160,160,164), (255,251,240), (166,202,240).
 - The VGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 98 unique colors (each color component is 0, 64, 128, or 192; or each color component is 0, 128, or 255; or each color component is 96 or 160; or each color component is 96 or 224).
-- 16-color [**canonical CGA palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
+- 16-color [**canonical Color/Graphics Adapter (CGA) palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
 - An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
 - A 16-color palette where each color is one of the following: each color component is 0 or 255; or each color component is 0 or 128 except for (128, 128, 128); or the color is (64, 64, 64).
 - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
-- The 64 colors displayable by EGA monitors (each color component is 0, 85, 170, or 255).[^3]
+- The 64 colors displayable by Extended Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).[^3]
 - Up to 16 colors from those displayable by 12-bit color displays (each color component is a multiple of 17).
 - Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - 5- to 64-color grayscale palette (all color components the same).

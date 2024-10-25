@@ -1424,6 +1424,8 @@ def _applyrop(a, b, rop):
 # background (used where the mask bit is 0 rather than 1).
 # 'maskimage' is ideally a monochrome image (every pixel is either all zeros
 # (black) or all ones (white), but it doesn't have to be.
+# 'dstimage' may be the same as 'srcimage', 'patternimage', or 'maskimage',
+# and the source and destination rectangles may overlap.
 def imageblitex(
     dstimage,
     dstwidth,
@@ -1505,6 +1507,16 @@ def imageblitex(
     if ropForeground == 0xAA and ropBackground == 0xAA:
         # Destination left unchanged
         return
+    if srcimage is dstimage or patternimage is dstimage or maskimage is dstimage:
+        # Avoid overlapping source/pattern/mask with destination
+        return imageblitex(dstimage,dstwidth,dstheight,
+              srcimage if srcimage is not dstimage else ([x for x in srcimage] if srcimage else None),
+              srcwidth,srcheight,x0src,y0src,transcolor,
+              patternimage if patternimage is not dstimage else ([x for x in patternimage] if patternimage else None),
+              patternwidth,patternheight,patternOrgX,patternOrgY,
+              maskimage if maskimage is not dstimage else ([x for x in maskimage] if maskimage else None),
+              maskwidth,maskheight,x0mask,y0mask,
+              ropForeground,ropBackground,wraparound)
     for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:
@@ -1549,6 +1561,8 @@ def imageblitex(
 # 'ropForeground' and 'ropBackground' are as in imageblitex, except that
 # 'ropForeground' is used where the source color is not 'transcolor' or if
 # 'transcolor' is None; 'ropBackground' is used elsewhere.
+# 'dstimage' may be the same as 'srcimage' or 'patternimage',
+# and the source and destination rectangles may overlap.
 def imagetransblit(
     dstimage,
     dstwidth,
@@ -1634,6 +1648,14 @@ def imagetransblit(
     if ropForeground == 0xAA and ropBackground == 0xAA:
         # Destination left unchanged
         return
+    if srcimage is dstimage or patternimage is dstimage:
+        # Avoid overlapping source/pattern with destination
+        return imagetransblit(dstimage,dstwidth,dstheight,
+              srcimage if srcimage is not dstimage else ([x for x in srcimage] if srcimage else None),
+              srcwidth,srcheight,x0src,y0src,
+              patternimage if patternimage is not dstimage else ([x for x in patternimage] if patternimage else None),
+              patternwidth,patternheight,patternOrgX,patternOrgY,
+              ropForeground,ropBackground,wraparound)
     for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:

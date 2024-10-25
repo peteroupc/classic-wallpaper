@@ -8,7 +8,7 @@
 <table class="heading">
 <tr class="heading-text decor">
 <td class="title">&nbsp;<br><strong class="title">desktopwallpaper</strong></td>
-<td class="extra"><a href=".">index</a><br></td></tr></table>
+<td class="extra"><a href=".">index</a></td></tr></table>
     <p><span class="code">#&nbsp;This&nbsp;Python&nbsp;script&nbsp;helps&nbsp;generate&nbsp;interesting&nbsp;variations&nbsp;on&nbsp;desktop<br>
 #&nbsp;wallpapers&nbsp;based&nbsp;on&nbsp;existing&nbsp;image&nbsp;files.&nbsp;&nbsp;Because&nbsp;they&nbsp;run&nbsp;on&nbsp;the&nbsp;CPU<br>
 #&nbsp;and&nbsp;are&nbsp;implemented&nbsp;in&nbsp;pure&nbsp;Python,&nbsp;the&nbsp;methods&nbsp;are&nbsp;intended&nbsp;for<br>
@@ -505,7 +505,9 @@ Data descriptors defined here:<br>
 #&nbsp;or&nbsp;an&nbsp;empty&nbsp;mask.&nbsp;'ropBackground'&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;'ropForeground',&nbsp;but&nbsp;for&nbsp;the<br>
 #&nbsp;background&nbsp;(used&nbsp;where&nbsp;the&nbsp;mask&nbsp;bit&nbsp;is&nbsp;0&nbsp;rather&nbsp;than&nbsp;1).<br>
 #&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;monochrome&nbsp;image&nbsp;(every&nbsp;pixel&nbsp;is&nbsp;either&nbsp;all&nbsp;zeros<br>
-#&nbsp;(black)&nbsp;or&nbsp;all&nbsp;ones&nbsp;(white),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.</span></dd></dl>
+#&nbsp;(black)&nbsp;or&nbsp;all&nbsp;ones&nbsp;(white),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.<br>
+#&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;or&nbsp;'maskimage',<br>
+#&nbsp;and&nbsp;the&nbsp;source&nbsp;and&nbsp;destination&nbsp;rectangles&nbsp;may&nbsp;overlap.</span></dd></dl>
  <dl><dt><a name="-imagereversecolumnorder"><strong>imagereversecolumnorder</strong></a>(image, width, height)</dt></dl>
  <dl><dt><a name="-imagereverseroworder"><strong>imagereverseroworder</strong></a>(image, width, height)</dt></dl>
  <dl><dt><a name="-imagerotatecolumn"><strong>imagerotatecolumn</strong></a>(image, width, height, x, offset=0)</dt></dl>
@@ -534,7 +536,9 @@ Data descriptors defined here:<br>
     wraparound=True
 )</dt><dd><span class="code">#&nbsp;'ropForeground'&nbsp;and&nbsp;'ropBackground'&nbsp;are&nbsp;as&nbsp;in&nbsp;imageblitex,&nbsp;except&nbsp;that<br>
 #&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;source&nbsp;color&nbsp;is&nbsp;not&nbsp;'transcolor'&nbsp;or&nbsp;if<br>
-#&nbsp;'transcolor'&nbsp;is&nbsp;None;&nbsp;'ropBackground'&nbsp;is&nbsp;used&nbsp;elsewhere.</span></dd></dl>
+#&nbsp;'transcolor'&nbsp;is&nbsp;None;&nbsp;'ropBackground'&nbsp;is&nbsp;used&nbsp;elsewhere.<br>
+#&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage'&nbsp;or&nbsp;'patternimage',<br>
+#&nbsp;and&nbsp;the&nbsp;source&nbsp;and&nbsp;destination&nbsp;rectangles&nbsp;may&nbsp;overlap.</span></dd></dl>
  <dl><dt><a name="-imagetranspose"><strong>imagetranspose</strong></a>(image, width, height)</dt></dl>
  <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt></dl>
  <dl><dt><a name="-linedraw"><strong>linedraw</strong></a>(
