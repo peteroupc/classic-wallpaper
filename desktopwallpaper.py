@@ -903,7 +903,7 @@ def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=Fal
             raise ValueError
         if len(image) != width * height * 3:
             raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
-    fps = 20  # 20 fps is adequate for fluid animations
+    fps = 20  # 20 fps or higher is adequate for fluid animations
     aviheader = struct.pack(
         "<LLLLLLLLLLLLLL",
         1000000 // fps,  # microseconds per frame
@@ -1357,42 +1357,42 @@ def hatchedbox(
                 image[yp + xp * 3 + 2] = cb
 
 def _applyrop(a, b, rop):
-  # apply a binary raster operation
-  match rop:
-    case 12:
-        return b
-    case 10:
-        return a
-    case 0:
-        return 0
-    case 1:
-        return (a | b) ^ 0xFF
-    case 2:
-        return a & (b ^ 0xFF)
-    case 3:
-        return b ^ 0xFF
-    case 4:
-        return b & (a ^ 0xFF)
-    case 5:
-        return a ^ 0xFF
-    case 6:
-        return a ^ b
-    case 7:
-        return (a & b) ^ 0xFF
-    case 8:
-        return a & b
-    case 9:
-        return (a ^ b) ^ 0xFF
-    case 11:
-        return (b & (a ^ 0xFF)) ^ 0xFF
-    case 13:
-        return (a & (b ^ 0xFF)) ^ 0xFF
-    case 14:
-        return a | b
-    case 15:
-        return 0xFF
-    case _:
-        return 0
+    # apply a binary raster operation
+    match rop:
+        case 12:
+            return b
+        case 10:
+            return a
+        case 0:
+            return 0
+        case 1:
+            return (a | b) ^ 0xFF
+        case 2:
+            return a & (b ^ 0xFF)
+        case 3:
+            return b ^ 0xFF
+        case 4:
+            return b & (a ^ 0xFF)
+        case 5:
+            return a ^ 0xFF
+        case 6:
+            return a ^ b
+        case 7:
+            return (a & b) ^ 0xFF
+        case 8:
+            return a & b
+        case 9:
+            return (a ^ b) ^ 0xFF
+        case 11:
+            return (b & (a ^ 0xFF)) ^ 0xFF
+        case 13:
+            return (a & (b ^ 0xFF)) ^ 0xFF
+        case 14:
+            return a | b
+        case 15:
+            return 0xFF
+        case _:
+            return 0
 
 # Draw a wraparound copy of an image on another image.
 # 'dstimage' and 'srcimage' are the destination and source images.
@@ -1509,14 +1509,42 @@ def imageblitex(
         return
     if srcimage is dstimage or patternimage is dstimage or maskimage is dstimage:
         # Avoid overlapping source/pattern/mask with destination
-        return imageblitex(dstimage,dstwidth,dstheight,
-              srcimage if srcimage is not dstimage else ([x for x in srcimage] if srcimage else None),
-              srcwidth,srcheight,x0src,y0src,transcolor,
-              patternimage if patternimage is not dstimage else ([x for x in patternimage] if patternimage else None),
-              patternwidth,patternheight,patternOrgX,patternOrgY,
-              maskimage if maskimage is not dstimage else ([x for x in maskimage] if maskimage else None),
-              maskwidth,maskheight,x0mask,y0mask,
-              ropForeground,ropBackground,wraparound)
+        return imageblitex(
+            dstimage,
+            dstwidth,
+            dstheight,
+            (
+                srcimage
+                if srcimage is not dstimage
+                else ([x for x in srcimage] if srcimage else None)
+            ),
+            srcwidth,
+            srcheight,
+            x0src,
+            y0src,
+            transcolor,
+            (
+                patternimage
+                if patternimage is not dstimage
+                else ([x for x in patternimage] if patternimage else None)
+            ),
+            patternwidth,
+            patternheight,
+            patternOrgX,
+            patternOrgY,
+            (
+                maskimage
+                if maskimage is not dstimage
+                else ([x for x in maskimage] if maskimage else None)
+            ),
+            maskwidth,
+            maskheight,
+            x0mask,
+            y0mask,
+            ropForeground,
+            ropBackground,
+            wraparound,
+        )
     for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:
@@ -1650,12 +1678,32 @@ def imagetransblit(
         return
     if srcimage is dstimage or patternimage is dstimage:
         # Avoid overlapping source/pattern with destination
-        return imagetransblit(dstimage,dstwidth,dstheight,
-              srcimage if srcimage is not dstimage else ([x for x in srcimage] if srcimage else None),
-              srcwidth,srcheight,x0src,y0src,
-              patternimage if patternimage is not dstimage else ([x for x in patternimage] if patternimage else None),
-              patternwidth,patternheight,patternOrgX,patternOrgY,
-              ropForeground,ropBackground,wraparound)
+        return imagetransblit(
+            dstimage,
+            dstwidth,
+            dstheight,
+            (
+                srcimage
+                if srcimage is not dstimage
+                else ([x for x in srcimage] if srcimage else None)
+            ),
+            srcwidth,
+            srcheight,
+            x0src,
+            y0src,
+            (
+                patternimage
+                if patternimage is not dstimage
+                else ([x for x in patternimage] if patternimage else None)
+            ),
+            patternwidth,
+            patternheight,
+            patternOrgX,
+            patternOrgY,
+            ropForeground,
+            ropBackground,
+            wraparound,
+        )
     for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:
@@ -1963,6 +2011,15 @@ def borderedbox(
                 image[yp + xp * 3] = color2[0]
                 image[yp + xp * 3 + 1] = color2[1]
                 image[yp + xp * 3 + 2] = color2[2]
+
+# Split an image into two interlaced versions with half the height.
+# The first image should be displayed at even-numbered frames; the second,
+# odd-numbered.
+def interlace(image,width,height):
+   if height%2!=0: raise ValueError("height must be even")
+   image1=listsum(image[(y*2)*width*3:(y*2+1)*width*3] for y in range(height//2))
+   image2=listsum(image[(y*2+1)*width*3:(y*2+2)*width*3] for y in range(height//2))
+   return [image1,image2]
 
 def blankimage(width, height, color=None):
     if color and len(color) < 3:
