@@ -1824,10 +1824,12 @@ def randomtiles(columns, rows, sourceImages, srcwidth, srcheight):
             )
     return image
 
+# Draws a box filled with a transparent vertical hatch pattern.
 def verthatchedbox(image, width, height, color, x0, y0, x1, y1):
     pattern = [0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA]
     hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1)
 
+# Draws a box filled with a transparent horizontal hatch pattern.
 def horizhatchedbox(image, width, height, color, x0, y0, x1, y1):
     pattern = [0xFF, 0, 0xFF, 0, 0xFF, 0, 0xFF, 0]
     hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1)
@@ -1839,6 +1841,37 @@ def shadowedborderedbox(
     pattern = [0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55]
     hatchedbox(image, width, height, shadow, pattern, x0 + 4, y0 + 4, x1 + 4, y1 + 4)
     borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
+
+# Creates a brush pattern with width 2 and height equal to 'spacing'*2.
+# Each color occurs equally in the image.
+# Designed for drawing filled, unstroked, opaque vector paths,
+# generally vector paths of an abstract design or symbol.
+# 'spacing' is the spacing from the beginning of one horizontal hatches
+# to the beginning of the next. Hatches are colored with color1.
+# 'hatchsize' is the thickness of each hatch line.
+def styledbrush1(color1, color2, color3, spacing=3, hatchsize=1):
+    if hatchsize < 0 or spacing <= 0:
+        raise ValueError
+    width = 2
+    height = spacing * 2
+    ret = blankimage(width, height)
+    for y in range(height):
+        for x in range(width):
+            if y % spacing < hatchsize:
+                setpixel(ret, width, height, x, y, color1)  # hatch
+            elif (x + y) % 2 == 0:
+                setpixel(ret, width, height, x, y, color2)  # dither color 1
+            else:
+                setpixel(ret, width, height, x, y, color3)  # dither color 2
+    return ret
+
+# Creates a brush pattern with width 2 and height 8.
+# color1 occurs on 1/2 the brush pattern; the other
+# colors on 1/4 each.
+# Designed for drawing filled, unstroked, opaque vector paths,
+# generally vector paths of an abstract design or symbol.
+def styledbrush2(color1, color2, color3):
+    return styledbrush1(color1, color2, color3, spacing=4, hatchsize=2)
 
 # Draw a wraparound box in a gradient fill on an image.
 # 'border' is the color of the 1-pixel-thick border. Can be None (so
@@ -2015,11 +2048,17 @@ def borderedbox(
 # Split an image into two interlaced versions with half the height.
 # The first image should be displayed at even-numbered frames; the second,
 # odd-numbered.
-def interlace(image,width,height):
-   if height%2!=0: raise ValueError("height must be even")
-   image1=listsum(image[(y*2)*width*3:(y*2+1)*width*3] for y in range(height//2))
-   image2=listsum(image[(y*2+1)*width*3:(y*2+2)*width*3] for y in range(height//2))
-   return [image1,image2]
+def interlace(image, width, height):
+    if height % 2 != 0:
+        raise ValueError("height must be even")
+    image1 = listsum(
+        image[(y * 2) * width * 3 : (y * 2 + 1) * width * 3] for y in range(height // 2)
+    )
+    image2 = listsum(
+        image[(y * 2 + 1) * width * 3 : (y * 2 + 2) * width * 3]
+        for y in range(height // 2)
+    )
+    return [image1, image2]
 
 def blankimage(width, height, color=None):
     if color and len(color) < 3:
