@@ -42,6 +42,8 @@ It is allowed to use dithering to simulate the appearance of more colors using t
 
 The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
 
+### Traditional Button Styles
+
 The following terms are used to describe the traditional appearance of ordinary buttons:
 
 - The _button label_ consists of the text and icons within the button.
@@ -68,6 +70,8 @@ Traditionally, to draw buttons, default buttons, and toolbar buttons:
     - For the unpressed style, the button face has a _mixed value appearance_. [^2]
     - For the unavailable style, the button label has an _unavailable appearance_.
 
+Traditionally, the three dimensional effects of buttons, icons, and other user interface elements are based on a light source shining from the upper left. [^3]
+
 ## Icons and Cursors
 
 An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
@@ -85,7 +89,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files in the AVI format without sound, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `_desktopwallpaper.py`_ under the method ``writeavi`.
+Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound in the AVI format, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `_desktopwallpaper.py`_ under the method `writeavi`.
 
 ## License
 
@@ -94,3 +98,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button face involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
+
+[^3]:  See, for example, _The Windows Interface Guidelines for Software Design_, which applies to Microsoft WIndows 95.

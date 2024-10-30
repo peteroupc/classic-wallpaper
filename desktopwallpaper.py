@@ -1847,8 +1847,8 @@ def shadowedborderedbox(
 # Designed for drawing filled, unstroked, opaque vector paths,
 # generally vector paths of an abstract design or symbol.
 # 'spacing' is the spacing from the beginning of one horizontal hatches
-# to the beginning of the next. Hatches are colored with color1.
-# 'hatchsize' is the thickness of each hatch line.
+# to the beginning of the next. Hatches are colored with color1.  Default is 3.
+# 'hatchsize' is the thickness of each hatch line. Default is 1.
 def styledbrush1(color1, color2, color3, spacing=3, hatchsize=1):
     if hatchsize < 0 or spacing <= 0:
         raise ValueError
@@ -3865,6 +3865,15 @@ def _reversediagcontourwrap(x, y):
 def _mindiagwrap(x, y):
     return min(_diagcontourwrap(x, y), _reversediagcontourwrap(x, y))
 
+# Draws a smaller version of the contour in the interior.
+# Preserves tileability.
+def _insetbox(x,y,contour):
+    if x*6.0<1 or y*6.0<1 or x*6>5 or x*6>5:
+       return contour(x,y)
+    x=min(1,max(0,3*x/2-1/4))
+    y=min(1,max(0,3*y/2-1/4))
+    return contour(x,y)
+
 def _randomgradientfillex(width, height, palette, contour):
     image = blankimage(width, height)
     grad = randomColorization()
@@ -3877,6 +3886,7 @@ def _randomcontour(tileable=True, includeWhole=False):
     contours = []
     r = random.choice([0.5, 2.0 / 3, 1, 1.5, 2])
     if tileable:
+        # Tileable gradient contours
         contours = [
             _horizcontourwrap,
             _vertcontourwrap,
@@ -3887,6 +3897,7 @@ def _randomcontour(tileable=True, includeWhole=False):
             lambda x, y: _argyle(x, y, r),
         ]
     else:
+        # Not necessarily tileable gradient contours
         contours = [
             _horizcontourwrap,
             _vertcontourwrap,
@@ -3896,12 +3907,17 @@ def _randomcontour(tileable=True, includeWhole=False):
             _horizcontour,
             _vertcontour,
             _diagcontour,
+            _reversediagcontour,
             _square,
             lambda x, y: _argyle(x, y, r),
         ]
     if includeWhole:
         contours.append(_whole)
-    return random.choice(contours)
+    ret=random.choice(contours)
+    if random.randint(0,9)==0:
+       rr=ret
+       ret=lambda x,y: _insetbox(x,y,rr)
+    return ret
 
 def _randomgradientfill(width, height, palette, tileable=True):
     return _randomgradientfillex(width, height, palette, _randomcontour(tileable))
