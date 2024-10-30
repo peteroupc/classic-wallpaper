@@ -1356,42 +1356,144 @@ def hatchedbox(
                 image[yp + xp * 3 + 1] = cg
                 image[yp + xp * 3 + 2] = cb
 
-def _applyrop(a, b, rop):
-    # apply a binary raster operation
+# Apply a binary raster operation.
+def _applyrop(dst, src, rop):
+    # Assuming the source and destination
+    # images are black-and-white, the result of
+    # each raster operation is as follows:
+    # 'dst' and 'src' are each integers from 0 through 255.
     match rop:
         case 12:
-            return b
+            # Also known as "source copy".
+            # Copy source to destination.
+            return src
         case 10:
-            return a
+            # Also known as "no-op".
+            # Leave destination unchanged.
+            return dst
         case 0:
+            # Turn destination black.
             return 0
         case 1:
-            return (a | b) ^ 0xFF
+            # Also known as "not source erase" or "not merge pen".
+            # Inversion of operation code 14.
+            # Result's white area is the intersection of black areas
+            # of the source and destination.  That is, the result pixel
+            # is white only if both the source and destination
+            # pixels are black.  Alternatively, the black area is
+            # the union of white areas of the source and destination.
+            # Alternatively, if the source is black-and-white and the
+            # destination is colored: The white area of the source is
+            # copied to the destination and turned black there, and
+            # if the source pixel is black, the destination color is
+            # inverted.
+            return (dst | src) ^ 0xFF
         case 2:
-            return a & (b ^ 0xFF)
+            # Also known as "mask not pen".
+            # Inversion of operation code 13.
+            # The result pixel is white only if the source pixel is black
+            # and the destination pixel is white.
+            # The result pixel is black only if the source pixel is white,
+            # the destination pixel is black, or both.
+            return dst & (src ^ 0xFF)
         case 3:
-            return b ^ 0xFF
+            # Also known as "not source copy" or "not copy pen".
+            # Copy inverted source colors to destination.
+            # If source and destination are black-and-white:
+            # If source pixel is black, white is copied
+            # to the destination, and vice versa.
+            return src ^ 0xFF
         case 4:
-            return b & (a ^ 0xFF)
+            # Also known as "source erase" or "mask pen not".
+            # Inversion of operation code 11.
+            # The result pixel is white only if the source pixel is white
+            # and the destination pixel is black.
+            # The result pixel is black only if the source pixel is black,
+            # the destination pixel is white, or both.
+            return src & (dst ^ 0xFF)
         case 5:
-            return a ^ 0xFF
+            # Also known as "destination invert".
+            # Invert colors of destination.
+            # If destination is black-and-white, turns
+            # white destination pixels black and vice versa.
+            return dst ^ 0xFF
         case 6:
-            return a ^ b
+            # Also known as "source invert" or "XOR pen".
+            # The result pixel is white if the source pixel is black
+            # and the destination is white or vice versa, and the result
+            # pixel is black if the source and destination pixels are
+            # the same.  Alternatively, if the source and destination
+            # are colored: Where the source color is black, the destination
+            # is left unchanged, and where the _destination_ color is
+            # black, the source color is copied to the destination.
+            return dst ^ src
         case 7:
-            return (a & b) ^ 0xFF
+            # Also known as "not mask pen".
+            # Result's white area is the intersection of white areas
+            # of the source and destination.  That is, the result pixel
+            # is white only if the source and destination pixels are
+            # both white.  Alternatively, the black area is the union
+            # of black areas of the source and destination.
+            # Alternatively, if the source is black-and-white and the
+            # destination is colored, the black area of the source is
+            # copied to the destination and turned white there, and where
+            # the source pixel color is white, the destination color is
+            # inverted.
+            return (dst & src) ^ 0xFF
         case 8:
-            return a & b
+            # Also known as "source AND".
+            # Result's white area is the intersection of white areas
+            # of the source and destination.  That is, the result pixel
+            # is white only if the source and destination pixels are
+            # both white.  Alternatively, the black area is the union
+            # of black areas of the source and destination.
+            # Alternatively, if the source is black-and-white and the
+            # destination is colored, the black area of the source is
+            # copied to the destination (and left black there).
+            return dst & src
         case 9:
-            return (a ^ b) ^ 0xFF
+            # Also known as "not XOR pen".
+            # Inversion of operation code 6.
+            # The result pixel is black if the source pixel is black
+            # and the destination is white or vice versa, and the result
+            # pixel is white if the source and destination pixels are
+            # the same. Alternatively, if the source and destination
+            # are colored: Where the source color is white, the destination
+            # is left unchanged, and where the _destination_ color is
+            # white, the source color is copied to the destination.
+            return (dst ^ src) ^ 0xFF
         case 11:
-            return (b & (a ^ 0xFF)) ^ 0xFF
+            # Also known as "merge paint" or "merge not pen".
+            # Inversion of operation code 4.
+            # The result pixel is black only if the source pixel is white
+            # and the destination pixel is black.
+            # The result pixel is white only if the source pixel is black,
+            # the destination pixel is white, or both.
+            return (src & (dst ^ 0xFF)) ^ 0xFF
         case 13:
-            return (a & (b ^ 0xFF)) ^ 0xFF
+            # Also known as "merge pen not".
+            # Inversion of operation code 2.
+            # The result pixel is black only if the source pixel is black
+            # and the destination pixel is white.
+            # The result pixel is white only if the source pixel is white,
+            # the destination pixel is black, or both.
+            return (dst & (src ^ 0xFF)) ^ 0xFF
         case 14:
-            return a | b
+            # Also known as "source paint" or "merge pen".
+            # Result's white area is the union of white areas
+            # of the source and destination.  That is, the result pixel
+            # is white only if the source pixel, the destination
+            # pixel, or both are white.  Alternatively, the black area is
+            # the intersection of black areas of the source and destination.
+            # Alternatively, if the source is black-and-white and the
+            # destination is colored, the white area of the source is
+            # copied to the destination (and left white there).
+            return dst | src
         case 15:
+            # Turn destination white.
             return 0xFF
         case _:
+            # Undefined raster operation.
             return 0
 
 # Draw a wraparound copy of an image on another image.
