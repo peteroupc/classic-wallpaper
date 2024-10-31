@@ -409,17 +409,24 @@ def shiftwrap(xOrigin, yOrigin):
         % ("+" if xOrigin >= 0 else "", xOrigin, "+" if yOrigin >= 0 else "", yOrigin),
     ]
 
+# Render an input image described in 'versatilePattern' in an unavailable appearance.
+# If 'buttonShadow' is darker than 'buttonHighlight' (as is the default), then this method will result in
+# the image's appearing engraved, that is, sunken onto the background, given the existence of a light
+# source that shines from the upper left corner.
+# If 'buttonShadow' is lighter than 'buttonHighlight', the image instead appears embossed, that is, raised above the
+# background, given the light source just described.
+# If 'drawShiftedImageOver' is True, the image drawn in the 'buttonShadow' color is drawn above the
+# image drawn in the 'buttonHighlight' color.
 def unavailable(
     bgColor=None, buttonShadow=None, buttonHighlight=None, drawShiftedImageOver=False
 ):
-    # Emboss an input image described in 'versatilePattern' for an unavailable appearance
     if not bgColor:
         bgColor = [192, 192, 192]
     if not buttonShadow:
         buttonShadow = [128, 128, 128]
     if not buttonHighlight:
         buttonHighlight = [255, 255, 255]
-    mpre = "mpr:emboss"
+    mpre = "mpr:engrave"
     return (
         ["-grayscale", "Rec709Luma", "-write", mpre, "-delete", "0", "(", mpre]
         + versatilePattern(buttonHighlight, None)
@@ -437,8 +444,13 @@ def unavailable(
         + backgroundColorUnder(bgColor)
     )
 
+# Emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image.
+# If 'fgColor' is lighter than 'hiltColor' (as is the default), then embossing an outline will result in its
+# appearing raised above the background, given the existence of a light source that shines from the upper
+# left corner.
+# If 'fgColor' is darker than 'hiltColor', the outline instead appears engraved, that is, sunken into the
+# background, given the light source just described.
 def emboss(bgColor=None, fgColor=None, hiltColor=None):
-    # Emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image
     return unavailable(
         bgColor if bgColor else [128, 128, 128],
         hiltColor if hiltColor else [255, 255, 255],

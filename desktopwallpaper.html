@@ -373,7 +373,12 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-drawsunkenouterwindowbutton"><strong>drawsunkenouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
  <dl><dt><a name="-drawupperedge"><strong>drawupperedge</strong></a>(helper, x0, y0, x1, y1, upper, edgesize=1, bordersize=1)</dt></dl>
  <dl><dt><a name="-egacolors"><strong>egacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;64&nbsp;colors&nbsp;displayable&nbsp;by&nbsp;EGA&nbsp;(extended&nbsp;graphics&nbsp;adapter)&nbsp;displays</span></dd></dl>
- <dl><dt><a name="-emboss"><strong>emboss</strong></a>(bgColor=None, fgColor=None, hiltColor=None)</dt></dl>
+ <dl><dt><a name="-emboss"><strong>emboss</strong></a>(bgColor=None, fgColor=None, hiltColor=None)</dt><dd><span class="code">#&nbsp;Emboss&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;into&nbsp;a&nbsp;3-color&nbsp;(black/gray/white)&nbsp;image.<br>
+#&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'hiltColor'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;embossing&nbsp;an&nbsp;outline&nbsp;will&nbsp;result&nbsp;in&nbsp;its<br>
+#&nbsp;appearing&nbsp;raised&nbsp;above&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper&nbsp;<br>
+#&nbsp;left&nbsp;corner.<br>
+#&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'hiltColor',&nbsp;the&nbsp;outline&nbsp;instead&nbsp;appears&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;into&nbsp;the<br>
+#&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.</span></dd></dl>
  <dl><dt><a name="-endingColumnsAreMirrored"><strong>endingColumnsAreMirrored</strong></a>(image, width, height)</dt></dl>
  <dl><dt><a name="-endingRowsAreMirrored"><strong>endingRowsAreMirrored</strong></a>(image, width, height)</dt></dl>
  <dl><dt><a name="-fieldbox"><strong>fieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None, pressed=False)</dt></dl>
@@ -435,7 +440,7 @@ Data descriptors defined here:<br>
 #&nbsp;'drawborder'&nbsp;means&nbsp;to&nbsp;draw&nbsp;the&nbsp;box's&nbsp;border&nbsp;with&nbsp;the&nbsp;hatch&nbsp;color;<br>
 #&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt></dl>
- <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt></dl>
+ <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;horizontal&nbsp;hatch&nbsp;pattern.</span></dd></dl>
  <dl><dt><a name="-horizskew"><strong>horizskew</strong></a>(image, width, height, skew)</dt></dl>
  <dl><dt><a name="-imageblit"><strong>imageblit</strong></a>(
     dstimage,
@@ -540,6 +545,9 @@ Data descriptors defined here:<br>
 #&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage'&nbsp;or&nbsp;'patternimage',<br>
 #&nbsp;and&nbsp;the&nbsp;source&nbsp;and&nbsp;destination&nbsp;rectangles&nbsp;may&nbsp;overlap.</span></dd></dl>
  <dl><dt><a name="-imagetranspose"><strong>imagetranspose</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-interlace"><strong>interlace</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Split&nbsp;an&nbsp;image&nbsp;into&nbsp;two&nbsp;interlaced&nbsp;versions&nbsp;with&nbsp;half&nbsp;the&nbsp;height.<br>
+#&nbsp;The&nbsp;first&nbsp;image&nbsp;should&nbsp;be&nbsp;displayed&nbsp;at&nbsp;even-numbered&nbsp;frames;&nbsp;the&nbsp;second,<br>
+#&nbsp;odd-numbered.</span></dd></dl>
  <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt></dl>
  <dl><dt><a name="-linedraw"><strong>linedraw</strong></a>(
     image,
@@ -620,6 +628,18 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;32-bit-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
 #&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-statusfieldbox"><strong>statusfieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
+ <dl><dt><a name="-styledbrush1"><strong>styledbrush1</strong></a>(color1, color2, color3, spacing=3, hatchsize=1)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;equal&nbsp;to&nbsp;'spacing'*2.<br>
+#&nbsp;Each&nbsp;color&nbsp;occurs&nbsp;equally&nbsp;in&nbsp;the&nbsp;image.<br>
+#&nbsp;Designed&nbsp;for&nbsp;drawing&nbsp;filled,&nbsp;unstroked,&nbsp;opaque&nbsp;vector&nbsp;paths,<br>
+#&nbsp;generally&nbsp;vector&nbsp;paths&nbsp;of&nbsp;an&nbsp;abstract&nbsp;design&nbsp;or&nbsp;symbol.<br>
+#&nbsp;'spacing'&nbsp;is&nbsp;the&nbsp;spacing&nbsp;from&nbsp;the&nbsp;beginning&nbsp;of&nbsp;one&nbsp;horizontal&nbsp;hatches<br>
+#&nbsp;to&nbsp;the&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next.&nbsp;Hatches&nbsp;are&nbsp;colored&nbsp;with&nbsp;color1.&nbsp;&nbsp;Default&nbsp;is&nbsp;3.<br>
+#&nbsp;'hatchsize'&nbsp;is&nbsp;the&nbsp;thickness&nbsp;of&nbsp;each&nbsp;hatch&nbsp;line.&nbsp;Default&nbsp;is&nbsp;1.</span></dd></dl>
+ <dl><dt><a name="-styledbrush2"><strong>styledbrush2</strong></a>(color1, color2, color3)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;8.<br>
+#&nbsp;color1&nbsp;occurs&nbsp;on&nbsp;1/2&nbsp;the&nbsp;brush&nbsp;pattern;&nbsp;the&nbsp;other<br>
+#&nbsp;colors&nbsp;on&nbsp;1/4&nbsp;each.<br>
+#&nbsp;Designed&nbsp;for&nbsp;drawing&nbsp;filled,&nbsp;unstroked,&nbsp;opaque&nbsp;vector&nbsp;paths,<br>
+#&nbsp;generally&nbsp;vector&nbsp;paths&nbsp;of&nbsp;an&nbsp;abstract&nbsp;design&nbsp;or&nbsp;symbol.</span></dd></dl>
  <dl><dt><a name="-svgimagepattern"><strong>svgimagepattern</strong></a>(
     idstr,
     image,
@@ -641,7 +661,14 @@ Data descriptors defined here:<br>
     buttonShadow=None,
     buttonHighlight=None,
     drawShiftedImageOver=False
-)</dt></dl>
+)</dt><dd><span class="code">#&nbsp;Render&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;in&nbsp;an&nbsp;unavailable&nbsp;appearance.<br>
+#&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'buttonHighlight'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;this&nbsp;method&nbsp;will&nbsp;result&nbsp;in<br>
+#&nbsp;the&nbsp;image's&nbsp;appearing&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;onto&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;<br>
+#&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper&nbsp;left&nbsp;corner.<br>
+#&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'buttonHighlight',&nbsp;the&nbsp;image&nbsp;instead&nbsp;appears&nbsp;embossed,&nbsp;that&nbsp;is,&nbsp;raised&nbsp;above&nbsp;the<br>
+#&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>
+#&nbsp;If&nbsp;'drawShiftedImageOver'&nbsp;is&nbsp;True,&nbsp;the&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonShadow'&nbsp;color&nbsp;is&nbsp;drawn&nbsp;above&nbsp;the<br>
+#&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonHighlight'&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-versatileForeground"><strong>versatileForeground</strong></a>(foregroundImage)</dt></dl>
  <dl><dt><a name="-versatilePattern"><strong>versatilePattern</strong></a>(fgcolor, bgcolor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;foreground&nbsp;pattern,&nbsp;whose&nbsp;black&nbsp;parts<br>
 #&nbsp;are&nbsp;set&nbsp;in&nbsp;the&nbsp;given&nbsp;foreground&nbsp;color,&nbsp;on&nbsp;a&nbsp;background&nbsp;that&nbsp;can&nbsp;optionally<br>
@@ -656,7 +683,7 @@ Data descriptors defined here:<br>
 #&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,<br>
 #&nbsp;[2,10,255]&nbsp;where&nbsp;each&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255.<br>
 #&nbsp;Inspired&nbsp;by&nbsp;the&nbsp;technique&nbsp;for&nbsp;generating&nbsp;backgrounds&nbsp;in&nbsp;heropatterns.com.</span></dd></dl>
- <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt></dl>
+ <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;vertical&nbsp;hatch&nbsp;pattern.</span></dd></dl>
  <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew)</dt></dl>
  <dl><dt><a name="-vgaVariantsFromFourGrays"><strong>vgaVariantsFromFourGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;four&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(192,192,192),(255,255,255)</span></dd></dl>
  <dl><dt><a name="-vgaVariantsFromThreeGrays"><strong>vgaVariantsFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)</span></dd></dl>

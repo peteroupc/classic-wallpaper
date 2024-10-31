@@ -76,16 +76,17 @@ Traditionally, the three dimensional effects of buttons, icons, and other user i
 
 An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
 
-- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel).  A traditional color choice for 16-color icons is the VGA palette [^1]; for 8-color icons, an 8-color palette where each color component is 0 or 255.
+- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette [^1]; for 8-color icons, an 8-color palette where each color component is 0 or 255.
 - The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). (Modern guidelines recommend a 256&times;256 icon as well.  Toolbar icons are traditionally offered in 16&times;16 and 20&times;20.)
-- All icons can include transparent pixels, but should have no translucent pixels except for 8-bit-per-color-component icons.
+- All icons can include transparent pixels, but should have no translucent pixels except for 8-bpc icons.
+- If 16- and 256-color icons are derived from 8-bpc icons, then the 256-color icon should be made from the 8-bpc icon without translucent pixels, and the 16-color icon should be made from the 256-color icon with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
 
 Of these variations, 32&times;32 icons with the VGA palette are traditionally the main icon variation.
 
 Cursors (mouse pointer graphics) can follow the guidelines given above as well, but most cursors are traditionally drawn:
 
 - In a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions).
-- in two colors (black and white) or in grayscale, in either case with optional transparency.  In the two-color case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
+- In two colors (black and white) or in grayscale, in either case with optional transparency.  In the two-color case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
 ## Animations
 
@@ -99,4 +100,6 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button face involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
-[^3]:  See, for example, _The Windows Interface Guidelines for Software Design_, which applies to Microsoft WIndows 95.
+[^3]:  See, for example, _The Windows Interface Guidelines for Software Design_, which applies to Microsoft Windows 95.
+
+[^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
