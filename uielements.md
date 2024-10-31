@@ -90,7 +90,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound in the AVI format, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in `_desktopwallpaper.py`_ under the method `writeavi`.
+Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound in the AVI format, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in _desktopwallpaper.py_ under the method `writeavi`.
 
 ## License
 
@@ -102,4 +102,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^3]:  See, for example, _The Windows Interface Guidelines for Software Design_, which applies to Microsoft Windows 95.
 
-[^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
+[^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.

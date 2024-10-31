@@ -1368,12 +1368,35 @@ def hatchedbox(
                 image[yp + xp * 3 + 1] = cg
                 image[yp + xp * 3 + 2] = cb
 
-# Apply a binary raster operation.
+# Apply a binary raster operation to two 8-bit source and destination
+# color channels.
+# 'dst' and 'src' are each integers from 0 through 255.
+# 'rop' is a binary raster operation from 0 through 15.
+# It can be interpreted as 'rop' = RopHigh * 4 + RopLow,
+# where RopHigh and RopLow are unary raster operations on the
+# destination color, as follows, for each of the eight
+# bits of the destination:
+# If the operation is 0, the result is 0;
+# if 1, the result is the inverted destination bit
+# (the result is 1 if the destination bit is 0, and vice versa);
+# if 2, the result is the destination bit (the destination
+# is left unchanged);
+# if 3, the result is 1.
+# For each of the eight bits of the
+# source color, if the bit is 1, the new bit is the result
+# of the unary operation RopHigh; if 0, the unary
+# operation RopLow.
+# For example, suppose the source and destination images are
+# black-and-white, and suppose 'rop' = 6 = 1 * 4 + 2, so that
+# ropHigh is 1 and ropLow is 2.  Then, where the source is
+# white (source bit is 1), the destination color is inverted
+# (since ropHigh is 1), and where the source is black (source
+# bit is 0), the destination is left unchanged (since
+# ropLow is 2).
 def _applyrop(dst, src, rop):
     # Assuming the source and destination
     # images are black-and-white, the result of
     # each raster operation is as follows:
-    # 'dst' and 'src' are each integers from 0 through 255.
     match rop:
         case 12:
             # Also known as "source copy".
@@ -1432,7 +1455,7 @@ def _applyrop(dst, src, rop):
         case 6:
             # Also known as "source invert" or "XOR pen".
             # The result pixel is white if the source pixel is black
-            # and the destination is white or vice versa, and the result
+            # and the destination pixel is white or vice versa, and the result
             # pixel is black if the source and destination pixels are
             # the same.  Alternatively, if the source and destination
             # are colored: Where the source color is black, the destination
