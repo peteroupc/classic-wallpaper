@@ -1533,7 +1533,7 @@ def _applyrop(dst, src, rop):
 
 # Draw a wraparound copy of an image on another image.
 # 'dstimage' and 'srcimage' are the destination and source images.
-# 'pattern' is a brush pattern image.
+# 'pattern' is a brush pattern image (also known as a stipple).
 # 'srcimage', 'maskimage', and 'patternimage' are optional.
 # All images are flat arrays with the same format returned by the blankimage
 # function.  Thus none of them can include transparency in whole or in part.
@@ -1979,7 +1979,7 @@ def shadowedborderedbox(
     hatchedbox(image, width, height, shadow, pattern, x0 + 4, y0 + 4, x1 + 4, y1 + 4)
     borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
 
-# Creates a brush pattern with width 2 and height equal to 'spacing'*2.
+# Creates a brush pattern (also known as a stipple) with width 2 and height equal to 'spacing'*2.
 # Each color occurs equally in the image.
 # Designed for drawing filled, unstroked, opaque vector paths,
 # generally vector paths of an abstract design or symbol.
@@ -2002,7 +2002,7 @@ def styledbrush1(color1, color2, color3, spacing=3, hatchsize=1):
                 setpixel(ret, width, height, x, y, color3)  # dither color 2
     return ret
 
-# Creates a brush pattern with width 2 and height 8.
+# Creates a brush pattern (also known as a stipple) with width 2 and height 8.
 # color1 occurs on 1/2 the brush pattern; the other
 # colors on 1/4 each.
 # Designed for drawing filled, unstroked, opaque vector paths,
@@ -2127,15 +2127,24 @@ def ditheralpha(image, width, height):
 # Splits a 32-bit-per pixel image (four elements per pixel) into a
 # color mask and an (inverted) alpha mask, in that order.
 def splitmask(image, width, height):
+    if width*height*4!=len(image):
+      raise ValueError
     img = [0 for _ in range(width * height * 3)]
     mask = [0 for _ in range(width * height * 3)]
     for i in range(width * height):
-        img[i * 3] = image[i * 4]
-        img[i * 3 + 1] = image[i * 4 + 1]
-        img[i * 3 + 2] = image[i * 4 + 2]
-        # Invert alpha channel to ease the alpha mask's use as an AND mask
-        # (when every pixel in the mask is all zeros or all ones)
-        mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
+        if image[i * 4 + 3] == 0:
+          # Set color to black for every transparent pixel,
+          # to ease the color mask's use as an XOR mask
+          # (when every pixel in the alpha mask is all zeros or all ones)
+          img[i * 3]=img[i * 3 + 1]=img[i * 3 + 2]=0
+          mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2]=255
+        else:
+          img[i * 3] = image[i * 4]
+          img[i * 3 + 1] = image[i * 4 + 1]
+          img[i * 3 + 2] = image[i * 4 + 2]
+          # Invert alpha channel to ease the alpha mask's use as an AND mask
+          # (when every pixel in the mask is all zeros or all ones)
+          mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
     return [img, mask]
 
 # Draw a wraparound dither-colored box on an image.

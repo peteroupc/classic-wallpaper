@@ -73,7 +73,10 @@ The following color palettes are allowed, but not preferred:
 - 65- to 236-color grayscale palette (all color components the same).
 - 237- to 256-color grayscale palette (all color components the same).
 
-> **Note:**  The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in software programs for drawing, especially those devoted to pixel art.
+> **Notes:**
+>
+> 1. The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in software programs for drawing, especially those devoted to pixel art.
+> 2. The palette can have one or more sequences of colors that smoothly range from one color to another, to aid in achieving gradient fills or other specialized shading techniques in a _ramp color model_.  For example, a palette can have ten colors (indexed from 0 through 9) that range from black to green, and ten additional colors (indexed from 10 through 19) that range from black to red.
 
 ## Pixel Dimensions
 

@@ -88,6 +88,13 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 - In a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions).
 - In two colors (black and white) or in grayscale, in either case with optional transparency.  In the two-color case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
+> **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) and a black-and-white _AND mask_ ("inverted alpha" mask).
+>
+>  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become black where the mask is black (in the _opaque_ areas of the icon or cursor) and left unchanged elsewhere.
+>  2. Then, the output pixels are combined using a bit-by-bit XOR operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is black, and the rest of the output is inverted where the mask is white.
+>
+>  For icons and cursors with only colored and transparent pixels (and no inverted pixels), the XOR mask should be black wherever the AND mask is white.
+
 ## Animations
 
 Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound in the AVI format, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in _desktopwallpaper.py_ under the method `writeavi`.
