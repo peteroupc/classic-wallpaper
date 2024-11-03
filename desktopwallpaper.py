@@ -1370,29 +1370,8 @@ def hatchedbox(
 
 # Apply a binary raster operation to two 8-bit source and destination
 # color channels.
-# 'dst' and 'src' are each integers from 0 through 255.
-# 'rop' is a binary raster operation from 0 through 15.
-# It can be interpreted as 'rop' = RopHigh * 4 + RopLow,
-# where RopHigh and RopLow are unary raster operations on the
-# destination color, as follows, for each of the eight
-# bits of the destination:
-# If the operation is 0, the result is 0;
-# if 1, the result is the inverted destination bit
-# (the result is 1 if the destination bit is 0, and vice versa);
-# if 2, the result is the destination bit (the destination
-# is left unchanged);
-# if 3, the result is 1.
-# For each of the eight bits of the
-# source color, if the bit is 1, the new bit is the result
-# of the unary operation RopHigh; if 0, the unary
-# operation RopLow.
-# For example, suppose the source and destination images are
-# black-and-white, and suppose 'rop' = 6 = 1 * 4 + 2, so that
-# ropHigh is 1 and ropLow is 2.  Then, where the source is
-# white (source bit is 1), the destination color is inverted
-# (since ropHigh is 1), and where the source is black (source
-# bit is 0), the destination is left unchanged (since
-# ropLow is 2).
+# 'dst' and 'src' are each 8-bit integers (from 0 through 255).
+# 'rop' is a 4-bit binary raster operation (from 0 through 15).
 def _applyrop(dst, src, rop):
     # Assuming the source and destination
     # images are black-and-white, the result of
@@ -1554,11 +1533,26 @@ def _applyrop(dst, src, rop):
 # 'x0mask' and 'y0mask' are offsets from the source image's top left corner
 # and correspond to pixels in the source image.
 # 'ropForeground' is a foreground ternary raster operation between the bits of the
-# destination and those of the source; the low 4 bits is the binary raster
-# operation used where the pattern bit is 0; the high 4 bits, where the pattern
+# destination, those of the source, and those of the brush pattern; the low 4 bits give the binary raster
+# operation used where the pattern bit is 0 or there is no pattern or an empty pattern;
+# the high 4 bits, where the pattern
 # bit is 1. 'ropForeground' is used where the mask bit is 1 or there is no mask
 # or an empty mask. 'ropBackground' is the same as 'ropForeground', but for the
 # background (used where the mask bit is 0 rather than 1).
+# In turn, a binary raster operation is a 4-bit value that tells how to combine
+# the bits of the destination with those of the source; the low 2 bits give the unary
+# raster operation used where the source bit is 0 or there is no source or an empty
+# source; the high 2 bits, where the source
+# bit is 1.  In turn, a unary raster operation tells how to change each bit
+# of the destination: if the operation is 0, the result is 0; if 1, the destination
+# bit is inverted (the result is 1 if the destination bit is 0, and vice versa);
+# if 2, the result is the destination bit (the destination is left unchanged);
+# if 3, the result is 1. For example, suppose the source and
+# destination images are black-and-white, and
+# suppose the binary raster operation is 6 (or the ternary raster operation is 0x66).
+# Then, where the source is white (source bit is 1), the destination color is inverted
+# (since the high 2 bits give 1), and where the source is black (source bit is 0), the
+# destination is left unchanged (since the low 2 bits give 2).
 # 'maskimage' is ideally a monochrome image (every pixel is either all zeros
 # (black) or all ones (white), but it doesn't have to be.
 # 'dstimage' may be the same as 'srcimage', 'patternimage', or 'maskimage',
@@ -2112,7 +2106,9 @@ def bordereddithergradientbox(
 
 # Dither 256-level alpha channel to two levels (opaque
 # and transparent).  Image is a 32-bit-per pixel image
-# (four elements per pixel).
+# (four elements per pixel).  Reducing the alpha channel
+# this way is also known as stippled or screen-door
+# transparency.
 def ditheralpha(image, width, height):
     i = 0
     for y in range(height):

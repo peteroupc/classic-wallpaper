@@ -257,7 +257,9 @@ Data descriptors defined here:<br>
 #&nbsp;to&nbsp;images&nbsp;with&nbsp;an&nbsp;even&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
  <dl><dt><a name="-ditheralpha"><strong>ditheralpha</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Dither&nbsp;256-level&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;two&nbsp;levels&nbsp;(opaque<br>
 #&nbsp;and&nbsp;transparent).&nbsp;&nbsp;Image&nbsp;is&nbsp;a&nbsp;32-bit-per&nbsp;pixel&nbsp;image<br>
-#&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel).</span></dd></dl>
+#&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel).&nbsp;&nbsp;Reducing&nbsp;the&nbsp;alpha&nbsp;channel<br>
+#&nbsp;this&nbsp;way&nbsp;is&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door<br>
+#&nbsp;transparency.</span></dd></dl>
  <dl><dt><a name="-dithertograyimage"><strong>dithertograyimage</strong></a>(image, width, height, grays)</dt></dl>
  <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h)</dt></dl>
  <dl><dt><a name="-draw16button"><strong>draw16button</strong></a>(
@@ -375,7 +377,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-egacolors"><strong>egacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;64&nbsp;colors&nbsp;displayable&nbsp;by&nbsp;EGA&nbsp;(extended&nbsp;graphics&nbsp;adapter)&nbsp;displays</span></dd></dl>
  <dl><dt><a name="-emboss"><strong>emboss</strong></a>(bgColor=None, fgColor=None, hiltColor=None)</dt><dd><span class="code">#&nbsp;Emboss&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;into&nbsp;a&nbsp;3-color&nbsp;(black/gray/white)&nbsp;image.<br>
 #&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'hiltColor'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;embossing&nbsp;an&nbsp;outline&nbsp;will&nbsp;result&nbsp;in&nbsp;its<br>
-#&nbsp;appearing&nbsp;raised&nbsp;above&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper&nbsp;<br>
+#&nbsp;appearing&nbsp;raised&nbsp;above&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper<br>
 #&nbsp;left&nbsp;corner.<br>
 #&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'hiltColor',&nbsp;the&nbsp;outline&nbsp;instead&nbsp;appears&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;into&nbsp;the<br>
 #&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.</span></dd></dl>
@@ -483,7 +485,7 @@ Data descriptors defined here:<br>
     wraparound=True
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;copy&nbsp;of&nbsp;an&nbsp;image&nbsp;on&nbsp;another&nbsp;image.<br>
 #&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;are&nbsp;the&nbsp;destination&nbsp;and&nbsp;source&nbsp;images.<br>
-#&nbsp;'pattern'&nbsp;is&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;image.<br>
+#&nbsp;'pattern'&nbsp;is&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple).<br>
 #&nbsp;'srcimage',&nbsp;'maskimage',&nbsp;and&nbsp;'patternimage'&nbsp;are&nbsp;optional.<br>
 #&nbsp;All&nbsp;images&nbsp;are&nbsp;flat&nbsp;arrays&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;blankimage<br>
 #&nbsp;function.&nbsp;&nbsp;Thus&nbsp;none&nbsp;of&nbsp;them&nbsp;can&nbsp;include&nbsp;transparency&nbsp;in&nbsp;whole&nbsp;or&nbsp;in&nbsp;part.<br>
@@ -504,11 +506,26 @@ Data descriptors defined here:<br>
 #&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner<br>
 #&nbsp;and&nbsp;correspond&nbsp;to&nbsp;pixels&nbsp;in&nbsp;the&nbsp;source&nbsp;image.<br>
 #&nbsp;'ropForeground'&nbsp;is&nbsp;a&nbsp;foreground&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
-#&nbsp;destination&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;source;&nbsp;the&nbsp;low&nbsp;4&nbsp;bits&nbsp;is&nbsp;the&nbsp;binary&nbsp;raster<br>
-#&nbsp;operation&nbsp;used&nbsp;where&nbsp;the&nbsp;pattern&nbsp;bit&nbsp;is&nbsp;0;&nbsp;the&nbsp;high&nbsp;4&nbsp;bits,&nbsp;where&nbsp;the&nbsp;pattern<br>
+#&nbsp;destination,&nbsp;those&nbsp;of&nbsp;the&nbsp;source,&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern;&nbsp;the&nbsp;low&nbsp;4&nbsp;bits&nbsp;give&nbsp;the&nbsp;binary&nbsp;raster<br>
+#&nbsp;operation&nbsp;used&nbsp;where&nbsp;the&nbsp;pattern&nbsp;bit&nbsp;is&nbsp;0&nbsp;or&nbsp;there&nbsp;is&nbsp;no&nbsp;pattern&nbsp;or&nbsp;an&nbsp;empty&nbsp;pattern;<br>
+#&nbsp;the&nbsp;high&nbsp;4&nbsp;bits,&nbsp;where&nbsp;the&nbsp;pattern<br>
 #&nbsp;bit&nbsp;is&nbsp;1.&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;mask&nbsp;bit&nbsp;is&nbsp;1&nbsp;or&nbsp;there&nbsp;is&nbsp;no&nbsp;mask<br>
 #&nbsp;or&nbsp;an&nbsp;empty&nbsp;mask.&nbsp;'ropBackground'&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;'ropForeground',&nbsp;but&nbsp;for&nbsp;the<br>
 #&nbsp;background&nbsp;(used&nbsp;where&nbsp;the&nbsp;mask&nbsp;bit&nbsp;is&nbsp;0&nbsp;rather&nbsp;than&nbsp;1).<br>
+#&nbsp;In&nbsp;turn,&nbsp;a&nbsp;binary&nbsp;raster&nbsp;operation&nbsp;is&nbsp;a&nbsp;4-bit&nbsp;value&nbsp;that&nbsp;tells&nbsp;how&nbsp;to&nbsp;combine&nbsp;<br>
+#&nbsp;the&nbsp;bits&nbsp;of&nbsp;the&nbsp;destination&nbsp;with&nbsp;those&nbsp;of&nbsp;the&nbsp;source;&nbsp;the&nbsp;low&nbsp;2&nbsp;bits&nbsp;give&nbsp;the&nbsp;unary<br>
+#&nbsp;raster&nbsp;operation&nbsp;used&nbsp;where&nbsp;the&nbsp;source&nbsp;bit&nbsp;is&nbsp;0&nbsp;or&nbsp;there&nbsp;is&nbsp;no&nbsp;source&nbsp;or&nbsp;an&nbsp;empty&nbsp;<br>
+#&nbsp;source;&nbsp;the&nbsp;high&nbsp;2&nbsp;bits,&nbsp;where&nbsp;the&nbsp;source<br>
+#&nbsp;bit&nbsp;is&nbsp;1.&nbsp;&nbsp;In&nbsp;turn,&nbsp;a&nbsp;unary&nbsp;raster&nbsp;operation&nbsp;tells&nbsp;how&nbsp;to&nbsp;change&nbsp;each&nbsp;bit<br>
+#&nbsp;of&nbsp;the&nbsp;destination:&nbsp;if&nbsp;the&nbsp;operation&nbsp;is&nbsp;0,&nbsp;the&nbsp;result&nbsp;is&nbsp;0;&nbsp;if&nbsp;1,&nbsp;the&nbsp;destination<br>
+#&nbsp;bit&nbsp;is&nbsp;inverted&nbsp;(the&nbsp;result&nbsp;is&nbsp;1&nbsp;if&nbsp;the&nbsp;destination&nbsp;bit&nbsp;is&nbsp;0,&nbsp;and&nbsp;vice&nbsp;versa);<br>
+#&nbsp;if&nbsp;2,&nbsp;the&nbsp;result&nbsp;is&nbsp;the&nbsp;destination&nbsp;bit&nbsp;(the&nbsp;destination&nbsp;is&nbsp;left&nbsp;unchanged);<br>
+#&nbsp;if&nbsp;3,&nbsp;the&nbsp;result&nbsp;is&nbsp;1.&nbsp;For&nbsp;example,&nbsp;suppose&nbsp;the&nbsp;source&nbsp;and&nbsp;<br>
+#&nbsp;destination&nbsp;images&nbsp;are&nbsp;black-and-white,&nbsp;and&nbsp;<br>
+#&nbsp;suppose&nbsp;the&nbsp;binary&nbsp;raster&nbsp;operation&nbsp;is&nbsp;6&nbsp;(or&nbsp;the&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;is&nbsp;0x66).<br>
+#&nbsp;Then,&nbsp;where&nbsp;the&nbsp;source&nbsp;is&nbsp;white&nbsp;(source&nbsp;bit&nbsp;is&nbsp;1),&nbsp;the&nbsp;destination&nbsp;color&nbsp;is&nbsp;inverted<br>
+#&nbsp;(since&nbsp;the&nbsp;high&nbsp;2&nbsp;bits&nbsp;give&nbsp;1),&nbsp;and&nbsp;where&nbsp;the&nbsp;source&nbsp;is&nbsp;black&nbsp;(source&nbsp;bit&nbsp;is&nbsp;0),&nbsp;the&nbsp;<br>
+#&nbsp;destination&nbsp;is&nbsp;left&nbsp;unchanged&nbsp;(since&nbsp;the&nbsp;low&nbsp;2&nbsp;bits&nbsp;give&nbsp;2).<br>
 #&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;monochrome&nbsp;image&nbsp;(every&nbsp;pixel&nbsp;is&nbsp;either&nbsp;all&nbsp;zeros<br>
 #&nbsp;(black)&nbsp;or&nbsp;all&nbsp;ones&nbsp;(white),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.<br>
 #&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;or&nbsp;'maskimage',<br>
@@ -628,14 +645,14 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;32-bit-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
 #&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-statusfieldbox"><strong>statusfieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
- <dl><dt><a name="-styledbrush1"><strong>styledbrush1</strong></a>(color1, color2, color3, spacing=3, hatchsize=1)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;equal&nbsp;to&nbsp;'spacing'*2.<br>
+ <dl><dt><a name="-styledbrush1"><strong>styledbrush1</strong></a>(color1, color2, color3, spacing=3, hatchsize=1)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple)&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;equal&nbsp;to&nbsp;'spacing'*2.<br>
 #&nbsp;Each&nbsp;color&nbsp;occurs&nbsp;equally&nbsp;in&nbsp;the&nbsp;image.<br>
 #&nbsp;Designed&nbsp;for&nbsp;drawing&nbsp;filled,&nbsp;unstroked,&nbsp;opaque&nbsp;vector&nbsp;paths,<br>
 #&nbsp;generally&nbsp;vector&nbsp;paths&nbsp;of&nbsp;an&nbsp;abstract&nbsp;design&nbsp;or&nbsp;symbol.<br>
 #&nbsp;'spacing'&nbsp;is&nbsp;the&nbsp;spacing&nbsp;from&nbsp;the&nbsp;beginning&nbsp;of&nbsp;one&nbsp;horizontal&nbsp;hatches<br>
 #&nbsp;to&nbsp;the&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next.&nbsp;Hatches&nbsp;are&nbsp;colored&nbsp;with&nbsp;color1.&nbsp;&nbsp;Default&nbsp;is&nbsp;3.<br>
 #&nbsp;'hatchsize'&nbsp;is&nbsp;the&nbsp;thickness&nbsp;of&nbsp;each&nbsp;hatch&nbsp;line.&nbsp;Default&nbsp;is&nbsp;1.</span></dd></dl>
- <dl><dt><a name="-styledbrush2"><strong>styledbrush2</strong></a>(color1, color2, color3)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;8.<br>
+ <dl><dt><a name="-styledbrush2"><strong>styledbrush2</strong></a>(color1, color2, color3)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple)&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;8.<br>
 #&nbsp;color1&nbsp;occurs&nbsp;on&nbsp;1/2&nbsp;the&nbsp;brush&nbsp;pattern;&nbsp;the&nbsp;other<br>
 #&nbsp;colors&nbsp;on&nbsp;1/4&nbsp;each.<br>
 #&nbsp;Designed&nbsp;for&nbsp;drawing&nbsp;filled,&nbsp;unstroked,&nbsp;opaque&nbsp;vector&nbsp;paths,<br>
@@ -663,7 +680,7 @@ Data descriptors defined here:<br>
     drawShiftedImageOver=False
 )</dt><dd><span class="code">#&nbsp;Render&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;in&nbsp;an&nbsp;unavailable&nbsp;appearance.<br>
 #&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'buttonHighlight'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;this&nbsp;method&nbsp;will&nbsp;result&nbsp;in<br>
-#&nbsp;the&nbsp;image's&nbsp;appearing&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;onto&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;<br>
+#&nbsp;the&nbsp;image's&nbsp;appearing&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;onto&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light<br>
 #&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper&nbsp;left&nbsp;corner.<br>
 #&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'buttonHighlight',&nbsp;the&nbsp;image&nbsp;instead&nbsp;appears&nbsp;embossed,&nbsp;that&nbsp;is,&nbsp;raised&nbsp;above&nbsp;the<br>
 #&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>

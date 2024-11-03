@@ -29,7 +29,7 @@ meeting the requirements given above.
 >
 > 1. If a wallpaper image is _monochrome_, then a _grayscale_ version of the image is preferred, since then the image could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.  (_Grayscale_ means having no colors other than gray tones, black, or white.  _Monochrome_ means the image is grayscale or its colors are of the same hue and the same chroma or "saturation".) If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "web safe" gray tones, or the full VGA palette; see below) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
 > 2. Photographic images are not within the scope of this challenge.  Indeed, if the image has more than 256 colors and otherwise meets the requirements above, it can be adapted to have the colors of a limited-color palette (such as the VGA palette, the "web safe" palette, or a 236- or 256-color palette) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
-> 3. An unusual form of wallpaper results from layering a tileable foreground (with transparent pixels) over a nontileable (abstract) background.  An example of this technique is shown in the wallpaper file `RIBBONS.BMP`, which was distributed with Microsoft Windows 3.0.
+> 3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  An example of this technique is shown in the wallpaper file `RIBBONS.BMP`, which was distributed with Microsoft Windows 3.0.
 
 ## Color Palettes
 
@@ -59,6 +59,7 @@ Additional color palettes allowed are as follows.
 - The 64 colors displayable by Extended Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).[^3]
 - Up to 16 colors from those displayable by 12-bit color displays (each color component is a multiple of 17).
 - Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
+- A palette of the 256 colors used by default in [VGA 256-color mode](https://github.com/canidlogic/vgapal).
 - 5- to 64-color grayscale palette (all color components the same).
 - A 27-color palette where each color component is 0, 128, or 255.
 - A 125-color palette where each color component is 0, 64, 128, 192, or 255.
