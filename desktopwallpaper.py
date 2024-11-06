@@ -189,6 +189,19 @@ def classiccolors():
         [255, 255, 255],
     ]
 
+# 8-color palette where each color opponent is 0 or 255
+def ega8colors():
+    return [
+        [0, 0, 0],
+        [255, 0, 0],
+        [0, 255, 0],
+        [0, 0, 255],
+        [255, 0, 255],
+        [0, 255, 255],
+        [255, 255, 0],
+        [255, 255, 255],
+    ]
+
 # colors in classiccolors() and their "half-and-half" versions
 def classiccolors2():
     colors = []
@@ -2104,7 +2117,8 @@ def bordereddithergradientbox(
                     image[yp + xp * 3 + 1] = color1[1]
                     image[yp + xp * 3 + 2] = color1[2]
 
-# Dither 256-level alpha channel to two levels (opaque
+# Modifies the given 4-byte-per-pixel image by
+# dithering its 256-level alpha channel to two levels (opaque
 # and transparent).  Image is a 32-bit-per pixel image
 # (four elements per pixel).  Reducing the alpha channel
 # this way is also known as stippled or screen-door
@@ -2119,28 +2133,29 @@ def ditheralpha(image, width, height):
                 a = 255 if bdither < a * 64 // 255 else 0
                 image[i + 3] = a
             i += 4
+    return image
 
 # Splits a 32-bit-per pixel image (four elements per pixel) into a
 # color mask and an (inverted) alpha mask, in that order.
 def splitmask(image, width, height):
-    if width*height*4!=len(image):
-      raise ValueError
+    if width * height * 4 != len(image):
+        raise ValueError
     img = [0 for _ in range(width * height * 3)]
     mask = [0 for _ in range(width * height * 3)]
     for i in range(width * height):
         if image[i * 4 + 3] == 0:
-          # Set color to black for every transparent pixel,
-          # to ease the color mask's use as an XOR mask
-          # (when every pixel in the alpha mask is all zeros or all ones)
-          img[i * 3]=img[i * 3 + 1]=img[i * 3 + 2]=0
-          mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2]=255
+            # Set color to black for every transparent pixel,
+            # to ease the color mask's use as an XOR mask
+            # (when every pixel in the alpha mask is all zeros or all ones)
+            img[i * 3] = img[i * 3 + 1] = img[i * 3 + 2] = 0
+            mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255
         else:
-          img[i * 3] = image[i * 4]
-          img[i * 3 + 1] = image[i * 4 + 1]
-          img[i * 3 + 2] = image[i * 4 + 2]
-          # Invert alpha channel to ease the alpha mask's use as an AND mask
-          # (when every pixel in the mask is all zeros or all ones)
-          mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
+            img[i * 3] = image[i * 4]
+            img[i * 3 + 1] = image[i * 4 + 1]
+            img[i * 3 + 2] = image[i * 4 + 2]
+            # Invert alpha channel to ease the alpha mask's use as an AND mask
+            # (when every pixel in the mask is all zeros or all ones)
+            mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
     return [img, mask]
 
 # Draw a wraparound dither-colored box on an image.
@@ -2429,6 +2444,8 @@ def drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
                 longCoord + 1,
             )
 
+# Finds the gray tones in the given color palette and returns
+# a sorted list of them.
 def getgrays(palette):
     grays = 0
     for p in palette:
@@ -2442,19 +2459,31 @@ def getgrays(palette):
             ret.append(i)
     return ret  # return a sorted list of gray tones in the given palette
 
-def dithertograyimage(image, width, height, grays):
+# Converts the image to grayscale and dithers the resulting image
+# to the gray tones given.
+# 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
+# from 0 through 255.  The list must have a length of 2 or greater.
+# If 'alpha' is True, there are four bytes per pixel, with the fourth being
+# the alpha component; otherwise, three.  Default is False.
+def dithertograyimage(image, width, height, grays, alpha=False):
     if not grays:
         return graymap(image, width, height)
     if len(grays) < 2:
         raise ValueError
     for i in range(1, len(grays)):
         # Grays must be sorted
-        if grays[i] < 0 or grays[i] < grays[i - 1] or (grays[i] - grays[i - 1]) > 255:
+        if (
+            grays[i] < 0
+            or grays[i] > 255
+            or grays[i] < grays[i - 1]
+            or (grays[i] - grays[i - 1]) > 255
+        ):
             raise ValueError
+    pixelSize = 4 if alpha else 3
     for y in range(height):
-        yp = y * width * 3
+        yp = y * width * pixelSize
         for x in range(width):
-            xp = yp + x * 3
+            xp = yp + x * pixelSize
             c = (image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722) // 10000
             r = 0
             bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
@@ -2473,11 +2502,14 @@ def dithertograyimage(image, width, height, grays):
 # Converts the image to grayscale and maps the resulting gray tones
 # to colors in the given colors array.  If 'colors' is None (the default),
 # the mapping step is skipped.
-def graymap(image, width, height, colors=None):
+# If 'alpha' is True, there are four bytes per pixel, with the fourth being
+# the alpha component; otherwise, three.  Default is False.
+def graymap(image, width, height, colors=None, alpha=False):
+    pixelSize = 4 if alpha else 3
     for y in range(height):
-        yp = y * width * 3
+        yp = y * width * pixelSize
         for x in range(width):
-            xp = yp + x * 3
+            xp = yp + x * pixelSize
             c = image[xp]
             if c != image[xp + 1] or image[xp + 1] != image[xp + 2]:
                 # Not a gray pixel, so find gray value
@@ -2497,14 +2529,25 @@ def graymap(image, width, height, colors=None):
     return image
 
 def getpixel(image, width, height, x, y):
-    pos = y * width * 3 + x * 3
+    pos = (y * width + x) * 3
     return image[pos : pos + 3]
 
 def setpixel(image, width, height, x, y, c):
-    pos = y * width * 3 + x * 3
+    pos = (y * width + x) * 3
     image[pos] = c[0]
     image[pos + 1] = c[1]
     image[pos + 2] = c[2]
+
+def getpixelalpha(image, width, height, x, y):
+    pos = (y * width + x) * 4
+    return image[pos : pos + 4]
+
+def setpixelalpha(image, width, height, x, y, c):
+    pos = (y * width + x) * 4
+    image[pos] = c[0]
+    image[pos + 1] = c[1]
+    image[pos + 2] = c[2]
+    image[pos + 3] = c[3]
 
 def imagetranspose(image, width, height):
     image2 = blankimage(height, width)
@@ -2545,12 +2588,15 @@ def tograyditherstyle(image, width, height, palette=None, light=False):
         graymap(im, width, height, colors)
     return _ditherstyle(im, width, height)
 
-# Dithering for the color palette returned by websafecolors()
-def websafeDither(image, width, height):
+# Dithers in place the given image to the colors in color palette returned by websafecolors().
+# If 'alpha' is True, there are four bytes per pixel, with the fourth being
+# the alpha component; otherwise, three.  Default is False.
+def websafeDither(image, width, height, alpha=False):
+    pixelSize = 4 if alpha else 3
     for y in range(height):
-        yp = y * width * 3
+        yp = y * width * pixelSize
         for x in range(width):
-            xp = yp + x * 3
+            xp = yp + x * pixelSize
             for i in range(3):
                 c = image[xp + i]
                 cm = c % 51
@@ -2558,10 +2604,54 @@ def websafeDither(image, width, height):
                 image[xp + i] = (c - cm) + 51 if bdither < cm * 64 // 51 else c - cm
     return image
 
-# Dithering for arbitrary color palettes
+# Dithers in place the given image to the colors in an 8-bit color palette returned by ega8colors().
+# If 'alpha' is True, there are four bytes per pixel, with the fourth being
+# the alpha component; otherwise, three.  Default is False.
+def eightColorDither(image, width, height, alpha=False):
+    pixelSize = 4 if alpha else 3
+    if len(image) < width * height * pixelSize:
+        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
+    for y in range(height):
+        yp = y * width * pixelSize
+        for x in range(width):
+            xp = yp + x * pixelSize
+            for i in range(3):
+                c = image[xp + i]
+                cm = c
+                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                image[xp + i] = (c - cm) + 255 if bdither < cm * 64 // 255 else c - cm
+    return image
+
+# Converts each color in the given image to the nearest color in the given color palette.
+# If 'alpha' is True, there are four bytes per pixel, with the fourth being
+# the alpha component; otherwise, three.  Default is False.
+def posterize(image, width, height, palette, alpha=False):
+    pixelSize = 4 if alpha else 3
+    if len(image) < width * height * pixelSize:
+        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
+    for y in range(height):
+        yp = y * width * pixelSize
+        for x in range(width):
+            xp = yp + x * pixelSize
+            canindex = _nearest_rgb3(
+                palette,
+                image[xp],
+                image[xp + 1],
+                image[xp + 2],
+            )
+            can = palette[canindex]
+            image[xp] = can[0]
+            image[xp + 1] = can[1]
+            image[xp + 2] = can[2]
+    return image
+
+# Dithers in place the given image to the colors in an arbitrary color palette.
 # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
 # https://bisqwit.iki.fi/story/howto/dither/jy/
-def patternDither(image, width, height, palette):
+# If 'alpha' is True, there are four bytes per pixel, with the fourth being
+# the alpha component; otherwise, three.  Default is False.
+def patternDither(image, width, height, palette, alpha=False):
+    pixelSize = 4 if alpha else 3
     candidates = [[] for i in range(len(DitherMatrix))]
     paletteLum = [
         (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
@@ -2570,9 +2660,9 @@ def patternDither(image, width, height, palette):
     numtrials = 0
     numskips = 0
     for y in range(height):
-        yp = y * width * 3
+        yp = y * width * pixelSize
         for x in range(width):
-            xp = yp + x * 3
+            xp = yp + x * pixelSize
             e = [0, 0, 0]
             exact = False
             for i in range(len(DitherMatrix)):
@@ -2954,12 +3044,12 @@ def imagereverseroworder(image, width, height):
         image[(height - 1 - y) * width * 3 : (height - y) * width * 3] = row
     return image
 
+# Returns True if width or height is 0 or if:
+# - The image's first column's first half is a mirror
+# of its second half, and...
+# - The image's last column's first half is a mirror
+# of its second half.
 def endingColumnsAreMirrored(image, width, height):
-    # Returns True if width or height is 0 or if:
-    # - The image's first column's first half is a mirror
-    # of its second half, and...
-    # - The image's last column's first half is a mirror
-    # of its second half.
     if width < 0 or height < 0:
         raise ValueError
     if width == 0 or height == 0:
@@ -4009,12 +4099,12 @@ def _mindiagwrap(x, y):
 
 # Draws a smaller version of the contour in the interior.
 # Preserves tileability.
-def _insetbox(x,y,contour):
-    if x*6.0<1 or y*6.0<1 or x*6>5 or x*6>5:
-       return contour(x,y)
-    x=min(1,max(0,3*x/2-1/4))
-    y=min(1,max(0,3*y/2-1/4))
-    return contour(x,y)
+def _insetbox(x, y, contour):
+    if x * 6.0 < 1 or y * 6.0 < 1 or x * 6 > 5 or x * 6 > 5:
+        return contour(x, y)
+    x = min(1, max(0, 3 * x / 2 - 1 / 4))
+    y = min(1, max(0, 3 * y / 2 - 1 / 4))
+    return contour(x, y)
 
 def _randomgradientfillex(width, height, palette, contour):
     image = blankimage(width, height)
@@ -4055,10 +4145,10 @@ def _randomcontour(tileable=True, includeWhole=False):
         ]
     if includeWhole:
         contours.append(_whole)
-    ret=random.choice(contours)
-    if random.randint(0,9)==0:
-       rr=ret
-       ret=lambda x,y: _insetbox(x,y,rr)
+    ret = random.choice(contours)
+    if random.randint(0, 9) == 0:
+        rr = ret
+        ret = lambda x, y: _insetbox(x, y, rr)
     return ret
 
 def _randomgradientfill(width, height, palette, tileable=True):
