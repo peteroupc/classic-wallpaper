@@ -4201,15 +4201,59 @@ def _randomgradientfill(width, height, palette, tileable=True):
 def randommaybemonochrome(image, width, height):
     r = random.randint(0, 99)
     if r < 8:
+        # dither the input image to three grays from the VGA palette
         image = dithertograyimage([x for x in image], width, height, [0, 128, 255])
-        return random.choice(
-            [x for x in vgaVariantsFromThreeGrays(image, width, height).values()]
+        r = random.randint(0, 6)
+        colors = [
+            [128, 128, 128],
+            [192, 192, 192],
+        ]  # dark gray and light gray from the VGA palette
+        black = [0, 0, 0]
+        white = [255, 255, 255]
+        if color > 0:
+            # use a "colored" dark gray and light gray from the VGA palette instead
+            colors = [
+                [(r & 1) * 0x80, ((r >> 1) & 1) * 0x80, ((r >> 2) & 1) * 0x80],
+                [(r & 1) * 0xFF, ((r >> 1) & 1) * 0xFF, ((r >> 2) & 1) * 0xFF],
+            ]
+        minipal = random.choice(
+            [
+                [black, colors[0], colors[1]],  # dark
+                [black, colors[0], white],  # gray
+                [black, colors[1], white],  # light gray
+                [colors[0], colors[1], white],  # light
+            ]
         )
+        # replace the grays with the colors
+        gcolors = [[] for i in range(256)]
+        gcolors[0] = minipal[0]
+        gcolors[128] = minipal[1]
+        gcolors[255] = minipal[2]
+        return graymap([x for x in image], width, height, gcolors)
     elif r < 16:
+        r = random.randint(0, 6)
+        colors = [
+            [128, 128, 128],
+            [192, 192, 192],
+        ]  # dark gray and light gray from the VGA palette
+        black = [0, 0, 0]
+        white = [255, 255, 255]
+        if color > 0:
+            # use a "colored" dark gray and light gray from the VGA palette instead
+            colors = [
+                [(r & 1) * 0x80, ((r >> 1) & 1) * 0x80, ((r >> 2) & 1) * 0x80],
+                [(r & 1) * 0xFF, ((r >> 1) & 1) * 0xFF, ((r >> 2) & 1) * 0xFF],
+            ]
+        minipal = [black, colors[0], colors[1], white]
+        # dither the input image to four grays from the VGA palette
         image = dithertograyimage([x for x in image], width, height, [0, 128, 192, 255])
-        return random.choice(
-            [x for x in vgaVariantsFromFourGrays(image, width, height).values()]
-        )
+        # replace the grays with the colors
+        gcolors = [[] for i in range(256)]
+        gcolors[0] = minipal[0]
+        gcolors[128] = minipal[1]
+        gcolors[192] = minipal[2]
+        gcolors[255] = minipal[3]
+        return graymap([x for x in image], width, height, gcolors)
     else:
         return image
 
@@ -4605,92 +4649,6 @@ def randomColorization(palette=None):
     for i in range(1, 255):
         colors[i] = [a + ((b - a) * i // 255) for a, b in zip(colors[0], colors[255])]
     return colors
-
-# Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
-def vgaVariantsFromThreeGrays(image, width, height):
-    colors = [[] for i in range(256)]
-    colors[0] = [0, 0, 0]
-    colors[128] = [128, 0, 0]
-    colors[255] = [255, 0, 0]
-    red = graymap([x for x in image], width, height, colors)
-    colors[128] = [0, 128, 0]
-    colors[255] = [0, 255, 0]
-    green = graymap([x for x in image], width, height, colors)
-    colors[128] = [0, 0, 128]
-    colors[255] = [0, 0, 255]
-    blue = graymap([x for x in image], width, height, colors)
-    colors[128] = [128, 128, 0]
-    colors[255] = [255, 255, 0]
-    yellow = graymap([x for x in image], width, height, colors)
-    colors[128] = [0, 128, 128]
-    colors[255] = [0, 255, 255]
-    cyan = graymap([x for x in image], width, height, colors)
-    colors[128] = [128, 0, 128]
-    colors[255] = [255, 0, 255]
-    magenta = graymap([x for x in image], width, height, colors)
-    colors[0] = [0, 0, 0]
-    colors[128] = [192, 192, 192]
-    colors[255] = [255, 255, 255]
-    lightgray = graymap([x for x in image], width, height, colors)
-    colors[0] = [128, 128, 128]
-    colors[128] = [192, 192, 192]
-    colors[255] = [255, 255, 255]
-    light = graymap([x for x in image], width, height, colors)
-    colors[0] = [0, 0, 0]
-    colors[128] = [128, 128, 128]
-    colors[255] = [192, 192, 192]
-    dark = graymap([x for x in image], width, height, colors)
-    return {
-        "gray": [x for x in image],
-        "red": red,
-        "green": green,
-        "blue": blue,
-        "yellow": yellow,
-        "cyan": cyan,
-        "magenta": magenta,
-        "lightgray": lightgray,
-        "light": light,
-        "dark": dark,
-    }
-
-# Input image uses only four colors: (0,0,0),(128,128,128),(192,192,192),(255,255,255)
-def vgaVariantsFromFourGrays(image, width, height):
-    colors = [[] for i in range(256)]
-    colors[0] = [0, 0, 0]
-    colors[255] = [255, 255, 255]
-    colors[128] = [128, 0, 0]
-    colors[192] = [255, 0, 0]
-    red = graymap([x for x in image], width, height, colors)
-    colors[128] = [0, 128, 0]
-    colors[192] = [0, 255, 0]
-    green = graymap([x for x in image], width, height, colors)
-    colors[128] = [0, 0, 128]
-    colors[192] = [0, 0, 255]
-    blue = graymap([x for x in image], width, height, colors)
-    colors[128] = [128, 128, 0]
-    colors[192] = [255, 255, 0]
-    yellow = graymap([x for x in image], width, height, colors)
-    colors[128] = [0, 128, 128]
-    colors[192] = [0, 255, 255]
-    cyan = graymap([x for x in image], width, height, colors)
-    colors[128] = [128, 0, 128]
-    colors[192] = [255, 0, 255]
-    magenta = graymap([x for x in image], width, height, colors)
-    colors[0] = [128, 128, 128]
-    colors[128] = [192, 192, 192]
-    colors[192] = [255, 255, 255]
-    colors[255] = [255, 255, 255]
-    light = graymap([x for x in image], width, height, colors)
-    return {
-        "gray": [x for x in image],
-        "red": red,
-        "green": green,
-        "blue": blue,
-        "yellow": yellow,
-        "cyan": cyan,
-        "magenta": magenta,
-        "light": light,
-    }
 
 # palette generation
 
