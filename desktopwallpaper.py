@@ -916,7 +916,10 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
 
-def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False):
+def writeavi(
+    f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False, fps=20
+):
+    # NOTE: 20 fps or higher is adequate for fluid animations
     if not images:
         raise ValueError
     if len(images) == 0:
@@ -928,7 +931,6 @@ def writeavi(f, images, width, height, raiseIfExists=False, singleFrameAsBmp=Fal
             raise ValueError
         if len(image) != width * height * 3:
             raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
-    fps = 20  # 20 fps or higher is adequate for fluid animations
     aviheader = struct.pack(
         "<LLLLLLLLLLLLLL",
         1000000 // fps,  # microseconds per frame
@@ -1309,6 +1311,40 @@ def writebmp(f, image, width, height, raiseIfExists=False):
     return writeavi(
         f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True
     )
+
+# NOTE: Currently, there must be 256 or fewer unique colors used in the image
+# for this method to be successful.
+def parallaxAvi(
+    image,
+    width,
+    height,
+    destParallax,
+    widthReverse=False,
+    heightReverse=False,
+    interlacing=False,
+):
+    if not image:
+        raise ValueError
+    outputHeight = height // 2 if interlacing else height
+    images = [blankimage(width, height) for i in range(32)]
+    for i in range(32):
+        imageblit(
+            images[i],
+            width,
+            height,
+            image,
+            width,
+            height,
+            width - width * i // 32 if widthReverse else width * i // 32,
+            height - height * i // 32 if heightReverse else height * i // 32,
+        )
+        if interlacing:
+            # interlace at half the height
+            a, b = interlace(images[i], width, height)
+            images[i] = a if i % 2 == 0 else b
+        if len(images[i]) != width * outputHeight * 3:
+            raise ValueError
+    writeavi(destParallax, images, width, outputHeight)
 
 def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
     borderedbox(
@@ -2217,6 +2253,9 @@ def interlace(image, width, height):
     )
     return [image1, image2]
 
+# Creates a blank image with 3 bytes per pixel and the given width, height,
+# and fill color.
+# If 'color' is None, uses [255,255,255], or white.
 def blankimage(width, height, color=None):
     if color and len(color) < 3:
         raise ValueError
@@ -2228,7 +2267,12 @@ def blankimage(width, height, color=None):
 # Generates a tileable argyle pattern from two images of the
 # same size.  'backgroundImage' must be tileable if shiftImageBg=False;
 # 'foregroundImage' need not be tileable.
+# 'expo' is a parameter that determines the shape in the middle of the image,
+# and can be any number greater than 0. If 1, the shape resembles a
+# diamond; if 2, an ellipse.  Default is 1.
 def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg=False):
+    if expo <= 0:
+        raise ValueError
     if shiftImageBg:
         i2 = blankimage(width, height)
         imageblit(
