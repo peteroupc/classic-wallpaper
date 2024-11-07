@@ -1,7 +1,6 @@
 GIMP Palette
 Name: 64 Grays
-Columns: 16
-# Colors: 64
+Columns: 8
 0 0 0 black #000000
 4 4 4 #040404
 8 8 8 #080808

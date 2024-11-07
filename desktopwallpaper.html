@@ -258,7 +258,7 @@ Data descriptors defined here:<br>
 #&nbsp;width&nbsp;in&nbsp;pixels&nbsp;is&nbsp;width*columns;&nbsp;its&nbsp;height&nbsp;is&nbsp;height*rows.<br>
 #&nbsp;The&nbsp;two&nbsp;images&nbsp;should&nbsp;be&nbsp;tileable.<br>
 #&nbsp;The&nbsp;number&nbsp;of&nbsp;columns&nbsp;and&nbsp;of&nbsp;rows&nbsp;must&nbsp;be&nbsp;even&nbsp;and&nbsp;positive.</span></dd></dl>
- <dl><dt><a name="-circledraw"><strong>circledraw</strong></a>(image, width, height, c, cx, cy, r, wraparound=True)</dt></dl>
+ <dl><dt><a name="-circledraw"><strong>circledraw</strong></a>(image, width, height, c, cx, cy, r, wraparound=True)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;circle&nbsp;that&nbsp;optionally&nbsp;wraps&nbsp;around.</span></dd></dl>
  <dl><dt><a name="-classiccolors"><strong>classiccolors</strong></a>()</dt><dd><span class="code">#&nbsp;16-color&nbsp;VGA&nbsp;palette</span></dd></dl>
  <dl><dt><a name="-classiccolors2"><strong>classiccolors2</strong></a>()</dt><dd><span class="code">#&nbsp;colors&nbsp;in&nbsp;<a href="#-classiccolors">classiccolors</a>()&nbsp;and&nbsp;their&nbsp;"half-and-half"&nbsp;versions</span></dd></dl>
  <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt></dl>
@@ -406,7 +406,11 @@ Data descriptors defined here:<br>
 #&nbsp;of&nbsp;its&nbsp;second&nbsp;half,&nbsp;and...<br>
 #&nbsp;-&nbsp;The&nbsp;image's&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror<br>
 #&nbsp;of&nbsp;its&nbsp;second&nbsp;half.</span></dd></dl>
- <dl><dt><a name="-endingRowsAreMirrored"><strong>endingRowsAreMirrored</strong></a>(image, width, height)</dt></dl>
+ <dl><dt><a name="-endingRowsAreMirrored"><strong>endingRowsAreMirrored</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Returns&nbsp;True&nbsp;if&nbsp;width&nbsp;or&nbsp;height&nbsp;is&nbsp;0&nbsp;or&nbsp;if:<br>
+#&nbsp;-&nbsp;The&nbsp;image's&nbsp;first&nbsp;row's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror<br>
+#&nbsp;of&nbsp;its&nbsp;second&nbsp;half,&nbsp;and...<br>
+#&nbsp;-&nbsp;The&nbsp;image's&nbsp;last&nbsp;row's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror<br>
+#&nbsp;of&nbsp;its&nbsp;second&nbsp;half.</span></dd></dl>
  <dl><dt><a name="-fieldbox"><strong>fieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None, pressed=False)</dt></dl>
  <dl><dt><a name="-flatborder"><strong>flatborder</strong></a>(helper, x0, y0, x1, y1, sh, buttonFace)</dt></dl>
  <dl><dt><a name="-getdithercolors"><strong>getdithercolors</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Gets&nbsp;the&nbsp;"half-and&nbsp;half"&nbsp;versions&nbsp;of&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette.</span></dd></dl>
@@ -561,7 +565,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-imagereversecolumnorder"><strong>imagereversecolumnorder</strong></a>(image, width, height)</dt></dl>
  <dl><dt><a name="-imagereverseroworder"><strong>imagereverseroworder</strong></a>(image, width, height)</dt></dl>
  <dl><dt><a name="-imagerotatecolumn"><strong>imagerotatecolumn</strong></a>(image, width, height, x, offset=0)</dt></dl>
- <dl><dt><a name="-imagerotaterow"><strong>imagerotaterow</strong></a>(image, width, height, y, offset=0)</dt></dl>
+ <dl><dt><a name="-imagerotaterow"><strong>imagerotaterow</strong></a>(image, width, height, y, offset=0)</dt><dd><span class="code">#&nbsp;Rotates&nbsp;a&nbsp;row&nbsp;of&nbsp;the&nbsp;image&nbsp;by&nbsp;the&nbsp;given&nbsp;rightward&nbsp;offset&nbsp;in&nbsp;pixels,&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.</span></dd></dl>
  <dl><dt><a name="-imagetransblit"><strong>imagetransblit</strong></a>(
     dstimage,
     dstwidth,
@@ -605,7 +609,7 @@ Data descriptors defined here:<br>
     y1,
     drawEndPoint=False,
     wraparound=True
-)</dt></dl>
+)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;line&nbsp;that&nbsp;optionally&nbsp;wraps&nbsp;around.</span></dd></dl>
  <dl><dt><a name="-magickgradientditherfilter"><strong>magickgradientditherfilter</strong></a>(
     rgb1=None,
     rgb2=None,
@@ -755,8 +759,8 @@ Data descriptors defined here:<br>
 #&nbsp;the&nbsp;alpha&nbsp;component;&nbsp;otherwise,&nbsp;three.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-websafecolors"><strong>websafecolors</strong></a>()</dt></dl>
  <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
- <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt></dl>
- <dl><dt><a name="-whitenoiseimage2"><strong>whitenoiseimage2</strong></a>(width=64, height=64, bgcolor=None, noisecolor=None)</dt></dl>
+ <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise</span></dd></dl>
+ <dl><dt><a name="-whitenoiseimage2"><strong>whitenoiseimage2</strong></a>(width=64, height=64, bgcolor=None, noisecolor=None)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise</span></dd></dl>
  <dl><dt><a name="-windowborder"><strong>windowborder</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-writeavi"><strong>writeavi</strong></a>(
     f,

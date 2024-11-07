@@ -1,7 +1,6 @@
 GIMP Palette
 Name: Canonical 16-Color CGA Palette
-Columns: 16
-# Colors: 16
+Columns: 8
 0 0 0 black #000000
 0 0 170 #0000aa
 0 170 0 #00aa00

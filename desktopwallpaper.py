@@ -2830,8 +2830,8 @@ def noiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
+# Generate an image of white noise
 def whitenoiseimage(width=64, height=64):
-    # Generate an image of white noise
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
@@ -2847,8 +2847,8 @@ def whitenoiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
+# Generate an image of white noise
 def whitenoiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
-    # Generate an image of white noise
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
@@ -2868,8 +2868,8 @@ def whitenoiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
         image.append(row)
     return [px for row in image for px in row]
 
+# Draws a circle that optionally wraps around.
 def circledraw(image, width, height, c, cx, cy, r, wraparound=True):
-    # Draws a wraparound circle
     stride = width * 3
     fullstride = stride * height
     # midpoint circle algorithm
@@ -2895,10 +2895,10 @@ def circledraw(image, width, height, c, cx, cy, r, wraparound=True):
             z -= x + x - 1
             x -= 1
 
+# Draws a line that optionally wraps around.
 def linedraw(
     image, width, height, c, x0, y0, x1, y1, drawEndPoint=False, wraparound=True
 ):
-    # Draws a wraparound line
     stride = width * 3
     fullstride = stride * height
     # Bresenham's algorithm
@@ -3088,8 +3088,8 @@ def imagerotatecolumn(image, width, height, x, offset=0):
         y += 1
     return image
 
+# Rotates a row of the image by the given rightward offset in pixels, which may be negative or not.
 def imagerotaterow(image, width, height, y, offset=0):
-    # Rotates a row of the image by the given rightward offset in pixels, which may be negative or not.
     if y < 0 or y >= height or width < 0 or height < 0:
         raise ValueError
     if height == 0 or width == 0:
@@ -3152,12 +3152,12 @@ def endingColumnsAreMirrored(image, width, height):
             return False
     return True
 
+# Returns True if width or height is 0 or if:
+# - The image's first row's first half is a mirror
+# of its second half, and...
+# - The image's last row's first half is a mirror
+# of its second half.
 def endingRowsAreMirrored(image, width, height):
-    # Returns True if width or height is 0 or if:
-    # - The image's first row's first half is a mirror
-    # of its second half, and...
-    # - The image's last row's first half is a mirror
-    # of its second half.
     if width < 0 or height < 0:
         raise ValueError
     if width == 0 or height == 0:
@@ -4755,6 +4755,19 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
         raise ValueError
     if (not palette) or len(palette) > 512:
         raise ValueError
+    # GIMP palette
+    ff = open(f + ".gpl", "xb" if raiseIfExists else "wb")
+    ff.write(bytes("GIMP Palette\n", "utf-8"))
+    ff.write(
+        bytes("Name: " + (name.replace("\n", " ").replace("#", "_")) + "\n", "utf-8")
+    )
+    ff.write(bytes("Columns: 8\n", "utf-8"))
+    for c in palette:
+        col = [c[0] & 0xFF, c[1] & 0xFF, c[2] & 0xFF]
+        ff.write(
+            bytes("%d %d %d %s\n" % (col[0], col[1], col[2], _colorname(col)), "utf-8")
+        )
+    ff.close()
     # Microsoft palette
     ff = open(f + ".pal", "xb" if raiseIfExists else "wb")
     ff.write(bytes("RIFF", "utf-8"))
@@ -4848,7 +4861,7 @@ if __name__ == "__main__":
     writepalette("palettes/vga", classiccolors(), "VGA (Windows) 16-Color Palette")
     writepalette("palettes/16color", classiccolors(), "VGA (Windows) 16-Color Palette")
     writepalette("palettes/ega", egacolors(), "Colors Displayable by EGA Monitors")
-    writepalette("palettes/websafe", websafecolors(), '"Web Safe" Colors')
+    writepalette("palettes/websafe", websafecolors(), '"Safety Palette"')
     writepalette(
         "palettes/websafe-and-vga",
         websafecolors()
@@ -4862,7 +4875,7 @@ if __name__ == "__main__":
             [0, 128, 128],
             [128, 128, 0],
         ],
-        '"Web Safe" and VGA Colors',
+        '"Safety Palette" and VGA Colors',
     )
     writepalette(
         "palettes/windows-20",

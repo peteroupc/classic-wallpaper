@@ -76,9 +76,9 @@ Traditionally, the three dimensional effects of buttons, icons, and other user i
 
 An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
 
-- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette [^1]; for 8-color icons, an 8-color palette where each color component is 0 or 255.
+- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
 - The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). (Modern guidelines recommend a 256&times;256 icon as well.  Toolbar icons are traditionally offered in 16&times;16 and 20&times;20.)
-- All icons can include transparent pixels, but should have no translucent pixels except for 8-bpc icons.
+- All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - If 16- and 256-color icons are derived from 8-bpc icons, then the 256-color icon should be made from the 8-bpc icon without translucent pixels, and the 16-color icon should be made from the 256-color icon with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
 
 Of these variations, 32&times;32 icons with the VGA palette are traditionally the main icon variation.
@@ -103,7 +103,7 @@ Although Windows 95 and later versions have an _animation control_ for displayin
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
 
-[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.
+[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.  Windows CE also supports icons with the four gray tones of the VGA palette (namely, black, white, light gray, and dark gray or (128, 128, 128)).
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button face involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 

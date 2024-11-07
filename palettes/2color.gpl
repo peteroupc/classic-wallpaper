@@ -1,6 +1,5 @@
 GIMP Palette
 Name: Two Colors
-Columns: 2
-# Colors: 2
+Columns: 8
 0 0 0 black #000000
 255 255 255 white #ffffff

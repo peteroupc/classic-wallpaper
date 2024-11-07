@@ -1,7 +1,6 @@
 GIMP Palette
 Name: Canonical CGA Palette with Half-and-Half Mixtures
-Columns: 16
-# Colors: 85
+Columns: 8
 0 0 0 black #000000
 0 0 85 #000055
 0 0 170 #0000aa

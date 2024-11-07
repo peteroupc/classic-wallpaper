@@ -27,8 +27,8 @@ meeting the requirements given above.
 
 > **Notes:**
 >
-> 1. If a wallpaper image is _monochrome_, then a _grayscale_ version of the image is preferred, since then the image could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.  (_Grayscale_ means having no colors other than gray tones, black, or white.  _Monochrome_ means the image is grayscale or its colors are of the same hue and the same chroma or "saturation".) If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the six "web safe" gray tones, or the full VGA palette; see below) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
-> 2. Photographic images are not within the scope of this challenge.  Indeed, if the image has more than 256 colors and otherwise meets the requirements above, it can be adapted to have the colors of a limited-color palette (such as the VGA palette, the "web safe" palette, or a 236- or 256-color palette) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
+> 1. If a wallpaper image is _monochrome_, then a _grayscale_ version of the image is preferred, since then the image could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.  (_Grayscale_ means having no colors other than gray tones, black, or white.  _Monochrome_ means the image is grayscale or its colors are of the same hue and the same chroma or "saturation".) If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the full VGA palette; see below) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
+> 2. Photographic images are not within the scope of this challenge.  Indeed, if the image has more than 256 colors and otherwise meets the requirements above, it can be adapted to have the colors of a limited-color palette (such as the VGA palette, the "safety palette", or a 236- or 256-color palette) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
 > 3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  An example of this technique is shown in the wallpaper file `RIBBONS.BMP`, which was distributed with Microsoft Windows 3.0.
 > 4. One example of tileable noise can be generated using the "[diamond-square algorithm](https://en.wikipedia.org/wiki/Diamond-square_algorithm)", which is not yet implemented on this repository.
 
@@ -39,8 +39,8 @@ The color palettes allowed are as follows.
 - Two colors only.
     - Such as black and white, which allows for hue shifting to, say, a black-to-red or gray-to-blue palette.
 - 16-color VGA (video graphics array) palette (light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).[^3]
-- 216-color "web safe" palette (each color component is a multiple of 51).[^3] [^7]
-- 216-color "web safe" palette plus VGA palette.[^3]
+- 216-color "safety palette", also known as "Web safe" palette (each color component is a multiple of 51).[^3] [^7]
+- 216-color "safety palette" plus VGA palette.[^3]
 - A subset of a color palette given earlier.
 
 Any 16-color or 256-color palette that was used in a significant volume of application and video game graphics before the year 2000 is also allowed.
@@ -104,7 +104,7 @@ The pixel dimensions allowed are as follows.
 | truchetff5500vga.png | peteroupc | VGA palette | 32x32 | Unlicense [^4] |
 | boxes.png | peteroupc | VGA palette | 128x128 | Unlicense |
 | circlec.png | peteroupc | VGA palette | 128x128 | Unlicense |
-| circlews.png | peteroupc | "Web safe" palette | 128x128 | Unlicense |
+| circlews.png | peteroupc | "Safety palette" | 128x128 | Unlicense |
 | check.png | peteroupc | VGA palette | 96x96 | Unlicense |
 | brushed.png | peteroupc | VGA palette | 96x96 | Unlicense |
 | [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100x100 | MIT License |
@@ -147,7 +147,7 @@ dw.patternDither(image, width, height, dw.classiccolors())
 dw.websafeDither(image2, width, height)
 # Dither in VGA colors
 dw.writepng("/tmp/circlec.png", image, width, height)
-# Dither in "web safe" colors
+# Dither in "safety palette"
 dw.writepng("/tmp/circlews.png", image2, width, height)
 ```
 
@@ -182,4 +182,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^6]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
 
-[^7]: When the "web safe" palette forms part of a 256-color repertoire, as it usually does, 40 slots are left that can be filled with additional colors. Usually these additional colors include the four legacy Windows colors plus the eight VGA palette colors not already in the "web safe" palette.  For Java's `BufferedImage.TYPE_BYTE_INDEXED`, these 40 colors are gray tones not already in the "web safe" palette.
+[^7]: The "safety palette" consists of 216 colors that are uniformly spaced in the red-green-blue color cube.  Robert Hess's article "[The Safety Palette](https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10))", 1996, described the advantage that images that use only colors in this palette won't dither when displayed by Web browsers on a 256-color display. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors). Dithering is the scattering of colors in a limited set to simulate colors outside that set.)  When the "safety palette" forms part of a 256-color repertoire, as it usually does, 40 slots are left that can be filled with additional colors, and as Hess mentions, Web designers have no control over what these additional colors are. Usually these additional colors include the four legacy Windows colors plus the eight VGA palette colors not already in the "safety palette".  For Java's `BufferedImage.TYPE_BYTE_INDEXED`, these 40 colors are gray tones not already in the "safety palette".

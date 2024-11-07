@@ -1,7 +1,6 @@
 GIMP Palette
 Name: Windows 20-Color Palette
-Columns: 16
-# Colors: 20
+Columns: 8
 0 0 0 black #000000
 128 128 128 gray #808080
 192 192 192 silver #c0c0c0
