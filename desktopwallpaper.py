@@ -1332,11 +1332,11 @@ def parallaxAvi(
             images[i],
             width,
             height,
+            width - width * i // 32 if widthReverse else width * i // 32,
+            height - height * i // 32 if heightReverse else height * i // 32,
             image,
             width,
             height,
-            width - width * i // 32 if widthReverse else width * i // 32,
-            height - height * i // 32 if heightReverse else height * i // 32,
         )
         if interlacing:
             # interlace at half the height
@@ -1932,11 +1932,11 @@ def imageblit(
     dstimage,
     dstwidth,
     dstheight,
+    x0,
+    y0,
     srcimage,
     srcwidth,
     srcheight,
-    x0,
-    y0,
     wraparound=True,
     rasterOp=12,
 ):
@@ -1973,11 +1973,11 @@ def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
                 image,
                 dstwidth,
                 dstheight,
+                x * srcwidth,
+                y * srcheight,
                 srcimage,
                 srcwidth,
                 srcheight,
-                x * srcwidth,
-                y * srcheight,
                 wraparound=False,
             )
     return image
@@ -1996,11 +1996,11 @@ def randomtiles(columns, rows, sourceImages, srcwidth, srcheight):
                 image,
                 width,
                 height,
+                x * srcwidth,
+                y * srcheight,
                 random.choice(sourceImages),
                 srcwidth,
                 srcheight,
-                x * srcwidth,
-                y * srcheight,
             )
     return image
 
@@ -2154,20 +2154,28 @@ def bordereddithergradientbox(
                     image[yp + xp * 3 + 2] = color1[2]
 
 # Modifies the given 4-byte-per-pixel image by
-# dithering its 256-level alpha channel to two levels (opaque
+# converting its 256-level alpha channel to two levels (opaque
 # and transparent).  Image is a 32-bit-per pixel image
 # (four elements per pixel).  Reducing the alpha channel
 # this way is also known as stippled or screen-door
 # transparency.
-def ditheralpha(image, width, height):
+# If 'dither' is True, the conversion is done by dithering, that
+# is, by scattering opaque and transparent pixels to simulate
+# pixels between the two extremes.  If False, the conversion is
+# done by thresholding: alpha values 127 or below become 0, and
+# alpha values 128 or higher become 255.  Default is False
+def alphaToTwoLevel(image, width, height, dither=False):
     i = 0
     for y in range(height):
         for x in range(width):
             a = image[i + 3]
             if a != 0 and a != 255:
-                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
-                a = 255 if bdither < a * 64 // 255 else 0
-                image[i + 3] = a
+                if dither:
+                    bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                    a = 255 if bdither < a * 64 // 255 else 0
+                    image[i + 3] = a
+                else:
+                    image[i + 3] = 0 if a <= 127 else 255
             i += 4
     return image
 
@@ -2193,6 +2201,33 @@ def splitmask(image, width, height):
             # (when every pixel in the mask is all zeros or all ones)
             mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
     return [img, mask]
+
+# Draws a 3D outline over a 4-byte-per-pixel image with transparent
+# pixels, assuming a light source from the upper left.
+# 'lt' is the light color.  If not given, is [128,128,128].
+# 'sh' is the shadow color.  If not given, is [0,0,0].
+def outlineimage(image, width, height, lt=None, sh=None):
+    for y in range(height):
+        for x in range(width):
+            xp = (y * width + x) * 4
+            # Draw upper left outline gray
+            if (
+                image[xp + 3] == 255
+                and (x == 0 or image[(xp - 4) + 3] != 255)
+                or (y == 0 or image[(xp - width * 4) + 3] != 255)
+            ):
+                image[xp] = lt[0] if lt else 0x80
+                image[xp + 1] = lt[1] if lt else 0x80
+                image[xp + 2] = lt[2] if lt else 0x80
+            # "Then" draw bottom right outline black
+            if (
+                image[xp + 3] == 255
+                and (x == width - 1 or image[(xp + 4) + 3] != 255)
+                or (y == height - 1 or image[(xp + width * 4) + 3] != 255)
+            ):
+                image[xp] = sh[0] if sh else 0x00
+                image[xp + 1] = sh[1] if sh else 0x00
+                image[xp + 2] = sh[2] if sh else 0x00
 
 # Draw a wraparound dither-colored box on an image.
 # 'border' is the color of the 1-pixel-thick border. Can be None (so
@@ -2276,7 +2311,7 @@ def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg
     if shiftImageBg:
         i2 = blankimage(width, height)
         imageblit(
-            i2, width, height, backgroundImage, width, height, width // 2, height // 2
+            i2, width, height, width // 2, height // 2, backgroundImage, width, height
         )
         return argyle(foregroundImage, i2, width, height, expo, shiftImageBg=False)
     ret = blankimage(width, height)
@@ -2313,11 +2348,11 @@ def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=
                 ret,
                 width * columns,
                 height * rows,
+                x * width,
+                y * height,
                 upperLeftImage if (y + x) % 2 == 0 else otherImage,
                 width,
                 height,
-                x * width,
-                y * height,
             )
     return ret
 
@@ -4210,7 +4245,7 @@ def randommaybemonochrome(image, width, height):
         ]  # dark gray and light gray from the VGA palette
         black = [0, 0, 0]
         white = [255, 255, 255]
-        if color > 0:
+        if r > 0:
             # use a "colored" dark gray and light gray from the VGA palette instead
             colors = [
                 [(r & 1) * 0x80, ((r >> 1) & 1) * 0x80, ((r >> 2) & 1) * 0x80],
@@ -4238,21 +4273,20 @@ def randommaybemonochrome(image, width, height):
         ]  # dark gray and light gray from the VGA palette
         black = [0, 0, 0]
         white = [255, 255, 255]
-        if color > 0:
+        if r > 0:
             # use a "colored" dark gray and light gray from the VGA palette instead
             colors = [
                 [(r & 1) * 0x80, ((r >> 1) & 1) * 0x80, ((r >> 2) & 1) * 0x80],
                 [(r & 1) * 0xFF, ((r >> 1) & 1) * 0xFF, ((r >> 2) & 1) * 0xFF],
             ]
-        minipal = [black, colors[0], colors[1], white]
         # dither the input image to four grays from the VGA palette
         image = dithertograyimage([x for x in image], width, height, [0, 128, 192, 255])
         # replace the grays with the colors
         gcolors = [[] for i in range(256)]
-        gcolors[0] = minipal[0]
-        gcolors[128] = minipal[1]
-        gcolors[192] = minipal[2]
-        gcolors[255] = minipal[3]
+        gcolors[0] = black
+        gcolors[128] = colors[0]
+        gcolors[192] = colors[1]
+        gcolors[255] = white
         return graymap([x for x in image], width, height, gcolors)
     else:
         return image

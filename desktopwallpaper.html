@@ -154,6 +154,17 @@ Data descriptors defined here:<br>
     m3,
     m4
 )</dt></dl>
+ <dl><dt><a name="-alphaToTwoLevel"><strong>alphaToTwoLevel</strong></a>(image, width, height, dither=False)</dt><dd><span class="code">#&nbsp;Modifies&nbsp;the&nbsp;given&nbsp;4-byte-per-pixel&nbsp;image&nbsp;by<br>
+#&nbsp;converting&nbsp;its&nbsp;256-level&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;two&nbsp;levels&nbsp;(opaque<br>
+#&nbsp;and&nbsp;transparent).&nbsp;&nbsp;Image&nbsp;is&nbsp;a&nbsp;32-bit-per&nbsp;pixel&nbsp;image<br>
+#&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel).&nbsp;&nbsp;Reducing&nbsp;the&nbsp;alpha&nbsp;channel<br>
+#&nbsp;this&nbsp;way&nbsp;is&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door<br>
+#&nbsp;transparency.<br>
+#&nbsp;If&nbsp;'dither'&nbsp;is&nbsp;True,&nbsp;the&nbsp;conversion&nbsp;is&nbsp;done&nbsp;by&nbsp;dithering,&nbsp;that<br>
+#&nbsp;is,&nbsp;by&nbsp;scattering&nbsp;opaque&nbsp;and&nbsp;transparent&nbsp;pixels&nbsp;to&nbsp;simulate<br>
+#&nbsp;pixels&nbsp;between&nbsp;the&nbsp;two&nbsp;extremes.&nbsp;&nbsp;If&nbsp;False,&nbsp;the&nbsp;conversion&nbsp;is<br>
+#&nbsp;done&nbsp;by&nbsp;thresholding:&nbsp;alpha&nbsp;values&nbsp;127&nbsp;or&nbsp;below&nbsp;become&nbsp;0,&nbsp;and<br>
+#&nbsp;alpha&nbsp;values&nbsp;128&nbsp;or&nbsp;higher&nbsp;become&nbsp;255.&nbsp;&nbsp;Default&nbsp;is&nbsp;False</span></dd></dl>
  <dl><dt><a name="-argyle"><strong>argyle</strong></a>(
     foregroundImage,
     backgroundImage,
@@ -260,12 +271,6 @@ Data descriptors defined here:<br>
 #&nbsp;pattern&nbsp;if&nbsp;the&nbsp;image&nbsp;the&nbsp;command&nbsp;is&nbsp;applied&nbsp;to&nbsp;has&nbsp;only&nbsp;its&nbsp;top&nbsp;half<br>
 #&nbsp;or&nbsp;its&nbsp;bottom&nbsp;half&nbsp;drawn).&nbsp;&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied<br>
 #&nbsp;to&nbsp;images&nbsp;with&nbsp;an&nbsp;even&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
- <dl><dt><a name="-ditheralpha"><strong>ditheralpha</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Modifies&nbsp;the&nbsp;given&nbsp;4-byte-per-pixel&nbsp;image&nbsp;by<br>
-#&nbsp;dithering&nbsp;its&nbsp;256-level&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;two&nbsp;levels&nbsp;(opaque<br>
-#&nbsp;and&nbsp;transparent).&nbsp;&nbsp;Image&nbsp;is&nbsp;a&nbsp;32-bit-per&nbsp;pixel&nbsp;image<br>
-#&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel).&nbsp;&nbsp;Reducing&nbsp;the&nbsp;alpha&nbsp;channel<br>
-#&nbsp;this&nbsp;way&nbsp;is&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door<br>
-#&nbsp;transparency.</span></dd></dl>
  <dl><dt><a name="-dithertograyimage"><strong>dithertograyimage</strong></a>(image, width, height, grays, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;dithers&nbsp;the&nbsp;resulting&nbsp;image<br>
 #&nbsp;to&nbsp;the&nbsp;gray&nbsp;tones&nbsp;given.<br>
 #&nbsp;'grays'&nbsp;is&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Each&nbsp;gray&nbsp;tone&nbsp;must&nbsp;be&nbsp;an&nbsp;integer<br>
@@ -471,11 +476,11 @@ Data descriptors defined here:<br>
     dstimage,
     dstwidth,
     dstheight,
+    x0,
+    y0,
     srcimage,
     srcwidth,
     srcheight,
-    x0,
-    y0,
     wraparound=True,
     rasterOp=12
 )</dt><dd><span class="code">#&nbsp;'rasterOp'&nbsp;is&nbsp;a&nbsp;binary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
@@ -628,6 +633,10 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)<br>
 #&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.</span></dd></dl>
  <dl><dt><a name="-noiseimage"><strong>noiseimage</strong></a>(width=64, height=64)</dt></dl>
+ <dl><dt><a name="-outlineimage"><strong>outlineimage</strong></a>(image, width, height, lt=None, sh=None)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3D&nbsp;outline&nbsp;over&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;with&nbsp;transparent<br>
+#&nbsp;pixels,&nbsp;assuming&nbsp;a&nbsp;light&nbsp;source&nbsp;from&nbsp;the&nbsp;upper&nbsp;left.<br>
+#&nbsp;'lt'&nbsp;is&nbsp;the&nbsp;light&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[128,128,128].<br>
+#&nbsp;'sh'&nbsp;is&nbsp;the&nbsp;shadow&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[0,0,0].</span></dd></dl>
  <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt></dl>
  <dl><dt><a name="-parallaxAvi"><strong>parallaxAvi</strong></a>(
     image,
