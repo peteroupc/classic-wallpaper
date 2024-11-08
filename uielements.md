@@ -1,6 +1,6 @@
 # Traditional User Interface Graphics
 
-This section discusses aspects of the traditional design of user interface graphics, such as button and border styles, icons, and cursors.
+This section discusses aspects of the traditional design of user interface graphics, such as button and border styles, icons, and mouse pointers.
 
 ## Logical Display Resolutions
 
@@ -20,7 +20,7 @@ Here is a challenge.  Write computer code (released to the public domain or lice
 - Buttons and default buttons:
     - Unpressed, pressed, mixed value ("indeterminate" or "third state"), unavailable ("disabled").
 - Toolbar buttons:
-    - Unpressed, hover, pressed, mixed value, unavailable.
+    - Unpressed, hover ("hot-tracked"), pressed, mixed value, unavailable.
 - Buttons, default buttons, and toolbar buttons in the option-set style:
     - Unpressed, unavailable.
 - Checkboxes when set, checkboxes when unset:
@@ -57,8 +57,8 @@ The following terms are used to describe the traditional appearance of ordinary 
 
     in each case with transparency and opacity in the label preserved.
 - _Unavailable appearance_: The button label has an _embossed appearance_, is drawn
-  with 50% opacity, or is masked with a pattern of alternating black
-  and white pixels.
+  with 50% opacity, or is drawn such that only every other pixel is rendered in a
+  checkerboard pattern.
 - _Mixed value appearance_: The button face is drawn as a dither pattern of the button face color and the button highlight color, or as a color that's a mixture of those two colors.
 
 Traditionally, to draw buttons, default buttons, and toolbar buttons:
@@ -86,9 +86,9 @@ Of these variations, 32&times;32 icons with the VGA palette are traditionally th
 Cursors (mouse pointer graphics) can follow the guidelines given above as well, but most cursors are traditionally drawn:
 
 - In a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions).
-- In two colors (black and white) or in grayscale, in either case with optional transparency.  In the two-color case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
+- In black and white or in grayscale (with colors limited to gray tones, black, and white), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
-> **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) and a black-and-white _AND mask_ ("inverted alpha" mask).
+> **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) and a black-and-white _AND mask_ ("inverted alpha" mask), a format that additionally allows for so-called "inverted pixels".
 >
 >  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become black where the mask is black (in the _opaque_ areas of the icon or cursor) and left unchanged elsewhere.
 >  2. Then, the output pixels are combined using a bit-by-bit XOR operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is black, and the rest of the output is inverted where the mask is white.
@@ -103,7 +103,7 @@ Although Windows 95 and later versions have an _animation control_ for displayin
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
 
-[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.  Windows CE also supports icons with the four gray tones of the VGA palette (namely, black, white, light gray, and dark gray or (128, 128, 128)).
+[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.  Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black, white, light gray, and dark gray or (128, 128, 128)).
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button face involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
