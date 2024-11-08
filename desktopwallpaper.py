@@ -2701,7 +2701,8 @@ def eightColorDither(image, width, height, alpha=False):
                 image[xp + i] = (c - cm) + 255 if bdither < cm * 64 // 255 else c - cm
     return image
 
-# Converts each color in the given image to the nearest color in the given color palette.
+# Converts each color in the given image to the nearest color (in ordinary red-green-blue
+# space) in the given color palette.
 # If 'alpha' is True, there are four bytes per pixel, with the fourth being
 # the alpha component; otherwise, three.  Default is False.
 def posterize(image, width, height, palette, alpha=False):
