@@ -422,7 +422,7 @@ def shiftwrap(xOrigin, yOrigin):
         % ("+" if xOrigin >= 0 else "", xOrigin, "+" if yOrigin >= 0 else "", yOrigin),
     ]
 
-# Render an input image described in 'versatilePattern' in an unavailable appearance.
+# ImageMagick command to render an input image described in 'versatilePattern' in an unavailable appearance.
 # If 'buttonShadow' is darker than 'buttonHighlight' (as is the default), then this method will result in
 # the image's appearing engraved, that is, sunken onto the background, given the existence of a light
 # source that shines from the upper left corner.
@@ -457,7 +457,7 @@ def unavailable(
         + backgroundColorUnder(bgColor)
     )
 
-# Emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image.
+# ImageMagick command to emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image.
 # If 'fgColor' is lighter than 'hiltColor' (as is the default), then embossing an outline will result in its
 # appearing raised above the background, given the existence of a light source that shines from the upper
 # left corner.
@@ -714,6 +714,7 @@ def groupCmm():
         + [")", "-append"]
     )
 
+# ImageMagick command to put a background color behind the input image.
 # 'bgcolor' is the background color,
 # either None or a 3-item array of the red,
 # green, and blue components in that order; e.g., [2,10,255] where each
@@ -876,6 +877,7 @@ def brushedmetal():
         "+repage",
     ]
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def writeppm(f, image, width, height, raiseIfExists=False):
     if not image:
         raise ValueError
@@ -888,6 +890,7 @@ def writeppm(f, image, width, height, raiseIfExists=False):
     fd.write(bytes(image))
     fd.close()
 
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     if not image:
         raise ValueError
@@ -916,6 +919,7 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
 
+# Images have the same format returned by the _blankimage_ method with alpha=False.
 def writeavi(
     f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False, fps=20
 ):
@@ -1312,6 +1316,7 @@ def writebmp(f, image, width, height, raiseIfExists=False):
         f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True
     )
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
 def parallaxAvi(
@@ -1352,6 +1357,7 @@ def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
     )
 
 # Draw a wraparound hatched box on an image.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 # 'color' is the color of the hatch, drawn on every "black" pixel
 # in the pattern's tiling.
 # 'pattern' is an 8-item array with integers in the interval [0,255].
@@ -1563,10 +1569,9 @@ def _applyrop(dst, src, rop):
 # 'dstimage' and 'srcimage' are the destination and source images.
 # 'pattern' is a brush pattern image (also known as a stipple).
 # 'srcimage', 'maskimage', and 'patternimage' are optional.
-# All images are flat arrays with the same format returned by the blankimage
-# function.  Thus none of them can include transparency in whole or in part.
+# All images have the same format returned by the _blankimage_ method with alpha=False.  Thus none of them can include transparent or translucent (semitransparent) pixels.
 # (Windows's graphical device interface [GDI] supports transparent
-# parts in brush patterns only for brushes
+# pixels in brush patterns, but only for brushes
 # with predefined hatch patterns and only in the gaps between hatch marks; in
 # bit block transfer operations such as BitBlt, these transparent pixels are
 # filled with the background color whether the background mode is
@@ -1602,6 +1607,8 @@ def _applyrop(dst, src, rop):
 # Then, where the source is white (source bit is 1), the destination color is inverted
 # (since the high 2 bits give 1), and where the source is black (source bit is 0), the
 # destination is left unchanged (since the low 2 bits give 2).
+# The default for 'ropForeground' is 0xCC (copy the source to the destination), and the
+# default for 'ropBackground' is 0xAA (leave destination unchanged).
 # 'maskimage' is ideally a monochrome image (every pixel is either all zeros
 # (black) or all ones (white), but it doesn't have to be.
 # 'dstimage' may be the same as 'srcimage', 'patternimage', or 'maskimage',
@@ -1766,9 +1773,13 @@ def imageblitex(
                     sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
 
+# All images have the same format returned by the _blankimage_ method with alpha=False.
 # 'ropForeground' and 'ropBackground' are as in imageblitex, except that
 # 'ropForeground' is used where the source color is not 'transcolor' or if
 # 'transcolor' is None; 'ropBackground' is used elsewhere.
+# The default for 'ropForeground' is 0xCC (copy the source to the destination), and the
+# default for 'ropBackground' is 0xAA (leave destination unchanged).
+# For more on raster operations, see the documentation for 'imageblitex'.
 # 'dstimage' may be the same as 'srcimage' or 'patternimage',
 # and the source and destination rectangles may overlap.
 def imagetransblit(
@@ -1926,6 +1937,7 @@ def imagetransblit(
                 sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
 
+# 'dstimage' and 'srcimage' have the same format returned by the _blankimage_ method with alpha=False.
 # 'rasterOp' is a binary raster operation between the bits of the
 # destination and those of the source.
 def imageblit(
@@ -1959,6 +1971,7 @@ def imageblit(
         ropForeground=rasterOp | (rasterOp << 4),
     )
 
+# 'srcimage' has the same format returned by the _blankimage_ method with alpha=False.
 def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
     if srcwidth < 0 or srcheight < 0 or dstwidth < 0 or dstheight < 0:
         raise ValueError
@@ -1982,6 +1995,7 @@ def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight):
             )
     return image
 
+# Images in 'sourceImages' have the same format returned by the _blankimage_ method with alpha=False.
 def randomtiles(columns, rows, sourceImages, srcwidth, srcheight):
     if srcwidth <= 0 or srcheight <= 0:
         raise ValueError
@@ -2005,15 +2019,18 @@ def randomtiles(columns, rows, sourceImages, srcwidth, srcheight):
     return image
 
 # Draws a box filled with a transparent vertical hatch pattern.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def verthatchedbox(image, width, height, color, x0, y0, x1, y1):
     pattern = [0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA]
     hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1)
 
 # Draws a box filled with a transparent horizontal hatch pattern.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def horizhatchedbox(image, width, height, color, x0, y0, x1, y1):
     pattern = [0xFF, 0, 0xFF, 0, 0xFF, 0, 0xFF, 0]
     hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1)
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def shadowedborderedbox(
     image, width, height, border, shadow, color1, color2, x0, y0, x1, y1
 ):
@@ -2023,6 +2040,7 @@ def shadowedborderedbox(
     borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
 
 # Creates a brush pattern (also known as a stipple) with width 2 and height equal to 'spacing'*2.
+# The image returned by this method has the same format returned by the _blankimage_ method with alpha=False.
 # Each color occurs equally in the image.
 # Designed for drawing filled, unstroked, opaque vector paths,
 # generally vector paths of an abstract design or symbol.
@@ -2048,11 +2066,13 @@ def styledbrush1(color1, color2, color3, spacing=3, hatchsize=1):
 # Creates a brush pattern (also known as a stipple) with width 2 and height 8.
 # color1 occurs on 1/2 the brush pattern; the other
 # colors on 1/4 each.
+# The image returned by this method has the same format returned by the _blankimage_ method with alpha=False.
 # Designed for drawing filled, unstroked, opaque vector paths,
 # generally vector paths of an abstract design or symbol.
 def styledbrush2(color1, color2, color3):
     return styledbrush1(color1, color2, color3, spacing=4, hatchsize=2)
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 # Draw a wraparound box in a gradient fill on an image.
 # 'border' is the color of the 1-pixel-thick border. Can be None (so
 # that no border is drawn)
@@ -2095,6 +2115,7 @@ def borderedgradientbox(
                 image[yp + xp * 3 + 1] = color[1]
                 image[yp + xp * 3 + 2] = color[2]
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 # Draw a wraparound box in a two-color dithered gradient fill on an image.
 # 'border' is the color of the 1-pixel-thick border. Can be None (so
 # that no border is drawn)
@@ -2155,10 +2176,10 @@ def bordereddithergradientbox(
 
 # Modifies the given 4-byte-per-pixel image by
 # converting its 256-level alpha channel to two levels (opaque
-# and transparent).  Image is a 32-bit-per pixel image
-# (four elements per pixel).  Reducing the alpha channel
+# and transparent). Reducing the alpha channel
 # this way is also known as stippled or screen-door
 # transparency.
+# Image has the same format returned by the _blankimage_ method with alpha=True.
 # If 'dither' is True, the conversion is done by dithering, that
 # is, by scattering opaque and transparent pixels to simulate
 # pixels between the two extremes.  If False, the conversion is
@@ -2179,8 +2200,9 @@ def alphaToTwoLevel(image, width, height, dither=False):
             i += 4
     return image
 
-# Splits a 32-bit-per pixel image (four elements per pixel) into a
+# Splits a 4-byte-per pixel image (four elements per pixel) into a
 # color mask and an (inverted) alpha mask, in that order.
+# Image has the same format returned by the _blankimage_ method with alpha=True.
 def splitmask(image, width, height):
     if width * height * 4 != len(image):
         raise ValueError
@@ -2204,6 +2226,7 @@ def splitmask(image, width, height):
 
 # Draws a 3D outline over a 4-byte-per-pixel image with transparent
 # pixels, assuming a light source from the upper left.
+# Image has the same format returned by the _blankimage_ method with alpha=True.
 # 'lt' is the light color.  If not given, is [128,128,128].
 # 'sh' is the shadow color.  If not given, is [0,0,0].
 def outlineimage(image, width, height, lt=None, sh=None):
@@ -2230,6 +2253,7 @@ def outlineimage(image, width, height, lt=None, sh=None):
                 image[xp + 2] = sh[2] if sh else 0x00
 
 # Draw a wraparound dither-colored box on an image.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 # 'border' is the color of the 1-pixel-thick border. Can be None (so
 # that no border is drawn)
 # 'color1' and 'color2' are the dithered
@@ -2274,33 +2298,44 @@ def borderedbox(
                 image[yp + xp * 3 + 2] = color2[2]
 
 # Split an image into two interlaced versions with half the height.
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 # The first image should be displayed at even-numbered frames; the second,
 # odd-numbered.
-def interlace(image, width, height):
+def interlace(image, width, height, alpha=False):
     if height % 2 != 0:
         raise ValueError("height must be even")
+    bypp = 4 if alpha else 3
     image1 = listsum(
-        image[(y * 2) * width * 3 : (y * 2 + 1) * width * 3] for y in range(height // 2)
+        image[(y * 2) * width * bypp : (y * 2 + 1) * width * bypp]
+        for y in range(height // 2)
     )
     image2 = listsum(
-        image[(y * 2 + 1) * width * 3 : (y * 2 + 2) * width * 3]
+        image[(y * 2 + 1) * width * bypp : (y * 2 + 2) * width * bypp]
         for y in range(height // 2)
     )
     return [image1, image2]
 
-# Creates a blank image with 3 bytes per pixel and the given width, height,
-# and fill color.
-# If 'color' is None, uses [255,255,255], or white.
-def blankimage(width, height, color=None):
-    if color and len(color) < 3:
+# Creates a blank image with 3 or 4 bytes per pixel and the given width, height,
+# and fill color.  The image is in the form of a list with a number of
+# elements equal to width*height*3 (or width*height*4 if 'alpha' is True).  The array is divided into 'height' many rows running from top to bottom. Each row is divided into 'width' many pixels (one pixel for each column from left to right), with three elements per pixel (or four elements if 'alpha' is True).  In each pixel, which represents a color at the given row and column, the first element is the color's red component; the second, its blue component; the third, its red component; the fourth, if present, is the color's alpha component or _opacity_ (0 if the color is transparent; 255 if opaque; otherwise, the color is translucent or semitransparent).  Each component is an integer as low as 0 and as high as 255.
+# If 'color' is None, uses [255,255,255,255], or white.
+# If 'alpha' is True, generates a 4-byte-per-pixel image; if False, generates a 3-byte-per-pixel image.  The default is False.
+def blankimage(width, height, color=None, alpha=False):
+    if color and len(color) < (4 if alpha else 3):
         raise ValueError
-    image = [255 for i in range(width * height * 3)]  # default background is white
+    # default background is white; default alpha is 255
+    image = [255 for i in range(width * height * (4 if alpha else 3))]
     if color:
-        simplebox(image, width, height, color, 0, 0, width, height)
+        for i in range(height * width):
+            image[i * 3] = color[0]
+            image[i * 3 + 1] = color[1]
+            image[i * 3 + 2] = color[2]
+            if alpha:
+                image[i * 3 + 3] = color[3]
     return image
 
 # Generates a tileable argyle pattern from two images of the
-# same size.  'backgroundImage' must be tileable if shiftImageBg=False;
+# same size.  The images have the same format returned by the _blankimage_ method with alpha=False.  'backgroundImage' must be tileable if shiftImageBg=False;
 # 'foregroundImage' need not be tileable.
 # 'expo' is a parameter that determines the shape in the middle of the image,
 # and can be any number greater than 0. If 1, the shape resembles a
@@ -2337,6 +2372,7 @@ def argyle(foregroundImage, backgroundImage, width, height, expo=1, shiftImageBg
 # each tile is the whole of one of the source images, and the return value's
 # width in pixels is width*columns; its height is height*rows.
 # The two images should be tileable.
+# The images have the same format returned by the _blankimage_ method with alpha=False.
 # The number of columns and of rows must be even and positive.
 def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=2):
     if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
@@ -2359,6 +2395,7 @@ def checkerboardtile(upperLeftImage, otherImage, width, height, columns=2, rows=
 # Generates a tileable checkerboard pattern made of parts of two images of the same size;
 # the return value has the same width and height as the source images.
 # The two images should be tileable.
+# The images have the same format returned by the _blankimage_ method with alpha=False.
 # The number of columns and of rows must be even and positive.
 def checkerboard(upperLeftImage, otherImage, width, height, columns=2, rows=2):
     if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
@@ -2380,6 +2417,7 @@ def checkerboard(upperLeftImage, otherImage, width, height, columns=2, rows=2):
             pos += 3
     return ret
 
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def simpleargyle(fgcolor, bgcolor, linecolor, w, h):
     fg = blankimage(w, h, fgcolor)
     bg = blankimage(w, h, bgcolor)
@@ -2388,11 +2426,13 @@ def simpleargyle(fgcolor, bgcolor, linecolor, w, h):
     linedraw(bg, w, h, linecolor, 0, h, w, 0)
     return bg
 
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def doubleargyle(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h):
     f1 = simpleargyle(fgcolor1, bgcolor, linecolor1, w, h)
     f2 = simpleargyle(fgcolor2, bgcolor, linecolor2, w, h)
     return checkerboardtile(f1, f2, w, h)
 
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def simpleargyle2(fgcolor, bgcolor, linecolor, w, h):
     fg = blankimage(w, h, fgcolor)
     bg = blankimage(w, h, bgcolor)
@@ -2420,6 +2460,7 @@ def _nearest_rgb(pal, rgb):
     return _nearest_rgb3(pal, rgb[0], rgb[1], rgb[2])
 
 # hatchdist - distance from beginning of one vertical hash line to the
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 # beginning of the next, in pixels.
 # hatchthick - thickness in pixels of each vertical hash line.
 def drawhatchcolumns(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
@@ -2443,6 +2484,7 @@ def drawhatchcolumns(image, width, height, hatchdist=8, hatchthick=1, fgcolor=No
         )
         pos += hatchdist
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
     if hatchdist <= 0 or hatchthick < 0 or hatchthick > hatchdist:
         raise ValueError
@@ -2464,6 +2506,7 @@ def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)
         )
         pos += hatchdist
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 # 'stripesize' is in pixels
 # reverse=false: stripe runs from top left to bottom
 # right assuming the image's first row is the top row
@@ -2540,10 +2583,10 @@ def getgrays(palette):
 
 # Converts the image to grayscale and dithers the resulting image
 # to the gray tones given.
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 # 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
 # from 0 through 255.  The list must have a length of 2 or greater.
-# If 'alpha' is True, there are four bytes per pixel, with the fourth being
-# the alpha component; otherwise, three.  Default is False.
+
 def dithertograyimage(image, width, height, grays, alpha=False):
     if not grays:
         return graymap(image, width, height)
@@ -2581,8 +2624,7 @@ def dithertograyimage(image, width, height, grays, alpha=False):
 # Converts the image to grayscale and maps the resulting gray tones
 # to colors in the given colors array.  If 'colors' is None (the default),
 # the mapping step is skipped.
-# If 'alpha' is True, there are four bytes per pixel, with the fourth being
-# the alpha component; otherwise, three.  Default is False.
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def graymap(image, width, height, colors=None, alpha=False):
     pixelSize = 4 if alpha else 3
     for y in range(height):
@@ -2607,20 +2649,24 @@ def graymap(image, width, height, colors=None, alpha=False):
                 image[xp] = image[xp + 1] = image[xp + 2] = c
     return image
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def getpixel(image, width, height, x, y):
     pos = (y * width + x) * 3
     return image[pos : pos + 3]
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def setpixel(image, width, height, x, y, c):
     pos = (y * width + x) * 3
     image[pos] = c[0]
     image[pos + 1] = c[1]
     image[pos + 2] = c[2]
 
+# Image has the same format returned by the _blankimage_ method with alpha=True.
 def getpixelalpha(image, width, height, x, y):
     pos = (y * width + x) * 4
     return image[pos : pos + 4]
 
+# Image has the same format returned by the _blankimage_ method with alpha=True.
 def setpixelalpha(image, width, height, x, y, c):
     pos = (y * width + x) * 4
     image[pos] = c[0]
@@ -2628,15 +2674,30 @@ def setpixelalpha(image, width, height, x, y, c):
     image[pos + 2] = c[2]
     image[pos + 3] = c[3]
 
-def imagetranspose(image, width, height):
-    image2 = blankimage(height, width)
-    for y in range(height):
-        for x in range(width):
-            setpixel(image2, height, width, y, x, getpixel(image, width, height, x, y))
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
+def imagetranspose(image, width, height, alpha=False):
+    image2 = blankimage(height, width, alpha=alpha)
+    if alpha:
+        for y in range(height):
+            for x in range(width):
+                setpixel(
+                    image2, height, width, y, x, getpixel(image, width, height, x, y)
+                )
+    else:
+        for y in range(height):
+            for x in range(width):
+                setpixelalpha(
+                    image2,
+                    height,
+                    width,
+                    y,
+                    x,
+                    getpixelalpha(image, width, height, x, y),
+                )
     return image2
 
 # Create a twice-as-wide image inspired by the style used
-# to generate MARBLE.BMP
+# to generate MARBLE.BMP.
 def _ditherstyle(image, width, height, bgcolor=None):
     image2 = blankimage(width * 2, height)
     if not bgcolor:
@@ -2650,6 +2711,7 @@ def _ditherstyle(image, width, height, bgcolor=None):
             )
     return image2
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def tograyditherstyle(image, width, height, palette=None, light=False):
     im = [x for x in image]
     graymap(im, width, height)
@@ -2668,8 +2730,7 @@ def tograyditherstyle(image, width, height, palette=None, light=False):
     return _ditherstyle(im, width, height)
 
 # Dithers in place the given image to the colors in color palette returned by websafecolors().
-# If 'alpha' is True, there are four bytes per pixel, with the fourth being
-# the alpha component; otherwise, three.  Default is False.
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def websafeDither(image, width, height, alpha=False):
     pixelSize = 4 if alpha else 3
     for y in range(height):
@@ -2684,8 +2745,7 @@ def websafeDither(image, width, height, alpha=False):
     return image
 
 # Dithers in place the given image to the colors in an 8-bit color palette returned by ega8colors().
-# If 'alpha' is True, there are four bytes per pixel, with the fourth being
-# the alpha component; otherwise, three.  Default is False.
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def eightColorDither(image, width, height, alpha=False):
     pixelSize = 4 if alpha else 3
     if len(image) < width * height * pixelSize:
@@ -2703,8 +2763,7 @@ def eightColorDither(image, width, height, alpha=False):
 
 # Converts each color in the given image to the nearest color (in ordinary red-green-blue
 # space) in the given color palette.
-# If 'alpha' is True, there are four bytes per pixel, with the fourth being
-# the alpha component; otherwise, three.  Default is False.
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def posterize(image, width, height, palette, alpha=False):
     pixelSize = 4 if alpha else 3
     if len(image) < width * height * pixelSize:
@@ -2728,8 +2787,7 @@ def posterize(image, width, height, palette, alpha=False):
 # Dithers in place the given image to the colors in an arbitrary color palette.
 # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
 # https://bisqwit.iki.fi/story/howto/dither/jy/
-# If 'alpha' is True, there are four bytes per pixel, with the fourth being
-# the alpha component; otherwise, three.  Default is False.
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def patternDither(image, width, height, palette, alpha=False):
     pixelSize = 4 if alpha else 3
     candidates = [[] for i in range(len(DitherMatrix))]
@@ -2813,6 +2871,7 @@ def colorgradient(blackColor, whiteColor):
         for j in range(256)
     ]
 
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def noiseimage(width=64, height=64):
     # Generate an image of noise
     if width <= 0 or int(width) != width:
@@ -2831,7 +2890,8 @@ def noiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
-# Generate an image of white noise
+# Generate an image of white noise.
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def whitenoiseimage(width=64, height=64):
     if width <= 0 or int(width) != width:
         raise ValueError
@@ -2848,7 +2908,8 @@ def whitenoiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
-# Generate an image of white noise
+# Alternate way to generate an image of white noise.
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def whitenoiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
     if width <= 0 or int(width) != width:
         raise ValueError
@@ -2870,6 +2931,7 @@ def whitenoiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
     return [px for row in image for px in row]
 
 # Draws a circle that optionally wraps around.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def circledraw(image, width, height, c, cx, cy, r, wraparound=True):
     stride = width * 3
     fullstride = stride * height
@@ -2897,6 +2959,7 @@ def circledraw(image, width, height, c, cx, cy, r, wraparound=True):
             x -= 1
 
 # Draws a line that optionally wraps around.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def linedraw(
     image, width, height, c, x0, y0, x1, y1, drawEndPoint=False, wraparound=True
 ):
@@ -3021,6 +3084,7 @@ def linedraw(
                 image[pos + 1] = c[1]
                 image[pos + 2] = c[2]
 
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def brushednoise(width, height, tileable=True):
     image = blankimage(width, height, [192, 192, 192])
     for i in range(max(width, height) * 5):
@@ -3031,6 +3095,7 @@ def brushednoise(width, height, tileable=True):
         simplebox(image, width, height, [c, c, c], x, y, x1, y + 1, wraparound=tileable)
     return image
 
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def brushednoise2(width, height, tileable=True):
     image = blankimage(width, height, [192, 192, 192])
     for i in range(max(width, height) * 5):
@@ -3046,6 +3111,7 @@ def brushednoise2(width, height, tileable=True):
         linedraw(image, width, height, [c, c, c], x, y, x1, y1, wraparound=tileable)
     return image
 
+# Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def brushednoise3(width, height, tileable=True):
     image = blankimage(width, height, [192, 192, 192])
     for i in range(max(width, height) * 3):
@@ -3068,8 +3134,9 @@ def brushednoise3(width, height, tileable=True):
             linedraw(image, width, height, [c, c, c], x, y, x1, y1, wraparound=tileable)
     return image
 
+# Rotates a column of the image by the given downward offset in pixels, which may be negative or not.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def imagerotatecolumn(image, width, height, x, offset=0):
-    # Rotates a column of the image by the given downward offset in pixels, which may be negative or not.
     if x < 0 or x >= width or width < 0 or height < 0:
         raise ValueError
     if height == 0 or width == 0:
@@ -3090,6 +3157,7 @@ def imagerotatecolumn(image, width, height, x, offset=0):
     return image
 
 # Rotates a row of the image by the given rightward offset in pixels, which may be negative or not.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def imagerotaterow(image, width, height, y, offset=0):
     if y < 0 or y >= height or width < 0 or height < 0:
         raise ValueError
@@ -3104,6 +3172,7 @@ def imagerotaterow(image, width, height, y, offset=0):
     )
     return image
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def imagereversecolumnorder(image, width, height):
     for y in range(height):
         pixels = [
@@ -3115,6 +3184,7 @@ def imagereversecolumnorder(image, width, height):
         ]
     return image
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def imagereverseroworder(image, width, height):
     halfHeight = height // 2  # floor of half height; don't care about middle row
     for y in range(halfHeight):
@@ -3129,6 +3199,7 @@ def imagereverseroworder(image, width, height):
 # of its second half, and...
 # - The image's last column's first half is a mirror
 # of its second half.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def endingColumnsAreMirrored(image, width, height):
     if width < 0 or height < 0:
         raise ValueError
@@ -3158,6 +3229,7 @@ def endingColumnsAreMirrored(image, width, height):
 # of its second half, and...
 # - The image's last row's first half is a mirror
 # of its second half.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def endingRowsAreMirrored(image, width, height):
     if width < 0 or height < 0:
         raise ValueError
@@ -3181,6 +3253,7 @@ def endingRowsAreMirrored(image, width, height):
             return False
     return True
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def randomTruchetTiles(image, width, height, columns, rows):
     # "Truchet" means Sébastien Truchet
     if endingRowsAreMirrored(image, width, height):
@@ -3194,24 +3267,37 @@ def randomTruchetTiles(image, width, height, columns, rows):
 
 import math
 
+# Images have the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def affine(
-    dstimage, dstwidth, dstheight, srcimage, srcwidth, srcheight, m1, m2, m3, m4
+    dstimage,
+    dstwidth,
+    dstheight,
+    srcimage,
+    srcwidth,
+    srcheight,
+    m1,
+    m2,
+    m3,
+    m4,
+    alpha=False,
 ):
+    bypp = 4 if alpha else 3
     for y in range(dstheight):
         yp = y / srcheight
         for x in range(dstwidth):
             xp = x / srcwidth
             tx = int((xp * m1 + yp * m2) * srcwidth) % srcwidth
             ty = int((xp * m3 + yp * m4) * srcheight) % srcheight
-            dstindex = (y * dstwidth + x) * 3
-            srcindex = (ty * srcwidth + tx) * 3
+            dstindex = (y * dstwidth + x) * bypp
+            srcindex = (ty * srcwidth + tx) * bypp
             if dstindex < 0 or dstindex > len(dstimage):
                 raise ValueError([x, y, tx, ty])
             if srcindex < 0 or srcindex > len(srcimage):
                 raise ValueError([x, y, tx, ty])
-            dstimage[dstindex : dstindex + 3] = srcimage[srcindex : srcindex + 3]
+            dstimage[dstindex : dstindex + bypp] = srcimage[srcindex : srcindex + bypp]
     return dstimage
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def horizskew(image, width, height, skew):
     if skew < -1 or skew > 1:
         raise ValueError
@@ -3220,6 +3306,7 @@ def horizskew(image, width, height, skew):
         imagerotaterow(image, width, height, i, int(skew * p * width))
     return image
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def vertskew(image, width, height, skew):
     if skew < -1 or skew > 1:
         raise ValueError
@@ -3228,6 +3315,7 @@ def vertskew(image, width, height, skew):
         imagerotatecolumn(image, width, height, i, int(skew * p * height))
     return image
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def randomRotated(image, width, height):
     # Do the rotation rarely
     if random.randint(0, 6) > 0:
@@ -3268,11 +3356,12 @@ def _linearmask(width, height, x, y):
     vy = abs((y / height) * 2.0 - 1.0)
     return max(vx, vy)
 
-def maketileable(image, width, height):
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
+def maketileable(image, width, height, alpha=False):
     # Use tiling method described by Paul Bourke,
     # Tiling Textures on the Plane (Part 1)
     # https://paulbourke.net/geometry/tiling/
-    ret = blankimage(width, height)
+    ret = blankimage(width, height, alpha=alpha)
     for y in range(height):
         yp = (y + height // 2) % height
         for x in range(width):
@@ -3283,11 +3372,21 @@ def maketileable(image, width, height):
             m2 = max(0.001, m2)
             o1 = getpixel(image, width, height, x, y)
             o2 = getpixel(image, width, height, xp, yp)
-            t = [
-                m1 * ov1 / (m1 + m2) + m2 * ov2 / (m1 + m2) for ov1, ov2 in zip(o1, o2)
-            ]
-            t = [max(0, min(255, int(v))) for v in t]
-            setpixel(ret, width, height, x, y, t)
+            if alpha:
+                t = [
+                    m1 * ov1 / (m1 + m2) + m2 * ov2 / (m1 + m2)
+                    for ov1, ov2 in zip(o1, o2)
+                ]
+                t[3] = o1[3]  # adopt source image's alpha
+                t = [max(0, min(255, int(v))) for v in t]
+                setpixelalpha(ret, width, height, x, y, t)
+            else:
+                t = [
+                    m1 * ov1 / (m1 + m2) + m2 * ov2 / (m1 + m2)
+                    for ov1, ov2 in zip(o1, o2)
+                ]
+                t = [max(0, min(255, int(v))) for v in t]
+                setpixel(ret, width, height, x, y, t)
     return ret
 
 # What follows are methods for generating scalable vector graphics (SVGs)
@@ -3301,6 +3400,7 @@ def maketileable(image, width, height):
 # "lower outer part", an "upper inner part", a "lower inner part", and a "middle part".
 # Each of these five parts can be colored separately or filled with a pattern.
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def svgimagepattern(idstr, image, width, height, transcolor=None, originX=0, originY=0):
     if not image:
         raise ValueError
@@ -3319,10 +3419,11 @@ def svgimagepattern(idstr, image, width, height, transcolor=None, originX=0, ori
         yp = y * width * 3
         for x in range(width):
             c = [image[yp + x * 3], image[yp + x * 3 + 1], image[yp + x * 3 + 2]]
-            if transcolor and c != transcolor:
+            if (not transcolor) or c != transcolor:
                 helper.rect(x, y, x + 1, y + 1, c)
     return str(helper) + "</pattern>"
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 class ImageWraparoundDraw:
     def __init__(self, image, width, height):
         self.image = image
@@ -4092,35 +4193,6 @@ def draw16button(
             drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
     return [x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn]
 
-def makesvg():
-    image = blankimage(64, 64)
-    helper = ImageWraparoundDraw(image, 64, 64)
-    draw16button(
-        helper,
-        0,
-        32,
-        64,
-        64,
-        [255, 255, 255],
-        [128, 128, 128],
-        [192, 192, 192],
-        [0, 0, 0],
-        squareFrame=True,
-    )
-    draw16button(
-        helper,
-        32,
-        0,
-        96,
-        32,
-        [255, 255, 255],
-        [128, 128, 128],
-        [192, 192, 192],
-        [0, 0, 0],
-        squareFrame=True,
-    )
-    return image
-
 # random wallpaper generation
 
 def _togray255(x):
@@ -4234,6 +4306,7 @@ def _randomcontour(tileable=True, includeWhole=False):
 def _randomgradientfill(width, height, palette, tileable=True):
     return _randomgradientfillex(width, height, palette, _randomcontour(tileable))
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def randommaybemonochrome(image, width, height):
     r = random.randint(0, 99)
     if r < 8:
@@ -4337,6 +4410,7 @@ def _randombackground(w, h, palette, tileable=True):
         )
         return image
 
+# Image returned by this method has the same format returned by the _blankimage_ method with alpha=False.
 def randomhatchimage(w, h, palette=None, tileable=True):
     # Generates a random hatch image (using the given palette, if any)
     expandedpal = paletteandhalfhalf(palette) if palette else []
@@ -4556,6 +4630,7 @@ def _hatchoverlay(image, width, height, hatchColor, rows=2):
         )
 
 # Generates a random checkerboard pattern image (using the given palette, if any)
+# Image returned by this method has the same format returned by the _blankimage_ method with alpha=False.
 def randomcheckimage(w, h, palette=None, tileable=True):
     expandedpal = paletteandhalfhalf(palette) if palette else []
     hatch = (
@@ -4602,6 +4677,7 @@ def _randomsimpleargyle(w, h, palette, tileable=True):
         halfhalfditherimage(image3, w, h, palette)
     return image3
 
+# Image returned by this method has the same format returned by the _blankimage_ method with alpha=False.
 def randombackgroundimage(w, h, palette=None, tileable=True):
     r = random.randint(0, 6)
     if r == 0:
@@ -4623,6 +4699,7 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
 
 # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
 # Turns the image into a black-and-white image, with middle gray dithered.
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def monochromeFromThreeGrays(image, width, height):
     image = [x for x in image]
     dithertograyimage(image, width, height, [0, 255])
@@ -4630,6 +4707,7 @@ def monochromeFromThreeGrays(image, width, height):
 
 # Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
 # Default for palette is VGA palette (classiccolors())
+# Image has the same format returned by the _blankimage_ method with alpha=False.
 def randomPalettedFromThreeGrays(image, width, height, palette=None):
     image = [x for x in image]
     if not palette:
