@@ -41,7 +41,7 @@ import zlib
 def _listdir(p):
     return [os.path.abspath(p + "/" + x) for x in os.listdir(p)]
 
-DitherMatrix4x4 = [  # Bayer 4x4 ordered dither matrix
+_DitherMatrix4x4 = [  # Bayer 4x4 ordered dither matrix
     0,
     8,
     2,
@@ -60,7 +60,7 @@ DitherMatrix4x4 = [  # Bayer 4x4 ordered dither matrix
     5,
 ]
 
-DitherMatrix = [  # Bayer 8x8 ordered dither matrix
+_DitherMatrix = [  # Bayer 8x8 ordered dither matrix
     0,
     32,
     8,
@@ -367,12 +367,7 @@ def magickgradientditherfilter(
         ret += ["-remap", "mpr:z"]
     return ret
 
-def solidfill(bg=[192, 192, 192]):
-    if bg == None or len(bg) < 3:
-        raise ValueError
-    bc = "#%02x%02x%02x" % (int(bg[0]), int(bg[1]), int(bg[2]))
-    return ["-size", "%wx%h", "xc:" + bc, "-delete", "-2"]
-
+# ImageMagick command for clearing an image with a solid color.
 def solid(bg=[192, 192, 192]):
     if bg == None or len(bg) < 3:
         raise ValueError
@@ -384,6 +379,7 @@ def solid(bg=[192, 192, 192]):
     # another solution that works better with alpha channel images
     return ["(", "+clone", "-size", "%wx%h", "xc:" + bc, "-delete", "-2", ")"]
 
+# ImageMagick command.
 def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
         raise ValueError
@@ -407,6 +403,7 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite "
     ) % (bc, hc, sc)
 
+# ImageMagick command.
 def shiftwrap(xOrigin, yOrigin):
     return [
         "(",
@@ -471,6 +468,7 @@ def emboss(bgColor=None, fgColor=None, hiltColor=None):
         True,
     )
 
+# ImageMagick command.
 def versatileForeground(foregroundImage):
     return [
         "-negate",
@@ -2164,7 +2162,7 @@ def bordereddithergradientbox(
             else:
                 xv = (x - x0) / (x1 - x0)
                 c = _togray64(contour(xv, yv))
-                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
                 if bdither < c:
                     image[yp + xp * 3] = color2[0]
                     image[yp + xp * 3 + 1] = color2[1]
@@ -2192,7 +2190,7 @@ def alphaToTwoLevel(image, width, height, dither=False):
             a = image[i + 3]
             if a != 0 and a != 255:
                 if dither:
-                    bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                    bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
                     a = 255 if bdither < a * 64 // 255 else 0
                     image[i + 3] = a
                 else:
@@ -2317,7 +2315,16 @@ def interlace(image, width, height, alpha=False):
 
 # Creates a blank image with 3 or 4 bytes per pixel and the given width, height,
 # and fill color.  The image is in the form of a list with a number of
-# elements equal to width*height*3 (or width*height*4 if 'alpha' is True).  The array is divided into 'height' many rows running from top to bottom. Each row is divided into 'width' many pixels (one pixel for each column from left to right), with three elements per pixel (or four elements if 'alpha' is True).  In each pixel, which represents a color at the given row and column, the first element is the color's red component; the second, its blue component; the third, its red component; the fourth, if present, is the color's alpha component or _opacity_ (0 if the color is transparent; 255 if opaque; otherwise, the color is translucent or semitransparent).  Each component is an integer as low as 0 and as high as 255.
+# elements equal to width*height*3 (or width*height*4 if 'alpha' is True).  The
+# array is divided into 'height' many rows running from top to bottom. Each row
+# is divided into 'width' many pixels (one pixel for each column from left to
+# right), with three elements per pixel (or four elements if 'alpha' is True).
+# In each pixel, which represents a color at the given row and column, the
+# first element is the color's red component; the second, its blue component;
+# the third, its red component; the fourth, if present, is the color's alpha
+# component or _opacity_ (0 if the color is transparent; 255 if opaque; otherwise,
+# the color is translucent or semitransparent).  Each component is an integer as
+# low as 0 and as high as 255.
 # If 'color' is None, uses [255,255,255,255], or white.
 # If 'alpha' is True, generates a 4-byte-per-pixel image; if False, generates a 3-byte-per-pixel image.  The default is False.
 def blankimage(width, height, color=None, alpha=False):
@@ -2459,8 +2466,8 @@ def _nearest_rgb3(pal, r, g, b):
 def _nearest_rgb(pal, rgb):
     return _nearest_rgb3(pal, rgb[0], rgb[1], rgb[2])
 
-# hatchdist - distance from beginning of one vertical hash line to the
 # Image has the same format returned by the _blankimage_ method with alpha=False.
+# hatchdist - distance from beginning of one vertical hash line to the
 # beginning of the next, in pixels.
 # hatchthick - thickness in pixels of each vertical hash line.
 def drawhatchcolumns(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
@@ -2586,7 +2593,6 @@ def getgrays(palette):
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 # 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
 # from 0 through 255.  The list must have a length of 2 or greater.
-
 def dithertograyimage(image, width, height, grays, alpha=False):
     if not grays:
         return graymap(image, width, height)
@@ -2608,7 +2614,7 @@ def dithertograyimage(image, width, height, grays, alpha=False):
             xp = yp + x * pixelSize
             c = (image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722) // 10000
             r = 0
-            bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+            bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
             for i in range(1, len(grays)):
                 if c >= grays[i - 1] and c <= grays[i]:
                     r = (
@@ -2740,7 +2746,7 @@ def websafeDither(image, width, height, alpha=False):
             for i in range(3):
                 c = image[xp + i]
                 cm = c % 51
-                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
                 image[xp + i] = (c - cm) + 51 if bdither < cm * 64 // 51 else c - cm
     return image
 
@@ -2757,7 +2763,7 @@ def eightColorDither(image, width, height, alpha=False):
             for i in range(3):
                 c = image[xp + i]
                 cm = c
-                bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
                 image[xp + i] = (c - cm) + 255 if bdither < cm * 64 // 255 else c - cm
     return image
 
@@ -2790,7 +2796,7 @@ def posterize(image, width, height, palette, alpha=False):
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def patternDither(image, width, height, palette, alpha=False):
     pixelSize = 4 if alpha else 3
-    candidates = [[] for i in range(len(DitherMatrix))]
+    candidates = [[] for i in range(len(_DitherMatrix))]
     paletteLum = [
         (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
     ]
@@ -2803,7 +2809,7 @@ def patternDither(image, width, height, palette, alpha=False):
             xp = yp + x * pixelSize
             e = [0, 0, 0]
             exact = False
-            for i in range(len(DitherMatrix)):
+            for i in range(len(_DitherMatrix)):
                 ir = image[xp]
                 ig = image[xp + 1]
                 ib = image[xp + 2]
@@ -2850,7 +2856,7 @@ def patternDither(image, width, height, palette, alpha=False):
             if exact:
                 continue
             candidates.sort()
-            bdither = DitherMatrix[(y & 7) * 8 + (x & 7)]
+            bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
             fcan = candidates[bdither][1]
             fcan = palette[fcan]
             image[xp] = fcan[0]

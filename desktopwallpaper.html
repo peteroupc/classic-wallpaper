@@ -187,7 +187,16 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt></dl>
  <dl><dt><a name="-blankimage"><strong>blankimage</strong></a>(width, height, color=None, alpha=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;blank&nbsp;image&nbsp;with&nbsp;3&nbsp;or&nbsp;4&nbsp;bytes&nbsp;per&nbsp;pixel&nbsp;and&nbsp;the&nbsp;given&nbsp;width,&nbsp;height,<br>
 #&nbsp;and&nbsp;fill&nbsp;color.&nbsp;&nbsp;The&nbsp;image&nbsp;is&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;list&nbsp;with&nbsp;a&nbsp;number&nbsp;of<br>
-#&nbsp;elements&nbsp;equal&nbsp;to&nbsp;width*height*3&nbsp;(or&nbsp;width*height*4&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).&nbsp;&nbsp;The&nbsp;array&nbsp;is&nbsp;divided&nbsp;into&nbsp;'height'&nbsp;many&nbsp;rows&nbsp;running&nbsp;from&nbsp;top&nbsp;to&nbsp;bottom.&nbsp;Each&nbsp;row&nbsp;is&nbsp;divided&nbsp;into&nbsp;'width'&nbsp;many&nbsp;pixels&nbsp;(one&nbsp;pixel&nbsp;for&nbsp;each&nbsp;column&nbsp;from&nbsp;left&nbsp;to&nbsp;right),&nbsp;with&nbsp;three&nbsp;elements&nbsp;per&nbsp;pixel&nbsp;(or&nbsp;four&nbsp;elements&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).&nbsp;&nbsp;In&nbsp;each&nbsp;pixel,&nbsp;which&nbsp;represents&nbsp;a&nbsp;color&nbsp;at&nbsp;the&nbsp;given&nbsp;row&nbsp;and&nbsp;column,&nbsp;the&nbsp;first&nbsp;element&nbsp;is&nbsp;the&nbsp;color's&nbsp;red&nbsp;component;&nbsp;the&nbsp;second,&nbsp;its&nbsp;blue&nbsp;component;&nbsp;the&nbsp;third,&nbsp;its&nbsp;red&nbsp;component;&nbsp;the&nbsp;fourth,&nbsp;if&nbsp;present,&nbsp;is&nbsp;the&nbsp;color's&nbsp;alpha&nbsp;component&nbsp;or&nbsp;_opacity_&nbsp;(0&nbsp;if&nbsp;the&nbsp;color&nbsp;is&nbsp;transparent;&nbsp;255&nbsp;if&nbsp;opaque;&nbsp;otherwise,&nbsp;the&nbsp;color&nbsp;is&nbsp;translucent&nbsp;or&nbsp;semitransparent).&nbsp;&nbsp;Each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;as&nbsp;low&nbsp;as&nbsp;0&nbsp;and&nbsp;as&nbsp;high&nbsp;as&nbsp;255.<br>
+#&nbsp;elements&nbsp;equal&nbsp;to&nbsp;width*height*3&nbsp;(or&nbsp;width*height*4&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).&nbsp;&nbsp;The<br>
+#&nbsp;array&nbsp;is&nbsp;divided&nbsp;into&nbsp;'height'&nbsp;many&nbsp;rows&nbsp;running&nbsp;from&nbsp;top&nbsp;to&nbsp;bottom.&nbsp;Each&nbsp;row<br>
+#&nbsp;is&nbsp;divided&nbsp;into&nbsp;'width'&nbsp;many&nbsp;pixels&nbsp;(one&nbsp;pixel&nbsp;for&nbsp;each&nbsp;column&nbsp;from&nbsp;left&nbsp;to<br>
+#&nbsp;right),&nbsp;with&nbsp;three&nbsp;elements&nbsp;per&nbsp;pixel&nbsp;(or&nbsp;four&nbsp;elements&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).<br>
+#&nbsp;In&nbsp;each&nbsp;pixel,&nbsp;which&nbsp;represents&nbsp;a&nbsp;color&nbsp;at&nbsp;the&nbsp;given&nbsp;row&nbsp;and&nbsp;column,&nbsp;the<br>
+#&nbsp;first&nbsp;element&nbsp;is&nbsp;the&nbsp;color's&nbsp;red&nbsp;component;&nbsp;the&nbsp;second,&nbsp;its&nbsp;blue&nbsp;component;<br>
+#&nbsp;the&nbsp;third,&nbsp;its&nbsp;red&nbsp;component;&nbsp;the&nbsp;fourth,&nbsp;if&nbsp;present,&nbsp;is&nbsp;the&nbsp;color's&nbsp;alpha<br>
+#&nbsp;component&nbsp;or&nbsp;_opacity_&nbsp;(0&nbsp;if&nbsp;the&nbsp;color&nbsp;is&nbsp;transparent;&nbsp;255&nbsp;if&nbsp;opaque;&nbsp;otherwise,<br>
+#&nbsp;the&nbsp;color&nbsp;is&nbsp;translucent&nbsp;or&nbsp;semitransparent).&nbsp;&nbsp;Each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;as<br>
+#&nbsp;low&nbsp;as&nbsp;0&nbsp;and&nbsp;as&nbsp;high&nbsp;as&nbsp;255.<br>
 #&nbsp;If&nbsp;'color'&nbsp;is&nbsp;None,&nbsp;uses&nbsp;[255,255,255,255],&nbsp;or&nbsp;white.<br>
 #&nbsp;If&nbsp;'alpha'&nbsp;is&nbsp;True,&nbsp;generates&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image;&nbsp;if&nbsp;False,&nbsp;generates&nbsp;a&nbsp;3-byte-per-pixel&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-borderedbox"><strong>borderedbox</strong></a>(
@@ -281,7 +290,11 @@ Data descriptors defined here:<br>
 #&nbsp;pattern&nbsp;if&nbsp;the&nbsp;image&nbsp;the&nbsp;command&nbsp;is&nbsp;applied&nbsp;to&nbsp;has&nbsp;only&nbsp;its&nbsp;top&nbsp;half<br>
 #&nbsp;or&nbsp;its&nbsp;bottom&nbsp;half&nbsp;drawn).&nbsp;&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied<br>
 #&nbsp;to&nbsp;images&nbsp;with&nbsp;an&nbsp;even&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
- <dl><dt><a name="-dithertograyimage"><strong>dithertograyimage</strong></a>(image, width, height, grays, alpha=False)</dt></dl>
+ <dl><dt><a name="-dithertograyimage"><strong>dithertograyimage</strong></a>(image, width, height, grays, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;dithers&nbsp;the&nbsp;resulting&nbsp;image<br>
+#&nbsp;to&nbsp;the&nbsp;gray&nbsp;tones&nbsp;given.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;'grays'&nbsp;is&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Each&nbsp;gray&nbsp;tone&nbsp;must&nbsp;be&nbsp;an&nbsp;integer<br>
+#&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;The&nbsp;list&nbsp;must&nbsp;have&nbsp;a&nbsp;length&nbsp;of&nbsp;2&nbsp;or&nbsp;greater.</span></dd></dl>
  <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-draw16button"><strong>draw16button</strong></a>(
     helper,
@@ -360,8 +373,8 @@ Data descriptors defined here:<br>
     bordersize=1
 )</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(neither&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
- <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
 #&nbsp;hatchthick&nbsp;-&nbsp;thickness&nbsp;in&nbsp;pixels&nbsp;of&nbsp;each&nbsp;vertical&nbsp;hash&nbsp;line.</span></dd></dl>
  <dl><dt><a name="-drawhatchrows"><strong>drawhatchrows</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
@@ -481,7 +494,7 @@ Data descriptors defined here:<br>
 #&nbsp;Default&nbsp;is&nbsp;True.<br>
 #&nbsp;'drawborder'&nbsp;means&nbsp;to&nbsp;draw&nbsp;the&nbsp;box's&nbsp;border&nbsp;with&nbsp;the&nbsp;hatch&nbsp;color;<br>
 #&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
- <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt></dl>
+ <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;horizontal&nbsp;hatch&nbsp;pattern.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-horizskew"><strong>horizskew</strong></a>(image, width, height, skew)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
@@ -710,12 +723,11 @@ Data descriptors defined here:<br>
     x1,
     y1
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-shiftwrap"><strong>shiftwrap</strong></a>(xOrigin, yOrigin)</dt></dl>
+ <dl><dt><a name="-shiftwrap"><strong>shiftwrap</strong></a>(xOrigin, yOrigin)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-simpleargyle"><strong>simpleargyle</strong></a>(fgcolor, bgcolor, linecolor, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-simpleargyle2"><strong>simpleargyle2</strong></a>(fgcolor, bgcolor, linecolor, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-simplebox"><strong>simplebox</strong></a>(image, width, height, color, x0, y0, x1, y1, wraparound=True)</dt></dl>
- <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt></dl>
- <dl><dt><a name="-solidfill"><strong>solidfill</strong></a>(bg=[192, 192, 192])</dt></dl>
+ <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
 #&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
@@ -763,7 +775,7 @@ Data descriptors defined here:<br>
 #&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>
 #&nbsp;If&nbsp;'drawShiftedImageOver'&nbsp;is&nbsp;True,&nbsp;the&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonShadow'&nbsp;color&nbsp;is&nbsp;drawn&nbsp;above&nbsp;the<br>
 #&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonHighlight'&nbsp;color.</span></dd></dl>
- <dl><dt><a name="-versatileForeground"><strong>versatileForeground</strong></a>(foregroundImage)</dt></dl>
+ <dl><dt><a name="-versatileForeground"><strong>versatileForeground</strong></a>(foregroundImage)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-versatilePattern"><strong>versatilePattern</strong></a>(fgcolor, bgcolor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;foreground&nbsp;pattern,&nbsp;whose&nbsp;black&nbsp;parts<br>
 #&nbsp;are&nbsp;set&nbsp;in&nbsp;the&nbsp;given&nbsp;foreground&nbsp;color,&nbsp;on&nbsp;a&nbsp;background&nbsp;that&nbsp;can&nbsp;optionally<br>
 #&nbsp;be&nbsp;colored.<br>
@@ -802,12 +814,5 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-writepalette"><strong>writepalette</strong></a>(f, palette, name=None, raiseIfExists=False)</dt></dl>
  <dl><dt><a name="-writepng"><strong>writepng</strong></a>(f, image, width, height, raiseIfExists=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-writeppm"><strong>writeppm</strong></a>(f, image, width, height, raiseIfExists=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
-</td></tr></table><p>
-<table class="section">
-<tr class="decor data-decor heading-text">
-<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
-
-<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><strong>DitherMatrix</strong> = [0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, ...]<br>
-<strong>DitherMatrix4x4</strong> = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]</td></tr></table>
+</td></tr></table>
 </body></html>
