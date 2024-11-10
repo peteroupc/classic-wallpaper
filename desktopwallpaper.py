@@ -127,6 +127,8 @@ _DitherMatrix = [  # Bayer 8x8 ordered dither matrix
     21,
 ]
 
+# Returns an array of the 216 colors of the "safety palette", also known as the
+# "Web safe" palette.
 def websafecolors():
     colors = []
     for r in range(6):
@@ -507,12 +509,15 @@ def versatilePattern(fgcolor, bgcolor=None):
         "shape",
     ] + backgroundColorUnder(bgcolor)
 
+# ImageMagick command for setting a light gray foreground pattern on a white background.
 def lightmodePattern():
     return versatilePattern([192, 192, 192], [255, 255, 255])
 
+# ImageMagick command for setting a gray foreground pattern on a black background.
 def darkmodePattern():
     return versatilePattern([128, 128, 128], [0, 0, 0])
 
+# ImageMagick command.
 def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
     if bg == None or len(bg) < 3:
         raise ValueError
@@ -536,6 +541,7 @@ def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + "mpr:a1 -compose Plus -composite "
     ) % (sc, hc, bc)
 
+# ImageMagick command.
 def magickgradientditherfilterrandom():
     rgb1 = None
     rgb2 = None
@@ -1607,8 +1613,8 @@ def _applyrop(dst, src, rop):
 # destination is left unchanged (since the low 2 bits give 2).
 # The default for 'ropForeground' is 0xCC (copy the source to the destination), and the
 # default for 'ropBackground' is 0xAA (leave destination unchanged).
-# 'maskimage' is ideally a monochrome image (every pixel is either all zeros
-# (black) or all ones (white), but it doesn't have to be.
+# 'maskimage' is ideally a monochrome image (every pixel's bits are either all zeros
+# [black] or all ones [white]), but it doesn't have to be.
 # 'dstimage' may be the same as 'srcimage', 'patternimage', or 'maskimage',
 # and the source and destination rectangles may overlap.
 def imageblitex(
@@ -1937,7 +1943,8 @@ def imagetransblit(
 
 # 'dstimage' and 'srcimage' have the same format returned by the _blankimage_ method with alpha=False.
 # 'rasterOp' is a binary raster operation between the bits of the
-# destination and those of the source.
+# destination and those of the source.  For more on binary raster
+# operations, see the documentation for _imageblitex_.
 def imageblit(
     dstimage,
     dstwidth,
@@ -2210,7 +2217,7 @@ def splitmask(image, width, height):
         if image[i * 4 + 3] == 0:
             # Set color to black for every transparent pixel,
             # to ease the color mask's use as an XOR mask
-            # (when every pixel in the alpha mask is all zeros or all ones)
+            # (when every pixel in the alpha mask's bits are all zeros or all ones)
             img[i * 3] = img[i * 3 + 1] = img[i * 3 + 2] = 0
             mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255
         else:
@@ -2218,7 +2225,7 @@ def splitmask(image, width, height):
             img[i * 3 + 1] = image[i * 4 + 1]
             img[i * 3 + 2] = image[i * 4 + 2]
             # Invert alpha channel to ease the alpha mask's use as an AND mask
-            # (when every pixel in the mask is all zeros or all ones)
+            # (when the bits of every pixel in the mask are all zeros or all ones)
             mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
     return [img, mask]
 
@@ -2686,12 +2693,6 @@ def imagetranspose(image, width, height, alpha=False):
     if alpha:
         for y in range(height):
             for x in range(width):
-                setpixel(
-                    image2, height, width, y, x, getpixel(image, width, height, x, y)
-                )
-    else:
-        for y in range(height):
-            for x in range(width):
                 setpixelalpha(
                     image2,
                     height,
@@ -2700,40 +2701,53 @@ def imagetranspose(image, width, height, alpha=False):
                     x,
                     getpixelalpha(image, width, height, x, y),
                 )
+    else:
+        for y in range(height):
+            for x in range(width):
+                setpixel(
+                    image2,
+                    height,
+                    width,
+                    y,
+                    x,
+                    getpixel(image, width, height, x, y),
+                )
     return image2
 
 # Create a twice-as-wide image inspired by the style used
 # to generate MARBLE.BMP.
-def _ditherstyle(image, width, height, bgcolor=None):
-    image2 = blankimage(width * 2, height)
+def _ditherstyle(image, width, height, bgcolor=None, alpha=False):
+    image2 = blankimage(width * 2, height, alpha=alpha)
     if not bgcolor:
-        bgcolor = [192, 192, 192]
+        bgcolor = [192, 192, 192, 255]
+    if len(bgcolor) == 3 and alpha:
+        bgcolor = bgcolor[0:3] + [255]
+    gp = getpixelalpha if alpha else getpixel
+    sp = setpixelalpha if alpha else setpixel
     for y in range(height):
         for x in range(width):
-            c = getpixel(image, width, height, x, y)
-            setpixel(image2, width * 2, height, x * 2, y, c if y % 2 == 0 else bgcolor)
-            setpixel(
-                image2, width * 2, height, x * 2 + 1, y, bgcolor if y % 2 == 0 else c
-            )
+            c = gp(image, width, height, x, y)
+            sp(image2, width * 2, height, x * 2, y, c if y % 2 == 0 else bgcolor)
+            sp(image2, width * 2, height, x * 2 + 1, y, bgcolor if y % 2 == 0 else c)
     return image2
 
-# Image has the same format returned by the _blankimage_ method with alpha=False.
-def tograyditherstyle(image, width, height, palette=None, light=False):
+# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
+def tograyditherstyle(image, width, height, palette=None, light=False, alpha=False):
     im = [x for x in image]
-    graymap(im, width, height)
+    graymap(im, width, height, alpha=alpha)
     if palette:
         grays = getgrays(palette)
         if len(grays) == 0:
             raise ValueError("palette has no gray tones")
-        dithertograyimage(im, width, height, grays)
+        dithertograyimage(im, width, height, grays, alpha=alpha)
     if light:
         # Variant used in background of WINLOGO.BMP
         colors = [[i, i, i] for i in range(256)]
         colors[192] = [255, 255, 255]
         colors[128] = [192, 192, 192]
         colors[0] = [128, 128, 128]
-        graymap(im, width, height, colors)
-    return _ditherstyle(im, width, height)
+        graymap(im, width, height, colors, alpha=alpha)
+    return _ditherstyle(im, width, height, alpha=alpha)
 
 # Dithers in place the given image to the colors in color palette returned by websafecolors().
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
@@ -2767,7 +2781,7 @@ def eightColorDither(image, width, height, alpha=False):
                 image[xp + i] = (c - cm) + 255 if bdither < cm * 64 // 255 else c - cm
     return image
 
-# Converts each color in the given image to the nearest color (in ordinary red-green-blue
+# Converts each color in the given image to the nearest color (in ordinary red&ndash;green&ndash;blue
 # space) in the given color palette.
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def posterize(image, width, height, palette, alpha=False):
@@ -2864,6 +2878,8 @@ def patternDither(image, width, height, palette, alpha=False):
             image[xp + 2] = fcan[2]
     return image
 
+# Returns a 256-element color gradient starting at 'blackColor' and ending at 'whiteColor'.
+# 'blackColor' and 'whiteColor' are each three-element lists identifying colors.
 def colorgradient(blackColor, whiteColor):
     if (
         (not blackColor)
@@ -2914,9 +2930,9 @@ def whitenoiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
-# Alternate way to generate an image of white noise.
+# Alternate way to generate an image of noise.
 # Returns an image with the same format returned by the _blankimage_ method with alpha=False.
-def whitenoiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
+def noiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
@@ -3140,7 +3156,8 @@ def brushednoise3(width, height, tileable=True):
             linedraw(image, width, height, [c, c, c], x, y, x1, y1, wraparound=tileable)
     return image
 
-# Rotates a column of the image by the given downward offset in pixels, which may be negative or not.
+# Rotates in place a column of the image by the given downward offset in pixels,
+# which may be negative or not.
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 def imagerotatecolumn(image, width, height, x, offset=0):
     if x < 0 or x >= width or width < 0 or height < 0:
@@ -3162,7 +3179,8 @@ def imagerotatecolumn(image, width, height, x, offset=0):
         y += 1
     return image
 
-# Rotates a row of the image by the given rightward offset in pixels, which may be negative or not.
+# Rotates in place a row of the image by the given rightward offset in pixels,
+# which may be negative or not.
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 def imagerotaterow(image, width, height, y, offset=0):
     if y < 0 or y >= height or width < 0 or height < 0:
@@ -3429,8 +3447,8 @@ def svgimagepattern(idstr, image, width, height, transcolor=None, originX=0, ori
                 helper.rect(x, y, x + 1, y + 1, c)
     return str(helper) + "</pattern>"
 
-# Image has the same format returned by the _blankimage_ method with alpha=False.
 class ImageWraparoundDraw:
+    # Image has the same format returned by the _blankimage_ method with alpha=False.
     def __init__(self, image, width, height):
         self.image = image
         self.width = width
@@ -3836,6 +3854,8 @@ def drawindentborder(
 
 # The following four functions draw window edges
 # in raised or sunken style
+
+# Draw an outer window edge in raised style.
 def drawraisedouterwindow(
     helper,
     x0,
@@ -3849,26 +3869,34 @@ def drawraisedouterwindow(
 ):
     drawedgebotdom(helper, x0, y0, x1, y1, lt, dksh)
 
+# Draw an inner window edge in raised style.
 def drawraisedinnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh)
 
+# Draw an outer window edge in sunken style.
 def drawsunkenouterwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt)
 
+# Draw an outer window edge in sunken style.
 def drawsunkeninnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, dksh, lt)
 
 # The following four functions draw button edges (also known as "soft" edges)
 # in raised or sunken style
+
+# Draw an outer button edge (or "soft" edge) in raised style.
 def drawraisedouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, hilt, dksh)
 
+# Draw an inner button edge (or "soft" edge) in raised style.
 def drawraisedinnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, lt, sh)
 
+# Draw an outer button edge (or "soft" edge) in sunken style.
 def drawsunkenouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, dksh, hilt)
 
+# Draw an inner button edge (or "soft" edge) in sunken style.
 def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, lt)
 

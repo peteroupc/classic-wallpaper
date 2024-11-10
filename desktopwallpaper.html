@@ -77,7 +77,7 @@
 <tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
 <td class="decor title-decor" colspan=2><span class="code"><a href="#ImageWraparoundDraw">ImageWraparoundDraw</a>(image,&nbsp;width,&nbsp;height)<br>
 &nbsp;<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>&nbsp;</span></td></tr>
+<br>&nbsp;</span></td></tr>
 <tr><td>&nbsp;</td>
 <td class="singlecolumn">Methods defined here:<br>
 <dl><dt><a name="ImageWraparoundDraw-__init__"><strong>__init__</strong></a>(self, image, width, height)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
@@ -184,7 +184,7 @@ Data descriptors defined here:<br>
 #&nbsp;either&nbsp;None&nbsp;or&nbsp;a&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255;&nbsp;default&nbsp;is&nbsp;None,&nbsp;or&nbsp;no&nbsp;background&nbsp;color.</span></dd></dl>
- <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt></dl>
+ <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-blankimage"><strong>blankimage</strong></a>(width, height, color=None, alpha=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;blank&nbsp;image&nbsp;with&nbsp;3&nbsp;or&nbsp;4&nbsp;bytes&nbsp;per&nbsp;pixel&nbsp;and&nbsp;the&nbsp;given&nbsp;width,&nbsp;height,<br>
 #&nbsp;and&nbsp;fill&nbsp;color.&nbsp;&nbsp;The&nbsp;image&nbsp;is&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;list&nbsp;with&nbsp;a&nbsp;number&nbsp;of<br>
 #&nbsp;elements&nbsp;equal&nbsp;to&nbsp;width*height*3&nbsp;(or&nbsp;width*height*4&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).&nbsp;&nbsp;The<br>
@@ -280,8 +280,9 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-classiccolors"><strong>classiccolors</strong></a>()</dt><dd><span class="code">#&nbsp;16-color&nbsp;VGA&nbsp;palette</span></dd></dl>
  <dl><dt><a name="-classiccolors2"><strong>classiccolors2</strong></a>()</dt><dd><span class="code">#&nbsp;colors&nbsp;in&nbsp;<a href="#-classiccolors">classiccolors</a>()&nbsp;and&nbsp;their&nbsp;"half-and-half"&nbsp;versions</span></dd></dl>
- <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt></dl>
- <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt></dl>
+ <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;'blackColor'&nbsp;and&nbsp;ending&nbsp;at&nbsp;'whiteColor'.<br>
+#&nbsp;'blackColor'&nbsp;and&nbsp;'whiteColor'&nbsp;are&nbsp;each&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.</span></dd></dl>
+ <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;gray&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;black&nbsp;background.</span></dd></dl>
  <dl><dt><a name="-diamondTiled"><strong>diamondTiled</strong></a>(bgcolor=None, kind=0)</dt><dd><span class="code">#&nbsp;kind=0:&nbsp;image&nbsp;drawn&nbsp;in&nbsp;middle&nbsp;and&nbsp;padded<br>
 #&nbsp;kind=1:&nbsp;brick&nbsp;drawn&nbsp;at&nbsp;top<br>
 #&nbsp;kind=2:&nbsp;brick&nbsp;drawn&nbsp;at&nbsp;left</span></dd></dl>
@@ -395,20 +396,18 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"bottom&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordertopdom"><strong>drawraisedbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"top&nbsp;left&nbsp;dominates"</span></dd></dl>
- <dl><dt><a name="-drawraisedinnerwindow"><strong>drawraisedinnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
- <dl><dt><a name="-drawraisedinnerwindowbutton"><strong>drawraisedinnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
- <dl><dt><a name="-drawraisedouterwindow"><strong>drawraisedouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;The&nbsp;following&nbsp;four&nbsp;functions&nbsp;draw&nbsp;window&nbsp;edges<br>
-#&nbsp;in&nbsp;raised&nbsp;or&nbsp;sunken&nbsp;style</span></dd></dl>
- <dl><dt><a name="-drawraisedouterwindowbutton"><strong>drawraisedouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;The&nbsp;following&nbsp;four&nbsp;functions&nbsp;draw&nbsp;button&nbsp;edges&nbsp;(also&nbsp;known&nbsp;as&nbsp;"soft"&nbsp;edges)<br>
-#&nbsp;in&nbsp;raised&nbsp;or&nbsp;sunken&nbsp;style</span></dd></dl>
+ <dl><dt><a name="-drawraisedinnerwindow"><strong>drawraisedinnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawraisedinnerwindowbutton"><strong>drawraisedinnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawraisedouterwindow"><strong>drawraisedouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawraisedouterwindowbutton"><strong>drawraisedouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"bottom&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkenbordernodom"><strong>drawsunkenbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkenbordertopdom"><strong>drawsunkenbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"top&nbsp;left&nbsp;dominates"</span></dd></dl>
- <dl><dt><a name="-drawsunkeninnerwindow"><strong>drawsunkeninnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
- <dl><dt><a name="-drawsunkeninnerwindowbutton"><strong>drawsunkeninnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
- <dl><dt><a name="-drawsunkenouterwindow"><strong>drawsunkenouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
- <dl><dt><a name="-drawsunkenouterwindowbutton"><strong>drawsunkenouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt></dl>
+ <dl><dt><a name="-drawsunkeninnerwindow"><strong>drawsunkeninnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawsunkeninnerwindowbutton"><strong>drawsunkeninnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawsunkenouterwindow"><strong>drawsunkenouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawsunkenouterwindowbutton"><strong>drawsunkenouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawupperedge"><strong>drawupperedge</strong></a>(helper, x0, y0, x1, y1, upper, edgesize=1, bordersize=1)</dt></dl>
  <dl><dt><a name="-ega8colors"><strong>ega8colors</strong></a>()</dt><dd><span class="code">#&nbsp;8-color&nbsp;palette&nbsp;where&nbsp;each&nbsp;color&nbsp;opponent&nbsp;is&nbsp;0&nbsp;or&nbsp;255</span></dd></dl>
  <dl><dt><a name="-egacolors"><strong>egacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;64&nbsp;colors&nbsp;displayable&nbsp;by&nbsp;EGA&nbsp;(extended&nbsp;graphics&nbsp;adapter)&nbsp;displays</span></dd></dl>
@@ -511,7 +510,8 @@ Data descriptors defined here:<br>
     rasterOp=12
 )</dt><dd><span class="code">#&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'rasterOp'&nbsp;is&nbsp;a&nbsp;binary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
-#&nbsp;destination&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;source.</span></dd></dl>
+#&nbsp;destination&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;source.&nbsp;&nbsp;For&nbsp;more&nbsp;on&nbsp;binary&nbsp;raster<br>
+#&nbsp;operations,&nbsp;see&nbsp;the&nbsp;documentation&nbsp;for&nbsp;_imageblitex_.</span></dd></dl>
  <dl><dt><a name="-imageblitex"><strong>imageblitex</strong></a>(
     dstimage,
     dstwidth,
@@ -582,15 +582,17 @@ Data descriptors defined here:<br>
 #&nbsp;destination&nbsp;is&nbsp;left&nbsp;unchanged&nbsp;(since&nbsp;the&nbsp;low&nbsp;2&nbsp;bits&nbsp;give&nbsp;2).<br>
 #&nbsp;The&nbsp;default&nbsp;for&nbsp;'ropForeground'&nbsp;is&nbsp;0xCC&nbsp;(copy&nbsp;the&nbsp;source&nbsp;to&nbsp;the&nbsp;destination),&nbsp;and&nbsp;the<br>
 #&nbsp;default&nbsp;for&nbsp;'ropBackground'&nbsp;is&nbsp;0xAA&nbsp;(leave&nbsp;destination&nbsp;unchanged).<br>
-#&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;monochrome&nbsp;image&nbsp;(every&nbsp;pixel&nbsp;is&nbsp;either&nbsp;all&nbsp;zeros<br>
-#&nbsp;(black)&nbsp;or&nbsp;all&nbsp;ones&nbsp;(white),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.<br>
+#&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;monochrome&nbsp;image&nbsp;(every&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;either&nbsp;all&nbsp;zeros<br>
+#&nbsp;[black]&nbsp;or&nbsp;all&nbsp;ones&nbsp;[white]),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.<br>
 #&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;or&nbsp;'maskimage',<br>
 #&nbsp;and&nbsp;the&nbsp;source&nbsp;and&nbsp;destination&nbsp;rectangles&nbsp;may&nbsp;overlap.</span></dd></dl>
  <dl><dt><a name="-imagereversecolumnorder"><strong>imagereversecolumnorder</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-imagereverseroworder"><strong>imagereverseroworder</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-imagerotatecolumn"><strong>imagerotatecolumn</strong></a>(image, width, height, x, offset=0)</dt><dd><span class="code">#&nbsp;Rotates&nbsp;a&nbsp;column&nbsp;of&nbsp;the&nbsp;image&nbsp;by&nbsp;the&nbsp;given&nbsp;downward&nbsp;offset&nbsp;in&nbsp;pixels,&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.<br>
+ <dl><dt><a name="-imagerotatecolumn"><strong>imagerotatecolumn</strong></a>(image, width, height, x, offset=0)</dt><dd><span class="code">#&nbsp;Rotates&nbsp;in&nbsp;place&nbsp;a&nbsp;column&nbsp;of&nbsp;the&nbsp;image&nbsp;by&nbsp;the&nbsp;given&nbsp;downward&nbsp;offset&nbsp;in&nbsp;pixels,<br>
+#&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-imagerotaterow"><strong>imagerotaterow</strong></a>(image, width, height, y, offset=0)</dt><dd><span class="code">#&nbsp;Rotates&nbsp;a&nbsp;row&nbsp;of&nbsp;the&nbsp;image&nbsp;by&nbsp;the&nbsp;given&nbsp;rightward&nbsp;offset&nbsp;in&nbsp;pixels,&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.<br>
+ <dl><dt><a name="-imagerotaterow"><strong>imagerotaterow</strong></a>(image, width, height, y, offset=0)</dt><dd><span class="code">#&nbsp;Rotates&nbsp;in&nbsp;place&nbsp;a&nbsp;row&nbsp;of&nbsp;the&nbsp;image&nbsp;by&nbsp;the&nbsp;given&nbsp;rightward&nbsp;offset&nbsp;in&nbsp;pixels,<br>
+#&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-imagetransblit"><strong>imagetransblit</strong></a>(
     dstimage,
@@ -628,7 +630,7 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;first&nbsp;image&nbsp;should&nbsp;be&nbsp;displayed&nbsp;at&nbsp;even-numbered&nbsp;frames;&nbsp;the&nbsp;second,<br>
 #&nbsp;odd-numbered.</span></dd></dl>
- <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt></dl>
+ <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;light&nbsp;gray&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;white&nbsp;background.</span></dd></dl>
  <dl><dt><a name="-linedraw"><strong>linedraw</strong></a>(
     image,
     width,
@@ -662,13 +664,15 @@ Data descriptors defined here:<br>
 #&nbsp;of&nbsp;colors&nbsp;(each&nbsp;color&nbsp;is&nbsp;of&nbsp;the&nbsp;same&nbsp;format&nbsp;as&nbsp;rgb1&nbsp;and&nbsp;rgb2).&nbsp;&nbsp;If&nbsp;'dither'&nbsp;is&nbsp;also&nbsp;True,&nbsp;the<br>
 #&nbsp;image's&nbsp;colors&nbsp;are&nbsp;then&nbsp;scattered&nbsp;so&nbsp;that&nbsp;they&nbsp;appear&nbsp;close&nbsp;to&nbsp;the&nbsp;original&nbsp;colors.<br>
 #&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;'basecolors'&nbsp;has&nbsp;a&nbsp;length&nbsp;greater&nbsp;than&nbsp;256.</span></dd></dl>
- <dl><dt><a name="-magickgradientditherfilterrandom"><strong>magickgradientditherfilterrandom</strong></a>()</dt></dl>
+ <dl><dt><a name="-magickgradientditherfilterrandom"><strong>magickgradientditherfilterrandom</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-monoborder"><strong>monoborder</strong></a>(helper, x0, y0, x1, y1, clientAreaColor, windowFrameColor)</dt></dl>
  <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)<br>
 #&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-noiseimage"><strong>noiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-noiseimage2"><strong>noiseimage2</strong></a>(width=64, height=64, bgcolor=None, noisecolor=None)</dt><dd><span class="code">#&nbsp;Alternate&nbsp;way&nbsp;to&nbsp;generate&nbsp;an&nbsp;image&nbsp;of&nbsp;noise.<br>
+#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-outlineimage"><strong>outlineimage</strong></a>(image, width, height, lt=None, sh=None)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3D&nbsp;outline&nbsp;over&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;with&nbsp;transparent<br>
 #&nbsp;pixels,&nbsp;assuming&nbsp;a&nbsp;light&nbsp;source&nbsp;from&nbsp;the&nbsp;upper&nbsp;left.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
@@ -690,7 +694,7 @@ Data descriptors defined here:<br>
 #&nbsp;Derived&nbsp;from&nbsp;Adobe's&nbsp;pattern&nbsp;dithering&nbsp;algorithm,&nbsp;described&nbsp;by&nbsp;J.&nbsp;Yliluoma&nbsp;at:<br>
 #&nbsp;<a href="https://bisqwit.iki.fi/story/howto/dither/jy/">https://bisqwit.iki.fi/story/howto/dither/jy/</a><br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red-green-blue<br>
+ <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&ndash;green&ndash;blue<br>
 #&nbsp;space)&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-randomColorization"><strong>randomColorization</strong></a>(palette=None)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;colorization&nbsp;gradient<br>
@@ -761,7 +765,7 @@ Data descriptors defined here:<br>
 #&nbsp;NOTE:&nbsp;"-append"&nbsp;is&nbsp;a&nbsp;vertical&nbsp;append;&nbsp;"+append"&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;append;<br>
 #&nbsp;"-flip"&nbsp;reverses&nbsp;the&nbsp;row&nbsp;order;&nbsp;"-flop"&nbsp;reverses&nbsp;the&nbsp;column&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-tiledImage"><strong>tiledImage</strong></a>(srcimage, srcwidth, srcheight, dstwidth, dstheight)</dt><dd><span class="code">#&nbsp;'srcimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-unavailable"><strong>unavailable</strong></a>(
     bgColor=None,
     buttonShadow=None,
@@ -794,11 +798,10 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-websafecolors"><strong>websafecolors</strong></a>()</dt></dl>
+ <dl><dt><a name="-websafecolors"><strong>websafecolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;216&nbsp;colors&nbsp;of&nbsp;the&nbsp;"safety&nbsp;palette",&nbsp;also&nbsp;known&nbsp;as&nbsp;the<br>
+#&nbsp;"Web&nbsp;safe"&nbsp;palette.</span></dd></dl>
  <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
  <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.<br>
-#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-whitenoiseimage2"><strong>whitenoiseimage2</strong></a>(width=64, height=64, bgcolor=None, noisecolor=None)</dt><dd><span class="code">#&nbsp;Alternate&nbsp;way&nbsp;to&nbsp;generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.<br>
 #&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-windowborder"><strong>windowborder</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-writeavi"><strong>writeavi</strong></a>(
