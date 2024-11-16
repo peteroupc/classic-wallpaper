@@ -48,11 +48,12 @@
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
 
 <tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="math.html">math</a><br>
-<a href="os.html">os</a><br>
-</td><td class="multicolumn"><a href="random.html">random</a><br>
-<a href="struct.html">struct</a><br>
-</td><td class="multicolumn"><a href="zlib.html">zlib</a><br>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="io.html">io</a><br>
+<a href="math.html">math</a><br>
+</td><td class="multicolumn"><a href="os.html">os</a><br>
+<a href="random.html">random</a><br>
+</td><td class="multicolumn"><a href="struct.html">struct</a><br>
+<a href="zlib.html">zlib</a><br>
 </td><td class="multicolumn"></td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor index-decor heading-text">
@@ -166,6 +167,15 @@ Data descriptors defined here:<br>
 #&nbsp;pixels&nbsp;between&nbsp;the&nbsp;two&nbsp;extremes.&nbsp;&nbsp;If&nbsp;False,&nbsp;the&nbsp;conversion&nbsp;is<br>
 #&nbsp;done&nbsp;by&nbsp;thresholding:&nbsp;alpha&nbsp;values&nbsp;127&nbsp;or&nbsp;below&nbsp;become&nbsp;0,&nbsp;and<br>
 #&nbsp;alpha&nbsp;values&nbsp;128&nbsp;or&nbsp;higher&nbsp;become&nbsp;255.&nbsp;&nbsp;Default&nbsp;is&nbsp;False</span></dd></dl>
+ <dl><dt><a name="-animationBitmap"><strong>animationBitmap</strong></a>(image, width, height, destImage, firstFrame=0, fps=15)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;AVI&nbsp;video&nbsp;file&nbsp;consisting&nbsp;of&nbsp;images&nbsp;arranged<br>
+#&nbsp;in&nbsp;a&nbsp;row&nbsp;or&nbsp;column.&nbsp;&nbsp;If&nbsp;the&nbsp;source&nbsp;image's&nbsp;width<br>
+#&nbsp;is&nbsp;greater&nbsp;than&nbsp;its&nbsp;height,&nbsp;then&nbsp;each&nbsp;frame's&nbsp;height<br>
+#&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;the&nbsp;source&nbsp;image's;&nbsp;if&nbsp;less,&nbsp;each<br>
+#&nbsp;frame's&nbsp;width.<br>
+#&nbsp;The&nbsp;source&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
+#&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
+#&nbsp;for&nbsp;this&nbsp;method&nbsp;to&nbsp;be&nbsp;successful.</span></dd></dl>
  <dl><dt><a name="-argyle"><strong>argyle</strong></a>(
     foregroundImage,
     backgroundImage,
@@ -436,8 +446,18 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-getdithercolors"><strong>getdithercolors</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Gets&nbsp;the&nbsp;"half-and&nbsp;half"&nbsp;versions&nbsp;of&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette.</span></dd></dl>
  <dl><dt><a name="-getgrays"><strong>getgrays</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Finds&nbsp;the&nbsp;gray&nbsp;tones&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette&nbsp;and&nbsp;returns<br>
 #&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;them.</span></dd></dl>
- <dl><dt><a name="-getpixel"><strong>getpixel</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-getpixelalpha"><strong>getpixelalpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
+ <dl><dt><a name="-getpixel"><strong>getpixel</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
+#&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-getpixelalpha"><strong>getpixelalpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;blue,&nbsp;and<br>
+#&nbsp;alpha&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-getpixelbgr"><strong>getpixelbgr</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;and&nbsp;red<br>
+#&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-getpixelbgralpha"><strong>getpixelbgralpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and&nbsp;alpha<br>
+#&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
 #&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
@@ -686,7 +706,8 @@ Data descriptors defined here:<br>
     destParallax,
     widthReverse=False,
     heightReverse=False,
-    interlacing=False
+    interlacing=False,
+    fps=15
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
 #&nbsp;for&nbsp;this&nbsp;method&nbsp;to&nbsp;be&nbsp;successful.</span></dd></dl>
@@ -694,7 +715,7 @@ Data descriptors defined here:<br>
 #&nbsp;Derived&nbsp;from&nbsp;Adobe's&nbsp;pattern&nbsp;dithering&nbsp;algorithm,&nbsp;described&nbsp;by&nbsp;J.&nbsp;Yliluoma&nbsp;at:<br>
 #&nbsp;<a href="https://bisqwit.iki.fi/story/howto/dither/jy/">https://bisqwit.iki.fi/story/howto/dither/jy/</a><br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&ndash;green&ndash;blue<br>
+ <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&amp;ndash;green&amp;ndash;blue<br>
 #&nbsp;space)&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-randomColorization"><strong>randomColorization</strong></a>(palette=None)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;colorization&nbsp;gradient<br>
@@ -712,8 +733,41 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-randomhatchimage"><strong>randomhatchimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randommaybemonochrome"><strong>randommaybemonochrome</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight)</dt><dd><span class="code">#&nbsp;Images&nbsp;in&nbsp;'sourceImages'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-setpixelalpha"><strong>setpixelalpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
+ <dl><dt><a name="-readitr"><strong>readitr</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;bitmaps,&nbsp;icons,&nbsp;and&nbsp;pointers&nbsp;in&nbsp;an&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file.<br>
+#&nbsp;An&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file&nbsp;is&nbsp;a&nbsp;collection&nbsp;of&nbsp;OS/2&nbsp;resources<br>
+#&nbsp;such&nbsp;as&nbsp;bitmaps,&nbsp;icons,&nbsp;pointers,&nbsp;and&nbsp;text&nbsp;string&nbsp;tables.<br>
+#&nbsp;These&nbsp;theme&nbsp;resource&nbsp;files&nbsp;have&nbsp;the&nbsp;extensions&nbsp;.itr,&nbsp;.cmr,&nbsp;.ecr,<br>
+#&nbsp;.inr,&nbsp;.mmr,&nbsp;and&nbsp;.pmr.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;elements,&nbsp;each&nbsp;of&nbsp;which&nbsp;has&nbsp;the&nbsp;format&nbsp;described<br>
+#&nbsp;in&nbsp;the&nbsp;_reados2icon_&nbsp;method.</span></dd></dl>
+ <dl><dt><a name="-reados2icon"><strong>reados2icon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;an&nbsp;OS/2&nbsp;icon,&nbsp;pointer,&nbsp;bitmap,&nbsp;or&nbsp;bitmap&nbsp;array.<br>
+#&nbsp;OS/2&nbsp;icons&nbsp;have&nbsp;the&nbsp;'.ico'&nbsp;file&nbsp;extension;&nbsp;OS/2&nbsp;cursors,&nbsp;'.ptr';&nbsp;and<br>
+#&nbsp;OS/2&nbsp;bitmaps,&nbsp;'.bmp'.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;three-element&nbsp;lists,&nbsp;representing&nbsp;the&nbsp;decoded&nbsp;images<br>
+#&nbsp;in&nbsp;the&nbsp;order&nbsp;in&nbsp;which&nbsp;they&nbsp;were&nbsp;read.&nbsp;&nbsp;If&nbsp;an&nbsp;icon,&nbsp;pointer,&nbsp;or<br>
+#&nbsp;bitmap&nbsp;could&nbsp;not&nbsp;be&nbsp;read,&nbsp;the&nbsp;value&nbsp;None&nbsp;takes&nbsp;the&nbsp;place&nbsp;of&nbsp;the<br>
+#&nbsp;corresponding&nbsp;three-element&nbsp;list.<br>
+#&nbsp;Each&nbsp;three-element&nbsp;list&nbsp;in&nbsp;the&nbsp;returned&nbsp;list&nbsp;contains&nbsp;the&nbsp;image,<br>
+#&nbsp;its&nbsp;width,&nbsp;and&nbsp;its&nbsp;height,&nbsp;in&nbsp;that&nbsp;order.<br>
+#&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_<br>
+#&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
+ <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(f)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;palette&nbsp;file.<br>
+#&nbsp;Returns&nbsp;an&nbsp;list&nbsp;of&nbsp;the&nbsp;colors&nbsp;read&nbsp;from&nbsp;the&nbsp;file.<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;list&nbsp;consisting&nbsp;of<br>
+#&nbsp;the&nbsp;color's&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;component,&nbsp;in&nbsp;that<br>
+#&nbsp;order;&nbsp;each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
+ <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
+#&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-setpixelalpha"><strong>setpixelalpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;blue,&nbsp;and<br>
+#&nbsp;alpha&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-setpixelbgr"><strong>setpixelbgr</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;and<br>
+#&nbsp;red&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-setpixelbgralpha"><strong>setpixelbgralpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and<br>
+#&nbsp;alpha&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-shadowedborderedbox"><strong>shadowedborderedbox</strong></a>(
     image,
     width,

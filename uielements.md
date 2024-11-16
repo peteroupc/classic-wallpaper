@@ -77,7 +77,7 @@ Traditionally, the three dimensional effects of buttons, icons, and other user i
 An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
 
 - The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
-- The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). (Modern guidelines recommend a 256&times;256 icon as well.  Toolbar icons are traditionally offered in 16&times;16 and 20&times;20.)
+- The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - If 16- and 256-color icons are derived from 8-bpc icons, then the 256-color icon should be made from the 8-bpc icon without translucent pixels, and the 16-color icon should be made from the 256-color icon with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
 
@@ -110,3 +110,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^3]:  See, for example, _The Windows Interface Guidelines for Software Design_, which applies to Microsoft Windows 95.
 
 [^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
+
+[^5]: Modern guidelines recommend a 256&times;256 icon as well.  Toolbar icons are traditionally offered in 16&times;16 and 20&times;20.  The standard icon sizes in the OS/2 operating system are 16&times;16, 20&times;20, 32&times;32, and 40&times;40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64&times;64 occur.

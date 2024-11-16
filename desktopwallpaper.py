@@ -37,6 +37,7 @@ import math
 import random
 import struct
 import zlib
+import io
 
 def _listdir(p):
     return [os.path.abspath(p + "/" + x) for x in os.listdir(p)]
@@ -1320,6 +1321,492 @@ def writebmp(f, image, width, height, raiseIfExists=False):
         f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True
     )
 
+# Reads an OS/2 icon, pointer, bitmap, or bitmap array.
+# OS/2 icons have the '.ico' file extension; OS/2 cursors, '.ptr'; and
+# OS/2 bitmaps, '.bmp'.
+# Returns a list of three-element lists, representing the decoded images
+# in the order in which they were read.  If an icon, pointer, or
+# bitmap could not be read, the value None takes the place of the
+# corresponding three-element list.
+# Each three-element list in the returned list contains the image,
+# its width, and its height, in that order.
+# The returned image has the same format returned by the _blankimage_
+# method with alpha=True.
+def reados2icon(infile):
+    f = open(infile, "rb")
+    try:
+        return _readiconcore(f)
+    finally:
+        f.close()
+
+def _readiconcore(f):
+    tag = f.read(2)
+    # Bitmap array (BA)
+    # NOTE: BA=>'PT'/'CP' allows for animated pointers.
+    # NOTE: BA=>'IC'/'CI' allows for varying the icon's
+    #   size or color depth.
+    if tag == b"BA":
+        f.seek(0)
+        # The first offset is "device independent";
+        # the others are "device dependent".
+        offsets = [0x0E]
+        infos = []
+        while True:
+            tag = f.read(2)
+            if tag != b"BA":
+                raise ValueError
+            info = struct.unpack(
+                "<LLHH", f.read(0x0C)
+            )  # size, next, display width in pixels,
+            # display height in pixels (the latter two
+            # can be zero)
+            # Combinations of display width/height seen
+            # include 640x200 (CGA, usually with half-height
+            # icons), 640x350 (EGA), 640x480, 1024x768.
+            endInfo = f.tell()
+            infos.append(info)
+            if info[1] == 0:
+                break
+            else:
+                contentSize = info[1] - endInfo
+                if contentSize < 2:
+                    raise ValueError("unsupported content size")
+                offsets.append(0x0E + info[1])
+                f.seek(info[1])
+        ret = []
+        for i in range(len(offsets)):
+            f.seek(offsets[i])
+            ret.append(_readicon(f))
+        return ret
+    else:
+        f.seek(0)
+        return [_readicon(f)]
+
+# Reads the color table from an OS/2 palette file.
+# Returns an list of the colors read from the file.
+# Each element in the list is a list consisting of
+# the color's red, green, and blue component, in that
+# order; each component is an integer from 0 through 255.
+def reados2palette(f):
+    tag = struct.unpack("<HH", f.read(4))
+    if tag[0] != 0x983:
+        raise ValueError
+    pal = [None for i in range(tag[1])]
+    for i in range(tag[1]):
+        col = f.read(3)
+        # NOTE: The ordering of the elements
+        # in palette resources is blue, green,
+        # red.
+        pal[i] = [col[2], col[1], col[0]]
+    # After the colors come tag[1] many bytes,
+    # but all of them are zeros in the palette files
+    # I've found so far
+    return pal
+
+# Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
+# An OS/2 theme resource file is a collection of OS/2 resources
+# such as bitmaps, icons, pointers, and text string tables.
+# These theme resource files have the extensions .itr, .cmr, .ecr,
+# .inr, .mmr, and .pmr.
+# Returns a list of elements, each of which has the format described
+# in the _reados2icon_ method.
+def readitr(infile):
+    f = open(infile, "rb")
+    try:
+        ret = []
+        i = 0
+        while True:
+            head = f.read(12)
+            if len(head) == 0:
+                return ret
+            st = struct.unpack("<HBHBHL", head)
+            st0 = (st[0] << 8) | st[1]
+            st1 = (st[2] << 8) | st[3]
+            size = st[5]
+            if size < 2:
+                raise ValueError("unsupported content size")
+            pos = f.tell()
+            data = f.read(size)
+            if len(data) != size:
+                raise ValueError
+            tag = data[0:2]
+            if (
+                tag != b"CI"
+                and tag != b"BA"
+                and tag != b"CP"
+                and tag != b"IC"
+                and tag != b"PT"
+                and tag != b"BM"
+            ):
+                # Not an image, skipping
+                i += 1
+                continue
+            ret.append(_readiconcore(io.BytesIO(data)))
+            i += 1
+    finally:
+        f.close()
+
+def _read1bppBitmap(byteData, scanSize, height, x, y):
+    # Reads the bit value of an array of bottom-up 1-bit-per-pixel
+    # Windows or OS/2 bitmap data.
+    return (byteData[scanSize * (height - 1 - y) + (x >> 3)] >> (7 - (x & 7))) & 1
+
+def _read4bppBitmap(byteData, scanSize, height, x, y):
+    # Reads the bit value of an array of bottom-up 4-bit-per-pixel
+    # Windows or OS/2 bitmap data.
+    return (
+        byteData[scanSize * (height - 1 - y) + (x >> 1)] >> (4 * (1 - (x & 1)))
+    ) & 0x0F
+
+def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
+    # Reads the pixel color value at the given position of a bitmap image,
+    # represented by an array of bottom-up Windows or OS/2 bitmap data.
+    # The color value is returned as an array containing the blue, green,
+    # and red components, in that order.
+    match bpp:
+        case 1:
+            return palette[_read1bppBitmap(byteData, scanSize, height, x, y)]
+        case 4:
+            return palette[_read4bppBitmap(byteData, scanSize, height, x, y)]
+        case 8:
+            return palette[byteData[scanSize * (height - 1 - y) + x]]
+        case 24:
+            row = scanSize * (height - 1 - y)
+            return byteData[row + x * 3 : row + x * 3 + 3]
+        case _:
+            raise ValueError("Bits per pixel not supported")
+
+def _readicon(f):
+    unusual = False
+    extra = ""
+    tag = f.read(2)
+    if len(tag) < 0:
+        raise ValueError
+    if tag != b"CI" and tag != b"CP" and tag != b"IC" and tag != b"PT" and tag != b"BM":
+        print("unrecognized tag: %s" % (tag))
+        return None
+    isColor = tag == b"CI" or tag == b"CP"  # color icon or color pointer
+    isIcon = tag == b"CI" or tag == b"IC"
+    isPointer = tag == b"CP" or tag == b"PT"
+    isBitmap = tag == b"BM"
+    # Read info on the AND mask or bitmap
+    andmask = None
+    andmaskcolors = None
+    colormask = None
+    colormaskscan = 0
+    colormaskcolors = None
+    andmaskinfooffset = f.tell()
+    andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
+    hotspotX = 0
+    hotspotY = 0
+    if not isBitmap:
+        hotspotX = andmaskinfo[1]  # hotspot is valid for icons and pointers
+        hotspotY = andmaskinfo[2]  # hotspot is valid for icons and pointers
+    andmaskhdr = struct.unpack("<L", f.read(4))
+    andpalette = 0
+    sizeImage = 0
+    if andmaskhdr[0] == 0x0C:
+        andmaskhdr += struct.unpack("<HHHH", f.read(8))
+        if andmaskhdr[4] <= 8:
+            andpalette = 1 << andmaskhdr[4]
+    elif andmaskhdr[0] < 0x10:
+        print("unsupported header size")
+        return None
+    elif andmaskhdr[0] >= 40:
+        andmaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
+        slack = f.read(andmaskhdr[0] - 40)
+        sizeImage = andmaskhdr[6]
+        if andmaskhdr[4] <= 8:
+            andpalette = 1 << andmaskhdr[4]
+        if andmaskhdr[4] <= 8 and andmaskhdr[9] != 0:  # biClrUsed
+            andpalette = min(andpalette, andmaskhdr[9])
+        if andmaskhdr[5] != 0:
+            print("unsupported compression")
+            return None
+        if andmaskhdr[5] != 0 or andmaskhdr[7] != 0 or andmaskhdr[8] != 0:
+            # resolutions seen include 3622x3622 pixels per meter (about 92 dpi)
+            # Also seen: 2833x2833; 2834x2834; 2667x2667; 2667x2000 (EGA); 2667x1111 (CGA)
+            # print(
+            #    "nonzero compression or resolution: %d %d %d"
+            #    % (andmaskhdr[5], andmaskhdr[7], andmaskhdr[8])
+            # )
+            # extra += ".%d,%d,%d" % (andmaskhdr[5], andmaskhdr[7], andmaskhdr[8])
+            pass
+        allzeros = True
+        for i in range(len(slack)):
+            if slack[i] != 0:
+                allzeros = False
+        if not allzeros:
+            print("nonzero slack")
+            return None
+    elif andmaskhdr[0] >= 0x10:
+        andmaskhdr += struct.unpack("<llHH", f.read(12))
+        slack = f.read(andmaskhdr[0] - 0x10)
+        allzeros = True
+        for i in range(len(slack)):
+            if slack[i] != 0:
+                allzeros = False
+        if not allzeros:
+            print("nonzero slack")
+            return None
+    if andmaskhdr[2] < 0:
+        print("top-down bitmaps not supported")
+        return None
+    if andmaskhdr[1] == 0 or andmaskhdr[2] == 0:
+        print("zero image size not supported")
+        return None
+    if (isIcon or isPointer) and andmaskhdr[2] % 2 != 0:
+        raise ValueError("mask height is odd")
+    if andmaskhdr[3] != 1:
+        raise ValueError("unsupported no. of planes")
+    if isBitmap:
+        if (
+            andmaskhdr[4] != 1
+            and andmaskhdr[4] != 4
+            and andmaskhdr[4] != 8
+            and andmaskhdr[4] != 24
+        ):
+            print("unsupported bits per pixel: %d" % (colorbpp))
+            return None
+    else:
+        if andmaskhdr[4] != 1:  # Only 1-bpp AND/XOR masks are supported
+            raise ValueError("unsupported bits per pixel: %d" % (andmaskhdr[4]))
+        if andpalette != 2:
+            print("unusual palette size: %d" % (andpalette))
+            unusual = None
+    andcolortable = f.tell()
+    f.seek(andcolortable + andpalette * (3 if andmaskhdr[0] <= 0x0C else 4))
+    w = andmaskhdr[1]
+    h = andmaskhdr[2]
+    andmaskscan = ((((w * andmaskhdr[4]) + 7) // 8 + 3) // 4) * 4
+    andmaskbits = andmaskscan * h
+    if sizeImage != 0 and andmaskbits != sizeImage:
+        print("unusual sizeImage")
+        return None
+    if isColor:
+        # Read info on the color mask
+        newtag = f.read(2)
+        if newtag != tag:
+            raise ValueError
+        colormaskinfooffset = f.tell()
+        colormaskinfo = struct.unpack("<LHHL", f.read(0x0C))
+        if (not isBitmap) and hotspotX != colormaskinfo[1]:
+            raise ValueError
+        if (not isBitmap) and hotspotY != colormaskinfo[2]:
+            raise ValueError
+        o = f.tell()
+        colorpalette = 0
+        sizeImage = 0
+        colormaskhdr = struct.unpack("<L", f.read(4))
+        if colormaskhdr[0] == 0x0C:
+            colormaskhdr += struct.unpack("<HHHH", f.read(8))
+            if colormaskhdr[4] <= 8:
+                colorpalette = 1 << colormaskhdr[4]
+        elif colormaskhdr[0] < 0x10:
+            print("unsupported header size")
+            return None
+        elif colormaskhdr[0] >= 40:
+            colormaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
+            slack = f.read(colormaskhdr[0] - 40)
+            sizeImage = colormaskhdr[6]
+            if colormaskhdr[4] <= 8:
+                colorpalette = 1 << colormaskhdr[4]
+            if colormaskhdr[4] <= 8 and colormaskhdr[9] != 0:  # biClrUsed
+                colorpalette = min(colorpalette, colormaskhdr[9])
+            if andmaskhdr[5] != 0:
+                print("unsupported compression")
+                return None
+            if colormaskhdr[5] != 0 or colormaskhdr[7] != 0 or colormaskhdr[8] != 0:
+                # print(
+                #    "nonzero compression or resolution: %d %d %d"
+                #    % (colormaskhdr[5], colormaskhdr[7], colormaskhdr[8])
+                # )
+                pass
+            allzeros = True
+            for i in range(len(slack)):
+                if slack[i] != 0:
+                    allzeros = False
+            if not allzeros:
+                print("nonzero slack")
+                return None
+        elif colormaskhdr[0] >= 0x10:
+            colormaskhdr += struct.unpack("<llHH", f.read(12))
+            slack = f.read(colormaskhdr[0] - 0x10)
+            allzeros = True
+            for i in range(len(slack)):
+                if slack[i] != 0:
+                    allzeros = False
+            if not allzeros:
+                print("nonzero slack")
+                return None
+        colorbpp = colormaskhdr[4]
+        if colormaskhdr[2] < 0:
+            print("top-down bitmaps not supported")
+            return None
+        if colorbpp == 3:
+            # NOTE: A 3 BPP color icon was attested, but it is unclear whether
+            # OS/2 supports such 3 BPP icons.
+            print("3 bits per pixel not supported")
+            return None
+        if colormaskhdr[1] == 0 or colormaskhdr[2] == 0:
+            print("zero image size not supported")
+            return None
+        if colormaskhdr[1] != andmaskhdr[1]:
+            raise ValueError("unsupported width")
+        if colormaskhdr[2] * 2 != andmaskhdr[2]:
+            raise ValueError("unsupported height")
+        if colormaskhdr[3] != 1:
+            print("unsupported no. of planes")
+            return None
+        if colorbpp != 1 and colorbpp != 4 and colorbpp != 8 and colorbpp != 24:
+            print("unsupported bits per pixel: %d" % (colorbpp))
+            return None
+        colorpalette = 0
+        if colorbpp <= 8:
+            colorpalette = 1 << colorbpp
+        colorcolortable = f.tell()
+        w = colormaskhdr[1]
+        h = colormaskhdr[2]
+        colormaskscan = ((((w * colorbpp) + 7) // 8 + 3) // 4) * 4
+        colormaskbits = colormaskscan * h
+        if sizeImage != 0 and colormaskbits != sizeImage:
+            print("unusual sizeImage")
+            return None
+    realHeight = andmaskhdr[2] if isBitmap else andmaskhdr[2] // 2
+    # hotspot Y counts from the bottom left row up, so adjust
+    # for top-down convention
+    if not isBitmap:
+        hotspotY = realHeight - 1 - hotspotY
+        if hotspotY < 0 or hotspotY >= realHeight:
+            # hotspot outside of image
+            if isPointer:
+                raise ValueError
+        if hotspotX < 0 or hotspotX >= andmaskhdr[1]:
+            # hotspot outside of image
+            if isPointer:
+                raise ValueError
+    tablesize = (1 << andmaskhdr[4]) if andpalette > 0 else 0
+    # The palette of icons' and pointers' AND/XOR mask
+    # is effectively fixed at black and white.
+    # It may be, but I am not sure, that OS/2
+    # ignores the color table of icons' and pointers' AND/XOR mask.
+    if not (isIcon or isPointer):
+        # Gather bitmap's color table if not an icon or pointer
+        tablesize = 2
+        if andpalette > 0:
+            f.seek(andcolortable)
+            andmaskcolors = []
+            cts = 3 if andmaskhdr[0] <= 0x0C else 4
+            for i in range(andpalette):
+                clr = f.read(3)  # BGR color
+                andmaskcolors.append(clr)
+                if len(clr) != 3:
+                    raise ValueError
+                if cts > 3:
+                    f.read(cts - 3)
+            for i in range((1 << andmaskhdr[4]) - andpalette):
+                clr = bytes([0, 0, 0])
+                andmaskcolors.append(clr)
+    f.seek(andmaskinfo[3])
+    andmask = f.read(andmaskbits)
+    if len(andmask) != andmaskbits:
+        print("Failure: %d %d" % (len(andmask), andmaskbits))
+        return None
+    bitspixel = andmaskhdr[4]
+    if isColor:
+        if colorpalette > 0:
+            f.seek(colorcolortable)
+            colormaskcolors = []
+            cts = 3 if colormaskhdr[0] <= 0x0C else 4
+            for i in range(colorpalette):
+                clr = f.read(3)  # BGR color
+                colormaskcolors.append(clr)
+                if len(clr) != 3:
+                    raise ValueError
+                if cts > 3:
+                    f.read(cts - 3)
+            for i in range((1 << colorbpp) - colorpalette):
+                clr = f.read(bytes([0, 0, 0]))
+                colormaskcolors.append(clr)
+        f.seek(colormaskinfo[3])
+        colormask = f.read(colormaskbits)
+        if len(colormask) != colormaskbits:
+            print("Failure: %d %d" % (len(colormask), colormaskbits))
+            return None
+    width = 0
+    height = 0
+    ret = None
+    if isBitmap:
+        cw = andmaskhdr[1]
+        ch = andmaskhdr[2]
+        bpp = andmaskhdr[4]
+        ci = blankimage(cw, ch, alpha=True)
+        alpha1 = bytes([255])
+        for y in range(ch):
+            for x in range(cw):
+                col = _readBitmapAsColorBGR(
+                    andmask, andmaskscan, ch, bpp, x, y, andmaskcolors
+                )
+                setpixelbgralpha(ci, cw, ch, x, y, col + alpha1)
+        ret = ci
+        width = cw
+        height = ch
+    elif isColor:
+        cw = colormaskhdr[1]
+        ch = colormaskhdr[2]
+        bpp = colormaskhdr[4]
+        bl = blankimage(cw, ch, alpha=True)
+        white = bytes([255, 255, 255])
+        alpha0 = bytes([0])
+        alpha1 = bytes([255])
+        for y in range(ch):
+            for x in range(cw):
+                bitand = _read1bppBitmap(andmask, andmaskscan, andmaskhdr[2], x, y)
+                bitxor = _read1bppBitmap(andmask, andmaskscan, andmaskhdr[2], x, y + ch)
+                # The XOR mask for Windows icons is the same as the OS/2 icon's
+                # color mask except that, where the OS/2 icon's XOR mask (the bottom
+                # half of the AND/XOR mask) and its AND mask (the top half) are white,
+                # the Windows icon's XOR mask is white rather than any other color.
+                # See "Bitmap File Format", in the _Presentation Manager Programming
+                # Guide and Reference_.
+                # However, white pixels in an OS/2 icon's or OS/2 cursor's XOR mask
+                # are unusual for color icons and pointers.
+                # Moreover, PNGs don't support color inversions.
+                px = (
+                    white
+                    if (bitand & bitxor) == 1
+                    else _readBitmapAsColorBGR(
+                        colormask, colormaskscan, ch, bpp, x, y, colormaskcolors
+                    )
+                ) + (alpha1 if bitand == 0 else alpha0)
+                setpixelbgralpha(bl, cw, ch, x, y, px)
+        width = cw
+        height = ch
+        ret = bl
+    else:
+        trueheight = andmaskhdr[2] // 2
+        bl = blankimage(andmaskhdr[1], trueheight, alpha=True)
+        blackalpha0 = [0, 0, 0, 0]
+        whitealpha0 = [255, 255, 255, 0]
+        blackalpha1 = [0, 0, 0, 255]
+        whitealpha1 = [255, 255, 255, 255]
+        for y in range(trueheight):
+            for x in range(andmaskhdr[1]):
+                bitand = _read1bppBitmap(andmask, andmaskscan, andmaskhdr[2], x, y)
+                bitxor = _read1bppBitmap(
+                    andmask, andmaskscan, andmaskhdr[2], x, y + trueheight
+                )
+                px = (
+                    (whitealpha1 if bitand == 0 else whitealpha0)
+                    if bitxor == 1
+                    else (blackalpha1 if bitand == 0 else blackalpha0)
+                )
+                setpixelalpha(bl, andmaskhdr[1], trueheight, x, y, px)
+        width = andmaskhdr[1]
+        height = trueheight
+        ret = bl
+    return [ret, width, height]
+
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
@@ -1331,6 +1818,7 @@ def parallaxAvi(
     widthReverse=False,
     heightReverse=False,
     interlacing=False,
+    fps=15,
 ):
     if not image:
         raise ValueError
@@ -1353,7 +1841,42 @@ def parallaxAvi(
             images[i] = a if i % 2 == 0 else b
         if len(images[i]) != width * outputHeight * 3:
             raise ValueError
-    writeavi(destParallax, images, width, outputHeight)
+    writeavi(destParallax, images, width, outputHeight, fps=fps)
+
+# Generates an AVI video file consisting of images arranged
+# in a row or column.  If the source image's width
+# is greater than its height, then each frame's height
+# is the same as the source image's; if less, each
+# frame's width.
+# The source image has the same format returned by the
+# _blankimage_ method with alpha=False.
+# NOTE: Currently, there must be 256 or fewer unique colors used in the image
+# for this method to be successful.
+def animationBitmap(image, width, height, destImage, firstFrame=0, fps=15):
+    frameSize = min(width, height)
+    if frameSize <= 0:
+        raise ValueError
+    animWidth = frameSize if width > height else width
+    animHeight = frameSize if height > width else height
+    images = []
+    for i in range(firstFrame, max(width, height) // frameSize):
+        dst = blankimage(animWidth, animHeight)
+        imageblitex(
+            dst,
+            animWidth,
+            animHeight,
+            0,
+            0,
+            animWidth,
+            animHeight,
+            image,
+            width,
+            height,
+            i * frameSize if width > height else 0,
+            i * frameSize if height > width else 0,
+        )
+        images.append(dst)
+    writeavi(destImage, images, animWidth, animHeight, fps=fps)
 
 def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
     borderedbox(
@@ -2663,28 +3186,69 @@ def graymap(image, width, height, colors=None, alpha=False):
     return image
 
 # Image has the same format returned by the _blankimage_ method with alpha=False.
+# Returns a list describing a color; its elements are the red, green, and blue
+# components, in that order.
 def getpixel(image, width, height, x, y):
     pos = (y * width + x) * 3
     return image[pos : pos + 3]
 
 # Image has the same format returned by the _blankimage_ method with alpha=False.
+# Returns a list describing a color; its elements are the blue, green, and red
+# components, in that order.
+def getpixelbgr(image, width, height, x, y):
+    r = getpixel(image, width, height, x, y)
+    return [r[2], r[1], r[0]]
+
+# Image has the same format returned by the _blankimage_ method with alpha=False.
+# Returns a list describing a color; its elements are the blue, green, red, and alpha
+# components, in that order.
+def getpixelbgralpha(image, width, height, x, y):
+    r = getpixelalpha(image, width, height, x, y)
+    return [r[2], r[1], r[0], r[3]]
+
+# Image has the same format returned by the _blankimage_ method with alpha=False.
+# 'c' is a list describing a color; its elements are the red, green, and blue
+# components, in that order.
 def setpixel(image, width, height, x, y, c):
     pos = (y * width + x) * 3
     image[pos] = c[0]
     image[pos + 1] = c[1]
     image[pos + 2] = c[2]
 
+# Image has the same format returned by the _blankimage_ method with alpha=False.
+# 'c' is a list describing a color; its elements are the blue, green, and
+# red components, in that order.
+def setpixelbgr(image, width, height, x, y, c):
+    pos = (y * width + x) * 3
+    image[pos] = c[2]
+    image[pos + 1] = c[1]
+    image[pos + 2] = c[0]
+
 # Image has the same format returned by the _blankimage_ method with alpha=True.
+# Returns a list describing a color; its elements are the red, green, blue, and
+# alpha components, in that order.
 def getpixelalpha(image, width, height, x, y):
     pos = (y * width + x) * 4
     return image[pos : pos + 4]
 
 # Image has the same format returned by the _blankimage_ method with alpha=True.
+# 'c' is a list describing a color; its elements are the red, green, blue, and
+# alpha components, in that order.
 def setpixelalpha(image, width, height, x, y, c):
     pos = (y * width + x) * 4
     image[pos] = c[0]
     image[pos + 1] = c[1]
     image[pos + 2] = c[2]
+    image[pos + 3] = c[3]
+
+# Image has the same format returned by the _blankimage_ method with alpha=True.
+# 'c' is a list describing a color; its elements are the blue, green, red, and
+# alpha components, in that order.
+def setpixelbgralpha(image, width, height, x, y, c):
+    pos = (y * width + x) * 4
+    image[pos] = c[2]
+    image[pos + 1] = c[1]
+    image[pos + 2] = c[0]
     image[pos + 3] = c[3]
 
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
