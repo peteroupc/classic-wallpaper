@@ -191,7 +191,7 @@ Data descriptors defined here:<br>
 #&nbsp;diamond;&nbsp;if&nbsp;2,&nbsp;an&nbsp;ellipse.&nbsp;&nbsp;Default&nbsp;is&nbsp;1.</span></dd></dl>
  <dl><dt><a name="-backgroundColorUnder"><strong>backgroundColorUnder</strong></a>(bgcolor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;put&nbsp;a&nbsp;background&nbsp;color&nbsp;behind&nbsp;the&nbsp;input&nbsp;image.<br>
 #&nbsp;'bgcolor'&nbsp;is&nbsp;the&nbsp;background&nbsp;color,<br>
-#&nbsp;either&nbsp;None&nbsp;or&nbsp;a&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
+#&nbsp;either&nbsp;None&nbsp;or&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255;&nbsp;default&nbsp;is&nbsp;None,&nbsp;or&nbsp;no&nbsp;background&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
@@ -500,7 +500,7 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;hatch,&nbsp;drawn&nbsp;on&nbsp;every&nbsp;"black"&nbsp;pixel<br>
 #&nbsp;in&nbsp;the&nbsp;pattern's&nbsp;tiling.<br>
-#&nbsp;'pattern'&nbsp;is&nbsp;an&nbsp;8-item&nbsp;array&nbsp;with&nbsp;integers&nbsp;in&nbsp;the&nbsp;interval&nbsp;[0,255].<br>
+#&nbsp;'pattern'&nbsp;is&nbsp;an&nbsp;8-element&nbsp;array&nbsp;with&nbsp;integers&nbsp;in&nbsp;the&nbsp;interval&nbsp;[0,255].<br>
 #&nbsp;The&nbsp;first&nbsp;integer&nbsp;represents&nbsp;the&nbsp;first&nbsp;row&nbsp;from&nbsp;the&nbsp;top;<br>
 #&nbsp;the&nbsp;second,&nbsp;the&nbsp;second&nbsp;row,&nbsp;etc.<br>
 #&nbsp;For&nbsp;each&nbsp;integer,&nbsp;the&nbsp;eight&nbsp;bits&nbsp;from&nbsp;most&nbsp;to&nbsp;least&nbsp;significant&nbsp;represent<br>
@@ -672,7 +672,7 @@ Data descriptors defined here:<br>
     dither=True
 )</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;ImageMagick&nbsp;filter&nbsp;string&nbsp;to&nbsp;generate&nbsp;a&nbsp;desktop&nbsp;background&nbsp;from&nbsp;an&nbsp;image,&nbsp;in&nbsp;three&nbsp;steps.<br>
 #&nbsp;1.&nbsp;If&nbsp;rgb1&nbsp;and&nbsp;rgb2&nbsp;are&nbsp;not&nbsp;nil,&nbsp;converts&nbsp;the&nbsp;input&nbsp;image&nbsp;to&nbsp;grayscale,&nbsp;then&nbsp;translates&nbsp;the&nbsp;grayscale<br>
-#&nbsp;palette&nbsp;to&nbsp;a&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;rgb1&nbsp;for&nbsp;black&nbsp;(a&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
+#&nbsp;palette&nbsp;to&nbsp;a&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;rgb1&nbsp;for&nbsp;black&nbsp;(a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255)&nbsp;and&nbsp;ending&nbsp;at&nbsp;rgb2&nbsp;for&nbsp;white&nbsp;(same&nbsp;format&nbsp;as&nbsp;rgb1).<br>
 #&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;rgb1&nbsp;or&nbsp;rgb2&nbsp;has&nbsp;a&nbsp;length&nbsp;less&nbsp;than&nbsp;3.<br>
@@ -844,7 +844,7 @@ Data descriptors defined here:<br>
 #&nbsp;gray&nbsp;tones,&nbsp;where&nbsp;the&nbsp;blacker,&nbsp;the&nbsp;less&nbsp;transparent.<br>
 #&nbsp;'bgcolor'&nbsp;can&nbsp;be&nbsp;None&nbsp;so&nbsp;that&nbsp;an&nbsp;alpha<br>
 #&nbsp;background&nbsp;is&nbsp;used.&nbsp;&nbsp;Each&nbsp;color&nbsp;is&nbsp;a<br>
-#&nbsp;3-item&nbsp;array&nbsp;of&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,<br>
+#&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,<br>
 #&nbsp;[2,10,255]&nbsp;where&nbsp;each&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255.<br>
 #&nbsp;Inspired&nbsp;by&nbsp;the&nbsp;technique&nbsp;for&nbsp;generating&nbsp;backgrounds&nbsp;in&nbsp;heropatterns.com.</span></dd></dl>
  <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;vertical&nbsp;hatch&nbsp;pattern.<br>

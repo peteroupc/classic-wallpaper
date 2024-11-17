@@ -289,7 +289,7 @@ def _isqrtceil(i):
 
 # Returns an ImageMagick filter string to generate a desktop background from an image, in three steps.
 # 1. If rgb1 and rgb2 are not nil, converts the input image to grayscale, then translates the grayscale
-# palette to a gradient starting at rgb1 for black (a 3-item array of the red,
+# palette to a gradient starting at rgb1 for black (a 3-element array of the red,
 # green, and blue components in that order; e.g., [2,10,255] where each
 # component is from 0 through 255) and ending at rgb2 for white (same format as rgb1).
 # Raises an error if rgb1 or rgb2 has a length less than 3.
@@ -498,7 +498,7 @@ def versatileForeground(foregroundImage):
 # gray tones, where the blacker, the less transparent.
 # 'bgcolor' can be None so that an alpha
 # background is used.  Each color is a
-# 3-item array of the red, green, and blue components in that order; e.g.,
+# 3-element array of the red, green, and blue components in that order; e.g.,
 # [2,10,255] where each component is from 0 through 255.
 # Inspired by the technique for generating backgrounds in heropatterns.com.
 def versatilePattern(fgcolor, bgcolor=None):
@@ -721,7 +721,7 @@ def groupCmm():
 
 # ImageMagick command to put a background color behind the input image.
 # 'bgcolor' is the background color,
-# either None or a 3-item array of the red,
+# either None or a 3-element array of the red,
 # green, and blue components in that order; e.g., [2,10,255] where each
 # component is from 0 through 255; default is None, or no background color.
 def backgroundColorUnder(bgcolor=None):
@@ -1476,6 +1476,363 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
         case _:
             raise ValueError("Bits per pixel not supported")
 
+def _rle8decompress(bitdata, dst, width, height):
+    if (not dst) or (not bitdata):
+        return False
+    szDst = len(dst)
+    x = 0
+    y = 0
+    bits = 0
+    length = 0
+    escape_code = 0
+    linesz = ((width * 8 + 31) >> 5) << 2  # bytes per scanline
+    dstln = 0
+    x = 0
+    y = height - 1
+    while y >= 0:
+        if bits >= len(bitdata):
+            return False
+        length = bitdata[bits]
+        bits += 1
+        if length != 0:  # encoded mode
+            if bits >= len(bitdata):
+                return False
+            color = bitdata[bits]
+            bits += 1
+            while True:
+                if length > 0:
+                    length -= 1
+                    if x >= width:
+                        break
+                else:
+                    break
+                if dstln + x >= szDst:
+                    return False
+                dst[dstln + x] = color
+                x += 1
+        else:  # escape
+            if bits >= len(bitdata):
+                return False
+            escape_code = bitdata[bits]
+            bits += 1
+            match (escape_code):
+                case 0:  # end of line
+                    x = 0
+                    dstln += linesz
+                    y -= 1
+                case 1:  # end of bitmap
+                    return True
+                case 2:  # delta
+                    if bits >= len(bitdata):
+                        return False
+                    x += bitdata[bits]
+                    bits += 1
+                    if bits >= len(bitdata):
+                        return False
+                    dstln += (bitdata[bits]) * linesz
+                    y -= bitdata[bits]
+                    bits += 1
+                case _:
+                    length = escape_code
+                    while length > 0:
+                        length -= 1
+                        if bits >= len(bitdata):
+                            return False
+                        color = bitdata[bits]
+                        bits += 1
+                        if x >= width:
+                            if bits + length > len(bitdata):
+                                return False
+                            bits += length
+                            break
+                        if dstln + x >= szDst:
+                            return False
+                        dst[dstln + x] = color
+                        x += 1
+                    if (escape_code & 1) > 0:
+                        if bits >= len(bitdata):
+                            return False
+                        bits += 1
+    return True
+
+def _rle24decompress(bitdata, dst, width, height):
+    if (not dst) or (not bitdata):
+        return False
+    szDst = len(dst)
+    x = 0
+    y = 0
+    bits = 0
+    length = 0
+    escape_code = 0
+    linesz = ((width * 24 + 31) >> 5) << 2  # bytes per scanline
+    dstln = 0
+    x = 0
+    y = height - 1
+    while y >= 0:
+        if bits >= len(bitdata):
+            return False
+        length = bitdata[bits]
+        bits += 1
+        if length != 0:  # encoded mode
+            if bits + 2 >= len(bitdata):
+                return False
+            color = bitdata[bits]
+            color1 = bitdata[bits + 1]
+            color2 = bitdata[bits + 2]
+            bits += 3
+            while True:
+                if length > 0:
+                    length -= 1
+                    if x >= width:
+                        break
+                else:
+                    break
+                if dstln + x * 3 + 2 >= szDst:
+                    return False
+                dst[dstln + x * 3] = color
+                dst[dstln + x * 3 + 1] = color1
+                dst[dstln + x * 3 + 2] = color2
+                x += 1
+        else:  # escape
+            if bits >= len(bitdata):
+                return False
+            escape_code = bitdata[bits]
+            bits += 1
+            match (escape_code):
+                case 0:  # end of line
+                    x = 0
+                    dstln += linesz
+                    y -= 1
+                case 1:  # end of bitmap
+                    return True
+                case 2:  # delta
+                    if bits >= len(bitdata):
+                        return False
+                    x += bitdata[bits]
+                    bits += 1
+                    if bits >= len(bitdata):
+                        return False
+                    dstln += (bitdata[bits]) * 3 * linesz
+                    y -= bitdata[bits]
+                    bits += 1
+                case _:
+                    length = escape_code
+                    while length > 0:
+                        length -= 1
+                        if bits + 2 >= len(bitdata):
+                            return False
+                        color = bitdata[bits]
+                        color1 = bitdata[bits + 1]
+                        color2 = bitdata[bits + 2]
+                        bits += 3
+                        if x >= width:
+                            if bits + length * 3 > len(bitdata):
+                                return False
+                            bits += length * 3
+                            break
+                        if dstln + x * 3 + 2 >= szDst:
+                            return False
+                        dst[dstln + x * 3] = color
+                        dst[dstln + x * 3 + 1] = color1
+                        dst[dstln + x * 3 + 2] = color2
+                        x += 1
+                    if (escape_code & 1) > 0:
+                        if bits >= len(bitdata):
+                            return False
+                        bits += 1
+    return True
+
+def _createhuffctx(bitdata, dst, width, height):
+    linesz = ((width + 31) >> 5) << 2  # bytes per scanline
+    return [bitdata, dst, width, height, 0, 0, 0, linesz]
+
+def _nexthuffcode(ctx):
+    raise NotImplementedError
+
+def _isnontermcode(code):
+    raise NotImplementedError
+
+def _istermcode(code):
+    raise NotImplementedError
+
+def _isstartcode(code):
+    raise NotImplementedError
+
+def _codebitcount(code):
+    raise NotImplementedError
+
+def _newscan(ctx, y):
+    ctx[6] = 0
+    ctx[4] = (ctx[3] - 1 - y) * ctx[7]
+
+def _writebitstodest(ctx, bit, count):
+    dst = ctx[1]
+    if ctx[6] + count > ctx[2]:  # would exceed width
+        return False
+    ctx[6] += count
+    i = 0
+    while i < count:
+        if ctx[4] >= len(dst):
+            return False
+        if i + 8 < count and ctx[5] == 0:
+            # fill whole byte
+            dst[ctx[4]] = 0 if bit == 0 else 0xFF
+            ctx[5] += 8
+            i += 8
+        elif bit == 1:
+            dst[ctx[4]] |= 1 << (7 - ctx[5])
+            ctx[5] += 1
+            i += 1
+        else:
+            dst[ctx[4]] &= ~(1 << (7 - ctx[5]))
+            ctx[5] += 1
+            i += 1
+        if ctx[5] >= 8:
+            ctx[4] += 1
+            ctx[5] = 0
+    return True
+
+def _huffmandecompress(bitdata, dst, width, height):
+    if (not dst) or (not bitdata):
+        return False
+    try:
+        linesz = ((width + 31) >> 5) << 2  # bytes per scanline
+        ctx = _createhuffctx(bitdata, dst, width, height)
+        starting = True
+        consecstartcodes = 0
+        bit = 0
+        y = height
+        bitcount = 0
+        while True:
+            code = _nexthuffcode(ctx)
+            if starting and not _isstartcode(code):
+                return False
+            if _istermcode(code):
+                if y < 0:
+                    return False
+                consecstartcodes = 0
+                bitcount += _codebitcount(code)
+                if not _writebitstodest(ctx, bit, bitcount):
+                    return False
+                bitcount = 0
+                bit = 1 - bit
+            elif _isnontermcode(code):
+                if y < 0:
+                    return False
+                consecstartcodes = 0
+                bitcount += _codebitcount(code)
+            elif _isstartcode(code):
+                y -= 1
+                if y >= 0:
+                    _newscan(ctx, y)
+                consecstartcodes += 1
+                if consecstartcodes >= 6:
+                    return True
+            starting = False
+    except NotImplementedError:
+        return False
+
+def _rle4decompress(bitdata, dst, width, height):
+    if (not dst) or (not bitdata):
+        return False
+    szDst = len(dst)
+    x = 0
+    y = height - 1
+    c = 0
+    length = 0
+    escapecode = 0
+    begin = 0
+    bits = 0
+    linesz = ((width * 4 + 31) >> 5) << 2  # bytes per scanline
+    dstln = 0
+    masks = [0xF0, 0x0F]
+    shifts = [4, 0]
+    lastbit = 0
+    while y >= 0:
+        if bits >= len(bitdata):
+            return False
+        length = bitdata[bits]
+        bits += 1
+        if length > 0:  # encoded
+            if bits >= len(bitdata):
+                return False
+            c = bitdata[bits]
+            bits += 1
+            while length > 0:
+                length -= 1
+                if x >= width:
+                    break
+                lastbit = (x) & 1
+                if dstln + ((x) >> 1) >= szDst:
+                    return False
+                dst[dstln + ((x) >> 1)] &= ~masks[lastbit]
+                dst[dstln + ((x) >> 1)] |= (c >> 4) << shifts[lastbit]
+                (x) += 1
+                if length == 0:
+                    break
+                length -= 1
+                if x >= width:
+                    break
+                lastbit = (x) & 1
+                if dstln + ((x) >> 1) >= szDst:
+                    return False
+                dst[dstln + ((x) >> 1)] &= ~masks[lastbit]
+                dst[dstln + ((x) >> 1)] |= (c & 0x0F) << shifts[lastbit]
+                (x) += 1
+        else:
+            if bits >= len(bitdata):
+                return False
+            length = bitdata[bits]
+            bits += 1
+            match length:
+                case 0:  # end of line
+                    if x != width:
+                        return False
+                    x = 0
+                    y -= 1
+                    dstln += linesz
+                case 1:  # end of bitmap
+                    return True
+                case 2:  # delta
+                    if bits >= len(bitdata):
+                        return False
+                    x += bitdata[bits]
+                    bits += 1
+                    if bits >= len(bitdata):
+                        return False
+                    dstln += bitdata[bits] * linesz
+                    y -= bitdata[bits]
+                    bits += 1
+                case _:  # absolute
+                    escapecode = length
+                    while length > 0:
+                        length -= 1
+                        if bits >= len(bitdata):
+                            return False
+                        c = bitdata[bits]
+                        bits += 1
+                        if x < width:
+                            lastbit = (x) & 1
+                            if dstln + ((x) >> 1) >= szDst:
+                                return False
+                            dst[dstln + ((x) >> 1)] &= ~masks[lastbit]
+                            dst[dstln + ((x) >> 1)] |= (c >> 4) << shifts[lastbit]
+                            (x) += 1
+                        if length == 0:
+                            break
+                        length -= 1
+                        if x < width:
+                            lastbit = (x) & 1
+                            if dstln + ((x) >> 1) >= szDst:
+                                return False
+                            dst[dstln + ((x) >> 1)] &= ~masks[lastbit]
+                            dst[dstln + ((x) >> 1)] |= (c & 0x0F) << shifts[lastbit]
+                            (x) += 1
+                    if ((bits - begin) & 1) != 0:
+                        if bits >= len(bitdata):
+                            return False
+                        bits += 1
+
 def _readicon(f):
     unusual = False
     extra = ""
@@ -1504,7 +1861,8 @@ def _readicon(f):
         hotspotY = andmaskinfo[2]  # hotspot is valid for icons and pointers
     andmaskhdr = struct.unpack("<L", f.read(4))
     andpalette = 0
-    sizeImage = 0
+    andcompression = 0
+    andsizeImage = 0
     if andmaskhdr[0] == 0x0C:
         andmaskhdr += struct.unpack("<HHHH", f.read(8))
         if andmaskhdr[4] <= 8:
@@ -1515,15 +1873,24 @@ def _readicon(f):
     elif andmaskhdr[0] >= 40:
         andmaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
         slack = f.read(andmaskhdr[0] - 40)
-        sizeImage = andmaskhdr[6]
+        andsizeImage = andmaskhdr[6]
         if andmaskhdr[4] <= 8:
             andpalette = 1 << andmaskhdr[4]
         if andmaskhdr[4] <= 8 and andmaskhdr[9] != 0:  # biClrUsed
             andpalette = min(andpalette, andmaskhdr[9])
-        if andmaskhdr[5] != 0:
-            print("unsupported compression")
+        andcompression = andmaskhdr[5]
+        if andcompression > 4:
+            print("unsupported compression: %d" % (andcompression))
             return None
-        if andmaskhdr[5] != 0 or andmaskhdr[7] != 0 or andmaskhdr[8] != 0:
+        if (
+            (andcompression == 1 and andmaskhdr[4] != 8)
+            or (andcompression == 2 and andmaskhdr[4] != 4)
+            or (andcompression == 4 and andmaskhdr[4] != 24)
+            or (andcompression == 3 and andmaskhdr[4] != 1)
+        ):
+            print("unsupported compression: %d" % (andcompression))
+            return None
+        if andmaskhdr[7] != 0 or andmaskhdr[8] != 0:
             # resolutions seen include 3622x3622 pixels per meter (about 92 dpi)
             # Also seen: 2833x2833; 2834x2834; 2667x2667; 2667x2000 (EGA); 2667x1111 (CGA)
             # print(
@@ -1541,6 +1908,8 @@ def _readicon(f):
             return None
     elif andmaskhdr[0] >= 0x10:
         andmaskhdr += struct.unpack("<llHH", f.read(12))
+        if andmaskhdr[4] <= 8:
+            andpalette = 1 << andmaskhdr[4]
         slack = f.read(andmaskhdr[0] - 0x10)
         allzeros = True
         for i in range(len(slack)):
@@ -1558,7 +1927,8 @@ def _readicon(f):
     if (isIcon or isPointer) and andmaskhdr[2] % 2 != 0:
         raise ValueError("mask height is odd")
     if andmaskhdr[3] != 1:
-        raise ValueError("unsupported no. of planes")
+        print("unsupported no. of planes")
+        return None
     if isBitmap:
         if (
             andmaskhdr[4] != 1
@@ -1566,7 +1936,7 @@ def _readicon(f):
             and andmaskhdr[4] != 8
             and andmaskhdr[4] != 24
         ):
-            print("unsupported bits per pixel: %d" % (colorbpp))
+            print("unsupported bits per pixel: %d" % (andmaskhdr[4]))
             return None
     else:
         if andmaskhdr[4] != 1:  # Only 1-bpp AND/XOR masks are supported
@@ -1574,15 +1944,14 @@ def _readicon(f):
         if andpalette != 2:
             print("unusual palette size: %d" % (andpalette))
             unusual = None
+    if andmaskhdr[1] < 0:
+        return None
     andcolortable = f.tell()
     f.seek(andcolortable + andpalette * (3 if andmaskhdr[0] <= 0x0C else 4))
     w = andmaskhdr[1]
     h = andmaskhdr[2]
-    andmaskscan = ((((w * andmaskhdr[4]) + 7) // 8 + 3) // 4) * 4
+    andmaskscan = ((w * andmaskhdr[4] + 31) >> 5) << 2
     andmaskbits = andmaskscan * h
-    if sizeImage != 0 and andmaskbits != sizeImage:
-        print("unusual sizeImage")
-        return None
     if isColor:
         # Read info on the color mask
         newtag = f.read(2)
@@ -1595,8 +1964,9 @@ def _readicon(f):
         if (not isBitmap) and hotspotY != colormaskinfo[2]:
             raise ValueError
         o = f.tell()
+        colorcompression = 0
         colorpalette = 0
-        sizeImage = 0
+        colorsizeImage = 0
         colormaskhdr = struct.unpack("<L", f.read(4))
         if colormaskhdr[0] == 0x0C:
             colormaskhdr += struct.unpack("<HHHH", f.read(8))
@@ -1608,15 +1978,24 @@ def _readicon(f):
         elif colormaskhdr[0] >= 40:
             colormaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
             slack = f.read(colormaskhdr[0] - 40)
-            sizeImage = colormaskhdr[6]
+            colorsizeImage = colormaskhdr[6]
+            colorcompression = colormaskhdr[5]
             if colormaskhdr[4] <= 8:
                 colorpalette = 1 << colormaskhdr[4]
             if colormaskhdr[4] <= 8 and colormaskhdr[9] != 0:  # biClrUsed
                 colorpalette = min(colorpalette, colormaskhdr[9])
-            if andmaskhdr[5] != 0:
-                print("unsupported compression")
+            if colorcompression > 4:
+                print("unsupported compression: %d" % (colorcompression))
                 return None
-            if colormaskhdr[5] != 0 or colormaskhdr[7] != 0 or colormaskhdr[8] != 0:
+            if (
+                (colorcompression == 1 and colormaskhdr[4] != 8)
+                or (colorcompression == 2 and colormaskhdr[4] != 4)
+                or (colorcompression == 4 and colormaskhdr[4] != 24)
+                or (colorcompression == 3 and colormaskhdr[4] != 1)
+            ):
+                print("unsupported compression: %d" % (andcompression))
+                return None
+            if colormaskhdr[7] != 0 or colormaskhdr[8] != 0:
                 # print(
                 #    "nonzero compression or resolution: %d %d %d"
                 #    % (colormaskhdr[5], colormaskhdr[7], colormaskhdr[8])
@@ -1639,6 +2018,8 @@ def _readicon(f):
             if not allzeros:
                 print("nonzero slack")
                 return None
+        if colormaskhdr[1] < 0:
+            return None
         colorbpp = colormaskhdr[4]
         if colormaskhdr[2] < 0:
             print("top-down bitmaps not supported")
@@ -1667,11 +2048,8 @@ def _readicon(f):
         colorcolortable = f.tell()
         w = colormaskhdr[1]
         h = colormaskhdr[2]
-        colormaskscan = ((((w * colorbpp) + 7) // 8 + 3) // 4) * 4
+        colormaskscan = ((w * colorbpp + 31) >> 5) << 2
         colormaskbits = colormaskscan * h
-        if sizeImage != 0 and colormaskbits != sizeImage:
-            print("unusual sizeImage")
-            return None
     realHeight = andmaskhdr[2] if isBitmap else andmaskhdr[2] // 2
     # hotspot Y counts from the bottom left row up, so adjust
     # for top-down convention
@@ -1690,12 +2068,12 @@ def _readicon(f):
     # is effectively fixed at black and white.
     # It may be, but I am not sure, that OS/2
     # ignores the color table of icons' and pointers' AND/XOR mask.
+    andmaskcolors = []
     if not (isIcon or isPointer):
         # Gather bitmap's color table if not an icon or pointer
         tablesize = 2
         if andpalette > 0:
             f.seek(andcolortable)
-            andmaskcolors = []
             cts = 3 if andmaskhdr[0] <= 0x0C else 4
             for i in range(andpalette):
                 clr = f.read(3)  # BGR color
@@ -1708,7 +2086,34 @@ def _readicon(f):
                 clr = bytes([0, 0, 0])
                 andmaskcolors.append(clr)
     f.seek(andmaskinfo[3])
-    andmask = f.read(andmaskbits)
+    sz = andsizeImage if andsizeImage > 0 else andmaskbits
+    andmask = f.read(sz)
+    if len(andmask) != sz:
+        print("Failure: %d %d" % (len(andmask), sz))
+        return None
+    if andcompression >= 0:
+        deco = [0 for i in range(andmaskbits)]
+        if andcompression == 1 and not _rle8decompress(
+            andmask, deco, andmaskhdr[1], andmaskhdr[2]
+        ):
+            print("Failed to decompress")
+            return None
+        elif andcompression == 2 and not _rle4decompress(
+            andmask, deco, andmaskhdr[1], andmaskhdr[2]
+        ):
+            print("Failed to decompress")
+            return None
+        elif andcompression == 3 and not _huffmandecompress(
+            andmask, deco, andmaskhdr[1], andmaskhdr[2]
+        ):
+            print("Failed to decompress")
+            return None
+        elif andcompression == 4 and not _rle24decompress(
+            andmask, deco, andmaskhdr[1], andmaskhdr[2]
+        ):
+            print("Failed to decompress")
+            return None
+        andmask = bytes(deco)
     if len(andmask) != andmaskbits:
         print("Failure: %d %d" % (len(andmask), andmaskbits))
         return None
@@ -1729,7 +2134,34 @@ def _readicon(f):
                 clr = f.read(bytes([0, 0, 0]))
                 colormaskcolors.append(clr)
         f.seek(colormaskinfo[3])
-        colormask = f.read(colormaskbits)
+        sz = colorsizeImage if colorsizeImage > 0 else colormaskbits
+        colormask = f.read(sz)
+        if len(colormask) != sz:
+            print("Failure: %d %d" % (len(andmask), sz))
+            return None
+        if colorcompression >= 0:
+            deco = [0 for i in range(colormaskbits)]
+            if colorcompression == 1 and not _rle8decompress(
+                colormask, deco, colormaskhdr[1], colormaskhdr[2]
+            ):
+                print("Failed to decompress")
+                return None
+            elif colorcompression == 2 and not _rle4decompress(
+                colormask, deco, colormaskhdr[1], colormaskhdr[2]
+            ):
+                print("Failed to decompress")
+                return None
+            elif colorcompression == 3 and not _huffmandecompress(
+                colormask, deco, colormaskhdr[1], colormaskhdr[2]
+            ):
+                print("Failed to decompress")
+                return None
+            elif colorcompression == 4 and not _rle24decompress(
+                colormask, deco, colormaskhdr[1], colormaskhdr[2]
+            ):
+                print("Failed to decompress")
+                return None
+            colormask = bytes(deco)
         if len(colormask) != colormaskbits:
             print("Failure: %d %d" % (len(colormask), colormaskbits))
             return None
@@ -1887,7 +2319,7 @@ def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 # 'color' is the color of the hatch, drawn on every "black" pixel
 # in the pattern's tiling.
-# 'pattern' is an 8-item array with integers in the interval [0,255].
+# 'pattern' is an 8-element array with integers in the interval [0,255].
 # The first integer represents the first row from the top;
 # the second, the second row, etc.
 # For each integer, the eight bits from most to least significant represent
