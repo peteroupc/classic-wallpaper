@@ -184,7 +184,8 @@ Data descriptors defined here:<br>
     expo=1,
     shiftImageBg=False
 )</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;argyle&nbsp;pattern&nbsp;from&nbsp;two&nbsp;images&nbsp;of&nbsp;the<br>
-#&nbsp;same&nbsp;size.&nbsp;&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.&nbsp;&nbsp;'backgroundImage'&nbsp;must&nbsp;be&nbsp;tileable&nbsp;if&nbsp;shiftImageBg=False;<br>
+#&nbsp;same&nbsp;size.&nbsp;&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_<br>
+#&nbsp;method&nbsp;with&nbsp;alpha=False.&nbsp;&nbsp;'backgroundImage'&nbsp;must&nbsp;be&nbsp;tileable&nbsp;if&nbsp;shiftImageBg=False;<br>
 #&nbsp;'foregroundImage'&nbsp;need&nbsp;not&nbsp;be&nbsp;tileable.<br>
 #&nbsp;'expo'&nbsp;is&nbsp;a&nbsp;parameter&nbsp;that&nbsp;determines&nbsp;the&nbsp;shape&nbsp;in&nbsp;the&nbsp;middle&nbsp;of&nbsp;the&nbsp;image,<br>
 #&nbsp;and&nbsp;can&nbsp;be&nbsp;any&nbsp;number&nbsp;greater&nbsp;than&nbsp;0.&nbsp;If&nbsp;1,&nbsp;the&nbsp;shape&nbsp;resembles&nbsp;a<br>
@@ -205,10 +206,13 @@ Data descriptors defined here:<br>
 #&nbsp;first&nbsp;element&nbsp;is&nbsp;the&nbsp;color's&nbsp;red&nbsp;component;&nbsp;the&nbsp;second,&nbsp;its&nbsp;blue&nbsp;component;<br>
 #&nbsp;the&nbsp;third,&nbsp;its&nbsp;red&nbsp;component;&nbsp;the&nbsp;fourth,&nbsp;if&nbsp;present,&nbsp;is&nbsp;the&nbsp;color's&nbsp;alpha<br>
 #&nbsp;component&nbsp;or&nbsp;_opacity_&nbsp;(0&nbsp;if&nbsp;the&nbsp;color&nbsp;is&nbsp;transparent;&nbsp;255&nbsp;if&nbsp;opaque;&nbsp;otherwise,<br>
-#&nbsp;the&nbsp;color&nbsp;is&nbsp;translucent&nbsp;or&nbsp;semitransparent).&nbsp;&nbsp;Each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;as<br>
-#&nbsp;low&nbsp;as&nbsp;0&nbsp;and&nbsp;as&nbsp;high&nbsp;as&nbsp;255.<br>
+#&nbsp;the&nbsp;color&nbsp;is&nbsp;translucent&nbsp;or&nbsp;semitransparent).&nbsp;&nbsp;Each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer<br>
+#&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;In&nbsp;this&nbsp;format,&nbsp;lower-intensity&nbsp;values&nbsp;are<br>
+#&nbsp;generally&nbsp;"darker",&nbsp;higher-intensity&nbsp;values&nbsp;"lighter",&nbsp;so&nbsp;that&nbsp;[0,0,0,255]&nbsp;(4&nbsp;bytes&nbsp;per&nbsp;pixel)<br>
+#&nbsp;or&nbsp;[0,0,0]&nbsp;(3&nbsp;bytes&nbsp;per&nbsp;pixel)&nbsp;is&nbsp;"black",&nbsp;and&nbsp;[255,255,255,255]&nbsp;or&nbsp;[255,255,255]&nbsp;is&nbsp;"white".<br>
 #&nbsp;If&nbsp;'color'&nbsp;is&nbsp;None,&nbsp;uses&nbsp;[255,255,255,255],&nbsp;or&nbsp;white.<br>
-#&nbsp;If&nbsp;'alpha'&nbsp;is&nbsp;True,&nbsp;generates&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image;&nbsp;if&nbsp;False,&nbsp;generates&nbsp;a&nbsp;3-byte-per-pixel&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
+#&nbsp;If&nbsp;'alpha'&nbsp;is&nbsp;True,&nbsp;generates&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image;&nbsp;if&nbsp;False,&nbsp;generates&nbsp;a<br>
+#&nbsp;3-byte-per-pixel&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-borderedbox"><strong>borderedbox</strong></a>(
     image,
     width,
@@ -292,7 +296,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-classiccolors2"><strong>classiccolors2</strong></a>()</dt><dd><span class="code">#&nbsp;colors&nbsp;in&nbsp;<a href="#-classiccolors">classiccolors</a>()&nbsp;and&nbsp;their&nbsp;"half-and-half"&nbsp;versions</span></dd></dl>
  <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;'blackColor'&nbsp;and&nbsp;ending&nbsp;at&nbsp;'whiteColor'.<br>
 #&nbsp;'blackColor'&nbsp;and&nbsp;'whiteColor'&nbsp;are&nbsp;each&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.</span></dd></dl>
- <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;gray&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;black&nbsp;background.</span></dd></dl>
+ <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;gray&nbsp;(128,128,128)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;black&nbsp;(0,0,0)&nbsp;background.</span></dd></dl>
  <dl><dt><a name="-diamondTiled"><strong>diamondTiled</strong></a>(bgcolor=None, kind=0)</dt><dd><span class="code">#&nbsp;kind=0:&nbsp;image&nbsp;drawn&nbsp;in&nbsp;middle&nbsp;and&nbsp;padded<br>
 #&nbsp;kind=1:&nbsp;brick&nbsp;drawn&nbsp;at&nbsp;top<br>
 #&nbsp;kind=2:&nbsp;brick&nbsp;drawn&nbsp;at&nbsp;left</span></dd></dl>
@@ -428,7 +432,8 @@ Data descriptors defined here:<br>
 #&nbsp;appearing&nbsp;raised&nbsp;above&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper<br>
 #&nbsp;left&nbsp;corner.<br>
 #&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'hiltColor',&nbsp;the&nbsp;outline&nbsp;instead&nbsp;appears&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;into&nbsp;the<br>
-#&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.</span></dd></dl>
+#&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>
+#&nbsp;In&nbsp;this&nbsp;description,&nbsp;lower-intensity&nbsp;values&nbsp;are&nbsp;generally&nbsp;"darker",&nbsp;higher-intensity&nbsp;values&nbsp;"lighter".</span></dd></dl>
  <dl><dt><a name="-endingColumnsAreMirrored"><strong>endingColumnsAreMirrored</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Returns&nbsp;True&nbsp;if&nbsp;width&nbsp;or&nbsp;height&nbsp;is&nbsp;0&nbsp;or&nbsp;if:<br>
 #&nbsp;-&nbsp;The&nbsp;image's&nbsp;first&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror<br>
 #&nbsp;of&nbsp;its&nbsp;second&nbsp;half,&nbsp;and...<br>
@@ -498,7 +503,7 @@ Data descriptors defined here:<br>
     wraparound=True
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;hatched&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
-#&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;hatch,&nbsp;drawn&nbsp;on&nbsp;every&nbsp;"black"&nbsp;pixel<br>
+#&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;hatch,&nbsp;drawn&nbsp;on&nbsp;every&nbsp;"black"&nbsp;pixel&nbsp;(defined&nbsp;below)<br>
 #&nbsp;in&nbsp;the&nbsp;pattern's&nbsp;tiling.<br>
 #&nbsp;'pattern'&nbsp;is&nbsp;an&nbsp;8-element&nbsp;array&nbsp;with&nbsp;integers&nbsp;in&nbsp;the&nbsp;interval&nbsp;[0,255].<br>
 #&nbsp;The&nbsp;first&nbsp;integer&nbsp;represents&nbsp;the&nbsp;first&nbsp;row&nbsp;from&nbsp;the&nbsp;top;<br>
@@ -595,7 +600,7 @@ Data descriptors defined here:<br>
 #&nbsp;bit&nbsp;is&nbsp;inverted&nbsp;(the&nbsp;result&nbsp;is&nbsp;1&nbsp;if&nbsp;the&nbsp;destination&nbsp;bit&nbsp;is&nbsp;0,&nbsp;and&nbsp;vice&nbsp;versa);<br>
 #&nbsp;if&nbsp;2,&nbsp;the&nbsp;result&nbsp;is&nbsp;the&nbsp;destination&nbsp;bit&nbsp;(the&nbsp;destination&nbsp;is&nbsp;left&nbsp;unchanged);<br>
 #&nbsp;if&nbsp;3,&nbsp;the&nbsp;result&nbsp;is&nbsp;1.&nbsp;For&nbsp;example,&nbsp;suppose&nbsp;the&nbsp;source&nbsp;and<br>
-#&nbsp;destination&nbsp;images&nbsp;are&nbsp;black-and-white,&nbsp;and<br>
+#&nbsp;destination&nbsp;images&nbsp;are&nbsp;black-and-white&nbsp;(where&nbsp;0-bits&nbsp;represent&nbsp;black,&nbsp;and&nbsp;1-bits&nbsp;white),&nbsp;and<br>
 #&nbsp;suppose&nbsp;the&nbsp;binary&nbsp;raster&nbsp;operation&nbsp;is&nbsp;6&nbsp;(or&nbsp;the&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;is&nbsp;0x66).<br>
 #&nbsp;Then,&nbsp;where&nbsp;the&nbsp;source&nbsp;is&nbsp;white&nbsp;(source&nbsp;bit&nbsp;is&nbsp;1),&nbsp;the&nbsp;destination&nbsp;color&nbsp;is&nbsp;inverted<br>
 #&nbsp;(since&nbsp;the&nbsp;high&nbsp;2&nbsp;bits&nbsp;give&nbsp;1),&nbsp;and&nbsp;where&nbsp;the&nbsp;source&nbsp;is&nbsp;black&nbsp;(source&nbsp;bit&nbsp;is&nbsp;0),&nbsp;the<br>
@@ -650,7 +655,7 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;first&nbsp;image&nbsp;should&nbsp;be&nbsp;displayed&nbsp;at&nbsp;even-numbered&nbsp;frames;&nbsp;the&nbsp;second,<br>
 #&nbsp;odd-numbered.</span></dd></dl>
- <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;light&nbsp;gray&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;white&nbsp;background.</span></dd></dl>
+ <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;light&nbsp;gray&nbsp;(192,192,192)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;white&nbsp;(255,255,255)&nbsp;background.</span></dd></dl>
  <dl><dt><a name="-linedraw"><strong>linedraw</strong></a>(
     image,
     width,
@@ -672,9 +677,9 @@ Data descriptors defined here:<br>
     dither=True
 )</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;ImageMagick&nbsp;filter&nbsp;string&nbsp;to&nbsp;generate&nbsp;a&nbsp;desktop&nbsp;background&nbsp;from&nbsp;an&nbsp;image,&nbsp;in&nbsp;three&nbsp;steps.<br>
 #&nbsp;1.&nbsp;If&nbsp;rgb1&nbsp;and&nbsp;rgb2&nbsp;are&nbsp;not&nbsp;nil,&nbsp;converts&nbsp;the&nbsp;input&nbsp;image&nbsp;to&nbsp;grayscale,&nbsp;then&nbsp;translates&nbsp;the&nbsp;grayscale<br>
-#&nbsp;palette&nbsp;to&nbsp;a&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;rgb1&nbsp;for&nbsp;black&nbsp;(a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
+#&nbsp;palette&nbsp;to&nbsp;a&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;rgb1&nbsp;for&nbsp;grayscale&nbsp;level&nbsp;0&nbsp;(a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
-#&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255)&nbsp;and&nbsp;ending&nbsp;at&nbsp;rgb2&nbsp;for&nbsp;white&nbsp;(same&nbsp;format&nbsp;as&nbsp;rgb1).<br>
+#&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255)&nbsp;and&nbsp;ending&nbsp;at&nbsp;rgb2&nbsp;for&nbsp;grayscale&nbsp;level&nbsp;255&nbsp;(same&nbsp;format&nbsp;as&nbsp;rgb1).<br>
 #&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;rgb1&nbsp;or&nbsp;rgb2&nbsp;has&nbsp;a&nbsp;length&nbsp;less&nbsp;than&nbsp;3.<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;is&nbsp;the&nbsp;input&nbsp;for&nbsp;the&nbsp;next&nbsp;step.<br>
 #&nbsp;2.&nbsp;If&nbsp;hue&nbsp;is&nbsp;not&nbsp;0,&nbsp;performs&nbsp;a&nbsp;hue&nbsp;shift,&nbsp;in&nbsp;degrees&nbsp;(-180&nbsp;to&nbsp;180),&nbsp;of&nbsp;the&nbsp;input&nbsp;image.<br>
@@ -687,7 +692,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-magickgradientditherfilterrandom"><strong>magickgradientditherfilterrandom</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-monoborder"><strong>monoborder</strong></a>(helper, x0, y0, x1, y1, clientAreaColor, windowFrameColor)</dt></dl>
- <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)<br>
+ <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
 #&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-noiseimage"><strong>noiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
@@ -722,7 +727,7 @@ Data descriptors defined here:<br>
 #&nbsp;Random&nbsp;beginning&nbsp;color.&nbsp;&nbsp;Palette&nbsp;is&nbsp;optional;<br>
 #&nbsp;if&nbsp;not&nbsp;None&nbsp;(the&nbsp;default),&nbsp;the&nbsp;beginning&nbsp;and&nbsp;end&nbsp;colors&nbsp;are&nbsp;limited<br>
 #&nbsp;to&nbsp;those&nbsp;in&nbsp;the&nbsp;given&nbsp;palette.</span></dd></dl>
- <dl><dt><a name="-randomPalettedFromThreeGrays"><strong>randomPalettedFromThreeGrays</strong></a>(image, width, height, palette=None)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0),(128,128,128),(255,255,255)<br>
+ <dl><dt><a name="-randomPalettedFromThreeGrays"><strong>randomPalettedFromThreeGrays</strong></a>(image, width, height, palette=None)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
 #&nbsp;Default&nbsp;for&nbsp;palette&nbsp;is&nbsp;VGA&nbsp;palette&nbsp;(<a href="#-classiccolors">classiccolors</a>())<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randomRotated"><strong>randomRotated</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
@@ -839,9 +844,9 @@ Data descriptors defined here:<br>
 #&nbsp;be&nbsp;colored.<br>
 #&nbsp;'fgcolor'&nbsp;and&nbsp;'bgcolor'&nbsp;are&nbsp;the&nbsp;foreground&nbsp;and&nbsp;background&nbsp;color,&nbsp;respectively.<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;this&nbsp;command&nbsp;will&nbsp;be&nbsp;applied&nbsp;to&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;an&nbsp;SVG&nbsp;file<br>
-#&nbsp;which&nbsp;must&nbsp;be&nbsp;black&nbsp;in&nbsp;the&nbsp;nontransparent&nbsp;areas&nbsp;(given&nbsp;that&nbsp;ImageMagick&nbsp;renders&nbsp;the<br>
-#&nbsp;SVG&nbsp;on&nbsp;a&nbsp;white&nbsp;background&nbsp;by&nbsp;default)&nbsp;or&nbsp;a&nbsp;raster&nbsp;image&nbsp;with&nbsp;only<br>
-#&nbsp;gray&nbsp;tones,&nbsp;where&nbsp;the&nbsp;blacker,&nbsp;the&nbsp;less&nbsp;transparent.<br>
+#&nbsp;which&nbsp;must&nbsp;be&nbsp;black&nbsp;(all&nbsp;zeros)&nbsp;in&nbsp;the&nbsp;nontransparent&nbsp;areas&nbsp;(given&nbsp;that&nbsp;ImageMagick&nbsp;renders&nbsp;the<br>
+#&nbsp;SVG,&nbsp;by&nbsp;default,&nbsp;on&nbsp;a&nbsp;background&nbsp;colored&nbsp;white,&nbsp;or&nbsp;(255,255,255))&nbsp;or&nbsp;a&nbsp;raster&nbsp;image&nbsp;with&nbsp;only<br>
+#&nbsp;gray&nbsp;tones,&nbsp;where&nbsp;the&nbsp;closer&nbsp;the&nbsp;gray&nbsp;level&nbsp;is&nbsp;to&nbsp;0,&nbsp;the&nbsp;less&nbsp;transparent.<br>
 #&nbsp;'bgcolor'&nbsp;can&nbsp;be&nbsp;None&nbsp;so&nbsp;that&nbsp;an&nbsp;alpha<br>
 #&nbsp;background&nbsp;is&nbsp;used.&nbsp;&nbsp;Each&nbsp;color&nbsp;is&nbsp;a<br>
 #&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,<br>

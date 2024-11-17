@@ -289,9 +289,9 @@ def _isqrtceil(i):
 
 # Returns an ImageMagick filter string to generate a desktop background from an image, in three steps.
 # 1. If rgb1 and rgb2 are not nil, converts the input image to grayscale, then translates the grayscale
-# palette to a gradient starting at rgb1 for black (a 3-element array of the red,
+# palette to a gradient starting at rgb1 for grayscale level 0 (a 3-element array of the red,
 # green, and blue components in that order; e.g., [2,10,255] where each
-# component is from 0 through 255) and ending at rgb2 for white (same format as rgb1).
+# component is from 0 through 255) and ending at rgb2 for grayscale level 255 (same format as rgb1).
 # Raises an error if rgb1 or rgb2 has a length less than 3.
 # The output image is the input for the next step.
 # 2. If hue is not 0, performs a hue shift, in degrees (-180 to 180), of the input image.
@@ -463,6 +463,7 @@ def unavailable(
 # left corner.
 # If 'fgColor' is darker than 'hiltColor', the outline instead appears engraved, that is, sunken into the
 # background, given the light source just described.
+# In this description, lower-intensity values are generally "darker", higher-intensity values "lighter".
 def emboss(bgColor=None, fgColor=None, hiltColor=None):
     return unavailable(
         bgColor if bgColor else [128, 128, 128],
@@ -493,9 +494,9 @@ def versatileForeground(foregroundImage):
 # be colored.
 # 'fgcolor' and 'bgcolor' are the foreground and background color, respectively.
 # The input image this command will be applied to is assumed to be an SVG file
-# which must be black in the nontransparent areas (given that ImageMagick renders the
-# SVG on a white background by default) or a raster image with only
-# gray tones, where the blacker, the less transparent.
+# which must be black (all zeros) in the nontransparent areas (given that ImageMagick renders the
+# SVG, by default, on a background colored white, or (255,255,255)) or a raster image with only
+# gray tones, where the closer the gray level is to 0, the less transparent.
 # 'bgcolor' can be None so that an alpha
 # background is used.  Each color is a
 # 3-element array of the red, green, and blue components in that order; e.g.,
@@ -510,11 +511,11 @@ def versatilePattern(fgcolor, bgcolor=None):
         "shape",
     ] + backgroundColorUnder(bgcolor)
 
-# ImageMagick command for setting a light gray foreground pattern on a white background.
+# ImageMagick command for setting a light gray (192,192,192) foreground pattern on a white (255,255,255) background.
 def lightmodePattern():
     return versatilePattern([192, 192, 192], [255, 255, 255])
 
-# ImageMagick command for setting a gray foreground pattern on a black background.
+# ImageMagick command for setting a gray (128,128,128) foreground pattern on a black (0,0,0) background.
 def darkmodePattern():
     return versatilePattern([128, 128, 128], [0, 0, 0])
 
@@ -1477,6 +1478,8 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
             raise ValueError("Bits per pixel not supported")
 
 def _rle8decompress(bitdata, dst, width, height):
+    # RLE compression for 8-bit-per-pixel bitmaps.
+    # This method assumes that all the elements in 'dst' are zeros.
     if (not dst) or (not bitdata):
         return False
     szDst = len(dst)
@@ -1556,6 +1559,8 @@ def _rle8decompress(bitdata, dst, width, height):
     return True
 
 def _rle24decompress(bitdata, dst, width, height):
+    # RLE compression for 24-bit-per-pixel bitmaps.
+    # This method assumes that all the elements in 'dst' are zeros.
     if (not dst) or (not bitdata):
         return False
     szDst = len(dst)
@@ -1649,7 +1654,7 @@ def _createhuffctx(bitdata, dst, width, height):
 def _nexthuffcode(ctx):
     raise NotImplementedError
 
-def _isnontermcode(code):
+def _ismakeupcode(code):
     raise NotImplementedError
 
 def _istermcode(code):
@@ -1693,6 +1698,11 @@ def _writebitstodest(ctx, bit, count):
     return True
 
 def _huffmandecompress(bitdata, dst, width, height):
+    # Group 3 one-dimensional encoding, where zero-bits are interpreted
+    # as white and one-bits as black, solely for purposes of the encoding.
+    # The encoded and decoded data are
+    # stored most-significant-bit-first in this Python method.
+    # This method assumes that all the elements in 'dst' are zeros.
     if (not dst) or (not bitdata):
         return False
     try:
@@ -1716,7 +1726,7 @@ def _huffmandecompress(bitdata, dst, width, height):
                     return False
                 bitcount = 0
                 bit = 1 - bit
-            elif _isnontermcode(code):
+            elif _ismakeupcode(code):
                 if y < 0:
                     return False
                 consecstartcodes = 0
@@ -1728,11 +1738,16 @@ def _huffmandecompress(bitdata, dst, width, height):
                 consecstartcodes += 1
                 if consecstartcodes >= 6:
                     return True
+            else:
+                return y <= 0
             starting = False
+        return True
     except NotImplementedError:
         return False
 
 def _rle4decompress(bitdata, dst, width, height):
+    # RLE compression for 4-bit-per-pixel bitmaps.
+    # This method assumes that all the elements in 'dst' are zeros.
     if (not dst) or (not bitdata):
         return False
     szDst = len(dst)
@@ -2065,7 +2080,8 @@ def _readicon(f):
                 raise ValueError
     tablesize = (1 << andmaskhdr[4]) if andpalette > 0 else 0
     # The palette of icons' and pointers' AND/XOR mask
-    # is effectively fixed at black and white.
+    # is effectively fixed at black and white (that is,
+    # (0,0,0) and (255,255,255), respectively).
     # It may be, but I am not sure, that OS/2
     # ignores the color table of icons' and pointers' AND/XOR mask.
     andmaskcolors = []
@@ -2198,13 +2214,13 @@ def _readicon(f):
                 # Windows color icons employ a simpler 2-mask system (an AND mask and
                 # an XOR mask) than OS/2 color icons (AND/XOR mask and color mask).
                 # The XOR mask for Windows icons is the same as the OS/2 icon's
-                # color mask except that, where the OS/2 icon's XOR mask (the bottom
-                # half of the AND/XOR mask) and its AND mask (the top half) are white,
-                # the Windows icon's XOR mask is white rather than any other color.
+                # color mask except that, where the OS/2 icon's XOR mask bit (in the bottom
+                # half of the AND/XOR mask) and its AND mask bit (in the top half) are 1,
+                # the Windows icon's XOR mask bits are all ones.
                 # See "Bitmap File Format", in the _Presentation Manager Programming
                 # Guide and Reference_.
-                # However, white pixels in an OS/2 icon's or OS/2 cursor's XOR mask
-                # are unusual for color icons and pointers.
+                # However, the presence of nonzero values in an OS/2 icon's or OS/2 cursor's
+                # XOR mask is unusual for color icons and pointers.
                 # Moreover, PNGs don't support color inversions.
                 px = (
                     white
@@ -2319,7 +2335,7 @@ def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
 
 # Draw a wraparound hatched box on an image.
 # Image has the same format returned by the _blankimage_ method with alpha=False.
-# 'color' is the color of the hatch, drawn on every "black" pixel
+# 'color' is the color of the hatch, drawn on every "black" pixel (defined below)
 # in the pattern's tiling.
 # 'pattern' is an 8-element array with integers in the interval [0,255].
 # The first integer represents the first row from the top;
@@ -2390,7 +2406,8 @@ def hatchedbox(
 # 'rop' is a 4-bit binary raster operation (from 0 through 15).
 def _applyrop(dst, src, rop):
     # Assuming the source and destination
-    # images are black-and-white, the result of
+    # images are black-and-white (where 0-bits represent black,
+    # and 1-bits white), the result of
     # each raster operation is as follows:
     match rop:
         case 12:
@@ -2563,7 +2580,7 @@ def _applyrop(dst, src, rop):
 # bit is inverted (the result is 1 if the destination bit is 0, and vice versa);
 # if 2, the result is the destination bit (the destination is left unchanged);
 # if 3, the result is 1. For example, suppose the source and
-# destination images are black-and-white, and
+# destination images are black-and-white (where 0-bits represent black, and 1-bits white), and
 # suppose the binary raster operation is 6 (or the ternary raster operation is 0x66).
 # Then, where the source is white (source bit is 1), the destination color is inverted
 # (since the high 2 bits give 1), and where the source is black (source bit is 0), the
@@ -3287,10 +3304,13 @@ def interlace(image, width, height, alpha=False):
 # first element is the color's red component; the second, its blue component;
 # the third, its red component; the fourth, if present, is the color's alpha
 # component or _opacity_ (0 if the color is transparent; 255 if opaque; otherwise,
-# the color is translucent or semitransparent).  Each component is an integer as
-# low as 0 and as high as 255.
+# the color is translucent or semitransparent).  Each component is an integer
+# from 0 through 255.  In this format, lower-intensity values are
+# generally "darker", higher-intensity values "lighter", so that [0,0,0,255] (4 bytes per pixel)
+# or [0,0,0] (3 bytes per pixel) is "black", and [255,255,255,255] or [255,255,255] is "white".
 # If 'color' is None, uses [255,255,255,255], or white.
-# If 'alpha' is True, generates a 4-byte-per-pixel image; if False, generates a 3-byte-per-pixel image.  The default is False.
+# If 'alpha' is True, generates a 4-byte-per-pixel image; if False, generates a
+# 3-byte-per-pixel image.  The default is False.
 def blankimage(width, height, color=None, alpha=False):
     if color and len(color) < (4 if alpha else 3):
         raise ValueError
@@ -3306,7 +3326,8 @@ def blankimage(width, height, color=None, alpha=False):
     return image
 
 # Generates a tileable argyle pattern from two images of the
-# same size.  The images have the same format returned by the _blankimage_ method with alpha=False.  'backgroundImage' must be tileable if shiftImageBg=False;
+# same size.  The images have the same format returned by the _blankimage_
+# method with alpha=False.  'backgroundImage' must be tileable if shiftImageBg=False;
 # 'foregroundImage' need not be tileable.
 # 'expo' is a parameter that determines the shape in the middle of the image,
 # and can be any number greater than 0. If 1, the shape resembles a
@@ -5729,7 +5750,7 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
     else:
         return _randombrushednoiseimage(w, h, palette, tileable=tileable)
 
-# Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
+# Input image uses only three colors: (0,0,0) or black,(128,128,128),(255,255,255) or white
 # Turns the image into a black-and-white image, with middle gray dithered.
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 def monochromeFromThreeGrays(image, width, height):
@@ -5737,7 +5758,7 @@ def monochromeFromThreeGrays(image, width, height):
     dithertograyimage(image, width, height, [0, 255])
     return image
 
-# Input image uses only three colors: (0,0,0),(128,128,128),(255,255,255)
+# Input image uses only three colors: (0,0,0) or black,(128,128,128),(255,255,255) or white
 # Default for palette is VGA palette (classiccolors())
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 def randomPalettedFromThreeGrays(image, width, height, palette=None):

@@ -31,10 +31,10 @@ Here is a challenge.  Write computer code (released to the public domain or lice
 
 Using only the following colors and with some pixels allowed to be transparent:
 
-- Button highlight color (white by default).
+- Button highlight color (by default, (255,255,255) or white).
 - Button "light" highlight color (by default, (192, 192, 192)).
 - Button shadow color (by default, (128, 128, 128)).
-- Button dark shadow color (black by default).
+- Button dark shadow color (by default, (0,0,0) or black).
 - Button face color (by default, (192, 192, 192)).
 - Window frame color (black by default).
 
@@ -90,10 +90,10 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 
 > **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) and a black-and-white _AND mask_ ("inverted alpha" mask), a format that additionally allows for so-called "inverted pixels".
 >
->  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become black where the mask is black (in the _opaque_ areas of the icon or cursor) and left unchanged elsewhere.
->  2. Then, the output pixels are combined using a bit-by-bit XOR operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is black, and the rest of the output is inverted where the mask is white.
+>  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become black where the mask is black (all its bits are zeros), in the _opaque_ areas of the icon or cursor, and left unchanged elsewhere.
+>  2. Then, the output pixels are combined using a bit-by-bit XOR operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is black, and the rest of the output is inverted where the mask is white (all its bits are ones).
 >
->  For icons and cursors with only colored and transparent pixels (and no inverted pixels), the XOR mask should be black wherever the AND mask is white.
+>  For icons and cursors with only colored and transparent pixels (and no inverted pixels), the XOR mask should be black wherever the AND mask is white (all its bits are ones).
 
 ## Animations
 
@@ -103,7 +103,7 @@ Although Windows 95 and later versions have an _animation control_ for displayin
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
 
-[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.  Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black, white, light gray, and dark gray or (128, 128, 128)).
+[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.  Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128, 128, 128)).
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button face involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
