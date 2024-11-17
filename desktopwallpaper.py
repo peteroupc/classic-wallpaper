@@ -2195,6 +2195,8 @@ def _readicon(f):
             for x in range(cw):
                 bitand = _read1bppBitmap(andmask, andmaskscan, andmaskhdr[2], x, y)
                 bitxor = _read1bppBitmap(andmask, andmaskscan, andmaskhdr[2], x, y + ch)
+                # Windows color icons employ a simpler 2-mask system (an AND mask and
+                # an XOR mask) than OS/2 color icons (AND/XOR mask and color mask).
                 # The XOR mask for Windows icons is the same as the OS/2 icon's
                 # color mask except that, where the OS/2 icon's XOR mask (the bottom
                 # half of the AND/XOR mask) and its AND mask (the top half) are white,
