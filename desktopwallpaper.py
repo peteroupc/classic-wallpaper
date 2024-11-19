@@ -1647,32 +1647,294 @@ def _rle24decompress(bitdata, dst, width, height):
                         bits += 1
     return True
 
+_HUFFBOTH = {
+    (4, 8): 91,
+    (4, 12): 92,
+    (4, 13): 93,
+    (5, 18): 94,
+    (5, 19): 95,
+    (5, 20): 96,
+    (5, 21): 97,
+    (5, 22): 98,
+    (5, 23): 99,
+    (5, 28): 100,
+    (5, 29): 101,
+    (5, 30): 102,
+    (5, 31): 103,
+}
+_TRAIL2_WHITE = [-1, -1, -1, -1, -1, -1, -1, -1, -1, 13, -1, 22, 29, 30, -1, -1]
+_TRAIL2_BLACK = [3, 2, 1, 4, 6, 5, -1, 7, -1, -1, -1, -1, -1, -1, -1, -1]
+
+_HUFFWHITES = {
+    (0, 4, 8): 3,
+    (0, 4, 11): 4,
+    (0, 4, 12): 5,
+    (0, 4, 14): 6,
+    (0, 4, 15): 7,
+    (0, 5, 18): 65,
+    (0, 5, 19): 8,
+    (0, 5, 20): 9,
+    (0, 5, 27): 64,
+    (0, 6, 42): 16,
+    (0, 6, 43): 17,
+    (0, 6, 52): 14,
+    (0, 6, 53): 15,
+    (1, 3, 7): 2,
+    (1, 4, 8): 11,
+    (1, 5, 23): 66,
+    (1, 5, 24): 89,
+    (1, 6, 36): 27,
+    (1, 6, 39): 18,
+    (1, 6, 40): 24,
+    (1, 6, 43): 25,
+    (1, 6, 55): 67,
+    (1, 7, 74): 59,
+    (1, 7, 75): 60,
+    (1, 7, 82): 49,
+    (1, 7, 83): 50,
+    (1, 7, 84): 51,
+    (1, 7, 85): 52,
+    (1, 7, 88): 55,
+    (1, 7, 89): 56,
+    (1, 7, 90): 57,
+    (1, 7, 91): 58,
+    (1, 7, 100): 70,
+    (1, 7, 101): 71,
+    (1, 7, 103): 73,
+    (1, 7, 104): 72,
+    (1, 8, 152): 86,
+    (1, 8, 153): 87,
+    (1, 8, 154): 88,
+    (1, 8, 155): 90,
+    (1, 8, 204): 74,
+    (1, 8, 205): 75,
+    (1, 8, 210): 76,
+    (1, 8, 211): 77,
+    (1, 8, 212): 78,
+    (1, 8, 213): 79,
+    (1, 8, 214): 80,
+    (1, 8, 215): 81,
+    (1, 8, 216): 82,
+    (1, 8, 217): 83,
+    (1, 8, 218): 84,
+    (1, 8, 219): 85,
+    (2, 3, 7): 10,
+    (2, 4, 8): 12,
+    (2, 5, 19): 26,
+    (2, 5, 23): 21,
+    (2, 5, 24): 28,
+    (2, 6, 36): 53,
+    (2, 6, 37): 54,
+    (2, 6, 40): 39,
+    (2, 6, 41): 40,
+    (2, 6, 42): 41,
+    (2, 6, 43): 42,
+    (2, 6, 44): 43,
+    (2, 6, 45): 44,
+    (2, 6, 50): 61,
+    (2, 6, 51): 62,
+    (2, 6, 52): 63,
+    (2, 6, 53): 0,
+    (2, 6, 54): 68,
+    (2, 6, 55): 69,
+    (3, 3, 7): 1,
+    (3, 4, 8): 20,
+    (3, 4, 12): 19,
+    (3, 5, 18): 33,
+    (3, 5, 19): 34,
+    (3, 5, 20): 35,
+    (3, 5, 21): 36,
+    (3, 5, 22): 37,
+    (3, 5, 23): 38,
+    (3, 5, 26): 31,
+    (3, 5, 27): 32,
+    (4, 3, 4): 23,
+    (4, 4, 10): 47,
+    (4, 4, 11): 48,
+    (5, 3, 4): 45,
+    (5, 3, 5): 46,
+}
+_HUFFBLACKS = {
+    (3, 3, 4): 9,
+    (3, 3, 5): 8,
+    (4, 3, 4): 10,
+    (4, 3, 5): 11,
+    (4, 3, 7): 12,
+    (4, 5, 24): 15,
+    (4, 6, 55): 0,
+    (4, 7, 103): 19,
+    (4, 7, 104): 20,
+    (4, 7, 108): 21,
+    (4, 8, 200): 65,
+    (4, 8, 201): 66,
+    (4, 8, 202): 26,
+    (4, 8, 203): 27,
+    (4, 8, 204): 28,
+    (4, 8, 205): 29,
+    (4, 8, 210): 34,
+    (4, 8, 211): 35,
+    (4, 8, 212): 36,
+    (4, 8, 213): 37,
+    (4, 8, 214): 38,
+    (4, 8, 215): 39,
+    (4, 8, 218): 42,
+    (4, 8, 219): 43,
+    (5, 3, 4): 13,
+    (5, 3, 7): 14,
+    (5, 5, 23): 16,
+    (5, 5, 24): 17,
+    (5, 6, 40): 23,
+    (5, 6, 55): 22,
+    (5, 7, 82): 50,
+    (5, 7, 83): 51,
+    (5, 7, 84): 44,
+    (5, 7, 85): 45,
+    (5, 7, 86): 46,
+    (5, 7, 87): 47,
+    (5, 7, 88): 57,
+    (5, 7, 89): 58,
+    (5, 7, 90): 61,
+    (5, 7, 91): 67,
+    (5, 7, 100): 48,
+    (5, 7, 101): 49,
+    (5, 7, 102): 62,
+    (5, 7, 103): 63,
+    (5, 7, 104): 30,
+    (5, 7, 105): 31,
+    (5, 7, 106): 32,
+    (5, 7, 107): 33,
+    (5, 7, 108): 40,
+    (5, 7, 109): 41,
+    (6, 4, 8): 18,
+    (6, 4, 15): 64,
+    (6, 5, 23): 24,
+    (6, 5, 24): 25,
+    (6, 6, 36): 52,
+    (6, 6, 39): 55,
+    (6, 6, 40): 56,
+    (6, 6, 43): 59,
+    (6, 6, 44): 60,
+    (6, 6, 51): 68,
+    (6, 6, 52): 69,
+    (6, 6, 53): 70,
+    (6, 6, 55): 53,
+    (6, 6, 56): 54,
+    (6, 7, 74): 73,
+    (6, 7, 75): 74,
+    (6, 7, 76): 75,
+    (6, 7, 77): 76,
+    (6, 7, 82): 83,
+    (6, 7, 83): 84,
+    (6, 7, 84): 85,
+    (6, 7, 85): 86,
+    (6, 7, 90): 87,
+    (6, 7, 91): 88,
+    (6, 7, 100): 89,
+    (6, 7, 101): 90,
+    (6, 7, 108): 71,
+    (6, 7, 109): 72,
+    (6, 7, 114): 77,
+    (6, 7, 115): 78,
+    (6, 7, 116): 79,
+    (6, 7, 117): 80,
+    (6, 7, 118): 81,
+    (6, 7, 119): 82,
+}
+
 def _createhuffctx(bitdata, dst, width, height):
     linesz = ((width + 31) >> 5) << 2  # bytes per scanline
-    return [bitdata, dst, width, height, 0, 0, 0, linesz]
+    # bitdata, dst, width, height, dstbytepos, dstbitpos, dstX, linesz,
+    # color, srcbytepos, srcbitpos
+    return [bitdata, dst, width, height, 0, 0, 0, linesz, 0, 0, 0]
+
+def _nextbit(ctx):
+    bitdata = ctx[0]
+    if ctx[9] >= len(bitdata):
+        return -1
+    ret = bitdata[ctx[9]] & (1 << (7 - ctx[10]))
+    ctx[10] += 1
+    if ctx[10] >= 8:
+        ctx[10] = 0
+        ctx[9] += 1
+    return ret
 
 def _nexthuffcode(ctx):
-    raise NotImplementedError
+    color = ctx[8]
+    zeros = 0
+    for i in range(12):
+        b = _nextbit(ctx)
+        if b < 0:
+            return None
+        if b != 0:
+            break
+        zeros += 1
+    if zeros == 11:
+        # start-of-line code
+        return [0, -1]
+    if zeros >= 8:
+        return None
+    b = _nextbit(ctx)
+    if b < 0:
+        return None
+    trail = 2 if b == 0 else 3
+    pos = zeros * 2 + (trail - 2)
+    tr = _TRAIL2_WHITE[pos] if color == 0 else _TRAIL2_BLACK[pos]
+    if tr >= 0:
+        ret = [color, tr]
+        # switch to other color, since this
+        # is a terminating code
+        ctx[8] = 1 - color
+        return ret
+    if color == 1 and zeros < 3:
+        return None
+    for i in range(6):
+        b = _nextbit(ctx)
+        if b < 0:
+            return None
+        trail = (trail << 1) | (0 if b == 0 else 1)
+        key = (zeros, i + 3, trail) if zeros < 7 else (i + 3, trail)
+        print(key)
+        if color == 0 and key in (_HUFFWHITES if zeros < 7 else _HUFFBOTH):
+            ret = [0, _HUFFWHITES[key] if zeros < 7 else _HUFFBOTH[key]]
+            if _istermcode(ret):
+                ctx[8] = 1  # switch to black
+            return ret
+        elif color == 1 and key in (_HUFFBLACKS if zeros < 7 else _HUFFBOTH):
+            ret = [1, _HUFFBLACKS[key] if zeros < 7 else _HUFFBOTH[key]]
+            if _istermcode(ret):
+                ctx[8] = 0  # switch to white
+            return ret
+    return None
 
 def _ismakeupcode(code):
-    raise NotImplementedError
+    return code != None and code[1] >= 64
 
 def _istermcode(code):
-    raise NotImplementedError
+    return code != None and code[1] >= 0 and code[1] < 64
 
 def _isstartcode(code):
-    raise NotImplementedError
+    return code != None and code[1] == -1
 
 def _codebitcount(code):
-    raise NotImplementedError
+    if code == None or code[1] == -1:
+        raise ValueError
+    return code[1] if code[1] < 64 else (code[1] - 63) * 64
+
+def _codecolor(code):
+    if code == None or code[1] == -1:
+        raise ValueError
+    return code[0]
 
 def _newscan(ctx, y):
-    ctx[6] = 0
-    ctx[4] = (ctx[3] - 1 - y) * ctx[7]
+    ctx[8] = 0  # switch to white
+    ctx[6] = 0  # set X to 0
+    ctx[4] = (ctx[3] - 1 - y) * ctx[7]  # set scan position
+    ctx[5] = 0  # set scan bit position
 
 def _writebitstodest(ctx, bit, count):
     dst = ctx[1]
-    if ctx[6] + count > ctx[2]:  # would exceed width
+    if ctx[6] + count > ctx[2]:
+        # would exceed width
         return False
     ctx[6] += count
     i = 0
@@ -1698,52 +1960,58 @@ def _writebitstodest(ctx, bit, count):
     return True
 
 def _huffmandecompress(bitdata, dst, width, height):
-    # Group 3 one-dimensional encoding, where zero-bits are interpreted
+    # Group 3 one-dimensional encoding (ITU-T Rec. T.4),
+    # where zero-bits are interpreted
     # as white and one-bits as black, solely for purposes of the encoding.
     # The encoded and decoded data are
     # stored most-significant-bit-first in this Python method.
     # This method assumes that all the elements in 'dst' are zeros.
     if (not dst) or (not bitdata):
         return False
-    try:
-        linesz = ((width + 31) >> 5) << 2  # bytes per scanline
-        ctx = _createhuffctx(bitdata, dst, width, height)
-        starting = True
-        consecstartcodes = 0
-        bit = 0
-        y = height
-        bitcount = 0
-        while True:
-            code = _nexthuffcode(ctx)
-            if starting and not _isstartcode(code):
+    linesz = ((width + 31) >> 5) << 2  # bytes per scanline
+    ctx = _createhuffctx(bitdata, dst, width, height)
+    starting = True
+    consecstartcodes = 0
+    y = height
+    bitcount = 0
+    lastWasMakeup = False
+    while True:
+        code = _nexthuffcode(ctx)
+        if starting and not _isstartcode(code):
+            return False
+        if _istermcode(code):
+            if y < 0:
                 return False
-            if _istermcode(code):
-                if y < 0:
-                    return False
-                consecstartcodes = 0
-                bitcount += _codebitcount(code)
-                if not _writebitstodest(ctx, bit, bitcount):
-                    return False
-                bitcount = 0
-                bit = 1 - bit
-            elif _ismakeupcode(code):
-                if y < 0:
-                    return False
-                consecstartcodes = 0
-                bitcount += _codebitcount(code)
-            elif _isstartcode(code):
-                y -= 1
-                if y >= 0:
-                    _newscan(ctx, y)
-                consecstartcodes += 1
-                if consecstartcodes >= 6:
-                    return True
-            else:
-                return y <= 0
-            starting = False
-        return True
-    except NotImplementedError:
-        return False
+            consecstartcodes = 0
+            bitcount += _codebitcount(code)
+            if not _writebitstodest(ctx, _codecolor(code), bitcount):
+                return False
+            bitcount = 0
+            lastWasMakeup = False
+        elif _ismakeupcode(code):
+            if y < 0:
+                return False
+            if lastWasMakeup:
+                # This method doesn't support multiple
+                # consecutive makeup codes; other implementations
+                # may support them as an extension to Rec. T.4
+                return False
+            consecstartcodes = 0
+            bitcount += _codebitcount(code)
+        elif _isstartcode(code):
+            if lastWasMakeup:
+                return False
+            y -= 1
+            if y >= 0:
+                _newscan(ctx, y)
+            lastWasMakeup = False
+            consecstartcodes += 1
+            if consecstartcodes >= 6:
+                return True
+        else:  # invalid code
+            return False
+        starting = False
+    return True
 
 def _rle4decompress(bitdata, dst, width, height):
     # RLE compression for 4-bit-per-pixel bitmaps.
@@ -3023,7 +3291,7 @@ def shadowedborderedbox(
 # Each color occurs equally in the image.
 # Designed for drawing filled, unstroked, opaque vector paths,
 # generally vector paths of an abstract design or symbol.
-# 'spacing' is the spacing from the beginning of one horizontal hatches
+# 'spacing' is the spacing from the beginning of one horizontal hatch
 # to the beginning of the next. Hatches are colored with color1.  Default is 3.
 # 'hatchsize' is the thickness of each hatch line. Default is 1.
 def styledbrush1(color1, color2, color3, spacing=3, hatchsize=1):
@@ -3182,6 +3450,8 @@ def alphaToTwoLevel(image, width, height, dither=False):
 # Splits a 4-byte-per pixel image (four elements per pixel) into a
 # color mask and an (inverted) alpha mask, in that order.
 # Image has the same format returned by the _blankimage_ method with alpha=True.
+# Returns a list of two elements, the color mask and the alpha mask, both
+# with the same format returned by the _blankimage_ method with alpha=False.
 def splitmask(image, width, height):
     if width * height * 4 != len(image):
         raise ValueError
@@ -3575,10 +3845,13 @@ def getgrays(palette):
 
 # Converts the image to grayscale and dithers the resulting image
 # to the gray tones given.
-# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
+# Image has the same format returned by the _blankimage_ method with the
+# given value of 'alpha' (default value for 'alpha' is False).
 # 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
 # from 0 through 255.  The list must have a length of 2 or greater.
-def dithertograyimage(image, width, height, grays, alpha=False):
+# If 'ignoreNonGrays' is True, just dither the gray tones and leave the other
+# colors in the image unchanged.  Default is False.
+def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=False):
     if not grays:
         return graymap(image, width, height)
     if len(grays) < 2:
@@ -3597,7 +3870,14 @@ def dithertograyimage(image, width, height, grays, alpha=False):
         yp = y * width * pixelSize
         for x in range(width):
             xp = yp + x * pixelSize
-            c = (image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722) // 10000
+            c = image[xp]
+            if ignoreNonGrays:
+                if image[xp] != image[xp + 1] or image[xp + 1] != image[xp + 2]:
+                    continue
+            else:
+                c = (
+                    image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722
+                ) // 10000
             r = 0
             bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
             for i in range(1, len(grays)):
@@ -3616,7 +3896,9 @@ def dithertograyimage(image, width, height, grays, alpha=False):
 # to colors in the given colors array.  If 'colors' is None (the default),
 # the mapping step is skipped.
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
-def graymap(image, width, height, colors=None, alpha=False):
+# If 'ignoreNonGrays' is True, leave colors other than gray tones
+# colors in the image unchanged.  Default is False.
+def graymap(image, width, height, colors=None, alpha=False, ignoreNonGrays=False):
     pixelSize = 4 if alpha else 3
     for y in range(height):
         yp = y * width * pixelSize
@@ -3624,6 +3906,8 @@ def graymap(image, width, height, colors=None, alpha=False):
             xp = yp + x * pixelSize
             c = image[xp]
             if c != image[xp + 1] or image[xp + 1] != image[xp + 2]:
+                if ignoreNonGrays:
+                    continue
                 # Not a gray pixel, so find gray value
                 c = (
                     image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722
@@ -3911,6 +4195,68 @@ def colorgradient(blackColor, whiteColor):
         [blackColor[i] + (whiteColor[i] - blackColor[i]) * j // 255 for i in range(3)]
         for j in range(256)
     ]
+
+def _gradient(stops, count=256):
+    # NOTE: Assumes gradient stops are sorted by position
+    if len(stops) == 0 or count <= 1:
+        raise ValueError
+    for s in stops:
+        if not s[1] or len(s[1]) != 3:
+            raise ValueError
+    minStop = stops[0][0]
+    maxStop = stops[len(stops) - 1][0]
+    if minStop < 0 or maxStop > 255 or minStop > maxStop:
+        raise ValueError
+    ret = [None for i in range(count)]
+    for i in range(count):
+        p = i
+        if p <= minStop:
+            ret[i] = [x for x in stops[0][1]]
+        elif p >= maxStop:
+            ret[i] = [x for x in stops[len(stops) - 1][1]]
+        else:
+            for j in range(len(stops) - 1):
+                if p >= stops[j][0] and p <= stops[j + 1][0]:
+                    if stops[j][0] == stops[j + 1][0]:
+                        ret[i] = [x for x in stops[j][1]]
+                    else:
+                        sx = stops[j][0]
+                        sy = stops[j + 1][0]
+                        pos = (p - sx) / (sy - sx)
+                        ret[i] = [
+                            int(x + (y - x) * pos)
+                            for x, y in zip(stops[j][1], stops[j + 1][1])
+                        ]
+    return ret
+
+# Returns a 256-element color gradient for coloring user interface elements (for example,
+# using the 'graymap' function).
+# The parameters are all
+# three-element lists identifying colors.  Each parameter can be None.
+def uicolorgradient(
+    hilightColor=None, lightColor=None, shadowColor=None, darkShadowColor=None
+):
+    return _gradient(
+        [
+            [0, darkShadowColor if darkShadowColor else [0, 0, 0]],
+            [128, shadowColor if shadowColor else [128, 128, 128]],
+            [192, lightColor if lightColor else [192, 192, 192]],
+            [255, hilightColor if hilightColor else [255, 255, 255]],
+        ]
+    )
+
+# Returns a 256-element color gradient for coloring user interface elements (for example,
+# using the 'graymap' function), given a desired button face color.  The parameters are all
+# three-element lists identifying colors.  Each parameter can be None.
+def uicolorgradient2(btnface=None):
+    if not btnface:
+        btnface = [192, 192, 192]
+    return uicolorgradient(
+        hilightColor=[255, 255, 255],
+        lightColor=btnface,
+        shadowColor=[x * 2 // 3 for x in btnface],
+        darkShadowColor=[0, 0, 0],
+    )
 
 # Returns an image with the same format returned by the _blankimage_ method with alpha=False.
 def noiseimage(width=64, height=64):
@@ -4710,7 +5056,7 @@ class WindowsMetafileDraw:
 
 # helper for upper edge drawing
 def _drawupperedgecore(helper, x0, y0, x1, y1, color, edgesize=1):
-    if (not color) or x1 > x0 or y1 > y0:  # empty or negative
+    if (not color) or x1 <= x0 or y1 <= y0:  # empty or negative
         return
     elif x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
         helper.rect(x0, y0, x1, y1, color)
@@ -4728,7 +5074,7 @@ def _drawupperedgecore(helper, x0, y0, x1, y1, color, edgesize=1):
 
 # helper for lower edge drawing
 def _drawloweredgecore(helper, x0, y0, x1, y1, color, edgesize=1):
-    if (not color) or x1 > x0 or y1 > y0:  # empty or negative
+    if (not color) or x1 <= x0 or y1 <= y0:  # empty or negative
         return
     elif x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
         helper.rect(x0, y0, x1, y1, color)
@@ -4782,7 +5128,7 @@ def drawupperedge(helper, x0, y0, x1, y1, upper, edgesize=1, bordersize=1):
 
 def drawloweredge(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1):
     for i in range(bordersize):
-        drawupperedgecore(helper, x0, y0, x1, y1, lower, edgesize=edgesize)
+        _drawloweredgecore(helper, x0, y0, x1, y1, lower, edgesize=edgesize)
         x1 -= edgesize
         y1 -= edgesize
 
@@ -4798,9 +5144,9 @@ def drawroundededge(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize
 # helper for edge drawing (upper left edge "dominates")
 def drawedgetopdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
     for i in range(bordersize):
-        drawloweredge(helper, x0, y0, x1, y1, upper, edgesize=edgesize)
-        drawupperedge(
-            helper, x0 + edgesize, y0 + edgesize, x1, y1, upper, edgesize=edgesize
+        drawupperedge(helper, x0, y0, x1, y1, upper, edgesize=edgesize)
+        drawloweredge(
+            helper, x0 + edgesize, y0 + edgesize, x1, y1, lower, edgesize=edgesize
         )
         x0 += edgesize
         y0 += edgesize
@@ -4810,10 +5156,10 @@ def drawedgetopdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=
 # helper for edge drawing (bottom right edge "dominates")
 def drawedgebotdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
     for i in range(bordersize):
-        drawloweredge(
+        drawupperedge(
             helper, x0, y0, x1 - edgesize, y1 - edgesize, upper, edgesize=edgesize
         )
-        drawupperedge(helper, x0, y0, x1, y1, upper, edgesize=edgesize)
+        drawloweredge(helper, x0, y0, x1, y1, lower, edgesize=edgesize)
         x0 += edgesize
         y0 += edgesize
         x1 -= edgesize
@@ -4824,11 +5170,11 @@ def drawedgenodom(
     helper, x0, y0, x1, y1, upper, lower, corner, edgesize=1, bordersize=1
 ):
     for i in range(bordersize):
-        drawloweredge(
+        drawupperedge(
             helper, x0, y0, x1 - edgesize, y1 - edgesize, upper, edgesize=edgesize
         )
-        drawupperedge(
-            helper, x0 + edgesize, y0 + edgesize, x1, y1, upper, edgesize=edgesize
+        drawloweredge(
+            helper, x0 + edgesize, y0 + edgesize, x1, y1, lower, edgesize=edgesize
         )
         drawpositiverect(helper, x1 - edgesize, y0, x1, y0 + edgesize, corner)
         drawpositiverect(helper, x1, y1 - edgesize, x1 + edgesize, y1, corner)
@@ -5422,7 +5768,7 @@ def _randomdither(image, width, height, palette):
     grays = getgrays(palette) if palette else None
     if ((not palette) or len(grays) >= 2) and random.randint(0, 99) < 10:
         # Convert to the grays in the palette
-        dithertograyimage(image, width, height, grays if palette else None)
+        dithertograyimage(image, width, height, grays)
     elif palette:
         # Dither away from half-and-half colors
         halfhalfditherimage(
