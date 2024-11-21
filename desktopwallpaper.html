@@ -757,6 +757,8 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-randomhatchimage"><strong>randomhatchimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randommaybemonochrome"><strong>randommaybemonochrome</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight)</dt><dd><span class="code">#&nbsp;Images&nbsp;in&nbsp;'sourceImages'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-readanimicon"><strong>readanimicon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;from&nbsp;a&nbsp;Windows&nbsp;animated&nbsp;icon/cursor&nbsp;file.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
+#&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'readitr'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-readitr"><strong>readitr</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;bitmaps,&nbsp;icons,&nbsp;and&nbsp;pointers&nbsp;in&nbsp;an&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file.<br>
 #&nbsp;An&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file&nbsp;is&nbsp;a&nbsp;collection&nbsp;of&nbsp;OS/2&nbsp;resources<br>
 #&nbsp;such&nbsp;as&nbsp;bitmaps,&nbsp;icons,&nbsp;pointers,&nbsp;and&nbsp;text&nbsp;string&nbsp;tables.<br>
@@ -782,6 +784,9 @@ Data descriptors defined here:<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;list&nbsp;consisting&nbsp;of<br>
 #&nbsp;the&nbsp;color's&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;component,&nbsp;in&nbsp;that<br>
 #&nbsp;order;&nbsp;each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
+ <dl><dt><a name="-readwinicon"><strong>readwinicon</strong></a>(infile)</dt></dl>
+ <dl><dt><a name="-readxcursor"><strong>readxcursor</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;cursor&nbsp;images&nbsp;from&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;XCursor&nbsp;format.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
+#&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'reados2icon'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>

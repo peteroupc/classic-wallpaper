@@ -1976,16 +1976,71 @@ def reados2icon(infile):
     finally:
         f.close()
 
+# Reads cursor images from a file in the XCursor format.  The return value
+# has the same format returned by the 'reados2icon' method.
+def readxcursor(infile):
+    f = open(infile, "rb")
+    try:
+        hdr = f.read(16)
+        if len(hdr) != 16 or hdr[0:4] != b"Xcur":
+            raise ValueError
+        s = struct.unpack("<LLLL", hdr)
+        if s[1] != 0x10 or s[2] != 0x10000:
+            raise ValueError
+        toccount = s[3]
+        tocs = []
+        images = []
+        for i in range(toccount):
+            tocs.append(struct.unpack("<LLL", f.read(12)))
+        for toc in tocs:
+            f.seek(toc[2])
+            chunk = struct.unpack("<LLLL", f.read(16))
+            if chunk[0] < 16 or chunk[1] != toc[0] or chunk[2] != toc[1]:
+                print(chunk)
+                raise ValueError
+            # There are also comments with chunk[1]==0xfffe0001,
+            # but ignore them
+            if chunk[1] == 0xFFFD0002:
+                if chunk[0] < 36 or chunk[3] > 1:
+                    # chunk too small, or unsupported cursor version
+                    images.append(None)
+                    continue
+                chunk = struct.unpack("<LLLLL", f.read(20))
+                # chunk[4] is delay in milliseconds
+                if (
+                    chunk[0] >= 0x8000
+                    or chunk[1] >= 0x8000
+                    or chunk[2] > chunk[0]
+                    or chunk[3] > chunk[1]
+                ):
+                    images.append(None)
+                    continue
+                image = [0 for i in range(chunk[0] * chunk[1] * 4)]
+                for i in range(chunk[0] * chunk[1]):
+                    argb = f.read(4)
+                    if len(argb) < 4:
+                        images.append(None)
+                        continue
+                    image[i * 4] = argb[2]
+                    image[i * 4 + 1] = argb[1]
+                    image[i * 4 + 2] = argb[0]
+                    image[i * 4 + 3] = argb[3]
+                images.append([image, chunk[0], chunk[1]])
+        return images
+    finally:
+        f.close()
+
 # Same as 'reados2icon', but takes an I/O object such as one
 # returned by Python's 'open' method.
 def reados2iconcore(f):
+    ft = f.tell()
     tag = f.read(2)
     # Bitmap array (BA)
     # NOTE: BA=>'PT'/'CP' allows for animated pointers.
     # NOTE: BA=>'IC'/'CI' allows for varying the icon's
     #   size or color depth.
     if tag == b"BA":
-        f.seek(0)
+        f.seek(ft)
         # The first offset is "device independent";
         # the others are "device dependent".
         offsets = [0x0E]
@@ -2017,8 +2072,12 @@ def reados2iconcore(f):
             f.seek(offsets[i])
             ret.append(_readicon(f))
         return ret
+    elif tag == bytes([0, 0]):
+        # Windows icon
+        f.seek(ft)
+        return _readwinicon(f)
     else:
-        f.seek(0)
+        f.seek(ft)
         return [_readicon(f)]
 
 # Reads the color table from an OS/2 palette file.
@@ -2101,6 +2160,16 @@ def _read4bppBitmap(byteData, scanSize, height, x, y):
         byteData[scanSize * (height - 1 - y) + (x >> 1)] >> (4 * (1 - (x & 1)))
     ) & 0x0F
 
+def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
+    # Reads the alpha value at the given pixel position of a bitmap image,
+    # represented by an array of bottom-up Windows or OS/2 bitmap data.
+    # Returns 255 if bpp is not 32.
+    if bpp == 32:
+        row = scanSize * (height - 1 - y)
+        return byteData[row + x * 4 + 3]
+    else:
+        return 255
+
 def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
     # Reads the pixel color value at the given position of a bitmap image,
     # represented by an array of bottom-up Windows or OS/2 bitmap data.
@@ -2116,8 +2185,245 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
         case 24:
             row = scanSize * (height - 1 - y)
             return byteData[row + x * 3 : row + x * 3 + 3]
+        case 32:
+            row = scanSize * (height - 1 - y)
+            return byteData[row + x * 4 : row + x * 4 + 3]
         case _:
             raise ValueError("Bits per pixel not supported")
+
+def _readwiniconcore(f, entry, isicon):
+    bmih = struct.unpack("<LllHHLLllLL", f.read(0x28))
+    if bmih[0] != 0x28:
+        print("unsupported header size")
+        return False
+    bitcount = bmih[4]
+    colortablesize = 1 << bitcount if bitcount <= 8 else 0
+    if colortablesize > 0 and bmih[9] != 0:
+        if bmih[9] > colortablesize:
+            print("bad biClrUsed")
+            return None
+        colortablesize = min(colortablesize, bmih[9])
+    if bmih[7] != 0 or bmih[8] != 0:
+        print("unusual: resolution given")
+    if entry and (bmih[1] != entry[0] or bmih[2] != entry[1] * 2):
+        print("bad header")
+        return None
+    if (
+        bmih[1] < 0
+        or bmih[2] < 0
+        or bmih[3] != 1
+        or bmih[5] != 0
+        or (bmih[9] != 0 and (colortablesize == 0 or bmih[9] > colortablesize))
+        or (
+            bmih[10] != 0
+            and (
+                colortablesize == 0
+                or bmih[9] > colortablesize
+                or (bmih[9] > 0 and bmih[10] > bmih[9])
+            )
+        )
+    ):
+        print(["bad header", bmih])
+        return None
+    # if entry and isicon and entry[3]!=bmih[4]:
+    #   # non-matching bit count
+    #   return False
+    sizeImage = bmih[6]
+    width = bmih[1]
+    if bmih[2] % 2 != 0:
+        print("odd height value")
+        return None
+    height = bmih[2] // 2
+    if (
+        bitcount != 1
+        and bitcount != 4
+        and bitcount != 8
+        and bitcount != 24
+        and bitcount != 32
+    ):
+        print("unsupported bit count")
+        return None
+    xormaskscan = ((width * bitcount + 31) >> 5) << 2
+    andmaskscan = ((width * 1 + 31) >> 5) << 2
+    xormaskbytes = xormaskscan * height
+    andmaskbytes = andmaskscan * height
+    if (
+        sizeImage != 0
+        and sizeImage != xormaskbytes + andmaskbytes
+        and sizeImage != xormaskbytes
+    ):
+        print(
+            "bad image size: %d %d [%d %d]"
+            % (sizeImage, xormaskbytes + andmaskbytes, xormaskbytes, bitcount)
+        )
+        return None
+    if isicon and bitcount <= 8 and entry and entry[2] > colortablesize:
+        print("too few colors")
+        return None
+    totalsize = colortablesize * 4 + xormaskbytes + andmaskbytes + 0x28
+    if entry and totalsize != entry[4]:
+        print("bad overall image size: %d %d" % (totalsize, entry[4]))
+        return None
+    colortable = []
+    failed = False
+    for j in range(colortablesize):
+        r = f.read(3)
+        if len(r) != 3:
+            failed = True
+            break
+        colortable.append(r)
+        if len(f.read(1)) != 1:
+            failed = True
+            break
+    if failed:
+        print("color table read failed")
+        return None
+    xormask = f.read(xormaskbytes)
+    if len(xormask) != xormaskbytes:
+        return None
+    andmask = f.read(andmaskbytes)
+    if len(andmask) != andmaskbytes:
+        return None
+    bl = blankimage(width, height, alpha=True)
+    alpha1 = bytes([0xFF])
+    alpha0 = bytes([0])
+    for y in range(height):
+        for x in range(width):
+            bitand = _read1bppBitmap(andmask, andmaskscan, height, x, y)
+            pxalpha = _readBitmapAlpha(xormask, xormaskscan, height, bitcount, x, y)
+            px = _readBitmapAsColorBGR(
+                xormask, xormaskscan, height, bitcount, x, y, colortable
+            ) + (
+                (bytes([pxalpha]) if pxalpha != 255 else alpha1)
+                if bitand == 0
+                else alpha0
+            )
+            setpixelbgralpha(bl, width, height, x, y, px)
+    return [bl, width, height]
+
+def _dup(x):
+    if x == None:
+        return None
+    return [([[z for z in y[0]], y[1], y[2]] if y else None) for y in x]
+
+# Reads from a Windows animated icon/cursor file.  The return value
+# has the same format returned by the 'readitr' method.
+def readanimicon(infile):
+    f = open(infile, "rb")
+    try:
+        ret = []
+        if f.read(4) != b"RIFF":
+            return ret
+        sz = struct.unpack("<L", f.read(4))[0]
+        if sz < 4:
+            return ret
+        fcc = f.read(4)
+        if fcc != b"ACON":
+            return ret
+        haveAnih = False
+        anih = None
+        seq = None
+        while True:
+            fcc = f.read(4)
+            sz = struct.unpack("<L", f.read(4))[0]
+            if fcc == b"LIST":
+                if sz < 4:
+                    raise ValueError
+                ft = f.tell()
+                listSz = sz
+                fcc = f.read(4)
+                if fcc == b"fram":
+                    if not haveAnih:
+                        return ret
+                    content = io.BytesIO(f.read(sz - 4))
+                    while True:
+                        if content.tell() == listSz - 4:
+                            break
+                        fcc = content.read(4)
+                        sz = struct.unpack("<L", content.read(4))[0]
+                        if fcc == b"icon":
+                            ret.append(_readwinicon(io.BytesIO(content.read(sz))))
+                        else:
+                            content.seek(f.tell() + sz)
+                    if len(ret) != anih[1]:
+                        raise ValueError
+                    if seq:
+                        ret = [_dup(ret[frame]) for frame in seq]
+                    return ret
+                else:
+                    f.seek(f.tell() + sz - 4)
+            elif fcc == b"anih":
+                if haveAnih:
+                    return ret
+                haveAnih = True
+                if sz != 0x24:
+                    raise ValueError
+                anih = struct.unpack("<LLLLLLLLL", f.read(0x24))
+                if anih[0] != 0x24:
+                    raise ValueError
+            elif fcc == b"seq ":
+                if seq or not haveAnih:
+                    return ret
+                seq = []
+                if sz < 4 or sz % 4 != 0:
+                    raise ValueError
+                for i in range(sz // 4):
+                    frame = struct.unpack("<L", f.read(4))[0]
+                    if frame >= anih[1]:
+                        raise ValueError
+                    seq.append(frame)
+            else:
+                f.seek(f.tell() + sz)
+    finally:
+        f.close()
+
+def readwinicon(infile):
+    f = open(infile, "rb")
+    try:
+        return readwinicon(f)
+    finally:
+        f.close()
+
+def _readwinicon(f):
+    ft = f.tell()
+    newheader = struct.unpack("<HHH", f.read(6))
+    if newheader[0] != 0 or (newheader[1] != 1 and newheader[1] != 2):
+        return []
+    entries = []
+    for i in range(newheader[2]):
+        dirent = struct.unpack("<BBBBHHLL", f.read(16))
+        width = 256 if dirent[0] == 0 else dirent[0]
+        height = 256 if dirent[1] == 0 else dirent[1]
+        colorcount = dirent[2]
+        if newheader[1] == 2:  # cursor
+            if dirent[4] == 0xFFFF and dirent[5] == 0xFFFF:
+                print("no hotspot?")
+            elif dirent[4] > width or dirent[5] > height:
+                print(
+                    "hotspot out of bounds: %d/%d %d/%d"
+                    % (dirent[4], width, dirent[5], height)
+                )
+                entries.append(None)
+                continue
+        elif newheader[1] == 1:  # icon
+            # Apparently, planes and bit count are ignored and can be 0.
+            # if dirent[4]!=1:
+            # print("unsupported planes")
+            # entries.append(None); continue
+            # if dirent[5]!=1 and dirent[5]!=4 and dirent[5]!=8 and \
+            # dirent[5]!=24:
+            # print("unsupported bit count")
+            # entries.append(None); continue
+            pass
+        entries.append(
+            [width, height, colorcount, dirent[5], dirent[6], dirent[7] + ft]
+        )
+    for i in range(len(entries)):
+        if not entries[i]:
+            continue
+        f.seek(entries[i][5])
+        entries[i] = _readwiniconcore(f, entries[i], newheader[1] == 1)
+    return entries
 
 def _readicon(f):
     unusual = False
@@ -2138,8 +2444,8 @@ def _readicon(f):
     colormask = None
     colormaskscan = 0
     colormaskcolors = None
-    andmaskinfooffset = f.tell()
     andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
+    offsetToImage = andmaskinfo[3]
     hotspotX = 0
     hotspotY = 0
     if not isBitmap:
@@ -2221,6 +2527,7 @@ def _readicon(f):
             and andmaskhdr[4] != 4
             and andmaskhdr[4] != 8
             and andmaskhdr[4] != 24
+            and andmaskhdr[4] != 32
         ):
             print("unsupported bits per pixel: %d" % (andmaskhdr[4]))
             return None
@@ -2372,7 +2679,9 @@ def _readicon(f):
             for i in range((1 << andmaskhdr[4]) - andpalette):
                 clr = bytes([0, 0, 0])
                 andmaskcolors.append(clr)
-    f.seek(andmaskinfo[3])
+    # Offset from the beginning of the file, not necessarily
+    # from the beginning of the bitmap/icon/cursor header.
+    f.seek(offsetToImage)
     sz = andsizeImage if andsizeImage > 0 else andmaskbits
     andmask = f.read(sz)
     if len(andmask) != sz:
@@ -2420,6 +2729,8 @@ def _readicon(f):
             for i in range((1 << colorbpp) - colorpalette):
                 clr = f.read(bytes([0, 0, 0]))
                 colormaskcolors.append(clr)
+        # Offset from the beginning of the file, not necessarily
+        # from the beginning of the bitmap/icon/cursor header.
         f.seek(colormaskinfo[3])
         sz = colorsizeImage if colorsizeImage > 0 else colormaskbits
         colormask = f.read(sz)
@@ -2466,7 +2777,12 @@ def _readicon(f):
                 col = _readBitmapAsColorBGR(
                     andmask, andmaskscan, ch, bpp, x, y, andmaskcolors
                 )
-                setpixelbgralpha(ci, cw, ch, x, y, col + alpha1)
+                alpha = (
+                    alpha1
+                    if bpp
+                    else bytes(_readBitmapAlpha(andmask, andmaskscan, ch, bpp, x, y))
+                )
+                setpixelbgralpha(ci, cw, ch, x, y, col + alpha)
         ret = ci
         width = cw
         height = ch
@@ -2499,7 +2815,17 @@ def _readicon(f):
                     else _readBitmapAsColorBGR(
                         colormask, colormaskscan, ch, bpp, x, y, colormaskcolors
                     )
-                ) + (alpha1 if bitand == 0 else alpha0)
+                ) + (
+                    (
+                        alpha1
+                        if bpp
+                        else bytes(
+                            _readBitmapAlpha(colormask, colormaskscan, ch, bpp, x, y)
+                        )
+                    )
+                    if bitand == 0
+                    else alpha0
+                )
                 setpixelbgralpha(bl, cw, ch, x, y, px)
         width = cw
         height = ch
