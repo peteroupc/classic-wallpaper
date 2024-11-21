@@ -1322,161 +1322,6 @@ def writebmp(f, image, width, height, raiseIfExists=False):
         f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True
     )
 
-# Reads an OS/2 icon, pointer, bitmap, or bitmap array.
-# OS/2 icons have the '.ico' file extension; OS/2 cursors, '.ptr'; and
-# OS/2 bitmaps, '.bmp'.
-# Returns a list of three-element lists, representing the decoded images
-# in the order in which they were read.  If an icon, pointer, or
-# bitmap could not be read, the value None takes the place of the
-# corresponding three-element list.
-# Each three-element list in the returned list contains the image,
-# its width, and its height, in that order.
-# The returned image has the same format returned by the _blankimage_
-# method with alpha=True.
-def reados2icon(infile):
-    f = open(infile, "rb")
-    try:
-        return _readiconcore(f)
-    finally:
-        f.close()
-
-def _readiconcore(f):
-    tag = f.read(2)
-    # Bitmap array (BA)
-    # NOTE: BA=>'PT'/'CP' allows for animated pointers.
-    # NOTE: BA=>'IC'/'CI' allows for varying the icon's
-    #   size or color depth.
-    if tag == b"BA":
-        f.seek(0)
-        # The first offset is "device independent";
-        # the others are "device dependent".
-        offsets = [0x0E]
-        infos = []
-        while True:
-            tag = f.read(2)
-            if tag != b"BA":
-                raise ValueError
-            info = struct.unpack(
-                "<LLHH", f.read(0x0C)
-            )  # size, next, display width in pixels,
-            # display height in pixels (the latter two
-            # can be zero)
-            # Combinations of display width/height seen
-            # include 640x200 (CGA, usually with half-height
-            # icons), 640x350 (EGA), 640x480, 1024x768.
-            endInfo = f.tell()
-            infos.append(info)
-            if info[1] == 0:
-                break
-            else:
-                contentSize = info[1] - endInfo
-                if contentSize < 2:
-                    raise ValueError("unsupported content size")
-                offsets.append(0x0E + info[1])
-                f.seek(info[1])
-        ret = []
-        for i in range(len(offsets)):
-            f.seek(offsets[i])
-            ret.append(_readicon(f))
-        return ret
-    else:
-        f.seek(0)
-        return [_readicon(f)]
-
-# Reads the color table from an OS/2 palette file.
-# Returns an list of the colors read from the file.
-# Each element in the list is a list consisting of
-# the color's red, green, and blue component, in that
-# order; each component is an integer from 0 through 255.
-def reados2palette(f):
-    tag = struct.unpack("<HH", f.read(4))
-    if tag[0] != 0x983:
-        raise ValueError
-    pal = [None for i in range(tag[1])]
-    for i in range(tag[1]):
-        col = f.read(3)
-        # NOTE: The ordering of the elements
-        # in palette resources is blue, green,
-        # red.
-        pal[i] = [col[2], col[1], col[0]]
-    # After the colors come tag[1] many bytes,
-    # but all of them are zeros in the palette files
-    # I've found so far
-    return pal
-
-# Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
-# An OS/2 theme resource file is a collection of OS/2 resources
-# such as bitmaps, icons, pointers, and text string tables.
-# These theme resource files have the extensions .itr, .cmr, .ecr,
-# .inr, .mmr, and .pmr.
-# Returns a list of elements, each of which has the format described
-# in the _reados2icon_ method.
-def readitr(infile):
-    f = open(infile, "rb")
-    try:
-        ret = []
-        i = 0
-        while True:
-            head = f.read(12)
-            if len(head) == 0:
-                return ret
-            st = struct.unpack("<HBHBHL", head)
-            st0 = (st[0] << 8) | st[1]
-            st1 = (st[2] << 8) | st[3]
-            size = st[5]
-            if size < 2:
-                raise ValueError("unsupported content size")
-            pos = f.tell()
-            data = f.read(size)
-            if len(data) != size:
-                raise ValueError
-            tag = data[0:2]
-            if (
-                tag != b"CI"
-                and tag != b"BA"
-                and tag != b"CP"
-                and tag != b"IC"
-                and tag != b"PT"
-                and tag != b"BM"
-            ):
-                # Not an image, skipping
-                i += 1
-                continue
-            ret.append(_readiconcore(io.BytesIO(data)))
-            i += 1
-    finally:
-        f.close()
-
-def _read1bppBitmap(byteData, scanSize, height, x, y):
-    # Reads the bit value of an array of bottom-up 1-bit-per-pixel
-    # Windows or OS/2 bitmap data.
-    return (byteData[scanSize * (height - 1 - y) + (x >> 3)] >> (7 - (x & 7))) & 1
-
-def _read4bppBitmap(byteData, scanSize, height, x, y):
-    # Reads the bit value of an array of bottom-up 4-bit-per-pixel
-    # Windows or OS/2 bitmap data.
-    return (
-        byteData[scanSize * (height - 1 - y) + (x >> 1)] >> (4 * (1 - (x & 1)))
-    ) & 0x0F
-
-def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
-    # Reads the pixel color value at the given position of a bitmap image,
-    # represented by an array of bottom-up Windows or OS/2 bitmap data.
-    # The color value is returned as an array containing the blue, green,
-    # and red components, in that order.
-    match bpp:
-        case 1:
-            return palette[_read1bppBitmap(byteData, scanSize, height, x, y)]
-        case 4:
-            return palette[_read4bppBitmap(byteData, scanSize, height, x, y)]
-        case 8:
-            return palette[byteData[scanSize * (height - 1 - y) + x]]
-        case 24:
-            row = scanSize * (height - 1 - y)
-            return byteData[row + x * 3 : row + x * 3 + 3]
-        case _:
-            raise ValueError("Bits per pixel not supported")
-
 def _rle8decompress(bitdata, dst, width, height):
     # RLE compression for 8-bit-per-pixel bitmaps.
     # This method assumes that all the elements in 'dst' are zeros.
@@ -1893,7 +1738,6 @@ def _nexthuffcode(ctx):
             return None
         trail = (trail << 1) | (0 if b == 0 else 1)
         key = (zeros, i + 3, trail) if zeros < 7 else (i + 3, trail)
-        print(key)
         if color == 0 and key in (_HUFFWHITES if zeros < 7 else _HUFFBOTH):
             ret = [0, _HUFFWHITES[key] if zeros < 7 else _HUFFBOTH[key]]
             if _istermcode(ret):
@@ -1947,14 +1791,17 @@ def _writebitstodest(ctx, bit, count):
             ctx[5] += 8
             i += 8
         elif bit == 1:
+            # set next bit
             dst[ctx[4]] |= 1 << (7 - ctx[5])
             ctx[5] += 1
             i += 1
         else:
+            # clear next bit
             dst[ctx[4]] &= ~(1 << (7 - ctx[5]))
             ctx[5] += 1
             i += 1
         if ctx[5] >= 8:
+            # move to next byte
             ctx[4] += 1
             ctx[5] = 0
     return True
@@ -1990,11 +1837,6 @@ def _huffmandecompress(bitdata, dst, width, height):
             lastWasMakeup = False
         elif _ismakeupcode(code):
             if y < 0:
-                return False
-            if lastWasMakeup:
-                # This method doesn't support multiple
-                # consecutive makeup codes; other implementations
-                # may support them as an extension to Rec. T.4
                 return False
             consecstartcodes = 0
             bitcount += _codebitcount(code)
@@ -2115,6 +1957,167 @@ def _rle4decompress(bitdata, dst, width, height):
                         if bits >= len(bitdata):
                             return False
                         bits += 1
+
+# Reads an OS/2 icon, pointer, bitmap, or bitmap array.
+# OS/2 icons have the '.ico' file extension; OS/2 cursors, '.ptr'; and
+# OS/2 bitmaps, '.bmp'.
+# Returns a list of three-element lists, representing the decoded images
+# in the order in which they were read.  If an icon, pointer, or
+# bitmap could not be read, the value None takes the place of the
+# corresponding three-element list.
+# Each three-element list in the returned list contains the image,
+# its width, and its height, in that order.
+# The returned image has the same format returned by the _blankimage_
+# method with alpha=True.
+def reados2icon(infile):
+    f = open(infile, "rb")
+    try:
+        return reados2iconcore(f)
+    finally:
+        f.close()
+
+# Same as 'reados2icon', but takes an I/O object such as one
+# returned by Python's 'open' method.
+def reados2iconcore(f):
+    tag = f.read(2)
+    # Bitmap array (BA)
+    # NOTE: BA=>'PT'/'CP' allows for animated pointers.
+    # NOTE: BA=>'IC'/'CI' allows for varying the icon's
+    #   size or color depth.
+    if tag == b"BA":
+        f.seek(0)
+        # The first offset is "device independent";
+        # the others are "device dependent".
+        offsets = [0x0E]
+        infos = []
+        while True:
+            tag = f.read(2)
+            if tag != b"BA":
+                raise ValueError
+            info = struct.unpack(
+                "<LLHH", f.read(0x0C)
+            )  # size, next, display width in pixels,
+            # display height in pixels (the latter two
+            # can be zero)
+            # Combinations of display width/height seen
+            # include 640x200 (CGA, usually with half-height
+            # icons), 640x350 (EGA), 640x480, 1024x768.
+            endInfo = f.tell()
+            infos.append(info)
+            if info[1] == 0:
+                break
+            else:
+                contentSize = info[1] - endInfo
+                if contentSize < 2:
+                    raise ValueError("unsupported content size")
+                offsets.append(0x0E + info[1])
+                f.seek(info[1])
+        ret = []
+        for i in range(len(offsets)):
+            f.seek(offsets[i])
+            ret.append(_readicon(f))
+        return ret
+    else:
+        f.seek(0)
+        return [_readicon(f)]
+
+# Reads the color table from an OS/2 palette file.
+# Returns an list of the colors read from the file.
+# Each element in the list is a list consisting of
+# the color's red, green, and blue component, in that
+# order; each component is an integer from 0 through 255.
+def reados2palette(f):
+    tag = struct.unpack("<HH", f.read(4))
+    if tag[0] != 0x983:
+        raise ValueError
+    pal = [None for i in range(tag[1])]
+    for i in range(tag[1]):
+        col = f.read(3)
+        # NOTE: The ordering of the elements
+        # in palette resources is blue, green,
+        # red.
+        pal[i] = [col[2], col[1], col[0]]
+    # After the colors come tag[1] many bytes,
+    # but all of them are zeros in the palette files
+    # I've found so far
+    return pal
+
+# Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
+# An OS/2 theme resource file is a collection of OS/2 resources
+# such as bitmaps, icons, pointers, and text string tables.
+# These theme resource files have the extensions .itr, .cmr, .ecr,
+# .inr, .mmr, and .pmr.
+# Returns a list of elements, each of which has the format described
+# in the _reados2icon_ method.
+def readitr(infile):
+    f = open(infile, "rb")
+    try:
+        ret = []
+        i = 0
+        nextpos = 0
+        while True:
+            f.seek(nextpos)
+            head = f.read(12)
+            if len(head) == 0:
+                return ret
+            st = struct.unpack("<HBHBHL", head)
+            st0 = (st[0] << 8) | st[1]
+            st1 = (st[2] << 8) | st[3]
+            size = st[5]
+            if size < 2:
+                raise ValueError("unsupported content size")
+            pos = f.tell()
+            data = f.read(size)
+            if len(data) != size:
+                raise ValueError
+            nextpos = f.tell()
+            tag = data[0:2]
+            if (
+                tag != b"CI"
+                and tag != b"BA"
+                and tag != b"CP"
+                and tag != b"IC"
+                and tag != b"PT"
+                and tag != b"BM"
+            ):
+                # Not an image, skipping
+                i += 1
+                continue
+            f.seek(pos)
+            ret.append(reados2iconcore(f))
+            i += 1
+    finally:
+        f.close()
+
+def _read1bppBitmap(byteData, scanSize, height, x, y):
+    # Reads the bit value of an array of bottom-up 1-bit-per-pixel
+    # Windows or OS/2 bitmap data.
+    return (byteData[scanSize * (height - 1 - y) + (x >> 3)] >> (7 - (x & 7))) & 1
+
+def _read4bppBitmap(byteData, scanSize, height, x, y):
+    # Reads the bit value of an array of bottom-up 4-bit-per-pixel
+    # Windows or OS/2 bitmap data.
+    return (
+        byteData[scanSize * (height - 1 - y) + (x >> 1)] >> (4 * (1 - (x & 1)))
+    ) & 0x0F
+
+def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
+    # Reads the pixel color value at the given position of a bitmap image,
+    # represented by an array of bottom-up Windows or OS/2 bitmap data.
+    # The color value is returned as an array containing the blue, green,
+    # and red components, in that order.
+    match bpp:
+        case 1:
+            return palette[_read1bppBitmap(byteData, scanSize, height, x, y)]
+        case 4:
+            return palette[_read4bppBitmap(byteData, scanSize, height, x, y)]
+        case 8:
+            return palette[byteData[scanSize * (height - 1 - y) + x]]
+        case 24:
+            row = scanSize * (height - 1 - y)
+            return byteData[row + x * 3 : row + x * 3 + 3]
+        case _:
+            raise ValueError("Bits per pixel not supported")
 
 def _readicon(f):
     unusual = False
@@ -2375,7 +2378,7 @@ def _readicon(f):
     if len(andmask) != sz:
         print("Failure: %d %d" % (len(andmask), sz))
         return None
-    if andcompression >= 0:
+    if andcompression > 0:
         deco = [0 for i in range(andmaskbits)]
         if andcompression == 1 and not _rle8decompress(
             andmask, deco, andmaskhdr[1], andmaskhdr[2]
@@ -2423,7 +2426,7 @@ def _readicon(f):
         if len(colormask) != sz:
             print("Failure: %d %d" % (len(andmask), sz))
             return None
-        if colorcompression >= 0:
+        if colorcompression > 0:
             deco = [0 for i in range(colormaskbits)]
             if colorcompression == 1 and not _rle8decompress(
                 colormask, deco, colormaskhdr[1], colormaskhdr[2]
@@ -2815,7 +2818,10 @@ def _applyrop(dst, src, rop):
 # 'dstimage' and 'srcimage' are the destination and source images.
 # 'pattern' is a brush pattern image (also known as a stipple).
 # 'srcimage', 'maskimage', and 'patternimage' are optional.
-# All images have the same format returned by the _blankimage_ method with alpha=False.  Thus none of them can include transparent or translucent (semitransparent) pixels.
+# 'dstimage', 'srcimage', 'patternimage', and 'maskimage', to the extent given,
+# have the same format returned by the _blankimage_ method with the given value of 'alpha'.
+# The default value for 'alpha' is False, and the alpha channel of the images, if any, is ignored,
+# so that the images are treated as having no transparent or translucent (semitransparent) pixels.
 # (Windows's graphical device interface [GDI] supports transparent
 # pixels in brush patterns, but only for brushes
 # with predefined hatch patterns and only in the gaps between hatch marks; in
@@ -2885,6 +2891,7 @@ def imageblitex(
     ropForeground=0xCC,
     ropBackground=0xAA,
     wraparound=True,
+    alpha=False,
 ):
     if ropForeground < 0 or ropForeground >= 256:
         raise ValueError
@@ -2977,33 +2984,37 @@ def imageblitex(
             ropForeground,
             ropBackground,
             wraparound,
+            alpha=alpha,
         )
+    pixelsize = 4 if alpha else 3
     for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:
             dy %= dstheight
         if (not wraparound) and dy < 0 or dy >= dstheight:
             continue
-        sy = (y0src + y) * srcwidth * 3 if srcimage else 0
+        sy = (y0src + y) * srcwidth * pixelsize if srcimage else 0
         paty = (
-            (((dy - patternOrgY) % patternheight) * patternwidth * 3)
+            (((dy - patternOrgY) % patternheight) * patternwidth * pixelsize)
             if patternimage
             else 0
         )
-        masky = (y0mask + y) * maskwidth * 3 if maskimage else 0
-        dy = dy * dstwidth * 3
+        masky = (y0mask + y) * maskwidth * pixelsize if maskimage else 0
+        dy = dy * dstwidth * pixelsize
         for x in range(x1 - x0):
             dx = x0 + x
             if wraparound:
                 dx %= dstwidth
             if (not wraparound) and dx < 0 or dx >= dstwidth:
                 continue
-            dstpos = dy + dx * 3
-            srcpos = sy + (x0src + x) * 3
+            dstpos = dy + dx * pixelsize
+            srcpos = sy + (x0src + x) * pixelsize
             patpos = (
-                (paty + ((dx - patternOrgX) % patternwidth) * 3) if patternimage else 0
+                (paty + ((dx - patternOrgX) % patternwidth) * pixelsize)
+                if patternimage
+                else 0
             )
-            maskpos = masky + (x0mask + x) * 3 if maskimage else 0
+            maskpos = masky + (x0mask + x) * pixelsize if maskimage else 0
             for i in range(3):
                 s1 = srcimage[srcpos + i] if srcimage else 0
                 d1 = dstimage[dstpos + i] if dstimage else 0
@@ -3019,9 +3030,11 @@ def imageblitex(
                     sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
 
-# All images have the same format returned by the _blankimage_ method with alpha=False.
+# All images have the same format returned by the _blankimage_ method with the given value of 'alpha'.
+# The default value for 'alpha' is False, and the alpha channel of the images, if any, is ignored,
+# so that the images are treated as having no transparent or translucent (semitransparent) pixels.
 # 'ropForeground' and 'ropBackground' are as in imageblitex, except that
-# 'ropForeground' is used where the source color is not 'transcolor' or if
+# 'ropForeground' is used where the source color (in its red, green, and blue components) is not 'transcolor' or if
 # 'transcolor' is None; 'ropBackground' is used elsewhere.
 # The default for 'ropForeground' is 0xCC (copy the source to the destination), and the
 # default for 'ropBackground' is 0xAA (leave destination unchanged).
@@ -3050,6 +3063,7 @@ def imagetransblit(
     ropForeground=0xCC,
     ropBackground=0xAA,
     wraparound=True,
+    alpha=False,
 ):
     if transcolor == None:
         imageblitex(
@@ -3073,6 +3087,7 @@ def imagetransblit(
             ropForeground=ropForeground,
             ropBackground=ropBackground,
             wraparound=wraparound,
+            alpha=alpha,
         )
     if ropForeground < 0 or ropForeground >= 256:
         raise ValueError
@@ -3141,25 +3156,28 @@ def imagetransblit(
             ropBackground,
             wraparound,
         )
+    pixelsize = 4 if alpha else 3
     for y in range(y1 - y0):
         dy = y0 + y
         if wraparound:
             dy %= dstheight
         if (not wraparound) and dy < 0 or dy >= dstheight:
             continue
-        sy = (y0src + y) * srcwidth * 3
-        paty = ((dy + patternOrgY) % patternheight) * 3 if patternimage else 0
-        dy = dy * dstwidth * 3
+        sy = (y0src + y) * srcwidth * pixelsize
+        paty = ((dy + patternOrgY) % patternheight) * pixelsize if patternimage else 0
+        dy = dy * dstwidth * pixelsize
         for x in range(x1 - x0):
             dx = x0 + x
             if wraparound:
                 dx %= dstwidth
             if (not wraparound) and dx < 0 or dx >= dstwidth:
                 continue
-            dstpos = dy + dx * 3
-            srcpos = sy + (x0src + x) * 3
+            dstpos = dy + dx * pixelsize
+            srcpos = sy + (x0src + x) * pixelsize
             patpos = (
-                paty + ((dx + patternOrgX) % patternwidth) * 3 if patternimage else 0
+                paty + ((dx + patternOrgX) % patternwidth) * pixelsize
+                if patternimage
+                else 0
             )
             m1 = (
                 0x00
@@ -3597,7 +3615,7 @@ def blankimage(width, height, color=None, alpha=False):
 
 # Generates a tileable argyle pattern from two images of the
 # same size.  The images have the same format returned by the _blankimage_
-# method with alpha=False.  'backgroundImage' must be tileable if shiftImageBg=False;
+# method with the given value of 'alpha' (default value for 'alpha' is False).  'backgroundImage' must be tileable if shiftImageBg=False;
 # 'foregroundImage' need not be tileable.
 # 'expo' is a parameter that determines the shape in the middle of the image,
 # and can be any number greater than 0. If 1, the shape resembles a
@@ -4054,12 +4072,27 @@ def tograyditherstyle(image, width, height, palette=None, light=False, alpha=Fal
 
 # Dithers in place the given image to the colors in color palette returned by websafecolors().
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
-def websafeDither(image, width, height, alpha=False):
+# If 'includeVga' is True, leave unchanged any colors in the colorpalette returned by classiccolors(). Default is False.
+def websafeDither(image, width, height, alpha=False, includeVga=False):
     pixelSize = 4 if alpha else 3
+    if len(image) < width * height * pixelSize:
+        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
     for y in range(height):
         yp = y * width * pixelSize
         for x in range(width):
             xp = yp + x * pixelSize
+            if includeVga:
+                # Leave unchanged any colors in the VGA palette
+                # but not in the "safety palette".
+                c0 = image[xp]
+                if c0 == 0xC0:
+                    if image[xp + 1] == 0xC0 and image[xp + 2] == 0xC0:
+                        continue
+                elif c0 == 0x80 or c0 == 0:
+                    if (image[xp + 1] == 0 or image[xp + 1] == 0x80) and (
+                        image[xp + 2] == 0 or image[xp + 2] == 0x80
+                    ):
+                        continue
             for i in range(3):
                 c = image[xp + i]
                 cm = c % 51
@@ -4071,6 +4104,10 @@ def websafeDither(image, width, height, alpha=False):
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def eightColorDither(image, width, height, alpha=False):
     pixelSize = 4 if alpha else 3
+    if width < 0 or height < 0:
+        raise ValueError
+    if width == 0 or height == 0:
+        return
     if len(image) < width * height * pixelSize:
         raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
     for y in range(height):
@@ -4126,10 +4163,10 @@ def patternDither(image, width, height, palette, alpha=False):
             xp = yp + x * pixelSize
             e = [0, 0, 0]
             exact = False
+            ir = image[xp]
+            ig = image[xp + 1]
+            ib = image[xp + 2]
             for i in range(len(_DitherMatrix)):
-                ir = image[xp]
-                ig = image[xp + 1]
-                ib = image[xp + 2]
                 # "// 4" is equiv. to "* 0.25" where 0.25
                 # is the dithering strength
                 t0 = ir + e[0] // 4
@@ -4248,6 +4285,25 @@ def uicolorgradient(
 # Returns a 256-element color gradient for coloring user interface elements (for example,
 # using the 'graymap' function), given a desired button face color.  The parameters are all
 # three-element lists identifying colors.  Each parameter can be None.
+#
+# Example 1: Suppose 'img' is the image of a custom drawn button in grayscale,
+# with the button face colored light gray (192, 192, 192) and highlights
+# and shadows colored in other gray tones.  Then the following code colors
+# the gray tones of the button image and saves the resulting image to a file.
+#
+#  grad = dw.uicolorgradient2([220, 200, 150])
+#  img256 = dw.graymap([x for x in img], w, h, grad, ignoreNonGrays=True)
+#  dw.writepng("uielement.png", img, w, h)
+#
+# Example 2: Same as the previous example, but the image is first dithered
+# to have at most four gray tones, including possibly light gray.
+#
+#  img = dw.dithertograyimage(
+#    [x for x in img], w, h, [0, 128, 192, 255], ignoreNonGrays=True
+#  )
+#  grad = dw.uicolorgradient2([220, 200, 150])
+#  img256 = dw.graymap([x for x in img], w, h, grad, ignoreNonGrays=True)
+#  dw.writepng("uielement.png", img, w, h)
 def uicolorgradient2(btnface=None):
     if not btnface:
         btnface = [192, 192, 192]

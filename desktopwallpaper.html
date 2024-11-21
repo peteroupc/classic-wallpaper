@@ -185,7 +185,7 @@ Data descriptors defined here:<br>
     shiftImageBg=False
 )</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;argyle&nbsp;pattern&nbsp;from&nbsp;two&nbsp;images&nbsp;of&nbsp;the<br>
 #&nbsp;same&nbsp;size.&nbsp;&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_<br>
-#&nbsp;method&nbsp;with&nbsp;alpha=False.&nbsp;&nbsp;'backgroundImage'&nbsp;must&nbsp;be&nbsp;tileable&nbsp;if&nbsp;shiftImageBg=False;<br>
+#&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).&nbsp;&nbsp;'backgroundImage'&nbsp;must&nbsp;be&nbsp;tileable&nbsp;if&nbsp;shiftImageBg=False;<br>
 #&nbsp;'foregroundImage'&nbsp;need&nbsp;not&nbsp;be&nbsp;tileable.<br>
 #&nbsp;'expo'&nbsp;is&nbsp;a&nbsp;parameter&nbsp;that&nbsp;determines&nbsp;the&nbsp;shape&nbsp;in&nbsp;the&nbsp;middle&nbsp;of&nbsp;the&nbsp;image,<br>
 #&nbsp;and&nbsp;can&nbsp;be&nbsp;any&nbsp;number&nbsp;greater&nbsp;than&nbsp;0.&nbsp;If&nbsp;1,&nbsp;the&nbsp;shape&nbsp;resembles&nbsp;a<br>
@@ -574,12 +574,16 @@ Data descriptors defined here:<br>
     y0mask=0,
     ropForeground=204,
     ropBackground=170,
-    wraparound=True
+    wraparound=True,
+    alpha=False
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;copy&nbsp;of&nbsp;an&nbsp;image&nbsp;on&nbsp;another&nbsp;image.<br>
 #&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;are&nbsp;the&nbsp;destination&nbsp;and&nbsp;source&nbsp;images.<br>
 #&nbsp;'pattern'&nbsp;is&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple).<br>
 #&nbsp;'srcimage',&nbsp;'maskimage',&nbsp;and&nbsp;'patternimage'&nbsp;are&nbsp;optional.<br>
-#&nbsp;All&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.&nbsp;&nbsp;Thus&nbsp;none&nbsp;of&nbsp;them&nbsp;can&nbsp;include&nbsp;transparent&nbsp;or&nbsp;translucent&nbsp;(semitransparent)&nbsp;pixels.<br>
+#&nbsp;'dstimage',&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;and&nbsp;'maskimage',&nbsp;to&nbsp;the&nbsp;extent&nbsp;given,<br>
+#&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;and&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;of&nbsp;the&nbsp;images,&nbsp;if&nbsp;any,&nbsp;is&nbsp;ignored,<br>
+#&nbsp;so&nbsp;that&nbsp;the&nbsp;images&nbsp;are&nbsp;treated&nbsp;as&nbsp;having&nbsp;no&nbsp;transparent&nbsp;or&nbsp;translucent&nbsp;(semitransparent)&nbsp;pixels.<br>
 #&nbsp;(Windows's&nbsp;graphical&nbsp;device&nbsp;interface&nbsp;[GDI]&nbsp;supports&nbsp;transparent<br>
 #&nbsp;pixels&nbsp;in&nbsp;brush&nbsp;patterns,&nbsp;but&nbsp;only&nbsp;for&nbsp;brushes<br>
 #&nbsp;with&nbsp;predefined&nbsp;hatch&nbsp;patterns&nbsp;and&nbsp;only&nbsp;in&nbsp;the&nbsp;gaps&nbsp;between&nbsp;hatch&nbsp;marks;&nbsp;in<br>
@@ -652,10 +656,13 @@ Data descriptors defined here:<br>
     patternOrgY=0,
     ropForeground=204,
     ropBackground=170,
-    wraparound=True
-)</dt><dd><span class="code">#&nbsp;All&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+    wraparound=True,
+    alpha=False
+)</dt><dd><span class="code">#&nbsp;All&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;and&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;of&nbsp;the&nbsp;images,&nbsp;if&nbsp;any,&nbsp;is&nbsp;ignored,<br>
+#&nbsp;so&nbsp;that&nbsp;the&nbsp;images&nbsp;are&nbsp;treated&nbsp;as&nbsp;having&nbsp;no&nbsp;transparent&nbsp;or&nbsp;translucent&nbsp;(semitransparent)&nbsp;pixels.<br>
 #&nbsp;'ropForeground'&nbsp;and&nbsp;'ropBackground'&nbsp;are&nbsp;as&nbsp;in&nbsp;imageblitex,&nbsp;except&nbsp;that<br>
-#&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;source&nbsp;color&nbsp;is&nbsp;not&nbsp;'transcolor'&nbsp;or&nbsp;if<br>
+#&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;source&nbsp;color&nbsp;(in&nbsp;its&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components)&nbsp;is&nbsp;not&nbsp;'transcolor'&nbsp;or&nbsp;if<br>
 #&nbsp;'transcolor'&nbsp;is&nbsp;None;&nbsp;'ropBackground'&nbsp;is&nbsp;used&nbsp;elsewhere.<br>
 #&nbsp;The&nbsp;default&nbsp;for&nbsp;'ropForeground'&nbsp;is&nbsp;0xCC&nbsp;(copy&nbsp;the&nbsp;source&nbsp;to&nbsp;the&nbsp;destination),&nbsp;and&nbsp;the<br>
 #&nbsp;default&nbsp;for&nbsp;'ropBackground'&nbsp;is&nbsp;0xAA&nbsp;(leave&nbsp;destination&nbsp;unchanged).<br>
@@ -768,6 +775,8 @@ Data descriptors defined here:<br>
 #&nbsp;its&nbsp;width,&nbsp;and&nbsp;its&nbsp;height,&nbsp;in&nbsp;that&nbsp;order.<br>
 #&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_<br>
 #&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
+ <dl><dt><a name="-reados2iconcore"><strong>reados2iconcore</strong></a>(f)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;'reados2icon',&nbsp;but&nbsp;takes&nbsp;an&nbsp;I/O&nbsp;<a href="builtins.html#object">object</a>&nbsp;such&nbsp;as&nbsp;one<br>
+#&nbsp;returned&nbsp;by&nbsp;Python's&nbsp;'open'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(f)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;palette&nbsp;file.<br>
 #&nbsp;Returns&nbsp;an&nbsp;list&nbsp;of&nbsp;the&nbsp;colors&nbsp;read&nbsp;from&nbsp;the&nbsp;file.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;list&nbsp;consisting&nbsp;of<br>
@@ -850,7 +859,26 @@ Data descriptors defined here:<br>
 #&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can&nbsp;be&nbsp;None.</span></dd></dl>
  <dl><dt><a name="-uicolorgradient2"><strong>uicolorgradient2</strong></a>(btnface=None)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;for&nbsp;coloring&nbsp;user&nbsp;interface&nbsp;elements&nbsp;(for&nbsp;example,<br>
 #&nbsp;using&nbsp;the&nbsp;'graymap'&nbsp;function),&nbsp;given&nbsp;a&nbsp;desired&nbsp;button&nbsp;face&nbsp;color.&nbsp;&nbsp;The&nbsp;parameters&nbsp;are&nbsp;all<br>
-#&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can&nbsp;be&nbsp;None.</span></dd></dl>
+#&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can&nbsp;be&nbsp;None.<br>
+#<br>
+#&nbsp;Example&nbsp;1:&nbsp;Suppose&nbsp;'img'&nbsp;is&nbsp;the&nbsp;image&nbsp;of&nbsp;a&nbsp;custom&nbsp;drawn&nbsp;button&nbsp;in&nbsp;grayscale,<br>
+#&nbsp;with&nbsp;the&nbsp;button&nbsp;face&nbsp;colored&nbsp;light&nbsp;gray&nbsp;(192,&nbsp;192,&nbsp;192)&nbsp;and&nbsp;highlights<br>
+#&nbsp;and&nbsp;shadows&nbsp;colored&nbsp;in&nbsp;other&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Then&nbsp;the&nbsp;following&nbsp;code&nbsp;colors<br>
+#&nbsp;the&nbsp;gray&nbsp;tones&nbsp;of&nbsp;the&nbsp;button&nbsp;image&nbsp;and&nbsp;saves&nbsp;the&nbsp;resulting&nbsp;image&nbsp;to&nbsp;a&nbsp;file.<br>
+#<br>
+#&nbsp;&nbsp;grad&nbsp;=&nbsp;dw.<a href="#-uicolorgradient2">uicolorgradient2</a>([220,&nbsp;200,&nbsp;150])<br>
+#&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;ignoreNonGrays=True)<br>
+#&nbsp;&nbsp;dw.<a href="#-writepng">writepng</a>("uielement.png",&nbsp;img,&nbsp;w,&nbsp;h)<br>
+#<br>
+#&nbsp;Example&nbsp;2:&nbsp;Same&nbsp;as&nbsp;the&nbsp;previous&nbsp;example,&nbsp;but&nbsp;the&nbsp;image&nbsp;is&nbsp;first&nbsp;dithered<br>
+#&nbsp;to&nbsp;have&nbsp;at&nbsp;most&nbsp;four&nbsp;gray&nbsp;tones,&nbsp;including&nbsp;possibly&nbsp;light&nbsp;gray.<br>
+#<br>
+#&nbsp;&nbsp;img&nbsp;=&nbsp;dw.<a href="#-dithertograyimage">dithertograyimage</a>(<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;[x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;128,&nbsp;192,&nbsp;255],&nbsp;ignoreNonGrays=True<br>
+#&nbsp;&nbsp;)<br>
+#&nbsp;&nbsp;grad&nbsp;=&nbsp;dw.<a href="#-uicolorgradient2">uicolorgradient2</a>([220,&nbsp;200,&nbsp;150])<br>
+#&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;ignoreNonGrays=True)<br>
+#&nbsp;&nbsp;dw.<a href="#-writepng">writepng</a>("uielement.png",&nbsp;img,&nbsp;w,&nbsp;h)</span></dd></dl>
  <dl><dt><a name="-unavailable"><strong>unavailable</strong></a>(
     bgColor=None,
     buttonShadow=None,
@@ -881,8 +909,9 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;vertical&nbsp;hatch&nbsp;pattern.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False, includeVga=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;If&nbsp;'includeVga'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;unchanged&nbsp;any&nbsp;colors&nbsp;in&nbsp;the&nbsp;colorpalette&nbsp;returned&nbsp;by&nbsp;<a href="#-classiccolors">classiccolors</a>().&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-websafecolors"><strong>websafecolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;216&nbsp;colors&nbsp;of&nbsp;the&nbsp;"safety&nbsp;palette",&nbsp;also&nbsp;known&nbsp;as&nbsp;the<br>
 #&nbsp;"Web&nbsp;safe"&nbsp;palette.</span></dd></dl>
  <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
