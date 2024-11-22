@@ -991,6 +991,7 @@ def writeanicursor(
     colortables = []
     numuniqueslist = []
     uniquecolorslist = []
+    bpplist = []
     for i in range(len(images)):
         colormask = newimages[i][0]
         monomask = newimages[i][1]
@@ -999,34 +1000,51 @@ def writeanicursor(
         numuniques = 0
         pos = 0
         semitransparent = False
-        for y in range(height * width):
-            a = images[i][pos + 3]
+        for a in monomask:
             if a > 0 and a < 255:
                 semitransparent = True
                 break
-            pos += 4
         pos = 0
         if semitransparent:
-            print("Images with semitransparent pixels not yet supported")
-            return
-        for y in range(height * width):
-            c = colormask[pos] | (colormask[pos + 1] << 8) | (colormask[pos + 2] << 16)
-            if c not in uniquecolors:
-                uniquecolors[c] = numuniques
-                if numuniques >= 256:
-                    # More than 256 unique colors
+            # Image has semitransparent pixels, so set the mono mask
+            # to zero on all such pixels, to conform to how Windows
+            # behaves when icons with such pixels are drawn
+            for i in range(len(monomask)):
+                if monomask[i] < 255:
+                    monomask[i] = 0
+            # Only 32-bit-per-pixel icons support semitransparent pixels, so
+            # assume image has more than 256 colors to avoid relying
+            # on the color table
+            numuniques = 257
+        else:
+            for y in range(height * width):
+                c = (
+                    colormask[pos]
+                    | (colormask[pos + 1] << 8)
+                    | (colormask[pos + 2] << 16)
+                )
+                if c not in uniquecolors:
+                    uniquecolors[c] = numuniques
+                    if numuniques >= 256:
+                        # More than 256 unique colors
+                        numuniques += 1
+                        break
+                    colortable[numuniques * 4] = colormask[pos + 2]
+                    colortable[numuniques * 4 + 1] = colormask[pos + 1]
+                    colortable[numuniques * 4 + 2] = colormask[pos]
+                    colortable[numuniques * 4 + 3] = 0
                     numuniques += 1
-                    break
-                colortable[numuniques * 4] = colormask[pos + 2]
-                colortable[numuniques * 4 + 1] = colormask[pos + 1]
-                colortable[numuniques * 4 + 2] = colormask[pos]
-                colortable[numuniques * 4 + 3] = 0
-                numuniques += 1
-            pos += 3
-        if numuniques > 256:
-            # TODO: Support more than 256 unique colors
-            # as well as images with semitransparent pixels
-            return  # raise ValueError
+                pos += 3
+        bpp = (
+            1
+            if _blackWhiteOnly(colortable, numuniques)
+            else (
+                4
+                if numuniques <= 16
+                else (8 if numuniques <= 256 else (32 if semitransparent else 24))
+            )
+        )
+        bpplist.append(bpp)
         numuniqueslist.append(numuniques)
         colortables.append(colortable)
         uniquecolorslist.append(uniquecolors)
@@ -1038,14 +1056,15 @@ def writeanicursor(
     iconheaders = []
     for i in range(len(images)):
         numuniques = numuniqueslist[i]
-        bpp = (
-            1
-            if _blackWhiteOnly(colortables[i], numuniques)
-            else (4 if numuniques <= 16 else 8)
-        )
+        bpp = bpplist[i]
         scansize = ((width * bpp + 31) >> 5) << 2
         scansize1 = ((width * 1 + 31) >> 5) << 2
-        imagesize = 0x28 + 4 * (1 << bpp) + scansize * height + scansize1 * height
+        imagesize = (
+            0x28
+            + (0 if bpp > 8 else 4 * (1 << bpp))
+            + scansize * height
+            + scansize1 * height
+        )
         iconheader = struct.pack(
             "<HHHBBBBHHLL",
             0,
@@ -1096,14 +1115,11 @@ def writeanicursor(
                         _writeChunkHead(f, sub2)
                     if sub2[0] == b"icon":
                         numuniques = numuniqueslist[i]
-                        bpp = (
-                            1
-                            if _blackWhiteOnly(colortables[i], numuniques)
-                            else (4 if numuniques <= 16 else 8)
-                        )
+                        bpp = bpplist[i]
                         scansize = ((width * bpp + 31) >> 5) << 2
                         scansize1 = ((width * 1 + 31) >> 5) << 2
                         colormask = newimages[i][0]
+                        origmask = images[i]
                         monomask = newimages[i][1]
                         bitmapinfo = struct.pack(
                             "<LllHHLLllLL",
@@ -1129,28 +1145,46 @@ def writeanicursor(
                         bitmapbits = [0 for i in range(scansize * height)]
                         maskbits = [0 for i in range(scansize1 * height)]
                         pos = 0
+                        mpos = 0
                         for y in range(height):
                             for x in range(width):
-                                col = uniquecolors[
-                                    colormask[pos]
-                                    | (colormask[pos + 1] << 8)
-                                    | (colormask[pos + 2] << 16)
-                                ]
-                                mask = 1 if monomask[pos] != 0 else 0
-                                if bpp == 1:
-                                    bitmapbits[
-                                        scansize1 * (height - 1 - y) + (x >> 3)
-                                    ] |= col << (7 - (x & 7))
-                                elif bpp == 4:
-                                    bitmapbits[
-                                        scansize * (height - 1 - y) + (x >> 1)
-                                    ] |= col << (4 * (1 - (x & 1)))
-                                else:
-                                    bitmapbits[scansize * (height - 1 - y) + x] = col
+                                if bpp <= 8:
+                                    col = uniquecolors[
+                                        colormask[pos]
+                                        | (colormask[pos + 1] << 8)
+                                        | (colormask[pos + 2] << 16)
+                                    ]
+                                    if bpp == 1:
+                                        bitmapbits[
+                                            scansize * (height - 1 - y) + (x >> 3)
+                                        ] |= col << (7 - (x & 7))
+                                    elif bpp == 4:
+                                        bitmapbits[
+                                            scansize * (height - 1 - y) + (x >> 1)
+                                        ] |= col << (4 * (1 - (x & 1)))
+                                    else:
+                                        bitmapbits[scansize * (height - 1 - y) + x] = (
+                                            col
+                                        )
+                                    pos += 3
+                                elif bpp == 32:
+                                    bpos = scansize * (height - 1 - y) + x * 4
+                                    bitmapbits[bpos] = origmask[pos + 2]
+                                    bitmapbits[bpos + 1] = origmask[pos + 1]
+                                    bitmapbits[bpos + 2] = origmask[pos + 0]
+                                    bitmapbits[bpos + 3] = origmask[pos + 3]
+                                    pos += 4
+                                elif bpp == 24:
+                                    bpos = scansize * (height - 1 - y) + x * 3
+                                    bitmapbits[bpos] = colormask[pos + 2]
+                                    bitmapbits[bpos + 1] = colormask[pos + 1]
+                                    bitmapbits[bpos + 2] = colormask[pos + 0]
+                                    pos += 3
+                                mask = 1 if monomask[mpos] != 0 else 0
                                 maskbits[
                                     scansize1 * (height - 1 - y) + (x >> 3)
                                 ] |= mask << (7 - (x & 7))
-                                pos += 3
+                                mpos += 3
                         f.write(bytes(bitmapbits))
                         f.write(bytes(maskbits))
                     else:
