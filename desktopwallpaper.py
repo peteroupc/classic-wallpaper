@@ -925,6 +925,239 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
 
+def _isRiffOrListChunk(chunk):
+    return chunk[0] == b"RIFF" or chunk[0] == b"LIST"
+
+def _getRiffChunkSize(chunk):
+    if _isRiffOrListChunk(chunk):
+        sz = 4
+        for subchunk in chunk[2]:
+            sz += 8 + _getRiffChunkSize(subchunk)
+        return sz
+    else:
+        return chunk[1]
+
+def _writeChunkHead(f, chunk):
+    f.write(bytes(chunk[0]))
+    f.write(struct.pack("<L", _getRiffChunkSize(chunk)))
+    if _isRiffOrListChunk(chunk):
+        f.write(bytes(chunk[1]))
+
+def _blackWhiteOnly(colortable, numuniques):
+    return (
+        numuniques == 0
+        or (
+            numuniques == 1
+            and colortable[0] == colortable[1]
+            and colortable[0] == colortable[2]
+            and (colortable[0] == 0 or colortable[0] == 255)
+        )
+        or (
+            numuniques == 2
+            and colortable[0] == colortable[1]
+            and colortable[0] == colortable[2]
+            and (colortable[0] == 0 or colortable[0] == 255)
+            and colortable[3] == colortable[4]
+            and colortable[3] == colortable[5]
+            and (colortable[3] == 0 or colortable[3] == 255)
+        )
+    )
+
+# Images have the same format returned by the _blankimage_ method with alpha=True.
+def writeanicursor(
+    outfile,
+    images,
+    width,
+    height,
+    raiseIfExists=False,
+    singleFrameAsCur=False,
+    asIcon=False,
+    hotx=0,
+    hoty=0,
+    fps=20,
+):
+    if (not images) or len(images) == 0:
+        raise ValueError
+    if width < 0 or height < 0:
+        raise ValueError
+    # large animated cursors are not supported
+    if width > 256 or height > 256:
+        raise ValueError
+    if fps <= 0:
+        raise ValueError
+    if hotx < 0 or hoty < 0 or hotx > width or hoty > height:
+        raise ValueError
+    newimages = [splitmask(img, width, height) for img in images]
+    colortables = []
+    numuniqueslist = []
+    uniquecolorslist = []
+    for i in range(len(images)):
+        colormask = newimages[i][0]
+        monomask = newimages[i][1]
+        uniquecolors = {}
+        colortable = [0 for i in range(1024)]
+        numuniques = 0
+        pos = 0
+        semitransparent = False
+        for y in range(height * width):
+            a = images[i][pos + 3]
+            if a > 0 and a < 255:
+                semitransparent = True
+                break
+            pos += 4
+        pos = 0
+        if semitransparent:
+            print("Images with semitransparent pixels not yet supported")
+            return
+        for y in range(height * width):
+            c = colormask[pos] | (colormask[pos + 1] << 8) | (colormask[pos + 2] << 16)
+            if c not in uniquecolors:
+                uniquecolors[c] = numuniques
+                if numuniques >= 256:
+                    # More than 256 unique colors
+                    numuniques += 1
+                    break
+                colortable[numuniques * 4] = colormask[pos + 2]
+                colortable[numuniques * 4 + 1] = colormask[pos + 1]
+                colortable[numuniques * 4 + 2] = colormask[pos]
+                colortable[numuniques * 4 + 3] = 0
+                numuniques += 1
+            pos += 3
+        if numuniques > 256:
+            # TODO: Support more than 256 unique colors
+            # as well as images with semitransparent pixels
+            return  # raise ValueError
+        numuniqueslist.append(numuniques)
+        colortables.append(colortable)
+        uniquecolorslist.append(uniquecolors)
+    riff = [b"RIFF", b"ACON", []]
+    riff[2].append([b"anih", 0x24])
+    riff[2].append([b"rate", len(images) * 4])
+    listchunk = [b"LIST", b"fram", []]
+    riff[2].append(listchunk)
+    iconheaders = []
+    for i in range(len(images)):
+        numuniques = numuniqueslist[i]
+        bpp = (
+            1
+            if _blackWhiteOnly(colortables[i], numuniques)
+            else (4 if numuniques <= 16 else 8)
+        )
+        scansize = ((width * bpp + 31) >> 5) << 2
+        scansize1 = ((width * 1 + 31) >> 5) << 2
+        imagesize = 0x28 + 4 * (1 << bpp) + scansize * height + scansize1 * height
+        iconheader = struct.pack(
+            "<HHHBBBBHHLL",
+            0,
+            1 if asIcon else 2,
+            1,
+            0 if width == 256 else width,
+            0 if height == 256 else height,
+            0,
+            0,
+            0 if asIcon else hotx,
+            0 if asIcon else hoty,
+            imagesize,
+            0x16,
+        )
+        iconheaders.append(iconheader)
+        listchunk[2].append([b"icon", 0x16 + imagesize])
+    f = open(outfile, "xb" if raiseIfExists else "wb")
+    multiIcon = len(images) > 1 or not singleFrameAsCur
+    try:
+        if multiIcon:
+            _writeChunkHead(f, riff)
+        for sub in riff[2]:
+            if multiIcon:
+                _writeChunkHead(f, sub)
+            if sub[0] == b"anih":
+                anih = struct.pack(
+                    "<LLLLLLLLL",
+                    0x24,
+                    len(images),  # number of images
+                    len(images),  # number of frames
+                    0,
+                    0,
+                    0,
+                    0,
+                    max(1, 60 // fps),
+                    1,
+                )
+                if multiIcon:
+                    f.write(anih)
+            elif sub[0] == b"rate":
+                if multiIcon:
+                    for i in range(len(images)):
+                        f.write(struct.pack("<L", max(1, 60 // fps)))
+            elif sub[0] == b"LIST":
+                for i in range(len(sub[2])):
+                    sub2 = sub[2][i]
+                    if multiIcon:
+                        _writeChunkHead(f, sub2)
+                    if sub2[0] == b"icon":
+                        numuniques = numuniqueslist[i]
+                        bpp = (
+                            1
+                            if _blackWhiteOnly(colortables[i], numuniques)
+                            else (4 if numuniques <= 16 else 8)
+                        )
+                        scansize = ((width * bpp + 31) >> 5) << 2
+                        scansize1 = ((width * 1 + 31) >> 5) << 2
+                        colormask = newimages[i][0]
+                        monomask = newimages[i][1]
+                        bitmapinfo = struct.pack(
+                            "<LllHHLLllLL",
+                            40,
+                            width,
+                            height * 2,
+                            1,
+                            bpp,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                        )
+                        if bpp <= 8:
+                            bitmapinfo += bytes(
+                                [colortables[i][k] for k in range((1 << bpp) * 4)]
+                            )
+                        f.write(iconheaders[i])
+                        f.write(bitmapinfo)
+                        uniquecolors = uniquecolorslist[i]
+                        bitmapbits = [0 for i in range(scansize * height)]
+                        maskbits = [0 for i in range(scansize1 * height)]
+                        pos = 0
+                        for y in range(height):
+                            for x in range(width):
+                                col = uniquecolors[
+                                    colormask[pos]
+                                    | (colormask[pos + 1] << 8)
+                                    | (colormask[pos + 2] << 16)
+                                ]
+                                mask = 1 if monomask[pos] != 0 else 0
+                                if bpp == 1:
+                                    bitmapbits[
+                                        scansize1 * (height - 1 - y) + (x >> 3)
+                                    ] |= col << (7 - (x & 7))
+                                elif bpp == 4:
+                                    bitmapbits[
+                                        scansize * (height - 1 - y) + (x >> 1)
+                                    ] |= col << (4 * (1 - (x & 1)))
+                                else:
+                                    bitmapbits[scansize * (height - 1 - y) + x] = col
+                                maskbits[
+                                    scansize1 * (height - 1 - y) + (x >> 3)
+                                ] |= mask << (7 - (x & 7))
+                                pos += 3
+                        f.write(bytes(bitmapbits))
+                        f.write(bytes(maskbits))
+                    else:
+                        raise RuntimeError
+    finally:
+        f.close()
+
 # Images have the same format returned by the _blankimage_ method with alpha=False.
 def writeavi(
     f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False, fps=20
@@ -1009,24 +1242,7 @@ def writeavi(
     compressionMode = 2 if rle4 else (1 if rle8 else 0)
     # For compatibility reasons, support writing two-color BMPs/AVIs only if no colors
     # other than black and white are in the color table and if uncompressed
-    support2color = (compressionMode == 0) and (
-        numuniques == 0
-        or (
-            numuniques == 1
-            and colortable[0] == colortable[1]
-            and colortable[0] == colortable[2]
-            and (colortable[0] == 0 or colortable[0] == 255)
-        )
-        or (
-            numuniques == 2
-            and colortable[0] == colortable[1]
-            and colortable[0] == colortable[2]
-            and (colortable[0] == 0 or colortable[0] == 255)
-            and colortable[3] == colortable[4]
-            and colortable[3] == colortable[5]
-            and (colortable[3] == 0 or colortable[3] == 255)
-        )
-    )
+    support2color = (compressionMode == 0) and _blackWhiteOnly(colortable, numuniques)
     scansize = 0
     bpp = 24
     if support2color and numuniques <= 2:
@@ -1426,7 +1642,8 @@ def _rle24decompress(bitdata, dst, width, height):
         if length != 0:  # encoded mode
             if bits + 2 >= len(bitdata):
                 return False
-            if y<0: return False
+            if y < 0:
+                return False
             color = bitdata[bits]
             color1 = bitdata[bits + 1]
             color2 = bitdata[bits + 2]
@@ -1451,7 +1668,8 @@ def _rle24decompress(bitdata, dst, width, height):
             bits += 1
             match (escape_code):
                 case 0:  # end of line
-                    if y<0: return False
+                    if y < 0:
+                        return False
                     x = 0
                     dstln += linesz
                     y -= 1
@@ -1460,7 +1678,8 @@ def _rle24decompress(bitdata, dst, width, height):
                 case 2:  # delta
                     if bits >= len(bitdata):
                         return False
-                    if y<0: return False
+                    if y < 0:
+                        return False
                     x += bitdata[bits]
                     bits += 1
                     if bits >= len(bitdata):
@@ -1469,7 +1688,8 @@ def _rle24decompress(bitdata, dst, width, height):
                     y -= bitdata[bits]
                     bits += 1
                 case _:
-                    if y<0: return False
+                    if y < 0:
+                        return False
                     length = escape_code
                     while length > 0:
                         length -= 1
@@ -1885,7 +2105,8 @@ def _rle4decompress(bitdata, dst, width, height):
         if length > 0:  # encoded
             if bits >= len(bitdata):
                 return False
-            if y<0: return False
+            if y < 0:
+                return False
             c = bitdata[bits]
             bits += 1
             while length > 0:
@@ -1918,7 +2139,8 @@ def _rle4decompress(bitdata, dst, width, height):
                 case 0:  # end of line
                     if x != width:
                         return False
-                    if y<0: return False
+                    if y < 0:
+                        return False
                     x = 0
                     y -= 1
                     dstln += linesz
@@ -1927,7 +2149,8 @@ def _rle4decompress(bitdata, dst, width, height):
                 case 2:  # delta
                     if bits >= len(bitdata):
                         return False
-                    if y<0: return False
+                    if y < 0:
+                        return False
                     x += bitdata[bits]
                     bits += 1
                     if bits >= len(bitdata):
@@ -1936,7 +2159,8 @@ def _rle4decompress(bitdata, dst, width, height):
                     y -= bitdata[bits]
                     bits += 1
                 case _:  # absolute
-                    if y<0: return False
+                    if y < 0:
+                        return False
                     escapecode = length
                     while length > 0:
                         length -= 1
@@ -2359,6 +2583,8 @@ def readanimicon(infile):
                 anih = struct.unpack("<LLLLLLLLL", f.read(0x24))
                 if anih[0] != 0x24:
                     raise ValueError
+                # anih[1] = images
+                # anim[2] = frames
             elif fcc == b"seq ":
                 if seq or not haveAnih:
                     return ret
@@ -2425,30 +2651,36 @@ def _readwinicon(f):
 
 def _readicon(f, packedWinBitmap=False):
     unusual = False
-    isColor=False
-    isIcon=False
-    isPointer=False
-    isBitmap=False
+    isColor = False
+    isIcon = False
+    isPointer = False
+    isBitmap = False
     hotspotX = 0
     hotspotY = 0
     if not packedWinBitmap:
-      tag = f.read(2)
-      if len(tag) < 0:
-        raise ValueError
-      if tag != b"CI" and tag != b"CP" and tag != b"IC" and tag != b"PT" and tag != b"BM":
-        print("unrecognized tag: %s" % (tag))
-        return None
-      isColor = tag == b"CI" or tag == b"CP"  # color icon or color pointer
-      isIcon = tag == b"CI" or tag == b"IC"
-      isPointer = tag == b"CP" or tag == b"PT"
-      isBitmap = tag == b"BM"
-      andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
-      offsetToImage = andmaskinfo[3]
-      if not isBitmap:
-        hotspotX = andmaskinfo[1]  # hotspot is valid for icons and pointers
-        hotspotY = andmaskinfo[2]  # hotspot is valid for icons and pointers
+        tag = f.read(2)
+        if len(tag) < 0:
+            raise ValueError
+        if (
+            tag != b"CI"
+            and tag != b"CP"
+            and tag != b"IC"
+            and tag != b"PT"
+            and tag != b"BM"
+        ):
+            print("unrecognized tag: %s" % (tag))
+            return None
+        isColor = tag == b"CI" or tag == b"CP"  # color icon or color pointer
+        isIcon = tag == b"CI" or tag == b"IC"
+        isPointer = tag == b"CP" or tag == b"PT"
+        isBitmap = tag == b"BM"
+        andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
+        offsetToImage = andmaskinfo[3]
+        if not isBitmap:
+            hotspotX = andmaskinfo[1]  # hotspot is valid for icons and pointers
+            hotspotY = andmaskinfo[2]  # hotspot is valid for icons and pointers
     else:
-      isBitmap=True
+        isBitmap = True
     # Read info on the AND mask or bitmap
     andmask = None
     andmaskcolors = None
@@ -2544,7 +2776,8 @@ def _readicon(f, packedWinBitmap=False):
         return None
     andcolortable = f.tell()
     f.seek(andcolortable + andpalette * (3 if andmaskhdr[0] <= 0x0C else 4))
-    if packedWinBitmap: offsetToImage=f.tell()
+    if packedWinBitmap:
+        offsetToImage = f.tell()
     w = andmaskhdr[1]
     h = andmaskhdr[2]
     andmaskscan = ((w * andmaskhdr[4] + 31) >> 5) << 2
@@ -2687,10 +2920,10 @@ def _readicon(f, packedWinBitmap=False):
     # from the beginning of the bitmap/icon/cursor header.
     # If packedWinBitmap is true, this is instead the offset
     # immediately after the header and color table.
-    #print(["offsetToImage",offsetToImage])
+    # print(["offsetToImage",offsetToImage])
     f.seek(offsetToImage)
-    sz = andsizeImage if andsizeImage > 0 and andcompression>0 else andmaskbits
-    #print(["andSizeImage",andsizeImage,"andmaskbits",andmaskbits])
+    sz = andsizeImage if andsizeImage > 0 and andcompression > 0 else andmaskbits
+    # print(["andSizeImage",andsizeImage,"andmaskbits",andmaskbits])
     andmask = f.read(sz)
     if len(andmask) != sz:
         print("Failure: %d %d [%d]" % (len(andmask), sz, andcompression))
