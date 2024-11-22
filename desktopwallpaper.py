@@ -1418,7 +1418,7 @@ def _rle24decompress(bitdata, dst, width, height):
     dstln = 0
     x = 0
     y = height - 1
-    while y >= 0:
+    while True:
         if bits >= len(bitdata):
             return False
         length = bitdata[bits]
@@ -1426,6 +1426,7 @@ def _rle24decompress(bitdata, dst, width, height):
         if length != 0:  # encoded mode
             if bits + 2 >= len(bitdata):
                 return False
+            if y<0: return False
             color = bitdata[bits]
             color1 = bitdata[bits + 1]
             color2 = bitdata[bits + 2]
@@ -1450,6 +1451,7 @@ def _rle24decompress(bitdata, dst, width, height):
             bits += 1
             match (escape_code):
                 case 0:  # end of line
+                    if y<0: return False
                     x = 0
                     dstln += linesz
                     y -= 1
@@ -1458,6 +1460,7 @@ def _rle24decompress(bitdata, dst, width, height):
                 case 2:  # delta
                     if bits >= len(bitdata):
                         return False
+                    if y<0: return False
                     x += bitdata[bits]
                     bits += 1
                     if bits >= len(bitdata):
@@ -1466,6 +1469,7 @@ def _rle24decompress(bitdata, dst, width, height):
                     y -= bitdata[bits]
                     bits += 1
                 case _:
+                    if y<0: return False
                     length = escape_code
                     while length > 0:
                         length -= 1
@@ -1873,7 +1877,7 @@ def _rle4decompress(bitdata, dst, width, height):
     masks = [0xF0, 0x0F]
     shifts = [4, 0]
     lastbit = 0
-    while y >= 0:
+    while True:
         if bits >= len(bitdata):
             return False
         length = bitdata[bits]
@@ -1881,6 +1885,7 @@ def _rle4decompress(bitdata, dst, width, height):
         if length > 0:  # encoded
             if bits >= len(bitdata):
                 return False
+            if y<0: return False
             c = bitdata[bits]
             bits += 1
             while length > 0:
@@ -1913,6 +1918,7 @@ def _rle4decompress(bitdata, dst, width, height):
                 case 0:  # end of line
                     if x != width:
                         return False
+                    if y<0: return False
                     x = 0
                     y -= 1
                     dstln += linesz
@@ -1921,6 +1927,7 @@ def _rle4decompress(bitdata, dst, width, height):
                 case 2:  # delta
                     if bits >= len(bitdata):
                         return False
+                    if y<0: return False
                     x += bitdata[bits]
                     bits += 1
                     if bits >= len(bitdata):
@@ -1929,6 +1936,7 @@ def _rle4decompress(bitdata, dst, width, height):
                     y -= bitdata[bits]
                     bits += 1
                 case _:  # absolute
+                    if y<0: return False
                     escapecode = length
                     while length > 0:
                         length -= 1
@@ -2247,16 +2255,6 @@ def _readwiniconcore(f, entry, isicon):
     andmaskscan = ((width * 1 + 31) >> 5) << 2
     xormaskbytes = xormaskscan * height
     andmaskbytes = andmaskscan * height
-    if (
-        sizeImage != 0
-        and sizeImage != xormaskbytes + andmaskbytes
-        and sizeImage != xormaskbytes
-    ):
-        print(
-            "bad image size: %d %d [%d %d]"
-            % (sizeImage, xormaskbytes + andmaskbytes, xormaskbytes, bitcount)
-        )
-        return None
     if isicon and bitcount <= 8 and entry and entry[2] > colortablesize:
         print("too few colors")
         return None
@@ -2425,32 +2423,38 @@ def _readwinicon(f):
         entries[i] = _readwiniconcore(f, entries[i], newheader[1] == 1)
     return entries
 
-def _readicon(f):
+def _readicon(f, packedWinBitmap=False):
     unusual = False
-    extra = ""
-    tag = f.read(2)
-    if len(tag) < 0:
+    isColor=False
+    isIcon=False
+    isPointer=False
+    isBitmap=False
+    hotspotX = 0
+    hotspotY = 0
+    if not packedWinBitmap:
+      tag = f.read(2)
+      if len(tag) < 0:
         raise ValueError
-    if tag != b"CI" and tag != b"CP" and tag != b"IC" and tag != b"PT" and tag != b"BM":
+      if tag != b"CI" and tag != b"CP" and tag != b"IC" and tag != b"PT" and tag != b"BM":
         print("unrecognized tag: %s" % (tag))
         return None
-    isColor = tag == b"CI" or tag == b"CP"  # color icon or color pointer
-    isIcon = tag == b"CI" or tag == b"IC"
-    isPointer = tag == b"CP" or tag == b"PT"
-    isBitmap = tag == b"BM"
+      isColor = tag == b"CI" or tag == b"CP"  # color icon or color pointer
+      isIcon = tag == b"CI" or tag == b"IC"
+      isPointer = tag == b"CP" or tag == b"PT"
+      isBitmap = tag == b"BM"
+      andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
+      offsetToImage = andmaskinfo[3]
+      if not isBitmap:
+        hotspotX = andmaskinfo[1]  # hotspot is valid for icons and pointers
+        hotspotY = andmaskinfo[2]  # hotspot is valid for icons and pointers
+    else:
+      isBitmap=True
     # Read info on the AND mask or bitmap
     andmask = None
     andmaskcolors = None
     colormask = None
     colormaskscan = 0
     colormaskcolors = None
-    andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
-    offsetToImage = andmaskinfo[3]
-    hotspotX = 0
-    hotspotY = 0
-    if not isBitmap:
-        hotspotX = andmaskinfo[1]  # hotspot is valid for icons and pointers
-        hotspotY = andmaskinfo[2]  # hotspot is valid for icons and pointers
     andmaskhdr = struct.unpack("<L", f.read(4))
     andpalette = 0
     andcompression = 0
@@ -2489,7 +2493,6 @@ def _readicon(f):
             #    "nonzero compression or resolution: %d %d %d"
             #    % (andmaskhdr[5], andmaskhdr[7], andmaskhdr[8])
             # )
-            # extra += ".%d,%d,%d" % (andmaskhdr[5], andmaskhdr[7], andmaskhdr[8])
             pass
         allzeros = True
         for i in range(len(slack)):
@@ -2541,6 +2544,7 @@ def _readicon(f):
         return None
     andcolortable = f.tell()
     f.seek(andcolortable + andpalette * (3 if andmaskhdr[0] <= 0x0C else 4))
+    if packedWinBitmap: offsetToImage=f.tell()
     w = andmaskhdr[1]
     h = andmaskhdr[2]
     andmaskscan = ((w * andmaskhdr[4] + 31) >> 5) << 2
@@ -2681,11 +2685,15 @@ def _readicon(f):
                 andmaskcolors.append(clr)
     # Offset from the beginning of the file, not necessarily
     # from the beginning of the bitmap/icon/cursor header.
+    # If packedWinBitmap is true, this is instead the offset
+    # immediately after the header and color table.
+    #print(["offsetToImage",offsetToImage])
     f.seek(offsetToImage)
-    sz = andsizeImage if andsizeImage > 0 else andmaskbits
+    sz = andsizeImage if andsizeImage > 0 and andcompression>0 else andmaskbits
+    #print(["andSizeImage",andsizeImage,"andmaskbits",andmaskbits])
     andmask = f.read(sz)
     if len(andmask) != sz:
-        print("Failure: %d %d" % (len(andmask), sz))
+        print("Failure: %d %d [%d]" % (len(andmask), sz, andcompression))
         return None
     if andcompression > 0:
         deco = [0 for i in range(andmaskbits)]
