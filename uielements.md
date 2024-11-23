@@ -4,7 +4,7 @@ This section discusses aspects of the traditional design of user interface graph
 
 ## Logical Display Resolutions
 
-An image can be adapted for displays with logical resolutions that differ from VGA (video graphics array; 96 horizontal and vertical pixels per inch) by scaling the image's width and height.
+An image can be adapted for displays with logical resolutions that differ from VGA (video graphics array; 96 horizontal and vertical pixels per inch) by scaling the image's width, height, or both.
 
 For example, displays compatible with the IBM Extended Graphics Adapter (EGA) or IBM Color/Graphics Adapter (CGA) have nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such displays are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for EGA displays, becomes a shrunken 300&times;225 image.
 
@@ -38,13 +38,13 @@ Using only the following colors and with some pixels allowed to be transparent:
 - Button face color (by default, (192, 192, 192)).
 - Window frame color (black by default).
 
-It is allowed to use dithering to simulate the appearance of more colors using these six colors.
+It is allowed to simulate the appearance of more colors using these six colors by means of dithering.[^6]
 
 The _desktopwallpaper.py_ file contains some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial intelligence tools.
 
 ### Traditional Button Styles
 
-The following terms are used to describe the traditional appearance of ordinary buttons:
+The following terms serve to describe the traditional appearance of ordinary buttons:
 
 - The _button label_ consists of the text and icons within the button.
 - The _button face_ is the inner background of the button.
@@ -79,7 +79,7 @@ An icon (a small graphic representing a computer program) should be present in a
 - The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
 - The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
-- If 16- and 256-color icons are derived from 8-bpc icons, then the 256-color icon should be made from the 8-bpc icon without translucent pixels, and the 16-color icon should be made from the 256-color icon with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
+- It is allowed to derive 16- and 256-color icons (without translucent pixels) from 8-bpc and 256-color icons, respectively.
 
 Of these variations, 32&times;32 icons with the VGA palette are traditionally the main icon variation.
 
@@ -91,13 +91,27 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 > **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) and a black-and-white _AND mask_ ("inverted alpha" mask), a format that additionally allows for so-called "inverted pixels".
 >
 >  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become black where the mask is black (all its bits are zeros), in the _opaque_ areas of the icon or cursor, and left unchanged elsewhere.
->  2. Then, the output pixels are combined using a bit-by-bit XOR operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is black, and the rest of the output is inverted where the mask is white (all its bits are ones).
+>  2. Then, the output pixels are combined using a bit-by-bit exclusive-OR (XOR) operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is black, and the rest of the output is inverted where the mask is white (all its bits are ones).
 >
 >  For icons and cursors with only colored and transparent pixels (and no inverted pixels), the XOR mask should be black wherever the AND mask is white (all its bits are ones).
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound in the AVI format, this control appears to be rarely used.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not used by the animation's frames).  AVI file writing at 20 frames per second is implemented in _desktopwallpaper.py_ under the method `writeavi`.
+Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound in the AVI format, this control appears to be rarely in use.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames).  AVI file writing at 20 frames per second is implemented in _desktopwallpaper.py_ under the method `writeavi`.
+
+## Drawing Style
+
+The following points are observed in general in user interface graphics, including icons, cursors, and illustrations, from about 1995 to about 2003, when they are drawn using a limited color palette:
+
+- Curves and straight line segments are drawn unsmoothed and one pixel thick.
+- Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally-sized steps.
+- The three-dimensional (3-D) appearance of graphics (including buttons, window borders, and real-world objects) is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
+    - If it is desired to give a real-world object a 3-D look with a limited color palette, that object is generally drawn in an _isometric_ view (rather than straight on).
+- In icons, cursors, and digital illustrations limited to the VGA palette[^1], color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided.  With a 256-color palette, such gradient fills are present but subtle.
+- Icons and cursors representing real-world objects tend to have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
+- Larger versions of icons originally in size 32&times;32 (for example, the 48&times;48 version) tend to be the same as the original icon but with finer but non-essential detail.
+
+After about 2003, icons, cursors, and illustrations for user interfaces tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions tend to be derived from those images through _dithering_[^6] or similar techniques.
 
 ## License
 
@@ -112,3 +126,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
 
 [^5]: Modern guidelines recommend a 256&times;256 icon as well.  Toolbar icons are traditionally offered in 16&times;16 and 20&times;20.  The standard icon sizes in the OS/2 operating system are 16&times;16, 20&times;20, 32&times;32, and 40&times;40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64&times;64 occur.
+
+[^6]: Dithering is the scattering of colors in a limited set to simulate colors outside that set.

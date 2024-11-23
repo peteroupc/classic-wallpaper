@@ -964,6 +964,7 @@ def _blackWhiteOnly(colortable, numuniques):
     )
 
 # Images have the same format returned by the _blankimage_ method with alpha=True.
+# Note that, for mouse pointers (cursors), 32x32 pixels are the standard width and height.
 def writeanicursor(
     outfile,
     images,
@@ -985,7 +986,12 @@ def writeanicursor(
         raise ValueError
     if fps <= 0:
         raise ValueError
-    if hotx < 0 or hoty < 0 or hotx > width or hoty > height:
+    if (
+        hotx < 0
+        or hoty < 0
+        or (hotx > width and hotx != 0xFFFF)
+        or (hoty > height and hoty != 0xFFFF)
+    ):
         raise ValueError
     newimages = [splitmask(img, width, height) for img in images]
     colortables = []
@@ -995,7 +1001,7 @@ def writeanicursor(
     for i in range(len(images)):
         colormask = newimages[i][0]
         monomask = newimages[i][1]
-        uniquecolors = {}
+        uniquecolorshash = {}
         colortable = [0 for i in range(1024)]
         numuniques = 0
         pos = 0
@@ -1023,8 +1029,8 @@ def writeanicursor(
                     | (colormask[pos + 1] << 8)
                     | (colormask[pos + 2] << 16)
                 )
-                if c not in uniquecolors:
-                    uniquecolors[c] = numuniques
+                if c not in uniquecolorshash:
+                    uniquecolorshash[c] = numuniques
                     if numuniques >= 256:
                         # More than 256 unique colors
                         numuniques += 1
@@ -1047,7 +1053,7 @@ def writeanicursor(
         bpplist.append(bpp)
         numuniqueslist.append(numuniques)
         colortables.append(colortable)
-        uniquecolorslist.append(uniquecolors)
+        uniquecolorslist.append(uniquecolorshash)
     riff = [b"RIFF", b"ACON", []]
     riff[2].append([b"anih", 0x24])
     riff[2].append([b"rate", len(images) * 4])
@@ -1141,7 +1147,7 @@ def writeanicursor(
                             )
                         f.write(iconheaders[i])
                         f.write(bitmapinfo)
-                        uniquecolors = uniquecolorslist[i]
+                        uniquecolorshash = uniquecolorslist[i]
                         bitmapbits = [0 for i in range(scansize * height)]
                         maskbits = [0 for i in range(scansize1 * height)]
                         pos = 0
@@ -1149,7 +1155,7 @@ def writeanicursor(
                         for y in range(height):
                             for x in range(width):
                                 if bpp <= 8:
-                                    col = uniquecolors[
+                                    col = uniquecolorshash[
                                         colormask[pos]
                                         | (colormask[pos + 1] << 8)
                                         | (colormask[pos + 2] << 16)
@@ -1245,15 +1251,15 @@ def writeavi(
         height,
     )
     streamheader = b"strh" + struct.pack("<L", len(streamheader)) + streamheader
-    uniquecolors = {}
+    uniquecolorshash = {}
     colortable = [0 for i in range(1024)]
     numuniques = 0
     for image in images:
         pos = 0
         for y in range(height * width):
             c = image[pos] | (image[pos + 1] << 8) | (image[pos + 2] << 16)
-            if c not in uniquecolors:
-                uniquecolors[c] = numuniques
+            if c not in uniquecolorshash:
+                uniquecolorshash[c] = numuniques
                 if numuniques >= 256:
                     # More than 256 unique colors
                     numuniques += 1
@@ -1333,14 +1339,14 @@ def writeavi(
                 for x in range(width // 8):
                     for i in range(8):
                         pp = pos + x * 24 + i * 3
-                        scan[x] |= uniquecolors[
+                        scan[x] |= uniquecolorshash[
                             image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
                         ] << (7 - i)
                 if width % 8 != 0:
                     x = width // 8
                     for i in range(width % 8):
                         pp = pos + x * 24 + i * 3
-                        scan[x] |= uniquecolors[
+                        scan[x] |= uniquecolorshash[
                             image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
                         ] << (7 - i)
                 if compressionMode == 0:
@@ -1354,14 +1360,14 @@ def writeavi(
             for y in range(height):
                 for x in range(width // 2):
                     scan[x] = (
-                        uniquecolors[
+                        uniquecolorshash[
                             image[pos + x * 6]
                             | (image[pos + x * 6 + 1] << 8)
                             | (image[pos + x * 6 + 2] << 16)
                         ]
                         << 4
                     ) | (
-                        uniquecolors[
+                        uniquecolorshash[
                             image[pos + x * 6 + 3]
                             | (image[pos + x * 6 + 4] << 8)
                             | (image[pos + x * 6 + 5] << 16)
@@ -1370,7 +1376,7 @@ def writeavi(
                 if width % 2 != 0:
                     x = width // 2
                     scan[x] = (
-                        uniquecolors[
+                        uniquecolorshash[
                             image[pos + x * 6]
                             | (image[pos + x * 6 + 1] << 8)
                             | (image[pos + x * 6 + 2] << 16)
@@ -1387,7 +1393,7 @@ def writeavi(
             for y in range(height):
                 scan = bytes(
                     [
-                        uniquecolors[
+                        uniquecolorshash[
                             image[pos + x * 3]
                             | (image[pos + x * 3 + 1] << 8)
                             | (image[pos + x * 3 + 2] << 16)
@@ -2224,17 +2230,21 @@ def _rle4decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
 
-# Reads an OS/2 icon, pointer, bitmap, or bitmap array.
+# Reads an OS/2 icon, mouse pointer (cursor), bitmap, or bitmap array.
 # OS/2 icons have the '.ico' file extension; OS/2 cursors, '.ptr'; and
 # OS/2 bitmaps, '.bmp'.
-# Returns a list of three-element lists, representing the decoded images
+# Returns a list of five-element lists, representing the decoded images
 # in the order in which they were read.  If an icon, pointer, or
 # bitmap could not be read, the value None takes the place of the
-# corresponding three-element list.
-# Each three-element list in the returned list contains the image,
-# its width, and its height, in that order.
-# The returned image has the same format returned by the _blankimage_
-# method with alpha=True.
+# corresponding five-element list.
+# Each five-element list in the returned list contains the image,
+# its width, its height, its hotspot X coordinate, and its hotspot
+# Y coordinate in that order. The image has the same format returned by the
+# _blankimage_ method with alpha=True. (The hotspot is the point in the image
+# that receives the system's mouse position when that image is
+# drawn on the screen.  The hotspot makes sense only for mouse pointers;
+# the hotspot X and Y coordinates are each 0 if the image relates to
+# an icon or bitmap, rather than a pointer.)
 def reados2icon(infile):
     f = open(infile, "rb")
     try:
@@ -2291,7 +2301,7 @@ def readxcursor(infile):
                     image[i * 4 + 1] = argb[1]
                     image[i * 4 + 2] = argb[0]
                     image[i * 4 + 3] = argb[3]
-                images.append([image, chunk[0], chunk[1]])
+                images.append([image, chunk[0], chunk[1], chunk[2], chunk[3]])
         return images
     finally:
         f.close()
@@ -2366,6 +2376,23 @@ def reados2palette(f):
     # but all of them are zeros in the palette files
     # I've found so far
     return pal
+
+# Returns a list of the unique colors in an image (disregarding
+# the alpha channel, if any).  The return value has the same
+# format returned in the _reados2palette_ function.
+def uniquecolors(image, width, height, alpha=False):
+    colors = {}
+    bytesperpixel = 4 if alpha else 3
+    for i in range(width * height):
+        c = (
+            image[i * bytesperpixel]
+            | (image[i * bytesperpixel + 1] << 8)
+            | (image[i * bytesperpixel + 2] << 16)
+        )
+        colors[c] = True
+    ck = [[k & 0xFF, (k >> 8) & 0xFF, (k >> 16) & 0xFF] for k in colors.keys()]
+    ck.sort()
+    return ck
 
 # Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
 # An OS/2 theme resource file is a collection of OS/2 resources
@@ -2457,7 +2484,7 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
         case _:
             raise ValueError("Bits per pixel not supported")
 
-def _readwiniconcore(f, entry, isicon):
+def _readwiniconcore(f, entry, isicon, hotspot):
     bmih = struct.unpack("<LllHHLLllLL", f.read(0x28))
     if bmih[0] != 0x28:
         print("unsupported header size")
@@ -2555,7 +2582,13 @@ def _readwiniconcore(f, entry, isicon):
                 else alpha0
             )
             setpixelbgralpha(bl, width, height, x, y, px)
-    return [bl, width, height]
+    return [
+        bl,
+        width,
+        height,
+        hotspot[0] if hotspot else 0,
+        hotspot[1] if hotspot else 0,
+    ]
 
 def _dup(x):
     if x == None:
@@ -2645,7 +2678,9 @@ def readwinicon(infile):
 def _readwinicon(f):
     ft = f.tell()
     newheader = struct.unpack("<HHH", f.read(6))
-    if newheader[0] != 0 or (newheader[1] != 1 and newheader[1] != 2):
+    isicon = newheader[1] == 1
+    iscursor = newheader[1] == 2
+    if newheader[0] != 0 or ((not isicon) and (not iscurosr)):
         return []
     entries = []
     for i in range(newheader[2]):
@@ -2653,7 +2688,7 @@ def _readwinicon(f):
         width = 256 if dirent[0] == 0 else dirent[0]
         height = 256 if dirent[1] == 0 else dirent[1]
         colorcount = dirent[2]
-        if newheader[1] == 2:  # cursor
+        if iscursor:
             if dirent[4] == 0xFFFF and dirent[5] == 0xFFFF:
                 print("no hotspot?")
             elif dirent[4] > width or dirent[5] > height:
@@ -2663,7 +2698,7 @@ def _readwinicon(f):
                 )
                 entries.append(None)
                 continue
-        elif newheader[1] == 1:  # icon
+        elif isicon:
             # Apparently, planes and bit count are ignored and can be 0.
             # if dirent[4]!=1:
             # print("unsupported planes")
@@ -2674,13 +2709,18 @@ def _readwinicon(f):
             # entries.append(None); continue
             pass
         entries.append(
-            [width, height, colorcount, dirent[5], dirent[6], dirent[7] + ft]
+            [width, height, colorcount, dirent[5], dirent[6], dirent[7] + ft, dirent[4]]
         )
     for i in range(len(entries)):
         if not entries[i]:
             continue
         f.seek(entries[i][5])
-        entries[i] = _readwiniconcore(f, entries[i], newheader[1] == 1)
+        entries[i] = _readwiniconcore(
+            f,
+            entries[i],
+            newheader[1] == 1,
+            [entries[i][6], entries[i][3]] if iscursor else None,
+        )
     return entries
 
 def _readicon(f, packedWinBitmap=False):
@@ -3127,7 +3167,7 @@ def _readicon(f, packedWinBitmap=False):
         width = andmaskhdr[1]
         height = trueheight
         ret = bl
-    return [ret, width, height]
+    return [ret, width, height, hotspotX, hotspotY]
 
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
