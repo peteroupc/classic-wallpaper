@@ -4,9 +4,9 @@ This section discusses aspects of the traditional design of user interface graph
 
 ## Logical Display Resolutions
 
-An image can be adapted for displays with logical resolutions that differ from VGA (video graphics array; 96 horizontal and vertical pixels per inch) by scaling the image's width, height, or both.
+An image can be adapted for displays with logical resolutions that differ from VGA (video graphics array; normally 640&times;480 with 96 horizontal and vertical pixels per inch) by scaling the image's width, height, or both.
 
-For example, displays compatible with the IBM Extended Graphics Adapter (EGA) or IBM Color/Graphics Adapter (CGA) have nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such displays are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for EGA displays, becomes a shrunken 300&times;225 image.
+For example, the IBM Extended Graphics Adapter's (EGA) 640&times;350 color display mode and the IBM Color/Graphics Adapter's (CGA) 640&times;200 two-tone display mode employ nonsquare pixels (nominally 96 horizontal pixels per inch and 72 or 48 vertical pixels per inch, respectively), so that graphics designed for such display modes are often adapted by shrinking the height of images to 3/4 or 1/2 of the original, respectively.  For example, a 300&times;300 image, when adapted for the EGA display mode mentioned above, becomes a shrunken 300&times;225 image.
 
 A table of logical resolutions (per inch) for different devices is found in the [OpenType 1.8 specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions) (the most recent version doesn't have this table).
 
@@ -56,9 +56,7 @@ The following terms serve to describe the traditional appearance of ordinary but
       1 pixel upward and 1 pixel to the left,
 
     in each case with transparency and opacity in the label preserved.
-- _Unavailable appearance_: The button label has an _embossed appearance_, is drawn
-  with 50% opacity, or is drawn such that only every other pixel is rendered in a
-  checkerboard pattern.
+- _Unavailable appearance_: The button label has an _embossed appearance_, is drawn with 50% opacity, or is drawn such that only every other pixel is rendered in a checkerboard pattern.
 - _Mixed value appearance_: The button face is drawn as a dither pattern of the button face color and the button highlight color, or as a color that's a mixture of those two colors.
 
 Traditionally, to draw buttons, default buttons, and toolbar buttons:
@@ -79,7 +77,7 @@ An icon (a small graphic representing a computer program) should be present in a
 - The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
 - The same icon should be drawn in the pixel dimensions 16&times;16, 24&times;24, 32&times;32, 48&times;48, and 64&times;64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
-- It is allowed to derive 16- and 256-color icons (without translucent pixels) from 8-bpc and 256-color icons, respectively.
+- Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive such icons from 8-bpc and 256-color icons, respectively, through an automated method.
 
 Of these variations, 32&times;32 icons with the VGA palette are traditionally the main icon variation.
 
