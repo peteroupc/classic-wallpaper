@@ -129,7 +129,17 @@ _DitherMatrix = [  # Bayer 8x8 ordered dither matrix
 ]
 
 # Returns an array of the 216 colors of the "safety palette", also known as the
-# "Web safe" palette.
+# "Web safe" palette.  The "safety palette" consists of 216 colors that are
+# uniformly spaced in the red&ndash;green&ndash;blue color cube.  Robert Hess's
+# article "[The Safety Palette](https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10))",
+# 1996, described the advantage that images that use only colors in this palette
+# won't dither when displayed by Web browsers on displays that can show up to 256
+# colors at once. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors).
+# Dithering is the scattering of colors in a limited set to simulate colors
+# outside that set.)
+# Each element in the return value is a color in the form of a 3-element array of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def websafecolors():
     colors = []
     for r in range(6):
@@ -139,6 +149,9 @@ def websafecolors():
     return colors
 
 # Returns an array of the 64 colors displayable by EGA (extended graphics adapter) displays
+# Each element in the return value is a color in the form of a 3-element array of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def egacolors():
     colors = []
     for r in range(4):
@@ -149,6 +162,9 @@ def egacolors():
 
 # Canonical 16-color CGA palette
 # see also: https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/
+# Each element in the return value is a color in the form of a 3-element array of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def cgacolors():
     return [
         [0, 0, 0],
@@ -193,6 +209,9 @@ def classiccolors():
     ]
 
 # 8-color palette where each color opponent is 0 or 255
+# Each element in the return value is a color in the form of a 3-element array of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def ega8colors():
     return [
         [0, 0, 0],
@@ -205,7 +224,10 @@ def ega8colors():
         [255, 255, 255],
     ]
 
-# colors in classiccolors() and their "half-and-half" versions
+# Colors in classiccolors() and their "half-and-half" versions.
+# Each element in the return value is a color in the form of a 3-element array of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def classiccolors2():
     colors = []
     for a in [0, 64, 128, 192]:
@@ -234,16 +256,21 @@ def classiccolors2():
                     colors.append(cij)
     return colors
 
+# Returns an array containing the colors in the given palette plus their
+# "half-and half" versions.
+# Each element in the return value is a color in the form of a 3-element array of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def paletteandhalfhalf(palette):
     ret = [
         [k & 0xFF, (k >> 8) & 0xFF, (k >> 16) & 0xFF]
-        for k in getdithercolors(palette).keys()
+        for k in _getdithercolors(palette).keys()
     ]
     ret.sort()
     return ret
 
 # Gets the "half-and half" versions of colors in the given palette.
-def getdithercolors(palette):
+def _getdithercolors(palette):
     if (not palette) or (len(palette) > 256):  # too long palettes not supported
         raise ValueError
     colors = {}
@@ -269,7 +296,7 @@ def getdithercolors(palette):
 def halfhalfditherimage(image, width, height, palette):
     if width <= 0 or height <= 0 or not palette:
         raise ValueError
-    cdcolors = getdithercolors(palette)
+    cdcolors = _getdithercolors(palette)
     for y in range(height):
         yd = y * width
         for x in range(width):
@@ -2238,12 +2265,12 @@ def _rle4decompress(bitdata, dst, width, height):
 # bitmap could not be read, the value None takes the place of the
 # corresponding five-element list.
 # Each five-element list in the returned list contains the image,
-# its width, its height, its hotspot X coordinate, and its hotspot
+# its width, its height, its hot spot X coordinate, and its hot spot
 # Y coordinate in that order. The image has the same format returned by the
-# _blankimage_ method with alpha=True. (The hotspot is the point in the image
+# _blankimage_ method with alpha=True. (The hot spot is the point in the image
 # that receives the system's mouse position when that image is
-# drawn on the screen.  The hotspot makes sense only for mouse pointers;
-# the hotspot X and Y coordinates are each 0 if the image relates to
+# drawn on the screen.  The hot spot makes sense only for mouse pointers;
+# the hot spot X and Y coordinates are each 0 if the image relates to
 # an icon or bitmap, rather than a pointer.)
 def reados2icon(infile):
     f = open(infile, "rb")
@@ -2356,26 +2383,61 @@ def reados2iconcore(f):
         f.seek(ft)
         return [_readicon(f)]
 
-# Reads the color table from an OS/2 palette file.
+# Reads the color table from an OS/2 or Windows palette file.
 # Returns an list of the colors read from the file.
-# Each element in the list is a list consisting of
+# Each element in the list is a color in the form of a three-element list consisting of
 # the color's red, green, and blue component, in that
 # order; each component is an integer from 0 through 255.
-def reados2palette(f):
-    tag = struct.unpack("<HH", f.read(4))
-    if tag[0] != 0x983:
+def reados2palette(infile):
+    f = open(infile, "rb")
+    try:
+        tag1 = f.read(4)
+        if tag1 == b"RIFF":
+            return _readwinpal(f)
+        tag = struct.unpack("<HH", tag1)
+        if tag[0] != 0x983:
+            raise ValueError
+        pal = [None for i in range(tag[1])]
+        for i in range(tag[1]):
+            col = f.read(3)
+            # NOTE: The ordering of the elements
+            # in palette resources is blue, green,
+            # red.
+            pal[i] = [col[2], col[1], col[0]]
+        # After the colors come tag[1] many bytes,
+        # but all of them are zeros in the palette files
+        # I've found so far
+        return pal
+    finally:
+        f.close()
+
+def _readwinpal(f):
+    ret = []
+    sz = struct.unpack("<L", f.read(4))[0]
+    if sz < 4:
         raise ValueError
-    pal = [None for i in range(tag[1])]
-    for i in range(tag[1]):
-        col = f.read(3)
-        # NOTE: The ordering of the elements
-        # in palette resources is blue, green,
-        # red.
-        pal[i] = [col[2], col[1], col[0]]
-    # After the colors come tag[1] many bytes,
-    # but all of them are zeros in the palette files
-    # I've found so far
-    return pal
+    endpos = f.tell() + sz
+    fcc = f.read(4)
+    if fcc != b"PAL ":
+        raise ValueError
+    while True:
+        if f.tell() >= endpos:
+            raise ValueError
+        fcc = f.read(4)
+        sz = struct.unpack("<L", f.read(4))[0]
+        if fcc == b"data":
+            haveAnih = True
+            if sz < 4:
+                raise ValueError
+            info = struct.unpack("<HH", f.read(4))
+            if info[0] != 0x300 or info[1] * 4 + 4 != sz:
+                raise ValueError
+            for i in range(info[1]):
+                color = struct.unpack("<BBBB", f.read(4))
+                ret.append(color[0], color[1], color[2])
+            return ret
+        else:
+            f.seek(f.tell() + sz)
 
 # Returns a list of the unique colors in an image (disregarding
 # the alpha channel, if any).  The return value has the same
@@ -2606,6 +2668,7 @@ def readanimicon(infile):
         sz = struct.unpack("<L", f.read(4))[0]
         if sz < 4:
             return ret
+        endpos = f.tell() + sz
         fcc = f.read(4)
         if fcc != b"ACON":
             return ret
@@ -2613,6 +2676,8 @@ def readanimicon(infile):
         anih = None
         seq = None
         while True:
+            if f.tell() >= endpos:
+                return ret
             fcc = f.read(4)
             sz = struct.unpack("<L", f.read(4))[0]
             if fcc == b"LIST":
@@ -2955,7 +3020,7 @@ def _readicon(f, packedWinBitmap=False):
         colormaskscan = ((w * colorbpp + 31) >> 5) << 2
         colormaskbits = colormaskscan * h
     realHeight = andmaskhdr[2] if isBitmap else andmaskhdr[2] // 2
-    # hotspot Y counts from the bottom left row up, so adjust
+    # hot spot Y counts from the bottom left row up, so adjust
     # for top-down convention
     if not isBitmap:
         hotspotY = realHeight - 1 - hotspotY
@@ -6955,7 +7020,7 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
     _writeu16le(ff, 0x300)
     _writeu16le(ff, len(palette))
     for c in palette:
-        ff.write(bytes([c[0] & 0xFF, c[1] & 0xFF, c[2] & 0xFF, 2]))
+        ff.write(bytes([c[0] & 0xFF, c[1] & 0xFF, c[2] & 0xFF, 0]))
     ff.close()
     # Adobe color swatch format
     ff = open(f + ".aco", "xb" if raiseIfExists else "wb")

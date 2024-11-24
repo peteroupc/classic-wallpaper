@@ -278,7 +278,10 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-buttondown"><strong>buttondown</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-buttonup"><strong>buttonup</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-cgacolors"><strong>cgacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Canonical&nbsp;16-color&nbsp;CGA&nbsp;palette<br>
-#&nbsp;see&nbsp;also:&nbsp;<a href="https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/">https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/</a></span></dd></dl>
+#&nbsp;see&nbsp;also:&nbsp;<a href="https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/">https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/</a><br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-checkerboard"><strong>checkerboard</strong></a>(upperLeftImage, otherImage, width, height, columns=2, rows=2)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;checkerboard&nbsp;pattern&nbsp;made&nbsp;of&nbsp;parts&nbsp;of&nbsp;two&nbsp;images&nbsp;of&nbsp;the&nbsp;same&nbsp;size;<br>
 #&nbsp;the&nbsp;return&nbsp;value&nbsp;has&nbsp;the&nbsp;same&nbsp;width&nbsp;and&nbsp;height&nbsp;as&nbsp;the&nbsp;source&nbsp;images.<br>
 #&nbsp;The&nbsp;two&nbsp;images&nbsp;should&nbsp;be&nbsp;tileable.<br>
@@ -293,7 +296,10 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-circledraw"><strong>circledraw</strong></a>(image, width, height, c, cx, cy, r, wraparound=True)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;circle&nbsp;that&nbsp;optionally&nbsp;wraps&nbsp;around.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-classiccolors"><strong>classiccolors</strong></a>()</dt><dd><span class="code">#&nbsp;16-color&nbsp;VGA&nbsp;palette</span></dd></dl>
- <dl><dt><a name="-classiccolors2"><strong>classiccolors2</strong></a>()</dt><dd><span class="code">#&nbsp;colors&nbsp;in&nbsp;<a href="#-classiccolors">classiccolors</a>()&nbsp;and&nbsp;their&nbsp;"half-and-half"&nbsp;versions</span></dd></dl>
+ <dl><dt><a name="-classiccolors2"><strong>classiccolors2</strong></a>()</dt><dd><span class="code">#&nbsp;Colors&nbsp;in&nbsp;<a href="#-classiccolors">classiccolors</a>()&nbsp;and&nbsp;their&nbsp;"half-and-half"&nbsp;versions.<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;'blackColor'&nbsp;and&nbsp;ending&nbsp;at&nbsp;'whiteColor'.<br>
 #&nbsp;'blackColor'&nbsp;and&nbsp;'whiteColor'&nbsp;are&nbsp;each&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.</span></dd></dl>
  <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;gray&nbsp;(128,128,128)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;black&nbsp;(0,0,0)&nbsp;background.</span></dd></dl>
@@ -433,8 +439,14 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-drawsunkenouterwindow"><strong>drawsunkenouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawsunkenouterwindowbutton"><strong>drawsunkenouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawupperedge"><strong>drawupperedge</strong></a>(helper, x0, y0, x1, y1, upper, edgesize=1, bordersize=1)</dt></dl>
- <dl><dt><a name="-ega8colors"><strong>ega8colors</strong></a>()</dt><dd><span class="code">#&nbsp;8-color&nbsp;palette&nbsp;where&nbsp;each&nbsp;color&nbsp;opponent&nbsp;is&nbsp;0&nbsp;or&nbsp;255</span></dd></dl>
- <dl><dt><a name="-egacolors"><strong>egacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;64&nbsp;colors&nbsp;displayable&nbsp;by&nbsp;EGA&nbsp;(extended&nbsp;graphics&nbsp;adapter)&nbsp;displays</span></dd></dl>
+ <dl><dt><a name="-ega8colors"><strong>ega8colors</strong></a>()</dt><dd><span class="code">#&nbsp;8-color&nbsp;palette&nbsp;where&nbsp;each&nbsp;color&nbsp;opponent&nbsp;is&nbsp;0&nbsp;or&nbsp;255<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
+ <dl><dt><a name="-egacolors"><strong>egacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;64&nbsp;colors&nbsp;displayable&nbsp;by&nbsp;EGA&nbsp;(extended&nbsp;graphics&nbsp;adapter)&nbsp;displays<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-eightColorDither"><strong>eightColorDither</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;an&nbsp;8-bit&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-ega8colors">ega8colors</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-emboss"><strong>emboss</strong></a>(bgColor=None, fgColor=None, hiltColor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;emboss&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;into&nbsp;a&nbsp;3-color&nbsp;(black/gray/white)&nbsp;image.<br>
@@ -458,7 +470,6 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-fieldbox"><strong>fieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None, pressed=False)</dt></dl>
  <dl><dt><a name="-flatborder"><strong>flatborder</strong></a>(helper, x0, y0, x1, y1, sh, buttonFace)</dt></dl>
- <dl><dt><a name="-getdithercolors"><strong>getdithercolors</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Gets&nbsp;the&nbsp;"half-and&nbsp;half"&nbsp;versions&nbsp;of&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette.</span></dd></dl>
  <dl><dt><a name="-getgrays"><strong>getgrays</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Finds&nbsp;the&nbsp;gray&nbsp;tones&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette&nbsp;and&nbsp;returns<br>
 #&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;them.</span></dd></dl>
  <dl><dt><a name="-getpixel"><strong>getpixel</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
@@ -722,7 +733,11 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'lt'&nbsp;is&nbsp;the&nbsp;light&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[128,128,128].<br>
 #&nbsp;'sh'&nbsp;is&nbsp;the&nbsp;shadow&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[0,0,0].</span></dd></dl>
- <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt></dl>
+ <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;containing&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette&nbsp;plus&nbsp;their<br>
+#&nbsp;"half-and&nbsp;half"&nbsp;versions.<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-parallaxAvi"><strong>parallaxAvi</strong></a>(
     image,
     width,
@@ -774,18 +789,18 @@ Data descriptors defined here:<br>
 #&nbsp;bitmap&nbsp;could&nbsp;not&nbsp;be&nbsp;read,&nbsp;the&nbsp;value&nbsp;None&nbsp;takes&nbsp;the&nbsp;place&nbsp;of&nbsp;the<br>
 #&nbsp;corresponding&nbsp;five-element&nbsp;list.<br>
 #&nbsp;Each&nbsp;five-element&nbsp;list&nbsp;in&nbsp;the&nbsp;returned&nbsp;list&nbsp;contains&nbsp;the&nbsp;image,<br>
-#&nbsp;its&nbsp;width,&nbsp;its&nbsp;height,&nbsp;its&nbsp;hotspot&nbsp;X&nbsp;coordinate,&nbsp;and&nbsp;its&nbsp;hotspot<br>
+#&nbsp;its&nbsp;width,&nbsp;its&nbsp;height,&nbsp;its&nbsp;hot&nbsp;spot&nbsp;X&nbsp;coordinate,&nbsp;and&nbsp;its&nbsp;hot&nbsp;spot<br>
 #&nbsp;Y&nbsp;coordinate&nbsp;in&nbsp;that&nbsp;order.&nbsp;The&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
-#&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.&nbsp;(The&nbsp;hotspot&nbsp;is&nbsp;the&nbsp;point&nbsp;in&nbsp;the&nbsp;image<br>
+#&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.&nbsp;(The&nbsp;hot&nbsp;spot&nbsp;is&nbsp;the&nbsp;point&nbsp;in&nbsp;the&nbsp;image<br>
 #&nbsp;that&nbsp;receives&nbsp;the&nbsp;system's&nbsp;mouse&nbsp;position&nbsp;when&nbsp;that&nbsp;image&nbsp;is<br>
-#&nbsp;drawn&nbsp;on&nbsp;the&nbsp;screen.&nbsp;&nbsp;The&nbsp;hotspot&nbsp;makes&nbsp;sense&nbsp;only&nbsp;for&nbsp;mouse&nbsp;pointers;<br>
-#&nbsp;the&nbsp;hotspot&nbsp;X&nbsp;and&nbsp;Y&nbsp;coordinates&nbsp;are&nbsp;each&nbsp;0&nbsp;if&nbsp;the&nbsp;image&nbsp;relates&nbsp;to<br>
+#&nbsp;drawn&nbsp;on&nbsp;the&nbsp;screen.&nbsp;&nbsp;The&nbsp;hot&nbsp;spot&nbsp;makes&nbsp;sense&nbsp;only&nbsp;for&nbsp;mouse&nbsp;pointers;<br>
+#&nbsp;the&nbsp;hot&nbsp;spot&nbsp;X&nbsp;and&nbsp;Y&nbsp;coordinates&nbsp;are&nbsp;each&nbsp;0&nbsp;if&nbsp;the&nbsp;image&nbsp;relates&nbsp;to<br>
 #&nbsp;an&nbsp;icon&nbsp;or&nbsp;bitmap,&nbsp;rather&nbsp;than&nbsp;a&nbsp;pointer.)</span></dd></dl>
  <dl><dt><a name="-reados2iconcore"><strong>reados2iconcore</strong></a>(f)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;'reados2icon',&nbsp;but&nbsp;takes&nbsp;an&nbsp;I/O&nbsp;<a href="builtins.html#object">object</a>&nbsp;such&nbsp;as&nbsp;one<br>
 #&nbsp;returned&nbsp;by&nbsp;Python's&nbsp;'open'&nbsp;method.</span></dd></dl>
- <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(f)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;palette&nbsp;file.<br>
+ <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;or&nbsp;Windows&nbsp;palette&nbsp;file.<br>
 #&nbsp;Returns&nbsp;an&nbsp;list&nbsp;of&nbsp;the&nbsp;colors&nbsp;read&nbsp;from&nbsp;the&nbsp;file.<br>
-#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;list&nbsp;consisting&nbsp;of<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;three-element&nbsp;list&nbsp;consisting&nbsp;of<br>
 #&nbsp;the&nbsp;color's&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;component,&nbsp;in&nbsp;that<br>
 #&nbsp;order;&nbsp;each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-readwinicon"><strong>readwinicon</strong></a>(infile)</dt></dl>
@@ -925,7 +940,17 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;If&nbsp;'includeVga'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;unchanged&nbsp;any&nbsp;colors&nbsp;in&nbsp;the&nbsp;colorpalette&nbsp;returned&nbsp;by&nbsp;<a href="#-classiccolors">classiccolors</a>().&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-websafecolors"><strong>websafecolors</strong></a>()</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;of&nbsp;the&nbsp;216&nbsp;colors&nbsp;of&nbsp;the&nbsp;"safety&nbsp;palette",&nbsp;also&nbsp;known&nbsp;as&nbsp;the<br>
-#&nbsp;"Web&nbsp;safe"&nbsp;palette.</span></dd></dl>
+#&nbsp;"Web&nbsp;safe"&nbsp;palette.&nbsp;&nbsp;The&nbsp;"safety&nbsp;palette"&nbsp;consists&nbsp;of&nbsp;216&nbsp;colors&nbsp;that&nbsp;are<br>
+#&nbsp;uniformly&nbsp;spaced&nbsp;in&nbsp;the&nbsp;red&amp;ndash;green&amp;ndash;blue&nbsp;color&nbsp;cube.&nbsp;&nbsp;Robert&nbsp;Hess's<br>
+#&nbsp;article&nbsp;"[The&nbsp;Safety&nbsp;Palette](<a href="https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10">https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10</a>))",<br>
+#&nbsp;1996,&nbsp;described&nbsp;the&nbsp;advantage&nbsp;that&nbsp;images&nbsp;that&nbsp;use&nbsp;only&nbsp;colors&nbsp;in&nbsp;this&nbsp;palette<br>
+#&nbsp;won't&nbsp;dither&nbsp;when&nbsp;displayed&nbsp;by&nbsp;Web&nbsp;browsers&nbsp;on&nbsp;displays&nbsp;that&nbsp;can&nbsp;show&nbsp;up&nbsp;to&nbsp;256<br>
+#&nbsp;colors&nbsp;at&nbsp;once.&nbsp;(See&nbsp;also&nbsp;[**Wikipedia**](<a href="http://en.wikipedia.org/wiki/Web_colors">http://en.wikipedia.org/wiki/Web_colors</a>).<br>
+#&nbsp;Dithering&nbsp;is&nbsp;the&nbsp;scattering&nbsp;of&nbsp;colors&nbsp;in&nbsp;a&nbsp;limited&nbsp;set&nbsp;to&nbsp;simulate&nbsp;colors<br>
+#&nbsp;outside&nbsp;that&nbsp;set.)<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
+#&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
  <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.<br>
 #&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>

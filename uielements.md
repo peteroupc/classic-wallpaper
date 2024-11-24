@@ -105,9 +105,12 @@ The following points are observed in general in user interface graphics, includi
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally-sized steps.
 - The three-dimensional (3-D) appearance of graphics (including buttons, window borders, and real-world objects) is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
     - If it is desired to give a real-world object a 3-D look with a limited color palette, that object is generally drawn in an _isometric_ view (rather than straight on).
-- In icons, cursors, and digital illustrations limited to the VGA palette[^1], color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided.  With a 256-color palette, such gradient fills are present but subtle.
-- Icons and cursors representing real-world objects tend to have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
-- Larger versions of icons originally in size 32&times;32 (for example, the 48&times;48 version) tend to be the same as the original icon but with finer but non-essential detail.
+- Real-world objects depicted in icons and other graphics tend to have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
+- In general, in icons, cursors, and digital illustrations limited to the 16-color VGA palette[^1]&mdash;
+    - color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided, and
+    - areas are filled with either a solid color in the palette or an alternating "checkerboard" pattern of two colors (to simulate a color outside the palette).
+- For graphics in a 256-color palette, gradient fills are present but subtle.
+- Larger versions of icons originally in size 32&times;32 (for example, the 48&times;48 version) tend to appear the same as the original icon but with finer but non-essential detail.
 
 After about 2003, icons, cursors, and illustrations for user interfaces tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions tend to be derived from those images through _dithering_[^6] or similar techniques.
 
