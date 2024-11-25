@@ -444,15 +444,17 @@ def writeavi(
         numuniques if numuniques <= 256 else 0,
         0,
     )
+    bitmapcolortable = b""
     if bpp <= 8:
-        bitmapinfo += bytes([colortable[i] for i in range(numuniques * 4)])
+        bitmapcolortable = bytes([colortable[i] for i in range(numuniques * 4)])
     fd = open(f, "xb" if raiseIfExists else "wb")
     if compressionMode == 0 and not dowriteavi:
-        bmsize = 14 + len(bitmapinfo) + sizeImage
-        bmoffset = 14 + len(bitmapinfo)
+        bmsize = 14 + len(bitmapinfo) + len(bitmapcolortable) + sizeImage
+        bmoffset = 14 + len(bitmapinfo) + len(bitmapcolortable)
         chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
         fd.write(chunk)
         fd.write(bitmapinfo)
+        fd.write(bitmapcolortable)
     imagedatas = []
     frameindex = []
     indexpos = 4
@@ -669,7 +671,12 @@ def writeavi(
         else:
             fd.write(b"".join(imagescans))
     if dowriteavi:
-        bitmapinfo = b"strf" + struct.pack("<L", len(bitmapinfo)) + bitmapinfo
+        bitmapinfo = (
+            b"strf"
+            + struct.pack("<L", len(bitmapinfo) + len(bitmapcolortable))
+            + bitmapinfo
+            + bitmapcolortable
+        )
         streamlist = b"strl" + streamheader + bitmapinfo
         aviheaderlist = (
             b"hdrl"
@@ -695,11 +702,31 @@ def writeavi(
             fd.write(img)
         fd.write(indexinfo)
     elif rle4 or rle8:
-        bmsize = 14 + len(bitmapinfo) + sum(len(img) for img in imagedatas)
-        bmoffset = 14 + len(bitmapinfo)
+        bitmapinfo = struct.pack(
+            "<LllHHLLllLL",
+            40,
+            width,
+            height,
+            1,
+            bpp,
+            compressionMode,
+            sum(len(img) for img in imagedatas),
+            0,
+            0,
+            numuniques if numuniques <= 256 else 0,
+            0,
+        )
+        bmsize = (
+            14
+            + len(bitmapinfo)
+            + len(bitmapcolortable)
+            + sum(len(img) for img in imagedatas)
+        )
+        bmoffset = 14 + len(bitmapinfo) + len(bitmapcolortable)
         chunk = b"BM" + struct.pack("<LhhL", bmsize, 0, 0, bmoffset)
         fd.write(chunk)
         fd.write(bitmapinfo)
+        fd.write(bitmapcolortable)
         for img in imagedatas:
             fd.write(img)
     fd.close()
@@ -2324,7 +2351,7 @@ def _readicon(f, packedWinBitmap=False):
         ret = bl
     return [ret, width, height, hotspotX, hotspotY]
 
-# Image has the same format returned by the _blankimage_ method with alpha=False.
+# Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
 def parallaxAvi(

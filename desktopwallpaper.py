@@ -3068,6 +3068,14 @@ def affine(
             dstimage[dstindex : dstindex + bypp] = srcimage[srcindex : srcindex + bypp]
     return dstimage
 
+# Horizontal doubling of pixels.
+# Images have the same format returned by the _blankimage_ method with the
+# given value of 'alpha' (default value for 'alpha' is False).
+def twobyonestretch(image, w, h, alpha=True):
+    return dw.affine(
+        dw.blankimage(w * 2, h), w * 2, h, image, w, h, 2, 0, 0, 1, alpha=True
+    )
+
 # Image has the same format returned by the _blankimage_ method with alpha=False.
 def horizskew(image, width, height, skew):
     if skew < -1 or skew > 1:
