@@ -1,7 +1,9 @@
 # This Python script implements the reading of writing
 # of certain classic bitmap, icon, and cursor formats,
 # and the writing of certain animation formats.
-# Released under the Unlicense.
+#
+# This script is released to the public domain; in case that is not possible, the
+# file is also licensed under the Unlicense: https://unlicense.org/
 
 import os
 import math
@@ -1370,7 +1372,7 @@ def _rle4decompress(bitdata, dst, width, height):
 # Each five-element list in the returned list contains the image,
 # its width, its height, its hot spot X coordinate, and its hot spot
 # Y coordinate in that order. The image has the same format returned by the
-# _blankimage_ method with alpha=True. (The hot spot is the point in the image
+# _desktopwallpaper_ module's _blankimage_ method with alpha=True. (The hot spot is the point in the image
 # that receives the system's mouse position when that image is
 # drawn on the screen.  The hot spot makes sense only for mouse pointers;
 # the hot spot X and Y coordinates are each 0 if the image relates to
@@ -1541,23 +1543,6 @@ def _readwinpal(f):
             return ret
         else:
             f.seek(f.tell() + sz)
-
-# Returns a list of the unique colors in an image (disregarding
-# the alpha channel, if any).  The return value has the same
-# format returned in the _reados2palette_ function.
-def uniquecolors(image, width, height, alpha=False):
-    colors = {}
-    bytesperpixel = 4 if alpha else 3
-    for i in range(width * height):
-        c = (
-            image[i * bytesperpixel]
-            | (image[i * bytesperpixel + 1] << 8)
-            | (image[i * bytesperpixel + 2] << 16)
-        )
-        colors[c] = True
-    ck = [[k & 0xFF, (k >> 8) & 0xFF, (k >> 16) & 0xFF] for k in colors.keys()]
-    ck.sort()
-    return ck
 
 # Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
 # An OS/2 theme resource file is a collection of OS/2 resources
@@ -2381,7 +2366,7 @@ def parallaxAvi(
 # is the same as the source image's; if less, each
 # frame's width.
 # The source image has the same format returned by the
-# _blankimage_ method with alpha=False.
+# _desktopwallpaper_ module's _blankimage_ method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
 def animationBitmap(image, width, height, destImage, firstFrame=0, fps=15):

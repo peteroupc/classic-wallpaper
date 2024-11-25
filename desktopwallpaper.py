@@ -308,6 +308,23 @@ def halfhalfditherimage(image, width, height, palette):
             image[xp * 3 + 1] = (col >> 8) & 0xFF
             image[xp * 3 + 2] = (col >> 16) & 0xFF
 
+# Returns a list of the unique colors in an image (disregarding
+# the alpha channel, if any).  The return value has the same
+# format returned in the _reados2palette_ function.
+def uniquecolors(image, width, height, alpha=False):
+    colors = {}
+    bytesperpixel = 4 if alpha else 3
+    for i in range(width * height):
+        c = (
+            image[i * bytesperpixel]
+            | (image[i * bytesperpixel + 1] << 8)
+            | (image[i * bytesperpixel + 2] << 16)
+        )
+        colors[c] = True
+    ck = [[k & 0xFF, (k >> 8) & 0xFF, (k >> 16) & 0xFF] for k in colors.keys()]
+    ck.sort()
+    return ck
+
 def _isqrtceil(i):
     r = math.isqrt(i)
     return r if r * r == i else r + 1

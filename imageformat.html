@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module imageformat</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">imageformat</strong></td>
+<td class="extra"><a href=".">index</a></td></tr></table>
+    <p><span class="code">#&nbsp;This&nbsp;Python&nbsp;script&nbsp;implements&nbsp;the&nbsp;reading&nbsp;of&nbsp;writing<br>
+#&nbsp;of&nbsp;certain&nbsp;classic&nbsp;bitmap,&nbsp;icon,&nbsp;and&nbsp;cursor&nbsp;formats,<br>
+#&nbsp;and&nbsp;the&nbsp;writing&nbsp;of&nbsp;certain&nbsp;animation&nbsp;formats.<br>
+#<br>
+#&nbsp;This&nbsp;script&nbsp;is&nbsp;released&nbsp;to&nbsp;the&nbsp;public&nbsp;domain;&nbsp;in&nbsp;case&nbsp;that&nbsp;is&nbsp;not&nbsp;possible,&nbsp;the<br>
+#&nbsp;file&nbsp;is&nbsp;also&nbsp;licensed&nbsp;under&nbsp;the&nbsp;Unlicense:&nbsp;<a href="https://unlicense.org/">https://unlicense.org/</a></span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="desktopwallpaper.html">desktopwallpaper</a><br>
+<a href="io.html">io</a><br>
+</td><td class="multicolumn"><a href="math.html">math</a><br>
+<a href="os.html">os</a><br>
+</td><td class="multicolumn"><a href="random.html">random</a><br>
+<a href="struct.html">struct</a><br>
+</td><td class="multicolumn"><a href="zlib.html">zlib</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-animationBitmap"><strong>animationBitmap</strong></a>(image, width, height, destImage, firstFrame=0, fps=15)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;AVI&nbsp;video&nbsp;file&nbsp;consisting&nbsp;of&nbsp;images&nbsp;arranged<br>
+#&nbsp;in&nbsp;a&nbsp;row&nbsp;or&nbsp;column.&nbsp;&nbsp;If&nbsp;the&nbsp;source&nbsp;image's&nbsp;width<br>
+#&nbsp;is&nbsp;greater&nbsp;than&nbsp;its&nbsp;height,&nbsp;then&nbsp;each&nbsp;frame's&nbsp;height<br>
+#&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;the&nbsp;source&nbsp;image's;&nbsp;if&nbsp;less,&nbsp;each<br>
+#&nbsp;frame's&nbsp;width.<br>
+#&nbsp;The&nbsp;source&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
+#&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
+#&nbsp;for&nbsp;this&nbsp;method&nbsp;to&nbsp;be&nbsp;successful.</span></dd></dl>
+ <dl><dt><a name="-parallaxAvi"><strong>parallaxAvi</strong></a>(
+    image,
+    width,
+    height,
+    destParallax,
+    widthReverse=False,
+    heightReverse=False,
+    interlacing=False,
+    fps=15
+)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
+#&nbsp;for&nbsp;this&nbsp;method&nbsp;to&nbsp;be&nbsp;successful.</span></dd></dl>
+ <dl><dt><a name="-readanimicon"><strong>readanimicon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;from&nbsp;a&nbsp;Windows&nbsp;animated&nbsp;icon/cursor&nbsp;file.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
+#&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'readitr'&nbsp;method.</span></dd></dl>
+ <dl><dt><a name="-readitr"><strong>readitr</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;bitmaps,&nbsp;icons,&nbsp;and&nbsp;pointers&nbsp;in&nbsp;an&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file.<br>
+#&nbsp;An&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file&nbsp;is&nbsp;a&nbsp;collection&nbsp;of&nbsp;OS/2&nbsp;resources<br>
+#&nbsp;such&nbsp;as&nbsp;bitmaps,&nbsp;icons,&nbsp;pointers,&nbsp;and&nbsp;text&nbsp;string&nbsp;tables.<br>
+#&nbsp;These&nbsp;theme&nbsp;resource&nbsp;files&nbsp;have&nbsp;the&nbsp;extensions&nbsp;.itr,&nbsp;.cmr,&nbsp;.ecr,<br>
+#&nbsp;.inr,&nbsp;.mmr,&nbsp;and&nbsp;.pmr.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;elements,&nbsp;each&nbsp;of&nbsp;which&nbsp;has&nbsp;the&nbsp;format&nbsp;described<br>
+#&nbsp;in&nbsp;the&nbsp;_reados2icon_&nbsp;method.</span></dd></dl>
+ <dl><dt><a name="-reados2icon"><strong>reados2icon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;an&nbsp;OS/2&nbsp;icon,&nbsp;mouse&nbsp;pointer&nbsp;(cursor),&nbsp;bitmap,&nbsp;or&nbsp;bitmap&nbsp;array,<br>
+#&nbsp;or&nbsp;a&nbsp;Windows&nbsp;icon&nbsp;or&nbsp;cursor.<br>
+#&nbsp;OS/2&nbsp;and&nbsp;Windows&nbsp;icons&nbsp;have&nbsp;the&nbsp;'.ico'&nbsp;file&nbsp;extension;&nbsp;OS/2&nbsp;cursors,&nbsp;'.ptr';<br>
+#&nbsp;OS/2&nbsp;bitmaps,&nbsp;'.bmp';&nbsp;and&nbsp;Windows&nbsp;cursors,&nbsp;'.cur'.<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;five-element&nbsp;lists,&nbsp;representing&nbsp;the&nbsp;decoded&nbsp;images<br>
+#&nbsp;in&nbsp;the&nbsp;order&nbsp;in&nbsp;which&nbsp;they&nbsp;were&nbsp;read.&nbsp;&nbsp;If&nbsp;an&nbsp;icon,&nbsp;pointer,&nbsp;or<br>
+#&nbsp;bitmap&nbsp;could&nbsp;not&nbsp;be&nbsp;read,&nbsp;the&nbsp;value&nbsp;None&nbsp;takes&nbsp;the&nbsp;place&nbsp;of&nbsp;the<br>
+#&nbsp;corresponding&nbsp;five-element&nbsp;list.<br>
+#&nbsp;Each&nbsp;five-element&nbsp;list&nbsp;in&nbsp;the&nbsp;returned&nbsp;list&nbsp;contains&nbsp;the&nbsp;image,<br>
+#&nbsp;its&nbsp;width,&nbsp;its&nbsp;height,&nbsp;its&nbsp;hot&nbsp;spot&nbsp;X&nbsp;coordinate,&nbsp;and&nbsp;its&nbsp;hot&nbsp;spot<br>
+#&nbsp;Y&nbsp;coordinate&nbsp;in&nbsp;that&nbsp;order.&nbsp;The&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
+#&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.&nbsp;(The&nbsp;hot&nbsp;spot&nbsp;is&nbsp;the&nbsp;point&nbsp;in&nbsp;the&nbsp;image<br>
+#&nbsp;that&nbsp;receives&nbsp;the&nbsp;system's&nbsp;mouse&nbsp;position&nbsp;when&nbsp;that&nbsp;image&nbsp;is<br>
+#&nbsp;drawn&nbsp;on&nbsp;the&nbsp;screen.&nbsp;&nbsp;The&nbsp;hot&nbsp;spot&nbsp;makes&nbsp;sense&nbsp;only&nbsp;for&nbsp;mouse&nbsp;pointers;<br>
+#&nbsp;the&nbsp;hot&nbsp;spot&nbsp;X&nbsp;and&nbsp;Y&nbsp;coordinates&nbsp;are&nbsp;each&nbsp;0&nbsp;if&nbsp;the&nbsp;image&nbsp;relates&nbsp;to<br>
+#&nbsp;an&nbsp;icon&nbsp;or&nbsp;bitmap,&nbsp;rather&nbsp;than&nbsp;a&nbsp;pointer.)</span></dd></dl>
+ <dl><dt><a name="-reados2iconcore"><strong>reados2iconcore</strong></a>(f)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;'reados2icon',&nbsp;but&nbsp;takes&nbsp;an&nbsp;I/O&nbsp;object&nbsp;such&nbsp;as&nbsp;one<br>
+#&nbsp;returned&nbsp;by&nbsp;Python's&nbsp;'open'&nbsp;method.</span></dd></dl>
+ <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;or&nbsp;Windows&nbsp;palette&nbsp;file.<br>
+#&nbsp;Returns&nbsp;an&nbsp;list&nbsp;of&nbsp;the&nbsp;colors&nbsp;read&nbsp;from&nbsp;the&nbsp;file.<br>
+#&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;three-element&nbsp;list&nbsp;consisting&nbsp;of<br>
+#&nbsp;the&nbsp;color's&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;component,&nbsp;in&nbsp;that<br>
+#&nbsp;order;&nbsp;each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
+ <dl><dt><a name="-readwinicon"><strong>readwinicon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;images&nbsp;from&nbsp;a&nbsp;Windows&nbsp;icon&nbsp;or&nbsp;cursor&nbsp;file.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
+#&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'reados2icon'&nbsp;method.</span></dd></dl>
+ <dl><dt><a name="-readxcursor"><strong>readxcursor</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;cursor&nbsp;images&nbsp;from&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;XCursor&nbsp;format.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
+#&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'reados2icon'&nbsp;method.</span></dd></dl>
+ <dl><dt><a name="-writeanicursor"><strong>writeanicursor</strong></a>(
+    outfile,
+    images,
+    width,
+    height,
+    raiseIfExists=False,
+    singleFrameAsCur=False,
+    asIcon=False,
+    hotx=0,
+    hoty=0,
+    fps=20
+)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;Note&nbsp;that,&nbsp;for&nbsp;mouse&nbsp;pointers&nbsp;(cursors),&nbsp;32x32&nbsp;pixels&nbsp;are&nbsp;the&nbsp;standard&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
+ <dl><dt><a name="-writeavi"><strong>writeavi</strong></a>(
+    f,
+    images,
+    width,
+    height,
+    raiseIfExists=False,
+    singleFrameAsBmp=False,
+    fps=20
+)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-writebmp"><strong>writebmp</strong></a>(f, image, width, height, raiseIfExists=False)</dt></dl>
+ <dl><dt><a name="-writepng"><strong>writepng</strong></a>(f, image, width, height, raiseIfExists=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-writeppm"><strong>writeppm</strong></a>(f, image, width, height, raiseIfExists=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+</td></tr></table>
+</body></html>
