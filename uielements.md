@@ -86,12 +86,12 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 - In a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions).
 - In black and white or in grayscale (with colors limited to gray tones, black, and white), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
-> **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) and a black-and-white _AND mask_ ("inverted alpha" mask), a format that additionally allows for so-called "inverted pixels".
+> **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) as well as an _AND mask_ ("inverted alpha" mask) where each pixel is either 0 or 1, a format that additionally allows for so-called "inverted pixels".
 >
->  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become black where the mask is black (all its bits are zeros), in the _opaque_ areas of the icon or cursor, and left unchanged elsewhere.
->  2. Then, the output pixels are combined using a bit-by-bit exclusive-OR (XOR) operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is black, and the rest of the output is inverted where the mask is white (all its bits are ones).
+>  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become "black" (all bits zeros) where the AND mask pixel equals 0, in the _opaque_ areas of the icon or cursor, and left unchanged elsewhere.
+>  2. Then, the output pixels are combined using a bit-by-bit exclusive-OR (XOR) operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is "black" (all its bits are zeros), and the rest of the output is inverted where the mask is "white" (all its bits are ones).
 >
->  For icons and cursors with only colored and transparent pixels (and no inverted pixels), the XOR mask should be black wherever the AND mask is white (all its bits are ones).
+>  For icons and cursors with only colored and transparent pixels (and no inverted pixels), the XOR mask should be "black" (all bits zeros) wherever the AND mask pixel equals 1.
 
 ## Animations
 
@@ -107,8 +107,8 @@ The following points are observed in general in user interface graphics, includi
     - If it is desired to give a real-world object a 3-D look with a limited color palette, that object is generally drawn in an _isometric_ view (rather than straight on).
 - Real-world objects depicted in icons and other graphics tend to have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
 - In general, in icons, cursors, and digital illustrations limited to the 16-color VGA palette[^1]&mdash;
-    - color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided, and
-    - areas are filled with either a solid color in the palette or an alternating "checkerboard" pattern of two colors (to simulate a color outside the palette).
+    - areas are filled with either a solid color in the palette or an alternating "checkerboard" pattern of two colors (to simulate a color outside the palette), and
+    - color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
 - Larger versions of icons originally in size 32&times;32 (for example, the 48&times;48 version) tend to appear the same as the original icon but with finer but non-essential detail.
 
