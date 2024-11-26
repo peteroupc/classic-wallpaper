@@ -6,6 +6,7 @@
 import random
 import desktopwallpaper as dw
 
+
 def randomwallpaper2(palette=None):
     w = random.randint(32, 128)
     h = random.randint(32, 128)
@@ -36,6 +37,7 @@ def randomwallpaper2(palette=None):
     image3, width, height = dw.randomRotated(image3, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
     return [image3, width, height]
+
 
 def randomwallpaper(palette=None):
     w = random.randint(96, 256)

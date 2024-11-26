@@ -14,6 +14,7 @@ import io
 
 import desktopwallpaper as dw
 
+
 # Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
 def writeppm(f, image, width, height, raiseIfExists=False):
     if not image:
@@ -26,6 +27,7 @@ def writeppm(f, image, width, height, raiseIfExists=False):
     fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
     fd.write(bytes(image))
     fd.close()
+
 
 # Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
 def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
@@ -56,8 +58,10 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
     fd.close()
 
+
 def _isRiffOrListChunk(chunk):
     return chunk[0] == b"RIFF" or chunk[0] == b"LIST"
+
 
 def _getRiffChunkSize(chunk):
     if _isRiffOrListChunk(chunk):
@@ -68,11 +72,13 @@ def _getRiffChunkSize(chunk):
     else:
         return chunk[1]
 
+
 def _writeChunkHead(f, chunk):
     f.write(bytes(chunk[0]))
     f.write(struct.pack("<L", _getRiffChunkSize(chunk)))
     if _isRiffOrListChunk(chunk):
         f.write(bytes(chunk[1]))
+
 
 def _blackWhiteOnly(colortable, numuniques):
     return (
@@ -93,6 +99,7 @@ def _blackWhiteOnly(colortable, numuniques):
             and (colortable[3] == 0 or colortable[3] == 255)
         )
     )
+
 
 # Images have the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=True.
 # Note that, for mouse pointers (cursors), 32x32 pixels are the standard width and height.
@@ -328,6 +335,7 @@ def writeanicursor(
                         raise RuntimeError
     finally:
         f.close()
+
 
 # Images have the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
 def writeavi(
@@ -731,10 +739,12 @@ def writeavi(
             fd.write(img)
     fd.close()
 
+
 def writebmp(f, image, width, height, raiseIfExists=False):
     return writeavi(
         f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True
     )
+
 
 def _rle8decompress(bitdata, dst, width, height):
     # RLE compression for 8-bit-per-pixel bitmaps.
@@ -816,6 +826,7 @@ def _rle8decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
     return True
+
 
 def _rle24decompress(bitdata, dst, width, height):
     # RLE compression for 24-bit-per-pixel bitmaps.
@@ -913,6 +924,7 @@ def _rle24decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
     return True
+
 
 _HUFFBOTH = {
     (4, 8): 91,
@@ -1108,11 +1120,13 @@ _HUFFBLACKS = {
     (6, 7, 119): 82,
 }
 
+
 def _createhuffctx(bitdata, dst, width, height):
     linesz = ((width + 31) >> 5) << 2  # bytes per scanline
     # bitdata, dst, width, height, dstbytepos, dstbitpos, dstX, linesz,
     # color, srcbytepos, srcbitpos
     return [bitdata, dst, width, height, 0, 0, 0, linesz, 0, 0, 0]
+
 
 def _nextbit(ctx):
     bitdata = ctx[0]
@@ -1124,6 +1138,7 @@ def _nextbit(ctx):
         ctx[10] = 0
         ctx[9] += 1
     return ret
+
 
 def _nexthuffcode(ctx):
     color = ctx[8]
@@ -1172,30 +1187,37 @@ def _nexthuffcode(ctx):
             return ret
     return None
 
+
 def _ismakeupcode(code):
     return code != None and code[1] >= 64
+
 
 def _istermcode(code):
     return code != None and code[1] >= 0 and code[1] < 64
 
+
 def _isstartcode(code):
     return code != None and code[1] == -1
+
 
 def _codebitcount(code):
     if code == None or code[1] == -1:
         raise ValueError
     return code[1] if code[1] < 64 else (code[1] - 63) * 64
 
+
 def _codecolor(code):
     if code == None or code[1] == -1:
         raise ValueError
     return code[0]
+
 
 def _newscan(ctx, y):
     ctx[8] = 0  # switch to white
     ctx[6] = 0  # set X to 0
     ctx[4] = (ctx[3] - 1 - y) * ctx[7]  # set scan position
     ctx[5] = 0  # set scan bit position
+
 
 def _writebitstodest(ctx, bit, count):
     dst = ctx[1]
@@ -1227,6 +1249,7 @@ def _writebitstodest(ctx, bit, count):
             ctx[4] += 1
             ctx[5] = 0
     return True
+
 
 def _huffmandecompress(bitdata, dst, width, height):
     # Group 3 one-dimensional encoding (ITU-T Rec. T.4),
@@ -1276,6 +1299,7 @@ def _huffmandecompress(bitdata, dst, width, height):
             return False
         starting = False
     return True
+
 
 def _rle4decompress(bitdata, dst, width, height):
     # RLE compression for 4-bit-per-pixel bitmaps.
@@ -1388,6 +1412,7 @@ def _rle4decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
 
+
 # Reads an OS/2 icon, mouse pointer (cursor), bitmap, or bitmap array,
 # or a Windows icon or cursor.
 # OS/2 and Windows icons have the '.ico' file extension; OS/2 cursors, '.ptr';
@@ -1410,6 +1435,7 @@ def reados2icon(infile):
         return reados2iconcore(f)
     finally:
         f.close()
+
 
 # Reads cursor images from a file in the XCursor format.  The return value
 # has the same format returned by the 'reados2icon' method.
@@ -1465,6 +1491,7 @@ def readxcursor(infile):
     finally:
         f.close()
 
+
 # Same as 'reados2icon', but takes an I/O object such as one
 # returned by Python's 'open' method.
 def reados2iconcore(f):
@@ -1515,6 +1542,7 @@ def reados2iconcore(f):
         f.seek(ft)
         return [_readicon(f)]
 
+
 # Reads the color table from an OS/2 or Windows palette file.
 # Returns an list of the colors read from the file.
 # Each element in the list is a color in the form of a three-element list consisting of
@@ -1543,6 +1571,7 @@ def reados2palette(infile):
     finally:
         f.close()
 
+
 def _readwinpal(f):
     ret = []
     sz = struct.unpack("<L", f.read(4))[0]
@@ -1570,6 +1599,7 @@ def _readwinpal(f):
             return ret
         else:
             f.seek(f.tell() + sz)
+
 
 # Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
 # An OS/2 theme resource file is a collection of OS/2 resources
@@ -1618,10 +1648,12 @@ def readitr(infile):
     finally:
         f.close()
 
+
 def _read1bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 1-bit-per-pixel
     # Windows or OS/2 bitmap data.
     return (byteData[scanSize * (height - 1 - y) + (x >> 3)] >> (7 - (x & 7))) & 1
+
 
 def _read4bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 4-bit-per-pixel
@@ -1629,6 +1661,7 @@ def _read4bppBitmap(byteData, scanSize, height, x, y):
     return (
         byteData[scanSize * (height - 1 - y) + (x >> 1)] >> (4 * (1 - (x & 1)))
     ) & 0x0F
+
 
 def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
     # Reads the alpha value at the given pixel position of a bitmap image,
@@ -1639,6 +1672,7 @@ def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
         return byteData[row + x * 4 + 3]
     else:
         return 255
+
 
 def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
     # Reads the pixel color value at the given position of a bitmap image,
@@ -1660,6 +1694,7 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
             return byteData[row + x * 4 : row + x * 4 + 3]
         case _:
             raise ValueError("Bits per pixel not supported")
+
 
 def _readwiniconcore(f, entry, isicon, hotspot):
     bmih = struct.unpack("<LllHHLLllLL", f.read(0x28))
@@ -1767,10 +1802,12 @@ def _readwiniconcore(f, entry, isicon, hotspot):
         hotspot[1] if hotspot else 0,
     ]
 
+
 def _dup(x):
     if x == None:
         return None
     return [([[z for z in y[0]], y[1], y[2]] if y else None) for y in x]
+
 
 # Reads from a Windows animated icon/cursor file.  The return value
 # has the same format returned by the 'readitr' method.
@@ -1848,6 +1885,7 @@ def readanimicon(infile):
     finally:
         f.close()
 
+
 # Reads images from a Windows icon or cursor file.  The return value
 # has the same format returned by the 'reados2icon' method.
 def readwinicon(infile):
@@ -1856,6 +1894,7 @@ def readwinicon(infile):
         return readwinicon(f)
     finally:
         f.close()
+
 
 def _readwinicon(f):
     ft = f.tell()
@@ -1904,6 +1943,7 @@ def _readwinicon(f):
             [entries[i][6], entries[i][3]] if iscursor else None,
         )
     return entries
+
 
 def _readicon(f, packedWinBitmap=False):
     unusual = False
@@ -2351,6 +2391,7 @@ def _readicon(f, packedWinBitmap=False):
         ret = bl
     return [ret, width, height, hotspotX, hotspotY]
 
+
 # Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
@@ -2386,6 +2427,7 @@ def parallaxAvi(
         if len(images[i]) != width * outputHeight * 3:
             raise ValueError
     dw.writeavi(destParallax, images, width, outputHeight, fps=fps)
+
 
 # Generates an AVI video file consisting of images arranged
 # in a row or column.  If the source image's width
