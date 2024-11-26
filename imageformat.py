@@ -1758,7 +1758,7 @@ def _readwiniconcore(f, entry, isicon, hotspot):
                 if bitand == 0
                 else alpha0
             )
-            setpixelbgralpha(bl, width, height, x, y, px)
+            dw.setpixelbgralpha(bl, width, height, x, y, px)
     return [
         bl,
         width,
@@ -2279,7 +2279,7 @@ def _readicon(f, packedWinBitmap=False):
                     if bpp
                     else bytes(_readBitmapAlpha(andmask, andmaskscan, ch, bpp, x, y))
                 )
-                setpixelbgralpha(ci, cw, ch, x, y, col + alpha)
+                dw.setpixelbgralpha(ci, cw, ch, x, y, col + alpha)
         ret = ci
         width = cw
         height = ch
@@ -2323,7 +2323,7 @@ def _readicon(f, packedWinBitmap=False):
                     if bitand == 0
                     else alpha0
                 )
-                setpixelbgralpha(bl, cw, ch, x, y, px)
+                dw.setpixelbgralpha(bl, cw, ch, x, y, px)
         width = cw
         height = ch
         ret = bl
@@ -2345,7 +2345,7 @@ def _readicon(f, packedWinBitmap=False):
                     if bitxor == 1
                     else (blackalpha1 if bitand == 0 else blackalpha0)
                 )
-                setpixelalpha(bl, andmaskhdr[1], trueheight, x, y, px)
+                dw.setpixelalpha(bl, andmaskhdr[1], trueheight, x, y, px)
         width = andmaskhdr[1]
         height = trueheight
         ret = bl
