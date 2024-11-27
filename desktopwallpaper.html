@@ -934,8 +934,9 @@ Data descriptors defined here:<br>
     darkShadowColor=None
 )</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;for&nbsp;coloring&nbsp;user&nbsp;interface&nbsp;elements&nbsp;(for&nbsp;example,<br>
 #&nbsp;using&nbsp;the&nbsp;'graymap'&nbsp;function).<br>
-#&nbsp;The&nbsp;parameters&nbsp;are&nbsp;all<br>
-#&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can&nbsp;be&nbsp;None.</span></dd></dl>
+#&nbsp;The&nbsp;parameters&nbsp;are&nbsp;all&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can<br>
+#&nbsp;be&nbsp;None.&nbsp;&nbsp;The&nbsp;examples&nbsp;for&nbsp;this&nbsp;function&nbsp;are&nbsp;similar&nbsp;to&nbsp;those&nbsp;given&nbsp;in&nbsp;the<br>
+#&nbsp;'uicolorgradient2'&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-uicolorgradient2"><strong>uicolorgradient2</strong></a>(btnface=None)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;for&nbsp;coloring&nbsp;user&nbsp;interface&nbsp;elements&nbsp;(for&nbsp;example,<br>
 #&nbsp;using&nbsp;the&nbsp;'graymap'&nbsp;function),&nbsp;given&nbsp;a&nbsp;desired&nbsp;button&nbsp;face&nbsp;color.&nbsp;&nbsp;The&nbsp;parameters&nbsp;are&nbsp;all<br>
 #&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can&nbsp;be&nbsp;None.<br>
@@ -945,19 +946,25 @@ Data descriptors defined here:<br>
 #&nbsp;and&nbsp;shadows&nbsp;colored&nbsp;in&nbsp;other&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Then&nbsp;the&nbsp;following&nbsp;code&nbsp;colors<br>
 #&nbsp;the&nbsp;gray&nbsp;tones&nbsp;of&nbsp;the&nbsp;button&nbsp;image&nbsp;and&nbsp;saves&nbsp;the&nbsp;resulting&nbsp;image&nbsp;to&nbsp;a&nbsp;file.<br>
 #<br>
+#&nbsp;&nbsp;import&nbsp;imageformat&nbsp;as&nbsp;ifmt<br>
+#<br>
 #&nbsp;&nbsp;grad&nbsp;=&nbsp;dw.<a href="#-uicolorgradient2">uicolorgradient2</a>([220,&nbsp;200,&nbsp;150])<br>
 #&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;ignoreNonGrays=True)<br>
-#&nbsp;&nbsp;#&nbsp;img256&nbsp;is&nbsp;the&nbsp;output.<br>
+#&nbsp;&nbsp;ifmt.writepng("button.png",img256,&nbsp;w,&nbsp;h)<br>
 #<br>
 #&nbsp;Example&nbsp;2:&nbsp;Same&nbsp;as&nbsp;the&nbsp;previous&nbsp;example,&nbsp;but&nbsp;the&nbsp;image&nbsp;is&nbsp;first&nbsp;dithered<br>
-#&nbsp;to&nbsp;have&nbsp;at&nbsp;most&nbsp;four&nbsp;gray&nbsp;tones,&nbsp;including&nbsp;possibly&nbsp;light&nbsp;gray.<br>
+#&nbsp;to&nbsp;have&nbsp;at&nbsp;most&nbsp;four&nbsp;gray&nbsp;tones,&nbsp;including&nbsp;possibly&nbsp;light&nbsp;gray.&nbsp;&nbsp;This<br>
+#&nbsp;dithering&nbsp;procedure&nbsp;is&nbsp;useful&nbsp;in&nbsp;order&nbsp;to&nbsp;prepare&nbsp;the&nbsp;image&nbsp;for&nbsp;display<br>
+#&nbsp;on&nbsp;devices&nbsp;that&nbsp;can&nbsp;show&nbsp;only&nbsp;a&nbsp;limited&nbsp;number&nbsp;of&nbsp;colors&nbsp;at&nbsp;a&nbsp;time.<br>
+#<br>
+#&nbsp;&nbsp;import&nbsp;imageformat&nbsp;as&nbsp;ifmt<br>
 #<br>
 #&nbsp;&nbsp;img&nbsp;=&nbsp;dw.<a href="#-dithertograyimage">dithertograyimage</a>(<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;[x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;128,&nbsp;192,&nbsp;255],&nbsp;ignoreNonGrays=True<br>
 #&nbsp;&nbsp;)<br>
 #&nbsp;&nbsp;grad&nbsp;=&nbsp;dw.<a href="#-uicolorgradient2">uicolorgradient2</a>([220,&nbsp;200,&nbsp;150])<br>
 #&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;ignoreNonGrays=True)<br>
-#&nbsp;&nbsp;#&nbsp;img256&nbsp;is&nbsp;the&nbsp;output.</span></dd></dl>
+#&nbsp;&nbsp;ifmt.writepng("button.png",&nbsp;img256,&nbsp;w,&nbsp;h)</span></dd></dl>
  <dl><dt><a name="-unavailable"><strong>unavailable</strong></a>(
     bgColor=None,
     buttonShadow=None,

@@ -84,7 +84,7 @@ Of these variations, 32&times;32 icons with the VGA palette are traditionally th
 Cursors (mouse pointer graphics) can follow the guidelines given above as well, but most cursors are traditionally drawn:
 
 - In a single pixel dimension, generally 32&times;32, except to account for [logical display resolution](#logical-display-resolutions).
-- In black and white or in grayscale (with colors limited to gray tones, black, and white), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
+- In black and white or in grayscale (with colors limited to white, black, and other gray tones), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) as well as an _AND mask_ ("inverted alpha" mask) where each pixel is either 0 or 1, a format that additionally allows for so-called "inverted pixels".
 >
@@ -113,6 +113,18 @@ The following points are observed in general in user interface graphics, includi
 - Larger versions of icons originally in size 32&times;32 (for example, the 48&times;48 version) tend to appear the same as the original icon but with finer but non-essential detail.
 
 After about 2003, icons, cursors, and illustrations for user interfaces tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions tend to be derived from those images through _dithering_[^6] or similar techniques.
+
+## Flexible User Interface Graphics
+
+For a high degree of flexibility, new graphical user interface systems should allow for the following:
+
+- Designing icons, cursors, and other user interface elements in the form of vector graphics.
+- Having certain vector paths (shapes) in vector graphics be filled with user-specified system colors, or _system colors_ for short (such as a button face color or button highlight color).
+- Designing user interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
+- Drawing the same icon, cursor, or graphic&mdash;
+    - in multiple sizes, each with a different level of detail (where the system is expected to use the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html), and
+    - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
+- Animation of icons and cursors.
 
 ## License
 

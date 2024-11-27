@@ -3054,8 +3054,9 @@ def _gradient(stops, count=256):
 
 # Returns a 256-element color gradient for coloring user interface elements (for example,
 # using the 'graymap' function).
-# The parameters are all
-# three-element lists identifying colors.  Each parameter can be None.
+# The parameters are all three-element lists identifying colors.  Each parameter can
+# be None.  The examples for this function are similar to those given in the
+# 'uicolorgradient2' function.
 def uicolorgradient(
     hilightColor=None, lightColor=None, shadowColor=None, darkShadowColor=None
 ):
@@ -3077,19 +3078,25 @@ def uicolorgradient(
 # and shadows colored in other gray tones.  Then the following code colors
 # the gray tones of the button image and saves the resulting image to a file.
 #
+#  import imageformat as ifmt
+#
 #  grad = dw.uicolorgradient2([220, 200, 150])
 #  img256 = dw.graymap([x for x in img], w, h, grad, ignoreNonGrays=True)
-#  # img256 is the output.
+#  ifmt.writepng("button.png",img256, w, h)
 #
 # Example 2: Same as the previous example, but the image is first dithered
-# to have at most four gray tones, including possibly light gray.
+# to have at most four gray tones, including possibly light gray.  This
+# dithering procedure is useful in order to prepare the image for display
+# on devices that can show only a limited number of colors at a time.
+#
+#  import imageformat as ifmt
 #
 #  img = dw.dithertograyimage(
 #    [x for x in img], w, h, [0, 128, 192, 255], ignoreNonGrays=True
 #  )
 #  grad = dw.uicolorgradient2([220, 200, 150])
 #  img256 = dw.graymap([x for x in img], w, h, grad, ignoreNonGrays=True)
-#  # img256 is the output.
+#  ifmt.writepng("button.png", img256, w, h)
 def uicolorgradient2(btnface=None):
     if not btnface:
         btnface = [192, 192, 192]
@@ -3674,7 +3681,7 @@ def maketileable(image, width, height, alpha=False):
     return ret
 
 # What follows are methods for generating scalable vector graphics (SVGs)
-# and raster graphics of classic OS style borders and button controls.
+# and raster graphics of classic-operating-system-style borders and button controls.
 # Although the SVGs are scalable
 # by definition, they are pixelated just as they would appear in classic OSs.
 #

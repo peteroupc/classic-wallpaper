@@ -6,6 +6,62 @@
 import random
 import desktopwallpaper as dw
 
+def randomdiamondtile(icon, iconwidth, iconheight, palette=None):
+    padding = random.randint(0, iconwidth)
+    imgwidth = 0
+    imgheight = 0
+    iconpos1 = []
+    iconpos2 = []
+    match random.randint(0, 2):
+        case 0:
+            imgwidth = (iconwidth + padding) * 2
+            imgheight = (iconwidth + padding) * 2
+            iconpos1 = [(imgwidth - iconwidth) // 2, (imgheight - iconheight) // 2]
+            iconpos2 = [imgwidth - (iconwidth) // 2, imgheight - (iconheight) // 2]
+        case 1:
+            imgwidth = (iconwidth + padding) * 2
+            imgheight = iconwidth + padding
+            iconpos1 = [padding // 2, padding // 2]
+            iconpos2 = [imgwidth // 2 + padding // 2, imgheight // 2 + padding // 2]
+        case 2:
+            imgwidth = iconwidth + padding
+            imgheight = (iconwidth + padding) * 2
+            iconpos1 = [padding // 2, padding // 2]
+            iconpos2 = [imgwidth // 2 + padding // 2, imgheight // 2 + padding // 2]
+    # Generate a random background for the icon tiling
+    bg = dw.randombackgroundimage(imgwidth, imgheight, palette)
+    dw.imagesrcover(
+        bg,
+        imgwidth,
+        imgheight,
+        iconpos1[0],
+        iconpos1[1],
+        iconpos1[0] + iconwidth,
+        iconpos1[1] + iconheight,
+        icon,
+        iconwidth,
+        iconheight,
+        0,
+        0,
+        wraparound=True,
+    )
+    dw.imagesrcover(
+        bg,
+        imgwidth,
+        imgheight,
+        iconpos2[0],
+        iconpos2[1],
+        iconpos2[0] + iconwidth,
+        iconpos2[1] + iconheight,
+        icon,
+        iconwidth,
+        iconheight,
+        0,
+        0,
+        wraparound=True,
+    )
+    return [bg, imgwidth, imgheight]
+
 def randomwallpaper3(palette=None):
     w = random.randint(32, 192)
     w -= w % 8
