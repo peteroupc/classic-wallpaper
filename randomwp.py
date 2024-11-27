@@ -6,6 +6,24 @@
 import random
 import desktopwallpaper as dw
 
+def randomwallpaper3(palette=None):
+    w = random.randint(32, 192)
+    w -= w % 8
+    h = random.randint(32, 192)
+    h -= h % 8
+    image = dw.randombackgroundimage(w, h, palette)
+    image, w, h = dw.randomRotated(image, w, h)
+    image = dw.randommaybemonochrome(image, w, h)
+    match random.randint(0, 4):
+        case 0:
+            image, w, h = dw.groupPmImage(image, w, h)
+        case 1:
+            image, w, h = dw.groupPgImage(image, w, h)
+        case 2:
+            image, w, h = dw.tileableImage(image, w, h)
+        case _:
+            pass
+    return [image, w, h]
 
 def randomwallpaper2(palette=None):
     w = random.randint(32, 128)
@@ -37,7 +55,6 @@ def randomwallpaper2(palette=None):
     image3, width, height = dw.randomRotated(image3, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
     return [image3, width, height]
-
 
 def randomwallpaper(palette=None):
     w = random.randint(96, 256)
