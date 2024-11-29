@@ -1511,6 +1511,10 @@ def reados2iconcore(f):
         # Windows icon
         f.seek(ft)
         return _readwinicon(f)
+    elif (
+        tag != b"CI" and tag != b"CP" and tag != b"IC" and tag != b"PT" and tag != b"BM"
+    ):
+        return []
     else:
         f.seek(ft)
         return [_readicon(f)]
@@ -1661,11 +1665,48 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
         case _:
             raise ValueError("Bits per pixel not supported")
 
-def _readwiniconcore(f, entry, isicon, hotspot):
-    bmih = struct.unpack("<LllHHLLllLL", f.read(0x28))
-    if bmih[0] != 0x28:
-        print("unsupported header size")
-        return False
+def _pilReadImage(imagebytes):
+    import PIL.Image
+
+    image = PIL.Image.open(io.BytesIO(imagebytes))
+    if not image:
+        return [None, 0, 0]
+    iconimg = [0 for i in range(image.width * image.height * 4)]
+    pos = 0
+    for y in range(image.height):
+        for x in range(image.width):
+            px = image.getpixel((x, y))
+            iconimg[pos] = px[0]
+            iconimg[pos + 1] = px[1]
+            iconimg[pos + 2] = px[2]
+            iconimg[pos + 3] = px[3]
+            pos += 4
+    return [iconimg, image.width, image.height]
+
+def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
+    tagbytes = f.read(4)
+    tag = struct.unpack("<L", tagbytes)
+    if tag[0] != 0x28:
+        if (
+            tag[0] == 0x474E5089
+            and resourceSize >= 8
+            and f.read(4) == b"\x0d\x0a\x1a\x0a"
+        ):
+            imagebytes = tagbytes + b"\x0d\x0a\x1a\x0a" + f.read(resourceSize - 8)
+            iconimg, width, height = _pilReadImage(imagebytes)
+            if not iconimg:
+                return None
+            return [
+                iconimg,
+                width,
+                height,
+                hotspot[0] if hotspot else 0,
+                hotspot[1] if hotspot else 1,
+            ]
+        else:
+            print("unsupported header size: %d" % (tag[0]))
+            return None
+    bmih = tag + struct.unpack("<llHHLLllLL", f.read(0x24))
     bitcount = bmih[4]
     colortablesize = 1 << bitcount if bitcount <= 8 else 0
     if colortablesize > 0 and bmih[9] != 0:
@@ -1697,7 +1738,7 @@ def _readwiniconcore(f, entry, isicon, hotspot):
         return None
     # if entry and isicon and entry[3]!=bmih[4]:
     #   # non-matching bit count
-    #   return False
+    #   return None
     sizeImage = bmih[6]
     width = bmih[1]
     if bmih[2] % 2 != 0:
@@ -1862,7 +1903,7 @@ def _readwinicon(f):
     newheader = struct.unpack("<HHH", f.read(6))
     isicon = newheader[1] == 1
     iscursor = newheader[1] == 2
-    if newheader[0] != 0 or ((not isicon) and (not iscurosr)):
+    if newheader[0] != 0 or ((not isicon) and (not iscursor)):
         return []
     entries = []
     for i in range(newheader[2]):
@@ -1902,6 +1943,7 @@ def _readwinicon(f):
             entries[i],
             newheader[1] == 1,
             [entries[i][6], entries[i][3]] if iscursor else None,
+            entries[i][4],
         )
     return entries
 
@@ -2421,3 +2463,439 @@ def animationBitmap(image, width, height, destImage, firstFrame=0, fps=15):
         )
         images.append(dst)
     writeavi(destImage, images, animWidth, animHeight, fps=fps)
+
+# IO over a limited portion of
+# another IO.  This class is not
+# thread safe, and it uses the
+# underlying IO, so the underlying IO
+# should not be used while an object
+# created from it is being used.
+class _LimitedIO:
+    # 'f' is the underlying IO; the portion
+    # will begin at the current position
+    # of 'f'. 'size' is the
+    # size in bytes of the portion.
+    def __init__(self, f, size):
+        self.start = f.tell()
+        self.f = f
+        self.size = size
+
+    def tell(self):
+        return self.f.tell() - self.start
+
+    def seek(self, pos):
+        if pos < 0 or pos > self.size:
+            raise ValueError
+        self.f.seek(self.start + pos)
+
+    def read(self, count=None):
+        if not count:
+            return self.f.read(self.size - self.tell())
+        else:
+            return self.f.read(min(count, self.size - self.tell()))
+
+def _icnspalette256():
+    ret = []
+    for i in range(215):
+        i2 = 216 - 1 - i
+        ret.append([(i2 // 36) * 51, ((i2 // 6) % 6) * 51, (i2 % 6) * 51])
+    s = [14, 13, 11, 10, 8, 7, 5, 4, 2, 1]
+    for v in s:
+        ret.append([v + (v << 4), 0, 0])
+    for v in s:
+        ret.append([0, v + (v << 4), 0])
+    for v in s:
+        ret.append([0, 0, v + (v << 4)])
+    for v in s:
+        ret.append([v + (v << 4), v + (v << 4), v + (v << 4)])
+    ret.append([0, 0, 0])
+    return ret
+
+# Reads icon images from a file in the macOS icon format.  The return value
+# has the same format returned by the 'reados2icon' method.
+def readicns(infile):
+    f = open(infile, "rb")
+    try:
+        ret = []
+        tag = f.read(4)
+        if tag != b"icns":
+            return ret
+        size = struct.unpack(">L", f.read(4))[0]
+        if size < 8:
+            return ret
+        lp = _LimitedIO(f, size - 8)
+        tag = lp.read(4)
+        size = struct.unpack(">L", lp.read(4))[0]
+        tags = {}
+        if size < 8:
+            return ret
+        if tag == b"TOC ":
+            # Table of contents
+            toc = lp.read(size - 8)
+        else:
+            lp.seek(0)
+        index = 0
+        while True:
+            tag = lp.read(4)
+            if len(tag) == 0:
+                break
+            size = struct.unpack(">L", lp.read(4))[0]
+            if size < 8:
+                raise ValueError
+            if tag in tags:
+                print("tag already exists: %s" % (tag))
+                return None
+            tags[tag] = [lp.tell(), size - 8, index]
+            lp.seek(lp.tell() + size - 8)
+            ret.append(None)
+            index += 1
+        for tag in tags.keys():
+            if (
+                tag == b"ic07"
+                or tag == b"ic08"
+                or tag == b"ic09"
+                or tag == b"ic10"
+                or tag == b"ic11"
+                or tag == b"ic12"
+                or tag == b"ic13"
+                or tag == b"ic14"
+                or tag == b"ic04"
+                or tag == b"ic05"
+            ):
+                info = tags[tag]
+                lp.seek(info[0])
+                imagebytes = lp.read(info[1])
+                if (
+                    (tag == b"ic04" or tag == b"ic05")
+                    and len(imagebytes) > 4
+                    and imagebytes[0:4] == b"ARGB"
+                ):
+                    width = 32 if tag == b"ic05" else 16
+                    height = width
+                    if len(imagebytes) - 4 == width * height * 4:
+                        # uncompressed
+                        icon = imagebytes[4:]
+                    else:
+                        # compressed
+                        icon = [0 for i in range(width * height * 4)]
+                        if not _icnsrle24decode(
+                            io.BytesIO(imagebytes[4:]), icon, planes=4
+                        ):
+                            print("decoding failed: %s" % (tag))
+                            continue
+                    image = [0 for i in range(width * height * 4)]
+                    for i in range(width * height):
+                        image[i * 4] = icon[i * 4 + 1]
+                        image[i * 4 + 1] = icon[i * 4 + 2]
+                        image[i * 4 + 2] = icon[i * 4 + 3]
+                        image[i * 4 + 3] = icon[i * 4 + 0]
+                    ret[info[2]] = [image, width, height, 0, 0]
+                else:
+                    iconimg, width, height = _pilReadImage(imagebytes)
+                    ret[info[2]] = [iconimg, width, height, 0, 0]
+            elif tag == b"s8mk" or tag == b"l8mk" or tag == b"h8mk" or tag == b"t8mk":
+                info = tags[tag]
+                ret[info[2]] = True
+            elif (
+                tag == b"is32"
+                or tag == b"il32"
+                or tag == b"ih32"
+                or tag == b"it32"
+                or tag == b"ics#"
+                or tag == b"ICN#"
+                or tag == b"ich#"
+                or tag == b"icm#"
+                or tag == b"ics4"
+                or tag == b"icl4"
+                or tag == b"ich4"
+                or tag == b"icm4"
+                or tag == b"ics8"
+                or tag == b"icl8"
+                or tag == b"ich8"
+                or tag == b"icm8"
+                or tag == b"SICN"
+                or tag == b"ICON"
+            ):
+                if _masktag(tag) not in tags and _masktag(tag) != b"":
+                    print("mask tag not found")
+                    break
+                info = tags[tag]
+                width = _iconsize(tag)
+                height = width if tag[3] != 0x23 else width * 2
+                lp.seek(info[0])
+                index = info[2]
+                iconsize = (
+                    (width * height) // 8
+                    if tag[3] == 0x23 or tag == b"SICN" or tag == b"ICON"
+                    else (
+                        (width * height) // 2
+                        if tag[3] == 0x34
+                        else (
+                            (width * height) if tag[3] == 0x38 else width * height * 3
+                        )
+                    )
+                )
+                isCompressed = iconsize != info[1]
+                is32bit = False
+                if tag[2] == 0x33 and tag[3] == 0x32 and width * height * 4 == info[1]:
+                    # ??32
+                    is32bit = True
+                    isCompressed = False
+                if isCompressed:
+                    if (
+                        tag[3] == 0x23
+                        or tag[3] == 0x34
+                        or tag[3] == 0x38
+                        or tag == b"SICN"
+                        or tag == b"ICON"
+                    ):
+                        print("compression unsupported")
+                        continue
+                    icon = [0 for i in range(width * height * 4)]
+                    if not _icnsrle24decode(_LimitedIO(lp, info[1]), icon):
+                        print("decoding failed: %s" % (tag))
+                        continue
+                else:
+                    icon = lp.read(info[1])
+                if tag[3] == 0x23:
+                    height //= 2
+                    halficonsize = width * height
+                    image = [0 for i in range(width * height * 4)]
+                    for i in range(width * height):
+                        bit = (icon[i // 8] >> (7 - (i & 7))) & 1  # XOR mask
+                        bit2 = (
+                            icon[(i + halficonsize) // 8] >> (7 - (i & 7))
+                        ) & 1  # AND mask
+                        if bit == 0:
+                            image[i * 4] = image[i * 4 + 1] = image[i * 4 + 2] = 0xFF
+                        image[i * 4 + 3] = 0xFF if (bit2 == 1) else 0x00
+                elif tag == b"SICN" or tag == b"ICON":
+                    image = [0 for i in range(width * height * 4)]
+                    for i in range(width * height):
+                        bit = (icon[i // 8] >> (7 - (i & 7))) & 1
+                        if bit == 0:
+                            image[i * 4] = image[i * 4 + 1] = image[i * 4 + 2] = 0xFF
+                        image[i * 4 + 3] = 0xFF
+                elif tag[3] == 0x34:
+                    image = [0xFF for i in range(width * height * 4)]
+                    pal = [
+                        [221, 8, 6],
+                        [242, 8, 132],
+                        [70, 0, 165],
+                        [0, 0, 212],
+                        [2, 171, 234],
+                        [31, 183, 20],
+                        [0, 100, 17],
+                        [86, 44, 5],
+                        [144, 113, 58],
+                    ]
+                    for i in range(width * height):
+                        bit = (icon[i // 2] >> (4 - 4 * (i & 1))) & 0x0F
+                        match bit:
+                            case 0:
+                                pass
+                            case 1:
+                                image[i * 4] = 252
+                                image[i * 4 + 1] = 243
+                                image[i * 4 + 2] = 5
+                            case 2:
+                                image[i * 4] = 255
+                                image[i * 4 + 1] = 100
+                                image[i * 4 + 2] = 2
+                            case 12 | 13 | 14 | 15:
+                                image[i * 4] = image[i * 4 + 1] = image[i * 4 + 2] = (
+                                    192 - (bit - 12) * 64
+                                )
+                            case _:
+                                if bit - 3 < 0:
+                                    raise ValueError
+                                if bit - 3 >= len(pal):
+                                    print(bit)
+                                    raise ValueError
+                                image[i * 4] = pal[bit - 3][0]
+                                image[i * 4 + 1] = pal[bit - 3][1]
+                                image[i * 4 + 2] = pal[bit - 3][2]
+                elif tag[3] == 0x38:
+                    pal = _icnspalette256()
+                    image = [0 for i in range(width * height * 4)]
+                    for i in range(width * height):
+                        bit = icon[i]
+                        image[i * 4] = pal[bit][0]
+                        image[i * 4 + 1] = pal[bit][1]
+                        image[i * 4 + 2] = pal[bit][2]
+                elif is32bit:
+                    image = [0 for i in range(width * height * 4)]
+                    for i in range(width * height):
+                        image[i * 4] = icon[i * 4 + 1]
+                        image[i * 4 + 1] = icon[i * 4 + 2]
+                        image[i * 4 + 2] = icon[i * 4 + 3]
+                        image[i * 4 + 3] = icon[i * 4 + 0]
+                else:
+                    if isCompressed:
+                        image = icon
+                    else:
+                        image = [0 for i in range(width * height * 4)]
+                        for i in range(width * height):
+                            image[i * 4] = icon[i * 3]
+                            image[i * 4 + 1] = icon[i * 3 + 1]
+                            image[i * 4 + 2] = icon[i * 3 + 2]
+                # mask
+                masktag = _masktag(tag)
+                if masktag != b"":
+                    info = tags[masktag]
+                    lp.seek(info[0])
+                    masksize = (
+                        (width * height * 2) // 8
+                        if masktag[3] == 0x23
+                        else width * height
+                    )
+                    if masksize != info[1]:
+                        print("compressed mask is unsupported")
+                        continue
+                    mask = lp.read(info[1])
+                    if masktag[3] == 0x23:
+                        halficonsize = width * height
+                        for i in range(width * height):
+                            bit2 = (
+                                mask[(i + halficonsize) // 8] >> (7 - (i & 7))
+                            ) & 1  # AND mask
+                            image[i * 4 + 3] = 0xFF if (bit2 == 1) else 0x00
+                    else:
+                        for i in range(width * height):
+                            image[i * 4 + 3] = mask[i]
+                ret[index] = [image, width, height, 0, 0]
+            elif tag == b"icnV":
+                info = tags[tag]
+                if info[1] == 4:
+                    lp.seek(info[0])
+                    val = struct.unpack(">f", lp.read(info[1]))[0]
+                    # val appears to be a floating-point value such as
+                    # -1.0 or 120.0
+                    ret[info[2]] = True
+                else:
+                    print("unrecognized: %s" % (tag))
+            elif tag == b"info":
+                info = tags[tag]
+                ret[info[2]] = True
+            else:
+                print("unrecognized: %s" % (tag))
+        ret2 = []
+        for v in ret:
+            if v is not True:
+                ret2.append(v)
+        ret = ret2
+        return ret
+    finally:
+        f.close()
+
+def _iconsize(icontag):
+    if icontag == b"is32":
+        return 16
+    if icontag == b"SICN":
+        return 16
+    if icontag == b"icm#":
+        return 12
+    if icontag == b"icm4":
+        return 12
+    if icontag == b"icm8":
+        return 12
+    if icontag == b"ics#":
+        return 16
+    if icontag == b"ics4":
+        return 16
+    if icontag == b"ics8":
+        return 16
+    if icontag == b"ICON":
+        return 32
+    if icontag == b"ICN#":
+        return 32
+    if icontag == b"icl4":
+        return 32
+    if icontag == b"icl8":
+        return 32
+    if icontag == b"il32":
+        return 32
+    if icontag == b"ich#":
+        return 48
+    if icontag == b"ich4":
+        return 48
+    if icontag == b"ich8":
+        return 48
+    if icontag == b"ih32":
+        return 48
+    if icontag == b"it32":
+        return 128
+    raise ValueError
+
+def _masktag(icontag):
+    if icontag == b"SICN":
+        return b""
+    if icontag == b"ICON":
+        return b""
+    if icontag == b"ics#":
+        return b""
+    if icontag == b"ics4":
+        return b"ics#"
+    if icontag == b"ics8":
+        return b"ics#"
+    if icontag == b"icm#":
+        return b""
+    if icontag == b"icm4":
+        return b"icm#"
+    if icontag == b"icm8":
+        return b"icm#"
+    if icontag == b"ICN#":
+        return b""
+    if icontag == b"icl4":
+        return b"ICN#"
+    if icontag == b"icl8":
+        return b"ICN#"
+    if icontag == b"ich#":
+        return b""
+    if icontag == b"ich4":
+        return b"ich#"
+    if icontag == b"ich8":
+        return b"ich#"
+    if icontag == b"is32":
+        return b"s8mk"
+    if icontag == b"il32":
+        return b"l8mk"
+    if icontag == b"ih32":
+        return b"h8mk"
+    if icontag == b"it32":
+        return b"t8mk"
+    raise ValueError
+
+def _icnsrle24decode(f, image, planes=3):
+    ftell = f.tell()
+    nulldata = f.read(4)
+    if nulldata != b"\x00\x00\x00\x00":
+        f.seek(ftell)
+    for i in range(planes):
+        pos = 0
+        while True:
+            if pos >= len(image):
+                break
+            b = f.read(1)
+            if len(b) == 0:
+                return False
+            if (b[0] & 0x80) == 0:
+                if (len(image) - pos) // 4 < b[0] + 1:
+                    return False
+                for j in range(b[0] + 1):
+                    b = f.read(1)
+                    if len(b) == 0:
+                        return False
+                    image[pos + i] = b[0]
+                    pos += 4
+            else:
+                bb = (b[0] & 0x7F) + 3
+                b = f.read(1)
+                if len(b) == 0:
+                    return False
+                if (len(image) - pos) // 4 < bb:
+                    return False
+                for j in range(bb):
+                    image[pos + i] = b[0]
+                    pos += 4
+    return True

@@ -4553,7 +4553,7 @@ def _mindiagwrap(x, y):
 # Draws a smaller version of the contour in the interior.
 # Preserves tileability.
 def _insetbox(x, y, contour):
-    if x * 6.0 < 1 or y * 6.0 < 1 or x * 6 > 5 or x * 6 > 5:
+    if x * 6.0 < 1 or y * 6.0 < 1 or x * 6 > 5 or y * 6 > 5:
         return contour(x, y)
     x = min(1, max(0, 3 * x / 2 - 1 / 4))
     y = min(1, max(0, 3 * y / 2 - 1 / 4))
