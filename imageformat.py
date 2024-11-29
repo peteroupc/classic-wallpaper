@@ -14,6 +14,37 @@ import io
 
 import desktopwallpaper as dw
 
+
+# IO over a limited portion of
+# another IO.  This class is not
+# thread safe, and it uses the
+# underlying IO, so the underlying IO
+# should not be used while an object
+# created from it is being used.
+class _LimitedIO:
+    # 'f' is the underlying IO; the portion
+    # will begin at the current position
+    # of 'f'. 'size' is the
+    # size in bytes of the portion.
+    def __init__(self, f, size):
+        self.start = f.tell()
+        self.f = f
+        self.size = size
+
+    def tell(self):
+        return self.f.tell() - self.start
+
+    def seek(self, pos):
+        if pos < 0 or pos > self.size:
+            raise ValueError
+        self.f.seek(self.start + pos)
+
+    def read(self, count=None):
+        if not count:
+            return self.f.read(self.size - self.tell())
+        else:
+            return self.f.read(min(count, self.size - self.tell()))
+
 # Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
 def writeppm(f, image, width, height, raiseIfExists=False):
     if not image:
@@ -1478,7 +1509,7 @@ def reados2iconcore(f):
         f.seek(ft)
         # The first offset is "device independent";
         # the others are "device dependent".
-        offsets = [0x0E]
+        offsets = [ft + 0x0E]
         infos = []
         while True:
             tag = f.read(2)
@@ -1497,11 +1528,11 @@ def reados2iconcore(f):
             if info[1] == 0:
                 break
             else:
-                contentSize = info[1] - endInfo
+                contentSize = (ft + info[1]) - endInfo
                 if contentSize < 2:
                     raise ValueError("unsupported content size")
-                offsets.append(0x0E + info[1])
-                f.seek(info[1])
+                offsets.append((ft + info[1]) + 0x0E)
+                f.seek(ft + info[1])
         ret = []
         for i in range(len(offsets)):
             f.seek(offsets[i])
@@ -1583,6 +1614,7 @@ def _readwinpal(f):
 # Returns a list of elements, each of which has the format described
 # in the _reados2icon_ method.
 def readitr(infile):
+    print(infile)
     f = open(infile, "rb")
     try:
         ret = []
@@ -1594,17 +1626,18 @@ def readitr(infile):
             if len(head) == 0:
                 return ret
             st = struct.unpack("<HBHBHL", head)
-            st0 = (st[0] << 8) | st[1]
-            st1 = (st[2] << 8) | st[3]
+            st0 = (st[1] << 8) | st[0]
+            st1 = (st[3] << 8) | st[2]
+            if (st[0]&0xFF)!=0xFF and len(ret)==0:
+               # probably not a theme resource file
+               return ret
             size = st[5]
             if size < 2:
                 raise ValueError("unsupported content size")
-            pos = f.tell()
-            data = f.read(size)
-            if len(data) != size:
-                raise ValueError
-            nextpos = f.tell()
-            tag = data[0:2]
+            curpos = f.tell()
+            nextpos = curpos + size
+            limf = _LimitedIO(f, size)
+            tag = limf.read(2)
             if (
                 tag != b"CI"
                 and tag != b"BA"
@@ -1616,8 +1649,8 @@ def readitr(infile):
                 # Not an image, skipping
                 i += 1
                 continue
-            f.seek(pos)
-            ret.append(reados2iconcore(f))
+            limf.seek(0)
+            ret.append(reados2iconcore(limf))
             i += 1
     finally:
         f.close()
@@ -2464,36 +2497,6 @@ def animationBitmap(image, width, height, destImage, firstFrame=0, fps=15):
         images.append(dst)
     writeavi(destImage, images, animWidth, animHeight, fps=fps)
 
-# IO over a limited portion of
-# another IO.  This class is not
-# thread safe, and it uses the
-# underlying IO, so the underlying IO
-# should not be used while an object
-# created from it is being used.
-class _LimitedIO:
-    # 'f' is the underlying IO; the portion
-    # will begin at the current position
-    # of 'f'. 'size' is the
-    # size in bytes of the portion.
-    def __init__(self, f, size):
-        self.start = f.tell()
-        self.f = f
-        self.size = size
-
-    def tell(self):
-        return self.f.tell() - self.start
-
-    def seek(self, pos):
-        if pos < 0 or pos > self.size:
-            raise ValueError
-        self.f.seek(self.start + pos)
-
-    def read(self, count=None):
-        if not count:
-            return self.f.read(self.size - self.tell())
-        else:
-            return self.f.read(min(count, self.size - self.tell()))
-
 def _icnspalette256():
     ret = []
     for i in range(215):
@@ -2710,7 +2713,6 @@ def readicns(infile):
                                 if bit - 3 < 0:
                                     raise ValueError
                                 if bit - 3 >= len(pal):
-                                    print(bit)
                                     raise ValueError
                                 image[i * 4] = pal[bit - 3][0]
                                 image[i * 4 + 1] = pal[bit - 3][1]
