@@ -14,7 +14,6 @@ import io
 
 import desktopwallpaper as dw
 
-
 # IO over a limited portion of
 # another IO.  This class is not
 # thread safe, and it uses the
@@ -1628,9 +1627,9 @@ def readitr(infile):
             st = struct.unpack("<HBHBHL", head)
             st0 = (st[1] << 8) | st[0]
             st1 = (st[3] << 8) | st[2]
-            if (st[0]&0xFF)!=0xFF and len(ret)==0:
-               # probably not a theme resource file
-               return ret
+            if (st[0] & 0xFF) != 0xFF and len(ret) == 0:
+                # probably not a theme resource file
+                return ret
             size = st[5]
             if size < 2:
                 raise ValueError("unsupported content size")
@@ -1793,10 +1792,6 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
     andmaskbytes = andmaskscan * height
     if isicon and bitcount <= 8 and entry and entry[2] > colortablesize:
         print("too few colors")
-        return None
-    totalsize = colortablesize * 4 + xormaskbytes + andmaskbytes + 0x28
-    if entry and totalsize != entry[4]:
-        print("bad overall image size: %d %d" % (totalsize, entry[4]))
         return None
     colortable = []
     failed = False
