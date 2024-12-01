@@ -6,6 +6,66 @@
 import random
 import desktopwallpaper as dw
 
+def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40):
+    if (not icons) or bgwidth <= 0 or bgheight <= 0 or framecount <= 0:
+        raise ValueError
+    exposures = []
+    for i in range(len(icons)):
+        expo = random.randint(framecount * 1 // 4, framecount * 3 // 4)
+        firstframe = random.randint(0, framecount - 1)
+        x0 = random.randint(0, bgwidth - 1)
+        y0 = random.randint(0, bgheight - 1)
+        exposures.append([firstframe, expo, x0, y0])
+    bg = dw.randombackgroundimage(bgwidth, bgheight, dw.classiccolors(), tileable=False)
+    animation = []
+    for i in range(framecount):
+        bgi = [x for x in bg]
+        for j in range(len(icons)):
+            firstframe = exposures[j][0]
+            endexpo = exposures[j][1] + firstframe
+            iconalpha = 255
+            visible = False
+            fadeframes = 3
+            # Fade the icon in at the beginning and out at the end,
+            # if there are multiple frames to draw
+            if i >= firstframe and i < endexpo:
+                visible = True
+                if framecount > 1 and i - firstframe < fadeframes:
+                    iconalpha = ((i - firstframe) + 1) * 255 // fadeframes
+                elif framecount > 1 and endexpo - i < fadeframes:
+                    iconalpha = ((endexpo - i) + 1) * 255 // fadeframes
+            elif endexpo > framecount and i < endexpo % framecount:
+                visible = True
+                ee = endexpo % framecount
+                if framecount > 1 and ee - i < fadeframes:
+                    iconalpha = ((ee - i) + 1) * 255 // 4
+            if visible:
+                # icon is visible
+                x0 = exposures[j][2]
+                y0 = exposures[j][3]
+                x1 = x0 + icons[j][1]
+                y1 = y0 + icons[j][2]
+                dw.imagesrcover(
+                    bgi,
+                    bgwidth,
+                    bgheight,
+                    x0,
+                    y0,
+                    x1,
+                    y1,
+                    icons[j][0],
+                    icons[j][1],
+                    icons[j][2],
+                    0,
+                    0,
+                    wraparound=True,
+                    sourceAlpha=iconalpha,
+                    screendoor=True,
+                )
+        dw.websafeDither(bgi, bgwidth, bgheight, includeVga=True)
+        animation.append(bgi)
+    return animation
+
 def randomdiamondtile(icon, iconwidth, iconheight, palette=None):
     padding = random.randint(0, iconwidth)
     imgwidth = 0

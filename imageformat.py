@@ -15,7 +15,8 @@ import io
 import desktopwallpaper as dw
 
 # IO over a limited portion of
-# another IO.  This class is not
+# another IO, which must be readable
+# and seekable.  This class is not
 # thread safe, and it uses the
 # underlying IO, so the underlying IO
 # should not be used while an object
@@ -1429,11 +1430,16 @@ def _rle4decompress(bitdata, dst, width, height):
 # Each five-element list in the returned list contains the image,
 # its width, its height, its hot spot X coordinate, and its hot spot
 # Y coordinate in that order. The image has the same format returned by the
-# _desktopwallpaper_ module's _blankimage_ method with alpha=True. (The hot spot is the point in the image
+# _desktopwallpaper_ module's _blankimage_ method with alpha=True. Notes:
+# 1. The hot spot is the point in the image
 # that receives the system's mouse position when that image is
 # drawn on the screen.  The hot spot makes sense only for mouse pointers;
 # the hot spot X and Y coordinates are each 0 if the image relates to
-# an icon or bitmap, rather than a pointer.)
+# an icon or bitmap, rather than a pointer.
+# 2. Although OS/2 and Windows icons and cursors support pixels that invert
+# the screen colors, this feature is not supported in images returned by
+# this function; areas where the icon or cursor would invert screen colors
+# are treated as transparent instead.
 def reados2icon(infile):
     f = open(infile, "rb")
     try:
@@ -1703,6 +1709,7 @@ def _pilReadImage(imagebytes):
     image = PIL.Image.open(io.BytesIO(imagebytes))
     if not image:
         return [None, 0, 0]
+    image = image.convert("RGBA")
     iconimg = [0 for i in range(image.width * image.height * 4)]
     pos = 0
     for y in range(image.height):
@@ -1716,6 +1723,7 @@ def _pilReadImage(imagebytes):
     return [iconimg, image.width, image.height]
 
 def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
+    ft = f.tell()
     tagbytes = f.read(4)
     tag = struct.unpack("<L", tagbytes)
     if tag[0] != 0x28:
@@ -1736,7 +1744,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
                 hotspot[1] if hotspot else 1,
             ]
         else:
-            print("unsupported header size: %d" % (tag[0]))
+            print("unsupported header size: %d [%08X]" % (tag[0], ft))
             return None
     bmih = tag + struct.unpack("<llHHLLllLL", f.read(0x24))
     bitcount = bmih[4]

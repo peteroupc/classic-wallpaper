@@ -1544,8 +1544,8 @@ def imagetransblit(
                 sdp = (m1 & sdp) ^ ((~m1) & sdpb)
                 dstimage[dstpos + i] = sdp
 
-def _porterduff(d, di, s, si, op, alpha=True):
-    sa = s[si + 3] if alpha else 255
+def _porterduff8bitalpha(d, di, s, si, op, sa255, alpha=True):
+    sa = sa255
     da = d[di + 3] if alpha else 255
     match op:
         case 0:  # source over
@@ -1609,7 +1609,7 @@ def _porterduff(d, di, s, si, op, alpha=True):
             d[di + 1] = s[si + 1]
             d[di + 2] = s[si + 2]
             if alpha:
-                d[di + 3] = s[si + 3]
+                d[di + 3] = sa
         case 9:  # destination
             pass
         case 10:  # clear
@@ -1660,6 +1660,138 @@ def _porterduff(d, di, s, si, op, alpha=True):
         case _:
             raise ValueError
 
+def _porterduff16bitalpha(d, di, s, si, op, sa65025, alpha=True):
+    sa = sa65025
+    da = d[di + 3] if alpha else 255
+    if sa == 65025:
+        _porterduff8bitalpha(d, di, s, si, op, 255, alpha=alpha)
+        return
+    elif sa == 0:
+        _porterduff8bitalpha(d, di, s, si, op, 0, alpha=alpha)
+        return
+    match op:
+        case 0:  # source over
+            den = da * (sa * sourceAlpha - 65025) - 255 * sa
+            if den == 0:
+                d[di] = d[di + 1] = d[di + 2] = 0
+                if alpha:
+                    d[di + 3] = 0
+            else:
+                d[di] = (
+                    da * d[di] * (sa * sourceAlpha - 65025) - 255 * sa * s[si]
+                ) // den
+                d[di + 1] = (
+                    da * d[di + 1] * (sa * sourceAlpha - 65025) - 255 * sa * s[si + 1]
+                ) // den
+                d[di + 2] = (
+                    da * d[di + 2] * (sa * sourceAlpha - 65025) - 255 * sa * s[si + 2]
+                ) // den
+                if alpha:
+                    d[di + 3] = (da * 65025 + sa * 255 - da * sa) // 65025
+        case 1:  # source in
+            d[di] = s[si]
+            d[di + 1] = s[si + 1]
+            d[di + 2] = s[si + 2]
+            if alpha:
+                d[di + 3] = (da * sa) // 65025
+        case 2:  # source held out
+            d[di] = s[si]
+            d[di + 1] = s[si + 1]
+            d[di + 2] = s[si + 2]
+            if alpha:
+                d[di + 3] = ((255 - da) * sa) // 65025
+        case 3:  # source atop
+            d[di] = (sa * s[si] - d[di] * (sa - 65025)) // 65025
+            d[di + 1] = (sa * s[si + 1] - d[di + 1] * (sa - 65025)) // 65025
+            d[di + 2] = (sa * s[si + 2] - d[di + 2] * (sa - 65025)) // 65025
+            if alpha:
+                d[di + 3] = da
+        case 4:  # destination over
+            den = sa * (da - 255) - 65025 * da
+            if den == 0:
+                d[di] = d[di + 1] = d[di + 2] = 0
+                if alpha:
+                    d[di + 3] = 0
+            else:
+                d[di] = (sa * s[si] * (da - 255) - 65025 * da * d[di]) // den
+                d[di + 1] = (
+                    sa * s[si + 1] * (da - 255) - 65025 * da * d[di + 1]
+                ) // den
+                d[di + 2] = (
+                    sa * s[si + 2] * (da - 255) - 65025 * da * d[di + 2]
+                ) // den
+                if alpha:
+                    d[di + 3] = (sa * 255 + da * 65025 - sa * da) // 65025
+        case 5:  # destination in
+            # Destination RGB left unchanged
+            if alpha:
+                d[di + 3] = (sa * da) // 65025
+        case 6:  # destination held out
+            # Destination RGB left unchanged
+            if alpha:
+                d[di + 3] = ((65025 - sa) * da) // 65025
+        case 7:  # destination atop
+            d[di] = (da * d[di] - s[si] * (da - 255)) // 255
+            d[di + 1] = (da * d[di + 1] - s[si + 1] * (da - 255)) // 255
+            d[di + 2] = (da * d[di + 2] - s[si + 2] * (da - 255)) // 255
+            if alpha:
+                d[di + 3] = sa // 255
+        case 8:  # source
+            d[di] = s[si]
+            d[di + 1] = s[si + 1]
+            d[di + 2] = s[si + 2]
+            if alpha:
+                d[di + 3] = sa // 255
+        case 9:  # destination
+            pass
+        case 10:  # clear
+            d[di] = 0
+            d[di + 1] = 0
+            d[di + 2] = 0
+            if alpha:
+                d[di + 3] = 0
+        case 11:  # XOR
+            den = -2 * da * sa + 65025 * da + 255 * sa
+            if den == 0:
+                d[di] = d[di + 1] = d[di + 2] = 0
+                if alpha:
+                    d[di + 3] = 0
+            else:
+                d[di] = (
+                    -da * d[di] * sa
+                    + 65025 * da * d[di]
+                    - da * sa * s[si]
+                    + 255 * sa * s[si]
+                ) // den
+                d[di + 1] = (
+                    -da * d[di + 1] * sa
+                    + 65025 * da * d[di + 1]
+                    - da * sa * s[si + 1]
+                    + 255 * sa * s[si + 1]
+                ) // den
+                d[di + 2] = (
+                    -da * d[di + 2] * sa
+                    + 65025 * da * d[di + 2]
+                    - da * sa * s[si + 2]
+                    + 255 * sa * s[si + 2]
+                ) // den
+                if alpha:
+                    d[di + 3] = (-2 * da * sa + sa * 255) // 255 + da
+        case 12:  # plus
+            den = 255 * da + sa
+            if den == 0:
+                d[di] = d[di + 1] = d[di + 2] = 0
+                if alpha:
+                    d[di + 3] = 0
+            else:
+                d[di] = min(255, (255 * da * d[di] + sa * s[si]) // den)
+                d[di + 1] = min(255, (255 * da * d[di + 1] + sa * s[si + 1]) // den)
+                d[di + 2] = min(255, (255 * da * d[di + 2] + sa * s[si + 2]) // den)
+                if alpha:
+                    d[di + 3] = min(255, den // 255)
+        case _:
+            raise ValueError
+
 # Performs a source-over composition involving a source image with an alpha channel
 # and a destination image without an alpha channel.  The destination rectangle
 # begins at x0 and y0 and has width ('x1'-'x0') and height ('y1'-'y0'), and wraps around the destination if 'wraparound'
@@ -1668,6 +1800,8 @@ def _porterduff(d, di, s, si, op, alpha=True):
 # If 'srcimage' is None, a source image with all zeros and an alpha of 0 for all pixels is used as the source, even if
 # 'alpha' is False.  The red, green, and blue components for 'srcimage' are assumed to be "non-premultiplied", that
 # is, not multiplied beforehand by the alpha component divided by 255.
+# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated through
+# the screen door effect.
 def imagesrcover(
     dstimage,
     dstwidth,
@@ -1682,13 +1816,13 @@ def imagesrcover(
     x0src=0,
     y0src=0,
     wraparound=True,
+    sourceAlpha=255,
+    screendoor=False,
 ):
     if dstimage == None or dstwidth < 0 or dstheight < 0:
         raise ValueError
     if x0 > x1 or y0 > y1:
         raise ValueError
-    if not srcimage:
-        return
     x1src = x0src + (x1 - x0)
     y1src = y0src + (y1 - y0)
     if srcimage and (
@@ -1702,9 +1836,11 @@ def imagesrcover(
         or y1src > srcheight
     ):
         raise ValueError
+    if (not srcimage) or sourceAlpha == 0:
+        return
     if srcimage is dstimage:
         # Avoid overlapping source/pattern with destination
-        return imagesrccopy(
+        return imagesrcover(
             dstimage,
             dstwidth,
             dstheight,
@@ -1722,6 +1858,8 @@ def imagesrcover(
             x0src,
             y0src,
             wraparound=wraparound,
+            sourceAlpha=sourceAlpha,
+            screendoor=screendoor,
         )
     for y in range(y1 - y0):
         dy = y0 + y
@@ -1730,6 +1868,7 @@ def imagesrcover(
         if (not wraparound) and dy < 0 or dy >= dstheight:
             continue
         sy = (y0src + y) * srcwidth * 4
+        dypos = dy
         dy = dy * dstwidth * 3
         for x in range(x1 - x0):
             dx = x0 + x
@@ -1740,16 +1879,34 @@ def imagesrcover(
             dstpos = dy + dx * 3
             srcpos = sy + (x0src + x) * 4
             sa = srcimage[srcpos + 3]
-            den = -65025
-            dstimage[dstpos] = (
-                sa * srcimage[srcpos] - dstimage[dstpos] * (sa - 255)
-            ) // 255
-            dstimage[dstpos + 1] = (
-                sa * srcimage[srcpos + 1] - dstimage[dstpos + 1] * (sa - 255)
-            ) // 255
-            dstimage[dstpos + 2] = (
-                sa * srcimage[srcpos + 2] - dstimage[dstpos + 2] * (sa - 255)
-            ) // 255
+            if sourceAlpha == 255 and not screendoor:
+                dstimage[dstpos] = (
+                    sa * srcimage[srcpos] - dstimage[dstpos] * (sa - 255)
+                ) // 255
+                dstimage[dstpos + 1] = (
+                    sa * srcimage[srcpos + 1] - dstimage[dstpos + 1] * (sa - 255)
+                ) // 255
+                dstimage[dstpos + 2] = (
+                    sa * srcimage[srcpos + 2] - dstimage[dstpos + 2] * (sa - 255)
+                ) // 255
+            else:
+                sa *= sourceAlpha
+                if screendoor:
+                    bdither = _DitherMatrix[(dypos & 7) * 8 + (dx & 7)]
+                    if bdither < sa * 64 // 65025:
+                        dstimage[dstpos] = srcimage[srcpos]
+                        dstimage[dstpos + 1] = srcimage[srcpos + 1]
+                        dstimage[dstpos + 2] = srcimage[srcpos + 2]
+                else:
+                    dstimage[dstpos] = (
+                        sa * srcimage[srcpos] - dstimage[dstpos] * (sa - 65025)
+                    ) // 65025
+                    dstimage[dstpos + 1] = (
+                        sa * srcimage[srcpos + 1] - dstimage[dstpos + 1] * (sa - 65025)
+                    ) // 65025
+                    dstimage[dstpos + 2] = (
+                        sa * srcimage[srcpos + 2] - dstimage[dstpos + 2] * (sa - 65025)
+                    ) // 65025
 
 # Performs an image composition involving a source image and a destination image.  The destination rectangle
 # begins at x0 and y0 and has width ('x1'-'x0') and height ('y1'-'y0'), and wraps around the destination if 'wraparound'
@@ -1766,6 +1923,8 @@ def imagesrcover(
 # 5 = destination in; 6 = destination held out; 7 = destination atop;
 # 8 = copy source; 9 = copy destination; 10 = clear; 11 = XOR; 12 = plus.
 # The default value is 0, source over.
+# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated through
+# the screen door effect.
 def imagecomposite(
     dstimage,
     dstwidth,
@@ -1782,6 +1941,8 @@ def imagecomposite(
     porterDuffOp=0,
     wraparound=True,
     alpha=True,
+    sourceAlpha=255,
+    screendoor=False,
 ):
     if porterDuffOp < 0 or porterDuffOp > 12:
         raise ValueError
@@ -1802,6 +1963,8 @@ def imagecomposite(
         or y1src > srcheight
     ):
         raise ValueError
+    if porterDuffOp == 0 and ((not srcimage) or sourceAlpha == 0):
+        return
     if (not alpha) and (porterDuffOp == 5 or porterDuffOp == 6):
         # destination in and destination held out operators
         # have no visible effect when alpha=False
@@ -1831,6 +1994,8 @@ def imagecomposite(
             porterDuffOp=porterDuffOp,
             wraparound=wraparound,
             alpha=alpha,
+            sourceAlpha=sourceAlpha,
+            screendoor=screendoor,
         )
     pixelsize = 4 if alpha else 3
     fakesrc = [0, 0, 0, 0]
@@ -1853,8 +2018,21 @@ def imagecomposite(
             if not srcimage:
                 _porterduff(dstimage, dstpos, fakesrc, 0, porterDuffOp, alpha=alpha)
             else:
-                _porterduff(
-                    dstimage, dstpos, srcimage, srcpos, porterDuffOp, alpha=alpha
+                srca = srcimage[srcpos + 3] if alpha else 255
+                srca *= sourceAlpha
+                if screendoor:
+                    bdither = _DitherMatrix[(dypos & 7) * 8 + (dx & 7)]
+                    if not (bdither < srca * 64 // 65025):
+                        continue
+                    srca = 65025
+                _porterduff16bitalpha(
+                    dstimage,
+                    dstpos,
+                    srcimage,
+                    srcpos,
+                    porterDuffOp,
+                    sa65025=srca,
+                    alpha=alpha,
                 )
 
 # 'dstimage' and 'srcimage' have the same format returned by the _blankimage_ method with
@@ -2857,8 +3035,10 @@ def tograyditherstyle(image, width, height, palette=None, light=False, alpha=Fal
     return _ditherstyle(im, width, height, alpha=alpha)
 
 # Dithers in place the given image to the colors in color palette returned by websafecolors().
-# Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
-# If 'includeVga' is True, leave unchanged any colors in the colorpalette returned by classiccolors(). Default is False.
+# Image has the same format returned by the _blankimage_ method with the given value
+# of 'alpha' (default value for 'alpha' is False).
+# If 'includeVga' is True, leave unchanged any colors in the color palette returned
+# by classiccolors(). Default is False.
 def websafeDither(image, width, height, alpha=False, includeVga=False):
     pixelSize = 4 if alpha else 3
     if len(image) < width * height * pixelSize:
@@ -2934,6 +3114,16 @@ def posterize(image, width, height, palette, alpha=False):
 # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
 # https://bisqwit.iki.fi/story/howto/dither/jy/
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
+# Example: The following function generates an 8x8 image of a solid color simulated
+# by the colors in the given color palette.  By default, the palette is the same
+# as that returned by the _classiccolors_ function.  The solid color is a three-element
+# list of a color as described for the _blankimage_ function.
+#
+# def ditherBrush(color, palette=None):
+#     image=blankimage(8,8,color)
+#     patternDither(image,8,8,palette if palette else classiccolors())
+#     return image
+#
 def patternDither(image, width, height, palette, alpha=False):
     pixelSize = 4 if alpha else 3
     candidates = [[] for i in range(len(_DitherMatrix))]
