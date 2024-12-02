@@ -14,6 +14,11 @@ import io
 
 import desktopwallpaper as dw
 
+try:
+    import PIL.Image
+except:
+    pass
+
 # IO over a limited portion of
 # another IO, which must be readable
 # and seekable.  This class is not
@@ -1704,9 +1709,10 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
             raise ValueError("Bits per pixel not supported")
 
 def _pilReadImage(imagebytes):
-    import PIL.Image
-
-    image = PIL.Image.open(io.BytesIO(imagebytes))
+    try:
+        image = PIL.Image.open(io.BytesIO(imagebytes))
+    except:
+        return [None, 0, 0]
     if not image:
         return [None, 0, 0]
     image = image.convert("RGBA")
@@ -1847,7 +1853,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
 def _dup(x):
     if x == None:
         return None
-    return [([[z for z in y[0]], y[1], y[2]] if y else None) for y in x]
+    return [([[z for z in y[0]], y[1], y[2], y[3], y[4]] if y else None) for y in x]
 
 # Reads from a Windows animated icon/cursor file.  The return value
 # has the same format returned by the 'readitr' method.
@@ -1888,7 +1894,8 @@ def readanimicon(infile):
                         fcc = content.read(4)
                         sz = struct.unpack("<L", content.read(4))[0]
                         if fcc == b"icon":
-                            ret.append(_readwinicon(io.BytesIO(content.read(sz))))
+                            icon = _readwinicon(io.BytesIO(content.read(sz)))
+                            ret.append(icon)
                         else:
                             content.seek(f.tell() + sz)
                     if len(ret) != anih[1]:
@@ -1981,6 +1988,8 @@ def _readwinicon(f):
             [entries[i][6], entries[i][3]] if iscursor else None,
             entries[i][4],
         )
+        if entries[i] and len(entries[i]) < 5:
+            raise ValueError
     return entries
 
 def _readicon(f, packedWinBitmap=False):

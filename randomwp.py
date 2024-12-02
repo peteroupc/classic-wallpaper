@@ -11,12 +11,13 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40):
         raise ValueError
     exposures = []
     for i in range(len(icons)):
-        expo = random.randint(framecount * 1 // 4, framecount * 3 // 4)
+        expo = 1 + random.randint(framecount * 1 // 4, framecount * 3 // 4)
         firstframe = random.randint(0, framecount - 1)
         x0 = random.randint(0, bgwidth - 1)
         y0 = random.randint(0, bgheight - 1)
         exposures.append([firstframe, expo, x0, y0])
-    bg = dw.randombackgroundimage(bgwidth, bgheight, dw.classiccolors(), tileable=False)
+    vgaColors = dw.classiccolors()
+    bg = dw.randombackgroundimage(bgwidth, bgheight, vgaColors, tileable=False)
     animation = []
     for i in range(framecount):
         bgi = [x for x in bg]
@@ -38,7 +39,7 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40):
                 visible = True
                 ee = endexpo % framecount
                 if framecount > 1 and ee - i < fadeframes:
-                    iconalpha = ((ee - i) + 1) * 255 // 4
+                    iconalpha = (ee - i) * 255 // fadeframes
             if visible:
                 # icon is visible
                 x0 = exposures[j][2]
@@ -60,9 +61,9 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40):
                     0,
                     wraparound=True,
                     sourceAlpha=iconalpha,
-                    screendoor=True,
+                    screendoor=False,
                 )
-        dw.websafeDither(bgi, bgwidth, bgheight, includeVga=True)
+        dw.patternDither(bgi, bgwidth, bgheight, vgaColors)
         animation.append(bgi)
     return animation
 
