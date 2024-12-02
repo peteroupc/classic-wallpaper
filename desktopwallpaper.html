@@ -148,10 +148,10 @@ Data descriptors defined here:<br>
     srcimage,
     srcwidth,
     srcheight,
-    m1,
-    m2,
-    m3,
-    m4,
+    m11,
+    m12,
+    m21,
+    m22,
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-alphaToTwoLevel"><strong>alphaToTwoLevel</strong></a>(image, width, height, dither=False)</dt><dd><span class="code">#&nbsp;Modifies&nbsp;the&nbsp;given&nbsp;4-byte-per-pixel&nbsp;image&nbsp;by<br>
@@ -566,7 +566,8 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;horizontal&nbsp;hatch&nbsp;pattern.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-horizskew"><strong>horizskew</strong></a>(image, width, height, skew)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-horizskew"><strong>horizskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imageblit"><strong>imageblit</strong></a>(
     dstimage,
     dstwidth,
@@ -707,6 +708,23 @@ Data descriptors defined here:<br>
 #&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-imageshear"><strong>imageshear</strong></a>(
+    img,
+    width,
+    height,
+    newwidth=None,
+    newheight=None,
+    alpha=False,
+    upward=True
+)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;sheared&nbsp;image,&nbsp;with&nbsp;optional&nbsp;resizing.<br>
+#&nbsp;'newwidth'&nbsp;is&nbsp;the&nbsp;new&nbsp;width&nbsp;of&nbsp;the&nbsp;image&nbsp;in&nbsp;pixels.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;same&nbsp;as&nbsp;'width'.<br>
+#&nbsp;'newheight'&nbsp;is&nbsp;the&nbsp;new&nbsp;height&nbsp;of&nbsp;the&nbsp;image&nbsp;in&nbsp;pixels.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;same&nbsp;as&nbsp;'height'.<br>
+#&nbsp;If&nbsp;upward=True&nbsp;(the&nbsp;default),&nbsp;the&nbsp;shear&nbsp;is&nbsp;upward&nbsp;and&nbsp;only&nbsp;the&nbsp;left&nbsp;and&nbsp;right&nbsp;edges<br>
+#&nbsp;of&nbsp;the&nbsp;input&nbsp;image&nbsp;must&nbsp;be&nbsp;tileable;&nbsp;the&nbsp;upper&nbsp;and&nbsp;lower&nbsp;edges&nbsp;need&nbsp;not&nbsp;be.<br>
+#&nbsp;If&nbsp;upward=False,&nbsp;the&nbsp;shear&nbsp;is&nbsp;rightward&nbsp;and&nbsp;only&nbsp;the&nbsp;upper&nbsp;and&nbsp;lowe&nbsp;edges<br>
+#&nbsp;of&nbsp;the&nbsp;input&nbsp;image&nbsp;must&nbsp;be&nbsp;tileable.<br>
+#&nbsp;Input&nbsp;and&nbsp;output&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imagesrcover"><strong>imagesrcover</strong></a>(
     dstimage,
     dstwidth,
@@ -856,7 +874,8 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-randomPalettedFromThreeGrays"><strong>randomPalettedFromThreeGrays</strong></a>(image, width, height, palette=None)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
 #&nbsp;Default&nbsp;for&nbsp;palette&nbsp;is&nbsp;VGA&nbsp;palette&nbsp;(<a href="#-classiccolors">classiccolors</a>())<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-randomRotated"><strong>randomRotated</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randomRotated"><strong>randomRotated</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-randomTruchetTiles"><strong>randomTruchetTiles</strong></a>(image, width, height, columns, rows)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randombackgroundimage"><strong>randombackgroundimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randomcheckimage"><strong>randomcheckimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;checkerboard&nbsp;pattern&nbsp;image&nbsp;(using&nbsp;the&nbsp;given&nbsp;palette,&nbsp;if&nbsp;any)<br>
@@ -941,7 +960,8 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
  <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-twobyonestretch"><strong>twobyonestretch</strong></a>(image, w, h, alpha=True)</dt><dd><span class="code">#&nbsp;Horizontal&nbsp;doubling&nbsp;of&nbsp;pixels.<br>
+ <dl><dt><a name="-twobyonestretch"><strong>twobyonestretch</strong></a>(image, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;horizontal&nbsp;doubling&nbsp;of&nbsp;pixels.<br>
+#&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;width&nbsp;2*'w'&nbsp;and&nbsp;height&nbsp;2*'h'.<br>
 #&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-uicolorgradient"><strong>uicolorgradient</strong></a>(
@@ -1014,7 +1034,8 @@ Data descriptors defined here:<br>
 #&nbsp;Inspired&nbsp;by&nbsp;the&nbsp;technique&nbsp;for&nbsp;generating&nbsp;backgrounds&nbsp;in&nbsp;heropatterns.com.</span></dd></dl>
  <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;vertical&nbsp;hatch&nbsp;pattern.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False, includeVga=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value<br>
 #&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>

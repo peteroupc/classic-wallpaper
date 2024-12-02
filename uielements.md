@@ -56,7 +56,7 @@ The following terms serve to describe the traditional appearance of ordinary but
       1 pixel upward and 1 pixel to the left,
 
     in each case with transparency and opacity in the label preserved.
-- _Unavailable appearance_: The button label has an _embossed appearance_, is drawn with 50% opacity, or is drawn such that only every other pixel is rendered in a checkerboard pattern.
+- _Unavailable appearance_: The button label has an _embossed appearance_ [^3], is drawn with 50% opacity, or is drawn such that only every other pixel is rendered in a checkerboard pattern.
 - _Mixed value appearance_: The button face is drawn as a dither pattern of the button face color and the button highlight color, or as a color that's a mixture of those two colors.
 
 Traditionally, to draw buttons, default buttons, and toolbar buttons:

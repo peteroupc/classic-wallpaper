@@ -3748,10 +3748,10 @@ def affine(
     srcimage,
     srcwidth,
     srcheight,
-    m1,
-    m2,
-    m3,
-    m4,
+    m11,  # upper left of matrix
+    m12,  # upper right of matrix
+    m21,  # lower left of matrix
+    m22,  # lower right of matrix
     alpha=False,
 ):
     bypp = 4 if alpha else 3
@@ -3759,8 +3759,8 @@ def affine(
         yp = y / srcheight
         for x in range(dstwidth):
             xp = x / srcwidth
-            tx = int((xp * m1 + yp * m2) * srcwidth) % srcwidth
-            ty = int((xp * m3 + yp * m4) * srcheight) % srcheight
+            tx = int((xp * m11 + yp * m21) * srcwidth) % srcwidth
+            ty = int((xp * m12 + yp * m22) * srcheight) % srcheight
             dstindex = (y * dstwidth + x) * bypp
             srcindex = (ty * srcwidth + tx) * bypp
             if dstindex < 0 or dstindex > len(dstimage):
@@ -3770,34 +3770,76 @@ def affine(
             dstimage[dstindex : dstindex + bypp] = srcimage[srcindex : srcindex + bypp]
     return dstimage
 
-# Horizontal doubling of pixels.
+# Generates an image with a horizontal doubling of pixels.
+# The returned image has width 2*'w' and height 2*'h'.
 # Images have the same format returned by the _blankimage_ method with the
 # given value of 'alpha' (default value for 'alpha' is False).
-def twobyonestretch(image, w, h, alpha=True):
-    return dw.affine(
-        dw.blankimage(w * 2, h), w * 2, h, image, w, h, 2, 0, 0, 1, alpha=True
+def twobyonestretch(image, w, h, alpha=False):
+    return affine(
+        blankimage(w * 2, h), w * 2, h, image, w, h, 1 / 2, 0, 0, 1, alpha=alpha
     )
 
-# Image has the same format returned by the _blankimage_ method with alpha=False.
-def horizskew(image, width, height, skew):
+# Image has the same format returned by the _blankimage_ method with the
+# given value of 'alpha' (default value for 'alpha' is False).
+def horizskew(image, width, height, skew, alpha=False):
     if skew < -1 or skew > 1:
         raise ValueError
     for i in range(height):
         p = i / height
-        imagerotaterow(image, width, height, i, int(skew * p * width))
+        imagerotaterow(image, width, height, i, int(skew * p * width), alpha=alpha)
     return image
 
-# Image has the same format returned by the _blankimage_ method with alpha=False.
-def vertskew(image, width, height, skew):
+# Image has the same format returned by the _blankimage_ method with the
+# given value of 'alpha' (default value for 'alpha' is False).
+def vertskew(image, width, height, skew, alpha=False):
     if skew < -1 or skew > 1:
         raise ValueError
     for i in range(width):
         p = i / width
-        imagerotatecolumn(image, width, height, i, int(skew * p * height))
+        imagerotatecolumn(image, width, height, i, int(skew * p * height), alpha=alpha)
     return image
 
-# Image has the same format returned by the _blankimage_ method with alpha=False.
-def randomRotated(image, width, height):
+# Generates a sheared image, with optional resizing.
+# 'newwidth' is the new width of the image in pixels.  If not given, same as 'width'.
+# 'newheight' is the new height of the image in pixels.  If not given, same as 'height'.
+# If upward=True (the default), the shear is upward and only the left and right edges
+# of the input image must be tileable; the upper and lower edges need not be.
+# If upward=False, the shear is rightward and only the upper and lowe edges
+# of the input image must be tileable.
+# Input and output images have the same format returned by the _blankimage_ method with the
+# given value of 'alpha' (default value for 'alpha' is False).
+def imageshear(
+    img, width, height, newwidth=None, newheight=None, alpha=False, upward=True
+):
+    if not newwidth:
+        newwidth = width
+    if not newheight:
+        newheight = height
+    if width <= 0 or height <= 0 or not img:
+        raise ValueError
+    if newwidth <= 0 or newheight <= 0 or not img:
+        raise ValueError
+    img2 = blankimage(newwidth, newheight, alpha=alpha)
+    if len(img2) != newwidth * newheight * 3:
+        raise ValueError
+    affine(
+        img2,
+        newwidth,
+        newheight,
+        img,
+        width,
+        height,
+        width / newwidth,
+        width / newwidth if upward else 0,
+        0 if upward else height / newheight,
+        height / newheight,
+        alpha=alpha,
+    )
+    return img2
+
+# Image has the same format returned by the _blankimage_ method with the
+# given value of 'alpha' (default value for 'alpha' is False).
+def randomRotated(image, width, height, alpha=False):
     # Do the rotation rarely
     if random.randint(0, 6) > 0:
         return [image, width, height]
@@ -3807,9 +3849,9 @@ def randomRotated(image, width, height):
     size = width
     image2width = int(slant * (width / size))
     image2height = int(slant * (height / size))
-    image2 = blankimage(image2width, image2height)
-    r1 = random.choice([1, -1])  # normally 1
-    r2 = random.choice([-1, 1])  # normally -1
+    image2 = blankimage(image2width, image2height, alpha=alpha)
+    r1 = random.choice([1, -1])  # normally -1
+    r2 = random.choice([-1, 1])  # normally 1
     return [
         affine(
             image2,
@@ -3822,6 +3864,7 @@ def randomRotated(image, width, height):
             r1 * (size / slant),
             r2 * (size / slant),
             (size * stretch / slant),
+            alpha=alpha,
         ),
         image2width,
         image2height,
