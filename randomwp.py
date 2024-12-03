@@ -6,7 +6,7 @@
 import random
 import desktopwallpaper as dw
 
-def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40):
+def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40, palette=None):
     if (not icons) or bgwidth <= 0 or bgheight <= 0 or framecount <= 0:
         raise ValueError
     exposures = []
@@ -16,8 +16,9 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40):
         x0 = random.randint(0, bgwidth - 1)
         y0 = random.randint(0, bgheight - 1)
         exposures.append([firstframe, expo, x0, y0])
-    vgaColors = dw.classiccolors()
-    bg = dw.randombackgroundimage(bgwidth, bgheight, vgaColors, tileable=False)
+    if not palette:
+        palette = dw.classiccolors()
+    bg = dw.randombackgroundimage(bgwidth, bgheight, palette, tileable=False)
     animation = []
     for i in range(framecount):
         bgi = [x for x in bg]
@@ -63,7 +64,7 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40):
                     sourceAlpha=iconalpha,
                     screendoor=False,
                 )
-        dw.patternDither(bgi, bgwidth, bgheight, vgaColors)
+        dw.patternDither(bgi, bgwidth, bgheight, palette)
         animation.append(bgi)
     return animation
 

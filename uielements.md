@@ -122,7 +122,7 @@ For a high degree of flexibility, new graphical user interface systems should al
 - Having certain vector paths (shapes) in vector graphics be filled with user-specified system colors, or _system colors_ for short (such as a button face color or button highlight color).
 - Designing user interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
-    - in multiple sizes, each with a different level of detail (where the system is expected to use the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html), and
+    - in multiple sizes, each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html), for example, in order to render parts of the graphic more crisply or if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm), and
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
 - Animation of icons and cursors.
 
