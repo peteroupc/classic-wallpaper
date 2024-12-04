@@ -156,13 +156,13 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-alphaToTwoLevel"><strong>alphaToTwoLevel</strong></a>(image, width, height, dither=False)</dt><dd><span class="code">#&nbsp;Modifies&nbsp;the&nbsp;given&nbsp;4-byte-per-pixel&nbsp;image&nbsp;by<br>
 #&nbsp;converting&nbsp;its&nbsp;256-level&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;two&nbsp;levels&nbsp;(opaque<br>
-#&nbsp;and&nbsp;transparent).&nbsp;Reducing&nbsp;the&nbsp;alpha&nbsp;channel<br>
-#&nbsp;this&nbsp;way&nbsp;is&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door<br>
-#&nbsp;transparency.<br>
+#&nbsp;and&nbsp;transparent).<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;If&nbsp;'dither'&nbsp;is&nbsp;True,&nbsp;the&nbsp;conversion&nbsp;is&nbsp;done&nbsp;by&nbsp;dithering,&nbsp;that<br>
 #&nbsp;is,&nbsp;by&nbsp;scattering&nbsp;opaque&nbsp;and&nbsp;transparent&nbsp;pixels&nbsp;to&nbsp;simulate<br>
-#&nbsp;pixels&nbsp;between&nbsp;the&nbsp;two&nbsp;extremes.&nbsp;&nbsp;If&nbsp;False,&nbsp;the&nbsp;conversion&nbsp;is<br>
+#&nbsp;pixels&nbsp;between&nbsp;the&nbsp;two&nbsp;extremes.&nbsp;(Reducing&nbsp;the&nbsp;alpha&nbsp;channel<br>
+#&nbsp;by&nbsp;dithering&nbsp;is&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door<br>
+#&nbsp;transparency.)&nbsp;&nbsp;If&nbsp;False,&nbsp;the&nbsp;conversion&nbsp;is<br>
 #&nbsp;done&nbsp;by&nbsp;thresholding:&nbsp;alpha&nbsp;values&nbsp;127&nbsp;or&nbsp;below&nbsp;become&nbsp;0,&nbsp;and<br>
 #&nbsp;alpha&nbsp;values&nbsp;128&nbsp;or&nbsp;higher&nbsp;become&nbsp;255.&nbsp;&nbsp;Default&nbsp;is&nbsp;False</span></dd></dl>
  <dl><dt><a name="-argyle"><strong>argyle</strong></a>(
@@ -187,7 +187,9 @@ Data descriptors defined here:<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255;&nbsp;default&nbsp;is&nbsp;None,&nbsp;or&nbsp;no&nbsp;background&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-blankimage"><strong>blankimage</strong></a>(width, height, color=None, alpha=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;blank&nbsp;image&nbsp;with&nbsp;3&nbsp;or&nbsp;4&nbsp;bytes&nbsp;per&nbsp;pixel&nbsp;and&nbsp;the&nbsp;given&nbsp;width,&nbsp;height,<br>
-#&nbsp;and&nbsp;fill&nbsp;color.&nbsp;&nbsp;The&nbsp;image&nbsp;is&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;list&nbsp;with&nbsp;a&nbsp;number&nbsp;of<br>
+#&nbsp;and&nbsp;fill&nbsp;color.<br>
+#<br>
+#&nbsp;The&nbsp;image&nbsp;is&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;list&nbsp;with&nbsp;a&nbsp;number&nbsp;of<br>
 #&nbsp;elements&nbsp;equal&nbsp;to&nbsp;width*height*3&nbsp;(or&nbsp;width*height*4&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).&nbsp;&nbsp;The<br>
 #&nbsp;array&nbsp;is&nbsp;divided&nbsp;into&nbsp;'height'&nbsp;many&nbsp;rows&nbsp;running&nbsp;from&nbsp;top&nbsp;to&nbsp;bottom.&nbsp;Each&nbsp;row<br>
 #&nbsp;is&nbsp;divided&nbsp;into&nbsp;'width'&nbsp;many&nbsp;pixels&nbsp;(one&nbsp;pixel&nbsp;for&nbsp;each&nbsp;column&nbsp;from&nbsp;left&nbsp;to<br>
@@ -196,13 +198,23 @@ Data descriptors defined here:<br>
 #&nbsp;first&nbsp;element&nbsp;is&nbsp;the&nbsp;color's&nbsp;red&nbsp;component;&nbsp;the&nbsp;second,&nbsp;its&nbsp;blue&nbsp;component;<br>
 #&nbsp;the&nbsp;third,&nbsp;its&nbsp;red&nbsp;component;&nbsp;the&nbsp;fourth,&nbsp;if&nbsp;present,&nbsp;is&nbsp;the&nbsp;color's&nbsp;alpha<br>
 #&nbsp;component&nbsp;or&nbsp;_opacity_&nbsp;(0&nbsp;if&nbsp;the&nbsp;color&nbsp;is&nbsp;transparent;&nbsp;255&nbsp;if&nbsp;opaque;&nbsp;otherwise,<br>
-#&nbsp;the&nbsp;color&nbsp;is&nbsp;translucent&nbsp;or&nbsp;semitransparent).&nbsp;&nbsp;Each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer<br>
+#&nbsp;the&nbsp;color&nbsp;is&nbsp;translucent&nbsp;or&nbsp;semitransparent).&nbsp;Each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer<br>
 #&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;In&nbsp;this&nbsp;format,&nbsp;lower-intensity&nbsp;values&nbsp;are<br>
 #&nbsp;generally&nbsp;"darker",&nbsp;higher-intensity&nbsp;values&nbsp;"lighter",&nbsp;so&nbsp;that&nbsp;[0,0,0,255]&nbsp;(4&nbsp;bytes&nbsp;per&nbsp;pixel)<br>
 #&nbsp;or&nbsp;[0,0,0]&nbsp;(3&nbsp;bytes&nbsp;per&nbsp;pixel)&nbsp;is&nbsp;"black",&nbsp;and&nbsp;[255,255,255,255]&nbsp;or&nbsp;[255,255,255]&nbsp;is&nbsp;"white".<br>
-#&nbsp;If&nbsp;'color'&nbsp;is&nbsp;None,&nbsp;uses&nbsp;[255,255,255,255],&nbsp;or&nbsp;white.<br>
+#&nbsp;Each&nbsp;color&nbsp;in&nbsp;the&nbsp;returned&nbsp;image&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;in&nbsp;the&nbsp;nonlinear&nbsp;sRGB&nbsp;color&nbsp;space.<br>
+#<br>
+#&nbsp;'color'&nbsp;is&nbsp;the&nbsp;fill&nbsp;color;&nbsp;if&nbsp;'color'&nbsp;is&nbsp;None,&nbsp;the&nbsp;fill&nbsp;color&nbsp;is&nbsp;[255,255,255,255],&nbsp;or&nbsp;white.<br>
 #&nbsp;If&nbsp;'alpha'&nbsp;is&nbsp;True,&nbsp;generates&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image;&nbsp;if&nbsp;False,&nbsp;generates&nbsp;a<br>
-#&nbsp;3-byte-per-pixel&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
+#&nbsp;3-byte-per-pixel&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+#<br>
+#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
+#&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
+#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.</span></dd></dl>
  <dl><dt><a name="-borderedbox"><strong>borderedbox</strong></a>(
     image,
     width,
@@ -614,7 +626,8 @@ Data descriptors defined here:<br>
 #&nbsp;'srcimage',&nbsp;'maskimage',&nbsp;and&nbsp;'patternimage'&nbsp;are&nbsp;optional.<br>
 #&nbsp;'dstimage',&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;and&nbsp;'maskimage',&nbsp;to&nbsp;the&nbsp;extent&nbsp;given,<br>
 #&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
-#&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;and&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;(opacity&nbsp;channel)&nbsp;of&nbsp;the&nbsp;images,&nbsp;if&nbsp;any,&nbsp;is<br>
+#&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;and&nbsp;the&nbsp;alpha&nbsp;channel<br>
+#&nbsp;(opacity&nbsp;channel)&nbsp;of&nbsp;the&nbsp;images,&nbsp;if&nbsp;any,&nbsp;is<br>
 #&nbsp;subject&nbsp;to&nbsp;the&nbsp;image&nbsp;operation&nbsp;in&nbsp;the&nbsp;same&nbsp;way&nbsp;as&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;channels.<br>
 #&nbsp;(Windows's&nbsp;graphical&nbsp;device&nbsp;interface&nbsp;[GDI]&nbsp;supports&nbsp;transparent<br>
 #&nbsp;pixels&nbsp;in&nbsp;brush&nbsp;patterns,&nbsp;but&nbsp;only&nbsp;for&nbsp;brushes<br>
@@ -633,7 +646,8 @@ Data descriptors defined here:<br>
 #&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner<br>
 #&nbsp;and&nbsp;correspond&nbsp;to&nbsp;pixels&nbsp;in&nbsp;the&nbsp;source&nbsp;image.<br>
 #&nbsp;'ropForeground'&nbsp;is&nbsp;a&nbsp;foreground&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
-#&nbsp;destination,&nbsp;those&nbsp;of&nbsp;the&nbsp;source,&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern;&nbsp;the&nbsp;low&nbsp;4&nbsp;bits&nbsp;give&nbsp;the&nbsp;binary&nbsp;raster<br>
+#&nbsp;destination,&nbsp;those&nbsp;of&nbsp;the&nbsp;source,&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern;&nbsp;the&nbsp;low&nbsp;4<br>
+#&nbsp;bits&nbsp;give&nbsp;the&nbsp;binary&nbsp;raster<br>
 #&nbsp;operation&nbsp;used&nbsp;where&nbsp;the&nbsp;pattern&nbsp;bit&nbsp;is&nbsp;0&nbsp;or&nbsp;there&nbsp;is&nbsp;no&nbsp;pattern&nbsp;or&nbsp;an&nbsp;empty&nbsp;pattern;<br>
 #&nbsp;the&nbsp;high&nbsp;4&nbsp;bits,&nbsp;where&nbsp;the&nbsp;pattern<br>
 #&nbsp;bit&nbsp;is&nbsp;1.&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;mask&nbsp;bit&nbsp;is&nbsp;1&nbsp;or&nbsp;there&nbsp;is&nbsp;no&nbsp;mask<br>
@@ -692,8 +706,19 @@ Data descriptors defined here:<br>
 #&nbsp;5&nbsp;=&nbsp;destination&nbsp;in;&nbsp;6&nbsp;=&nbsp;destination&nbsp;held&nbsp;out;&nbsp;7&nbsp;=&nbsp;destination&nbsp;atop;<br>
 #&nbsp;8&nbsp;=&nbsp;copy&nbsp;source;&nbsp;9&nbsp;=&nbsp;copy&nbsp;destination;&nbsp;10&nbsp;=&nbsp;clear;&nbsp;11&nbsp;=&nbsp;XOR;&nbsp;12&nbsp;=&nbsp;plus.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;is&nbsp;0,&nbsp;source&nbsp;over.<br>
-#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;through<br>
-#&nbsp;the&nbsp;screen&nbsp;door&nbsp;effect.</span></dd></dl>
+#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door&nbsp;transparency)<br>
+#<br>
+#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
+#&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
+#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.&nbsp;&nbsp;The&nbsp;Alpha&nbsp;Blending&nbsp;Note&nbsp;does&nbsp;not<br>
+#&nbsp;apply&nbsp;to&nbsp;this&nbsp;function&nbsp;if&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;or&nbsp;if&nbsp;both&nbsp;'sourceAlpha'&nbsp;is&nbsp;0&nbsp;or&nbsp;255&nbsp;and<br>
+#&nbsp;the&nbsp;input&nbsp;images&nbsp;have&nbsp;only&nbsp;transparent&nbsp;and<br>
+#&nbsp;opaque&nbsp;pixels&nbsp;(the&nbsp;alpha&nbsp;component&nbsp;of&nbsp;each&nbsp;color&nbsp;is&nbsp;either&nbsp;0&nbsp;or&nbsp;255);&nbsp;in&nbsp;that&nbsp;case,<br>
+#&nbsp;the&nbsp;images&nbsp;can&nbsp;be&nbsp;in&nbsp;a&nbsp;linear&nbsp;or&nbsp;nonlinear&nbsp;RGB&nbsp;color&nbsp;space.</span></dd></dl>
  <dl><dt><a name="-imagereversecolumnorder"><strong>imagereversecolumnorder</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Reverses&nbsp;in&nbsp;place&nbsp;the&nbsp;order&nbsp;of&nbsp;columns&nbsp;in&nbsp;the&nbsp;given&nbsp;image.&nbsp;&nbsp;Returns&nbsp;'image'.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
@@ -749,8 +774,19 @@ Data descriptors defined here:<br>
 #&nbsp;If&nbsp;'srcimage'&nbsp;is&nbsp;None,&nbsp;a&nbsp;source&nbsp;image&nbsp;with&nbsp;all&nbsp;zeros&nbsp;and&nbsp;an&nbsp;alpha&nbsp;of&nbsp;0&nbsp;for&nbsp;all&nbsp;pixels&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;source,&nbsp;even&nbsp;if<br>
 #&nbsp;'alpha'&nbsp;is&nbsp;False.&nbsp;&nbsp;The&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;for&nbsp;'srcimage'&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;"non-premultiplied",&nbsp;that<br>
 #&nbsp;is,&nbsp;not&nbsp;multiplied&nbsp;beforehand&nbsp;by&nbsp;the&nbsp;alpha&nbsp;component&nbsp;divided&nbsp;by&nbsp;255.<br>
-#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;through<br>
-#&nbsp;the&nbsp;screen&nbsp;door&nbsp;effect.</span></dd></dl>
+#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door&nbsp;transparency)<br>
+#<br>
+#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
+#&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
+#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.&nbsp;&nbsp;The&nbsp;Alpha&nbsp;Blending&nbsp;Note&nbsp;does&nbsp;not<br>
+#&nbsp;apply&nbsp;to&nbsp;this&nbsp;function&nbsp;if&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;or&nbsp;if&nbsp;both&nbsp;'sourceAlpha'&nbsp;is&nbsp;0&nbsp;or&nbsp;255&nbsp;and<br>
+#&nbsp;the&nbsp;input&nbsp;images&nbsp;have&nbsp;only&nbsp;transparent&nbsp;and<br>
+#&nbsp;opaque&nbsp;pixels&nbsp;(the&nbsp;alpha&nbsp;component&nbsp;of&nbsp;each&nbsp;color&nbsp;is&nbsp;either&nbsp;0&nbsp;or&nbsp;255);&nbsp;in&nbsp;that&nbsp;case,<br>
+#&nbsp;the&nbsp;images&nbsp;can&nbsp;be&nbsp;in&nbsp;a&nbsp;linear&nbsp;or&nbsp;nonlinear&nbsp;RGB&nbsp;color&nbsp;space.</span></dd></dl>
  <dl><dt><a name="-imagetransblit"><strong>imagetransblit</strong></a>(
     dstimage,
     dstwidth,
@@ -829,7 +865,17 @@ Data descriptors defined here:<br>
 #&nbsp;image's&nbsp;colors&nbsp;are&nbsp;then&nbsp;scattered&nbsp;so&nbsp;that&nbsp;they&nbsp;appear&nbsp;close&nbsp;to&nbsp;the&nbsp;original&nbsp;colors.<br>
 #&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;'basecolors'&nbsp;has&nbsp;a&nbsp;length&nbsp;greater&nbsp;than&nbsp;256.</span></dd></dl>
  <dl><dt><a name="-magickgradientditherfilterrandom"><strong>magickgradientditherfilterrandom</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
- <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Makes&nbsp;a&nbsp;tileable&nbsp;image&nbsp;from&nbsp;a&nbsp;not&nbsp;necessarily&nbsp;tileable&nbsp;images,&nbsp;by&nbsp;blending<br>
+#&nbsp;the&nbsp;image's&nbsp;edge&nbsp;with&nbsp;its&nbsp;middle.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#<br>
+#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
+#&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
+#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.</span></dd></dl>
  <dl><dt><a name="-monoborder"><strong>monoborder</strong></a>(helper, x0, y0, x1, y1, clientAreaColor, windowFrameColor)</dt></dl>
  <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
 #&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.<br>

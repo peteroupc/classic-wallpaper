@@ -1148,7 +1148,8 @@ def _applyrop(dst, src, rop):
 # 'srcimage', 'maskimage', and 'patternimage' are optional.
 # 'dstimage', 'srcimage', 'patternimage', and 'maskimage', to the extent given,
 # have the same format returned by the _blankimage_ method with the given value of 'alpha'.
-# The default value for 'alpha' is False, and the alpha channel (opacity channel) of the images, if any, is
+# The default value for 'alpha' is False, and the alpha channel
+# (opacity channel) of the images, if any, is
 # subject to the image operation in the same way as the red, green, and blue channels.
 # (Windows's graphical device interface [GDI] supports transparent
 # pixels in brush patterns, but only for brushes
@@ -1167,7 +1168,8 @@ def _applyrop(dst, src, rop):
 # 'x0mask' and 'y0mask' are offsets from the source image's top left corner
 # and correspond to pixels in the source image.
 # 'ropForeground' is a foreground ternary raster operation between the bits of the
-# destination, those of the source, and those of the brush pattern; the low 4 bits give the binary raster
+# destination, those of the source, and those of the brush pattern; the low 4
+# bits give the binary raster
 # operation used where the pattern bit is 0 or there is no pattern or an empty pattern;
 # the high 4 bits, where the pattern
 # bit is 1. 'ropForeground' is used where the mask bit is 1 or there is no mask
@@ -1800,8 +1802,19 @@ def _porterduff16bitalpha(d, di, s, si, op, sa65025, alpha=True):
 # If 'srcimage' is None, a source image with all zeros and an alpha of 0 for all pixels is used as the source, even if
 # 'alpha' is False.  The red, green, and blue components for 'srcimage' are assumed to be "non-premultiplied", that
 # is, not multiplied beforehand by the alpha component divided by 255.
-# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated through
-# the screen door effect.
+# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated by scattering transparent and opaque pixels, or dithering (a process also known as stippled or screen-door transparency)
+#
+# Alpha Blending Note: Operations that involve the blending of two RGB (red-green-
+# blue) colors work best if the RGB color space is linear.  This is not the case
+# for the sRGB color space, which is the color space assumed for images created
+# using the _blankimage_ method.  Moreover, converting an image from a nonlinear
+# to a linear color space and back can lead to data loss especially if the image's color
+# components are 8 bits or fewer in length (as with images returned by _blankimage_).
+# This function does not do any such conversion.  The Alpha Blending Note does not
+# apply to this function if 'screendoor' is True or if both 'sourceAlpha' is 0 or 255 and
+# the input images have only transparent and
+# opaque pixels (the alpha component of each color is either 0 or 255); in that case,
+# the images can be in a linear or nonlinear RGB color space.
 def imagesrcover(
     dstimage,
     dstwidth,
@@ -1923,8 +1936,19 @@ def imagesrcover(
 # 5 = destination in; 6 = destination held out; 7 = destination atop;
 # 8 = copy source; 9 = copy destination; 10 = clear; 11 = XOR; 12 = plus.
 # The default value is 0, source over.
-# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated through
-# the screen door effect.
+# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated by scattering transparent and opaque pixels, or dithering (a process also known as stippled or screen-door transparency)
+#
+# Alpha Blending Note: Operations that involve the blending of two RGB (red-green-
+# blue) colors work best if the RGB color space is linear.  This is not the case
+# for the sRGB color space, which is the color space assumed for images created
+# using the _blankimage_ method.  Moreover, converting an image from a nonlinear
+# to a linear color space and back can lead to data loss especially if the image's color
+# components are 8 bits or fewer in length (as with images returned by _blankimage_).
+# This function does not do any such conversion.  The Alpha Blending Note does not
+# apply to this function if 'screendoor' is True or if both 'sourceAlpha' is 0 or 255 and
+# the input images have only transparent and
+# opaque pixels (the alpha component of each color is either 0 or 255); in that case,
+# the images can be in a linear or nonlinear RGB color space.
 def imagecomposite(
     dstimage,
     dstwidth,
@@ -2342,13 +2366,13 @@ def bordereddithergradientbox(
 
 # Modifies the given 4-byte-per-pixel image by
 # converting its 256-level alpha channel to two levels (opaque
-# and transparent). Reducing the alpha channel
-# this way is also known as stippled or screen-door
-# transparency.
+# and transparent).
 # Image has the same format returned by the _blankimage_ method with alpha=True.
 # If 'dither' is True, the conversion is done by dithering, that
 # is, by scattering opaque and transparent pixels to simulate
-# pixels between the two extremes.  If False, the conversion is
+# pixels between the two extremes. (Reducing the alpha channel
+# by dithering is also known as stippled or screen-door
+# transparency.)  If False, the conversion is
 # done by thresholding: alpha values 127 or below become 0, and
 # alpha values 128 or higher become 255.  Default is False
 def alphaToTwoLevel(image, width, height, dither=False):
@@ -2484,7 +2508,9 @@ def interlace(image, width, height, alpha=False):
     return [image1, image2]
 
 # Creates a blank image with 3 or 4 bytes per pixel and the given width, height,
-# and fill color.  The image is in the form of a list with a number of
+# and fill color.
+#
+# The image is in the form of a list with a number of
 # elements equal to width*height*3 (or width*height*4 if 'alpha' is True).  The
 # array is divided into 'height' many rows running from top to bottom. Each row
 # is divided into 'width' many pixels (one pixel for each column from left to
@@ -2493,13 +2519,23 @@ def interlace(image, width, height, alpha=False):
 # first element is the color's red component; the second, its blue component;
 # the third, its red component; the fourth, if present, is the color's alpha
 # component or _opacity_ (0 if the color is transparent; 255 if opaque; otherwise,
-# the color is translucent or semitransparent).  Each component is an integer
+# the color is translucent or semitransparent). Each component is an integer
 # from 0 through 255.  In this format, lower-intensity values are
 # generally "darker", higher-intensity values "lighter", so that [0,0,0,255] (4 bytes per pixel)
 # or [0,0,0] (3 bytes per pixel) is "black", and [255,255,255,255] or [255,255,255] is "white".
-# If 'color' is None, uses [255,255,255,255], or white.
+# Each color in the returned image is assumed to be in the nonlinear sRGB color space.
+#
+# 'color' is the fill color; if 'color' is None, the fill color is [255,255,255,255], or white.
 # If 'alpha' is True, generates a 4-byte-per-pixel image; if False, generates a
 # 3-byte-per-pixel image.  The default is False.
+#
+# Alpha Blending Note: Operations that involve the blending of two RGB (red-green-
+# blue) colors work best if the RGB color space is linear.  This is not the case
+# for the sRGB color space, which is the color space assumed for images created
+# using the _blankimage_ method.  Moreover, converting an image from a nonlinear
+# to a linear color space and back can lead to data loss especially if the image's color
+# components are 8 bits or fewer in length (as with images returned by _blankimage_).
+# This function does not do any such conversion.
 def blankimage(width, height, color=None, alpha=False):
     if color and len(color) < (4 if alpha else 3):
         raise ValueError
@@ -3880,7 +3916,17 @@ def _linearmask(width, height, x, y):
     vy = abs((y / height) * 2.0 - 1.0)
     return max(vx, vy)
 
+# Makes a tileable image from a not necessarily tileable images, by blending
+# the image's edge with its middle.
 # Image has the same format returned by the _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
+#
+# Alpha Blending Note: Operations that involve the blending of two RGB (red-green-
+# blue) colors work best if the RGB color space is linear.  This is not the case
+# for the sRGB color space, which is the color space assumed for images created
+# using the _blankimage_ method.  Moreover, converting an image from a nonlinear
+# to a linear color space and back can lead to data loss especially if the image's color
+# components are 8 bits or fewer in length (as with images returned by _blankimage_).
+# This function does not do any such conversion.
 def maketileable(image, width, height, alpha=False):
     # Use tiling method described by Paul Bourke,
     # Tiling Textures on the Plane (Part 1)
