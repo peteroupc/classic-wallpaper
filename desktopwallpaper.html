@@ -153,11 +153,11 @@ Data descriptors defined here:<br>
     m21,
     m22,
     alpha=False
-)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-alphaToTwoLevel"><strong>alphaToTwoLevel</strong></a>(image, width, height, dither=False)</dt><dd><span class="code">#&nbsp;Modifies&nbsp;the&nbsp;given&nbsp;4-byte-per-pixel&nbsp;image&nbsp;by<br>
 #&nbsp;converting&nbsp;its&nbsp;256-level&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;two&nbsp;levels&nbsp;(opaque<br>
 #&nbsp;and&nbsp;transparent).<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;If&nbsp;'dither'&nbsp;is&nbsp;True,&nbsp;the&nbsp;conversion&nbsp;is&nbsp;done&nbsp;by&nbsp;dithering,&nbsp;that<br>
 #&nbsp;is,&nbsp;by&nbsp;scattering&nbsp;opaque&nbsp;and&nbsp;transparent&nbsp;pixels&nbsp;to&nbsp;simulate<br>
 #&nbsp;pixels&nbsp;between&nbsp;the&nbsp;two&nbsp;extremes.&nbsp;(Reducing&nbsp;the&nbsp;alpha&nbsp;channel<br>
@@ -174,7 +174,7 @@ Data descriptors defined here:<br>
     shiftImageBg=False,
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;argyle&nbsp;pattern&nbsp;from&nbsp;two&nbsp;images&nbsp;of&nbsp;the<br>
-#&nbsp;same&nbsp;size.&nbsp;&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_<br>
+#&nbsp;same&nbsp;size.&nbsp;&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()<br>
 #&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).&nbsp;&nbsp;'backgroundImage'&nbsp;must&nbsp;be&nbsp;tileable&nbsp;if&nbsp;shiftImageBg=False;<br>
 #&nbsp;'foregroundImage'&nbsp;need&nbsp;not&nbsp;be&nbsp;tileable.<br>
 #&nbsp;'expo'&nbsp;is&nbsp;a&nbsp;parameter&nbsp;that&nbsp;determines&nbsp;the&nbsp;shape&nbsp;in&nbsp;the&nbsp;middle&nbsp;of&nbsp;the&nbsp;image,<br>
@@ -208,12 +208,12 @@ Data descriptors defined here:<br>
 #&nbsp;If&nbsp;'alpha'&nbsp;is&nbsp;True,&nbsp;generates&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image;&nbsp;if&nbsp;False,&nbsp;generates&nbsp;a<br>
 #&nbsp;3-byte-per-pixel&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
 #<br>
-#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
 #&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
-#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;using&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
 #&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
-#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;<a href="#-blankimage">blankimage</a>()).<br>
 #&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.</span></dd></dl>
  <dl><dt><a name="-borderedbox"><strong>borderedbox</strong></a>(
     image,
@@ -228,7 +228,7 @@ Data descriptors defined here:<br>
     y1,
     wraparound=True
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;dither-colored&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'border'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;1-pixel-thick&nbsp;border.&nbsp;Can&nbsp;be&nbsp;None&nbsp;(so<br>
 #&nbsp;that&nbsp;no&nbsp;border&nbsp;is&nbsp;drawn)<br>
 #&nbsp;'color1'&nbsp;and&nbsp;'color2'&nbsp;are&nbsp;the&nbsp;dithered<br>
@@ -246,7 +246,7 @@ Data descriptors defined here:<br>
     x1,
     y1,
     wraparound=True
-)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;box&nbsp;in&nbsp;a&nbsp;two-color&nbsp;dithered&nbsp;gradient&nbsp;fill&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;'border'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;1-pixel-thick&nbsp;border.&nbsp;Can&nbsp;be&nbsp;None&nbsp;(so<br>
 #&nbsp;that&nbsp;no&nbsp;border&nbsp;is&nbsp;drawn)<br>
@@ -264,7 +264,7 @@ Data descriptors defined here:<br>
     x1,
     y1,
     wraparound=True
-)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;box&nbsp;in&nbsp;a&nbsp;gradient&nbsp;fill&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;'border'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;1-pixel-thick&nbsp;border.&nbsp;Can&nbsp;be&nbsp;None&nbsp;(so<br>
 #&nbsp;that&nbsp;no&nbsp;border&nbsp;is&nbsp;drawn)<br>
@@ -274,9 +274,9 @@ Data descriptors defined here:<br>
 #&nbsp;A&nbsp;brushed&nbsp;metal&nbsp;texture&nbsp;was&nbsp;featured&nbsp;in&nbsp;Mac&nbsp;OS&nbsp;X&nbsp;Panther&nbsp;and<br>
 #&nbsp;Tiger&nbsp;(10.3,&nbsp;10.4)&nbsp;and&nbsp;other&nbsp;Apple&nbsp;products<br>
 #&nbsp;around&nbsp;the&nbsp;time&nbsp;of&nbsp;either&nbsp;OS's&nbsp;release.</span></dd></dl>
- <dl><dt><a name="-brushednoise"><strong>brushednoise</strong></a>(width, height, tileable=True)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-brushednoise2"><strong>brushednoise2</strong></a>(width, height, tileable=True)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-brushednoise3"><strong>brushednoise3</strong></a>(width, height, tileable=True)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-brushednoise"><strong>brushednoise</strong></a>(width, height, tileable=True)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-brushednoise2"><strong>brushednoise2</strong></a>(width, height, tileable=True)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-brushednoise3"><strong>brushednoise3</strong></a>(width, height, tileable=True)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-buttondown"><strong>buttondown</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-buttonup"><strong>buttonup</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-cgacolors"><strong>cgacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Canonical&nbsp;16-color&nbsp;CGA&nbsp;palette<br>
@@ -295,7 +295,7 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;tileable&nbsp;checkerboard&nbsp;pattern&nbsp;made&nbsp;of&nbsp;parts&nbsp;of&nbsp;two&nbsp;images&nbsp;of&nbsp;the&nbsp;same&nbsp;size;<br>
 #&nbsp;the&nbsp;return&nbsp;value&nbsp;has&nbsp;the&nbsp;same&nbsp;width&nbsp;and&nbsp;height&nbsp;as&nbsp;the&nbsp;source&nbsp;images.<br>
 #&nbsp;The&nbsp;two&nbsp;images&nbsp;should&nbsp;be&nbsp;tileable.<br>
-#&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;number&nbsp;of&nbsp;columns&nbsp;and&nbsp;of&nbsp;rows&nbsp;must&nbsp;be&nbsp;even&nbsp;and&nbsp;positive.</span></dd></dl>
  <dl><dt><a name="-checkerboardtile"><strong>checkerboardtile</strong></a>(
@@ -310,11 +310,11 @@ Data descriptors defined here:<br>
 #&nbsp;each&nbsp;tile&nbsp;is&nbsp;the&nbsp;whole&nbsp;of&nbsp;one&nbsp;of&nbsp;the&nbsp;source&nbsp;images,&nbsp;and&nbsp;the&nbsp;return&nbsp;value's<br>
 #&nbsp;width&nbsp;in&nbsp;pixels&nbsp;is&nbsp;width*columns;&nbsp;its&nbsp;height&nbsp;is&nbsp;height*rows.<br>
 #&nbsp;The&nbsp;two&nbsp;images&nbsp;should&nbsp;be&nbsp;tileable.<br>
-#&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;The&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;number&nbsp;of&nbsp;columns&nbsp;and&nbsp;of&nbsp;rows&nbsp;must&nbsp;be&nbsp;even&nbsp;and&nbsp;positive.</span></dd></dl>
  <dl><dt><a name="-circledraw"><strong>circledraw</strong></a>(image, width, height, c, cx, cy, r, wraparound=True)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;circle&nbsp;that&nbsp;optionally&nbsp;wraps&nbsp;around.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-classiccolors"><strong>classiccolors</strong></a>()</dt><dd><span class="code">#&nbsp;16-color&nbsp;VGA&nbsp;palette</span></dd></dl>
  <dl><dt><a name="-classiccolors2"><strong>classiccolors2</strong></a>()</dt><dd><span class="code">#&nbsp;Colors&nbsp;in&nbsp;<a href="#-classiccolors">classiccolors</a>()&nbsp;and&nbsp;their&nbsp;"half-and-half"&nbsp;versions.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
@@ -340,13 +340,13 @@ Data descriptors defined here:<br>
     ignoreNonGrays=False
 )</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;dithers&nbsp;the&nbsp;resulting&nbsp;image<br>
 #&nbsp;to&nbsp;the&nbsp;gray&nbsp;tones&nbsp;given.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;'grays'&nbsp;is&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Each&nbsp;gray&nbsp;tone&nbsp;must&nbsp;be&nbsp;an&nbsp;integer<br>
 #&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;The&nbsp;list&nbsp;must&nbsp;have&nbsp;a&nbsp;length&nbsp;of&nbsp;2&nbsp;or&nbsp;greater.<br>
 #&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;just&nbsp;dither&nbsp;the&nbsp;gray&nbsp;tones&nbsp;and&nbsp;leave&nbsp;the&nbsp;other<br>
 #&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
- <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-draw16button"><strong>draw16button</strong></a>(
     helper,
     x0,
@@ -404,7 +404,7 @@ Data descriptors defined here:<br>
     squareFrame=True,
     isDefault=False
 )</dt></dl>
- <dl><dt><a name="-drawdiagstripe"><strong>drawdiagstripe</strong></a>(image, width, height, stripesize, reverse, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-drawdiagstripe"><strong>drawdiagstripe</strong></a>(image, width, height, stripesize, reverse, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'stripesize'&nbsp;is&nbsp;in&nbsp;pixels<br>
 #&nbsp;reverse=false:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;top&nbsp;left&nbsp;to&nbsp;bottom<br>
 #&nbsp;right&nbsp;assuming&nbsp;the&nbsp;image's&nbsp;first&nbsp;row&nbsp;is&nbsp;the&nbsp;top&nbsp;row<br>
@@ -424,11 +424,11 @@ Data descriptors defined here:<br>
     bordersize=1
 )</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(neither&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
- <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
 #&nbsp;hatchthick&nbsp;-&nbsp;thickness&nbsp;in&nbsp;pixels&nbsp;of&nbsp;each&nbsp;vertical&nbsp;hash&nbsp;line.</span></dd></dl>
- <dl><dt><a name="-drawhatchrows"><strong>drawhatchrows</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-drawhatchrows"><strong>drawhatchrows</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-drawindentborder"><strong>drawindentborder</strong></a>(
     helper,
     x0,
@@ -468,7 +468,7 @@ Data descriptors defined here:<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-eightColorDither"><strong>eightColorDither</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;an&nbsp;8-bit&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-ega8colors">ega8colors</a>().<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-emboss"><strong>emboss</strong></a>(bgColor=None, fgColor=None, hiltColor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;emboss&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;into&nbsp;a&nbsp;3-color&nbsp;(black/gray/white)&nbsp;image.<br>
 #&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'hiltColor'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;embossing&nbsp;an&nbsp;outline&nbsp;will&nbsp;result&nbsp;in&nbsp;its<br>
 #&nbsp;appearing&nbsp;raised&nbsp;above&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper<br>
@@ -481,33 +481,33 @@ Data descriptors defined here:<br>
 #&nbsp;of&nbsp;its&nbsp;second&nbsp;half,&nbsp;and...<br>
 #&nbsp;-&nbsp;The&nbsp;image's&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror<br>
 #&nbsp;of&nbsp;its&nbsp;second&nbsp;half.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-endingRowsAreMirrored"><strong>endingRowsAreMirrored</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Returns&nbsp;True&nbsp;if&nbsp;width&nbsp;or&nbsp;height&nbsp;is&nbsp;0&nbsp;or&nbsp;if:<br>
 #&nbsp;-&nbsp;The&nbsp;image's&nbsp;first&nbsp;row's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror<br>
 #&nbsp;of&nbsp;its&nbsp;second&nbsp;half,&nbsp;and...<br>
 #&nbsp;-&nbsp;The&nbsp;image's&nbsp;last&nbsp;row's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror<br>
 #&nbsp;of&nbsp;its&nbsp;second&nbsp;half.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-fieldbox"><strong>fieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None, pressed=False)</dt></dl>
  <dl><dt><a name="-flatborder"><strong>flatborder</strong></a>(helper, x0, y0, x1, y1, sh, buttonFace)</dt></dl>
  <dl><dt><a name="-getgrays"><strong>getgrays</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Finds&nbsp;the&nbsp;gray&nbsp;tones&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette&nbsp;and&nbsp;returns<br>
 #&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;them.</span></dd></dl>
- <dl><dt><a name="-getpixel"><strong>getpixel</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-getpixel"><strong>getpixel</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
- <dl><dt><a name="-getpixelalpha"><strong>getpixelalpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+ <dl><dt><a name="-getpixelalpha"><strong>getpixelalpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;blue,&nbsp;and<br>
 #&nbsp;alpha&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
- <dl><dt><a name="-getpixelbgr"><strong>getpixelbgr</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-getpixelbgr"><strong>getpixelbgr</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;and&nbsp;red<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
- <dl><dt><a name="-getpixelbgralpha"><strong>getpixelbgralpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-getpixelbgralpha"><strong>getpixelbgralpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and&nbsp;alpha<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, ignoreNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
 #&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;colors&nbsp;other&nbsp;than&nbsp;gray&nbsp;tones<br>
 #&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-groupCmm"><strong>groupCmm</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Cmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
@@ -524,7 +524,7 @@ Data descriptors defined here:<br>
 #&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
 #&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its&nbsp;second&nbsp;half.<br>
 #&nbsp;Returns&nbsp;a&nbsp;three-element&nbsp;list&nbsp;with&nbsp;the&nbsp;new&nbsp;image,&nbsp;its&nbsp;width,&nbsp;and&nbsp;its&nbsp;height.<br>
-#&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-groupPgg"><strong>groupPgg</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pgg&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
@@ -537,7 +537,7 @@ Data descriptors defined here:<br>
 #&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
 #&nbsp;last&nbsp;row's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its&nbsp;second&nbsp;half.<br>
 #&nbsp;Returns&nbsp;a&nbsp;three-element&nbsp;list&nbsp;with&nbsp;the&nbsp;new&nbsp;image,&nbsp;its&nbsp;width,&nbsp;and&nbsp;its&nbsp;height.<br>
-#&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-groupPmg"><strong>groupPmg</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmg&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
@@ -559,7 +559,7 @@ Data descriptors defined here:<br>
     drawborder=False,
     wraparound=True
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;hatched&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;hatch,&nbsp;drawn&nbsp;on&nbsp;every&nbsp;"black"&nbsp;pixel&nbsp;(defined&nbsp;below)<br>
 #&nbsp;in&nbsp;the&nbsp;pattern's&nbsp;tiling.<br>
 #&nbsp;'pattern'&nbsp;is&nbsp;an&nbsp;8-element&nbsp;array&nbsp;with&nbsp;integers&nbsp;in&nbsp;the&nbsp;interval&nbsp;[0,255].<br>
@@ -577,8 +577,8 @@ Data descriptors defined here:<br>
 #&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;horizontal&nbsp;hatch&nbsp;pattern.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-horizskew"><strong>horizskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-horizskew"><strong>horizskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imageblit"><strong>imageblit</strong></a>(
     dstimage,
@@ -591,7 +591,7 @@ Data descriptors defined here:<br>
     srcheight,
     wraparound=True,
     alpha=False
-)</dt><dd><span class="code">#&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+)</dt><dd><span class="code">#&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imageblitex"><strong>imageblitex</strong></a>(
     dstimage,
@@ -625,7 +625,7 @@ Data descriptors defined here:<br>
 #&nbsp;'pattern'&nbsp;is&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple).<br>
 #&nbsp;'srcimage',&nbsp;'maskimage',&nbsp;and&nbsp;'patternimage'&nbsp;are&nbsp;optional.<br>
 #&nbsp;'dstimage',&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;and&nbsp;'maskimage',&nbsp;to&nbsp;the&nbsp;extent&nbsp;given,<br>
-#&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;and&nbsp;the&nbsp;alpha&nbsp;channel<br>
 #&nbsp;(opacity&nbsp;channel)&nbsp;of&nbsp;the&nbsp;images,&nbsp;if&nbsp;any,&nbsp;is<br>
 #&nbsp;subject&nbsp;to&nbsp;the&nbsp;image&nbsp;operation&nbsp;in&nbsp;the&nbsp;same&nbsp;way&nbsp;as&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;channels.<br>
@@ -695,7 +695,7 @@ Data descriptors defined here:<br>
 #&nbsp;begins&nbsp;at&nbsp;x0&nbsp;and&nbsp;y0&nbsp;and&nbsp;has&nbsp;width&nbsp;('x1'-'x0')&nbsp;and&nbsp;height&nbsp;('y1'-'y0'),&nbsp;and&nbsp;wraps&nbsp;around&nbsp;the&nbsp;destination&nbsp;if&nbsp;'wraparound'<br>
 #&nbsp;is&nbsp;True.&nbsp;&nbsp;Unlike&nbsp;with&nbsp;the&nbsp;original&nbsp;Porter&amp;ndash;Duff&nbsp;composition&nbsp;operators,&nbsp;areas&nbsp;of&nbsp;the&nbsp;destination&nbsp;outside<br>
 #&nbsp;the&nbsp;destination&nbsp;rectangle&nbsp;are&nbsp;left&nbsp;unchanged.<br>
-#&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;True.&nbsp;&nbsp;If&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;this&nbsp;method&nbsp;behaves&nbsp;as&nbsp;though&nbsp;both&nbsp;images<br>
 #&nbsp;had&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;with&nbsp;all&nbsp;pixel's&nbsp;alpha&nbsp;components&nbsp;set&nbsp;to&nbsp;255&nbsp;(so&nbsp;that&nbsp;the&nbsp;two&nbsp;images&nbsp;are&nbsp;treated&nbsp;as&nbsp;opaque).<br>
 #&nbsp;If&nbsp;'srcimage'&nbsp;is&nbsp;None,&nbsp;a&nbsp;source&nbsp;image&nbsp;with&nbsp;all&nbsp;zeros&nbsp;and&nbsp;an&nbsp;alpha&nbsp;of&nbsp;0&nbsp;for&nbsp;all&nbsp;pixels&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;source,&nbsp;even&nbsp;if<br>
@@ -708,30 +708,45 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;is&nbsp;0,&nbsp;source&nbsp;over.<br>
 #&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door&nbsp;transparency)<br>
 #<br>
-#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
 #&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
-#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;using&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
 #&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
-#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
-#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.&nbsp;&nbsp;The&nbsp;Alpha&nbsp;Blending&nbsp;Note&nbsp;does&nbsp;not<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;<a href="#-blankimage">blankimage</a>()).<br>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.&nbsp;&nbsp;The&nbsp;Blending&nbsp;Note&nbsp;does&nbsp;not<br>
 #&nbsp;apply&nbsp;to&nbsp;this&nbsp;function&nbsp;if&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;or&nbsp;if&nbsp;both&nbsp;'sourceAlpha'&nbsp;is&nbsp;0&nbsp;or&nbsp;255&nbsp;and<br>
 #&nbsp;the&nbsp;input&nbsp;images&nbsp;have&nbsp;only&nbsp;transparent&nbsp;and<br>
 #&nbsp;opaque&nbsp;pixels&nbsp;(the&nbsp;alpha&nbsp;component&nbsp;of&nbsp;each&nbsp;color&nbsp;is&nbsp;either&nbsp;0&nbsp;or&nbsp;255);&nbsp;in&nbsp;that&nbsp;case,<br>
 #&nbsp;the&nbsp;images&nbsp;can&nbsp;be&nbsp;in&nbsp;a&nbsp;linear&nbsp;or&nbsp;nonlinear&nbsp;RGB&nbsp;color&nbsp;space.</span></dd></dl>
+ <dl><dt><a name="-imagept"><strong>imagept</strong></a>(image, width, height, x, y, alpha=False)</dt><dd><span class="code">#&nbsp;Gets&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;in-between&nbsp;pixel&nbsp;at&nbsp;the&nbsp;given&nbsp;point<br>
+#&nbsp;of&nbsp;the&nbsp;image,&nbsp;using&nbsp;bilinear&nbsp;interpolation.<br>
+#&nbsp;'image'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;True.<br>
+#&nbsp;'width'&nbsp;and&nbsp;'height'&nbsp;is&nbsp;the&nbsp;image's&nbsp;width&nbsp;and&nbsp;height.<br>
+#&nbsp;'x'&nbsp;is&nbsp;the&nbsp;point's&nbsp;X&nbsp;coordinate,&nbsp;0&nbsp;or&nbsp;greater,&nbsp;('width'-1)&nbsp;or&nbsp;less.<br>
+#&nbsp;'y'&nbsp;is&nbsp;the&nbsp;point's&nbsp;Y&nbsp;coordinate,&nbsp;0&nbsp;or&nbsp;greater,&nbsp;('height'-1)&nbsp;or&nbsp;less.<br>
+#<br>
+#&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
+#&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
+#&nbsp;using&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;<a href="#-blankimage">blankimage</a>()).<br>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.</span></dd></dl>
  <dl><dt><a name="-imagereversecolumnorder"><strong>imagereversecolumnorder</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Reverses&nbsp;in&nbsp;place&nbsp;the&nbsp;order&nbsp;of&nbsp;columns&nbsp;in&nbsp;the&nbsp;given&nbsp;image.&nbsp;&nbsp;Returns&nbsp;'image'.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imagereverseroworder"><strong>imagereverseroworder</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Reverses&nbsp;in&nbsp;place&nbsp;the&nbsp;order&nbsp;of&nbsp;rows&nbsp;in&nbsp;the&nbsp;given&nbsp;image.&nbsp;&nbsp;Returns&nbsp;'image'.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imagerotatecolumn"><strong>imagerotatecolumn</strong></a>(image, width, height, x, offset=0, alpha=False)</dt><dd><span class="code">#&nbsp;Rotates&nbsp;in&nbsp;place&nbsp;a&nbsp;column&nbsp;of&nbsp;the&nbsp;image&nbsp;by&nbsp;the&nbsp;given&nbsp;downward&nbsp;offset&nbsp;in&nbsp;pixels,<br>
 #&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imagerotaterow"><strong>imagerotaterow</strong></a>(image, width, height, y, offset=0, alpha=False)</dt><dd><span class="code">#&nbsp;Rotates&nbsp;in&nbsp;place&nbsp;a&nbsp;row&nbsp;of&nbsp;the&nbsp;image&nbsp;by&nbsp;the&nbsp;given&nbsp;rightward&nbsp;offset&nbsp;in&nbsp;pixels,<br>
 #&nbsp;which&nbsp;may&nbsp;be&nbsp;negative&nbsp;or&nbsp;not.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imageshear"><strong>imageshear</strong></a>(
     img,
@@ -748,7 +763,7 @@ Data descriptors defined here:<br>
 #&nbsp;of&nbsp;the&nbsp;input&nbsp;image&nbsp;must&nbsp;be&nbsp;tileable;&nbsp;the&nbsp;upper&nbsp;and&nbsp;lower&nbsp;edges&nbsp;need&nbsp;not&nbsp;be.<br>
 #&nbsp;If&nbsp;upward=False,&nbsp;the&nbsp;shear&nbsp;is&nbsp;rightward&nbsp;and&nbsp;only&nbsp;the&nbsp;upper&nbsp;and&nbsp;lowe&nbsp;edges<br>
 #&nbsp;of&nbsp;the&nbsp;input&nbsp;image&nbsp;must&nbsp;be&nbsp;tileable.<br>
-#&nbsp;Input&nbsp;and&nbsp;output&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;Input&nbsp;and&nbsp;output&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-imagesrcover"><strong>imagesrcover</strong></a>(
     dstimage,
@@ -770,19 +785,19 @@ Data descriptors defined here:<br>
 #&nbsp;and&nbsp;a&nbsp;destination&nbsp;image&nbsp;without&nbsp;an&nbsp;alpha&nbsp;channel.&nbsp;&nbsp;The&nbsp;destination&nbsp;rectangle<br>
 #&nbsp;begins&nbsp;at&nbsp;x0&nbsp;and&nbsp;y0&nbsp;and&nbsp;has&nbsp;width&nbsp;('x1'-'x0')&nbsp;and&nbsp;height&nbsp;('y1'-'y0'),&nbsp;and&nbsp;wraps&nbsp;around&nbsp;the&nbsp;destination&nbsp;if&nbsp;'wraparound'<br>
 #&nbsp;is&nbsp;True.<br>
-#&nbsp;'dstimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False;&nbsp;'srcimage',&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;'dstimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False;&nbsp;'srcimage',&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;If&nbsp;'srcimage'&nbsp;is&nbsp;None,&nbsp;a&nbsp;source&nbsp;image&nbsp;with&nbsp;all&nbsp;zeros&nbsp;and&nbsp;an&nbsp;alpha&nbsp;of&nbsp;0&nbsp;for&nbsp;all&nbsp;pixels&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;source,&nbsp;even&nbsp;if<br>
 #&nbsp;'alpha'&nbsp;is&nbsp;False.&nbsp;&nbsp;The&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;for&nbsp;'srcimage'&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;"non-premultiplied",&nbsp;that<br>
 #&nbsp;is,&nbsp;not&nbsp;multiplied&nbsp;beforehand&nbsp;by&nbsp;the&nbsp;alpha&nbsp;component&nbsp;divided&nbsp;by&nbsp;255.<br>
 #&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door&nbsp;transparency)<br>
 #<br>
-#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
 #&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
-#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;using&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
 #&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
-#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
-#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.&nbsp;&nbsp;The&nbsp;Alpha&nbsp;Blending&nbsp;Note&nbsp;does&nbsp;not<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;<a href="#-blankimage">blankimage</a>()).<br>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.&nbsp;&nbsp;The&nbsp;Blending&nbsp;Note&nbsp;does&nbsp;not<br>
 #&nbsp;apply&nbsp;to&nbsp;this&nbsp;function&nbsp;if&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;or&nbsp;if&nbsp;both&nbsp;'sourceAlpha'&nbsp;is&nbsp;0&nbsp;or&nbsp;255&nbsp;and<br>
 #&nbsp;the&nbsp;input&nbsp;images&nbsp;have&nbsp;only&nbsp;transparent&nbsp;and<br>
 #&nbsp;opaque&nbsp;pixels&nbsp;(the&nbsp;alpha&nbsp;component&nbsp;of&nbsp;each&nbsp;color&nbsp;is&nbsp;either&nbsp;0&nbsp;or&nbsp;255);&nbsp;in&nbsp;that&nbsp;case,<br>
@@ -810,7 +825,7 @@ Data descriptors defined here:<br>
     ropBackground=170,
     wraparound=True,
     alpha=False
-)</dt><dd><span class="code">#&nbsp;All&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+)</dt><dd><span class="code">#&nbsp;All&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;and&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;(opacity&nbsp;channel)&nbsp;of&nbsp;the&nbsp;images,&nbsp;if&nbsp;any,&nbsp;is<br>
 #&nbsp;subject&nbsp;to&nbsp;the&nbsp;image&nbsp;operation&nbsp;in&nbsp;the&nbsp;same&nbsp;way&nbsp;as&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;channels.<br>
 #&nbsp;'ropForeground'&nbsp;and&nbsp;'ropBackground'&nbsp;are&nbsp;as&nbsp;in&nbsp;imageblitex,&nbsp;except&nbsp;that<br>
@@ -823,9 +838,9 @@ Data descriptors defined here:<br>
 #&nbsp;For&nbsp;more&nbsp;on&nbsp;raster&nbsp;operations,&nbsp;see&nbsp;the&nbsp;documentation&nbsp;for&nbsp;'imageblitex'.<br>
 #&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage'&nbsp;or&nbsp;'patternimage',<br>
 #&nbsp;and&nbsp;the&nbsp;source&nbsp;and&nbsp;destination&nbsp;rectangles&nbsp;may&nbsp;overlap.</span></dd></dl>
- <dl><dt><a name="-imagetranspose"><strong>imagetranspose</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-imagetranspose"><strong>imagetranspose</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-interlace"><strong>interlace</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Split&nbsp;an&nbsp;image&nbsp;into&nbsp;two&nbsp;interlaced&nbsp;versions&nbsp;with&nbsp;half&nbsp;the&nbsp;height.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;first&nbsp;image&nbsp;should&nbsp;be&nbsp;displayed&nbsp;at&nbsp;even-numbered&nbsp;frames;&nbsp;the&nbsp;second,<br>
 #&nbsp;odd-numbered.</span></dd></dl>
  <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;light&nbsp;gray&nbsp;(192,192,192)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;white&nbsp;(255,255,255)&nbsp;background.</span></dd></dl>
@@ -842,7 +857,7 @@ Data descriptors defined here:<br>
     wraparound=True,
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;line&nbsp;that&nbsp;optionally&nbsp;wraps&nbsp;around.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-magickgradientditherfilter"><strong>magickgradientditherfilter</strong></a>(
     rgb1=None,
@@ -867,29 +882,29 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-magickgradientditherfilterrandom"><strong>magickgradientditherfilterrandom</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Makes&nbsp;a&nbsp;tileable&nbsp;image&nbsp;from&nbsp;a&nbsp;not&nbsp;necessarily&nbsp;tileable&nbsp;images,&nbsp;by&nbsp;blending<br>
 #&nbsp;the&nbsp;image's&nbsp;edge&nbsp;with&nbsp;its&nbsp;middle.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #<br>
-#&nbsp;Alpha&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
+#&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
 #&nbsp;for&nbsp;the&nbsp;sRGB&nbsp;color&nbsp;space,&nbsp;which&nbsp;is&nbsp;the&nbsp;color&nbsp;space&nbsp;assumed&nbsp;for&nbsp;images&nbsp;created<br>
-#&nbsp;using&nbsp;the&nbsp;_blankimage_&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
+#&nbsp;using&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
 #&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
-#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;_blankimage_).<br>
+#&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;<a href="#-blankimage">blankimage</a>()).<br>
 #&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.</span></dd></dl>
  <dl><dt><a name="-monoborder"><strong>monoborder</strong></a>(helper, x0, y0, x1, y1, clientAreaColor, windowFrameColor)</dt></dl>
  <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
 #&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-noalpha"><strong>noalpha</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Converts&nbsp;an&nbsp;image&nbsp;with&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;an&nbsp;image&nbsp;without&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;by<br>
 #&nbsp;removing&nbsp;that&nbsp;alpha&nbsp;channel.<br>
-#&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
-#&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-noiseimage"><strong>noiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-noiseimage"><strong>noiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-noiseimage2"><strong>noiseimage2</strong></a>(width=64, height=64, bgcolor=None, noisecolor=None)</dt><dd><span class="code">#&nbsp;Alternate&nbsp;way&nbsp;to&nbsp;generate&nbsp;an&nbsp;image&nbsp;of&nbsp;noise.<br>
-#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-outlineimage"><strong>outlineimage</strong></a>(image, width, height, lt=None, sh=None)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3D&nbsp;outline&nbsp;over&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;with&nbsp;transparent<br>
 #&nbsp;pixels,&nbsp;assuming&nbsp;a&nbsp;light&nbsp;source&nbsp;from&nbsp;the&nbsp;upper&nbsp;left.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'lt'&nbsp;is&nbsp;the&nbsp;light&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[128,128,128].<br>
 #&nbsp;'sh'&nbsp;is&nbsp;the&nbsp;shadow&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[0,0,0].</span></dd></dl>
  <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;containing&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette&nbsp;plus&nbsp;their<br>
@@ -900,11 +915,11 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-patternDither"><strong>patternDither</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;an&nbsp;arbitrary&nbsp;color&nbsp;palette.<br>
 #&nbsp;Derived&nbsp;from&nbsp;Adobe's&nbsp;pattern&nbsp;dithering&nbsp;algorithm,&nbsp;described&nbsp;by&nbsp;J.&nbsp;Yliluoma&nbsp;at:<br>
 #&nbsp;<a href="https://bisqwit.iki.fi/story/howto/dither/jy/">https://bisqwit.iki.fi/story/howto/dither/jy/</a><br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;Example:&nbsp;The&nbsp;following&nbsp;function&nbsp;generates&nbsp;an&nbsp;8x8&nbsp;image&nbsp;of&nbsp;a&nbsp;solid&nbsp;color&nbsp;simulated<br>
 #&nbsp;by&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.&nbsp;&nbsp;By&nbsp;default,&nbsp;the&nbsp;palette&nbsp;is&nbsp;the&nbsp;same<br>
 #&nbsp;as&nbsp;that&nbsp;returned&nbsp;by&nbsp;the&nbsp;_classiccolors_&nbsp;function.&nbsp;&nbsp;The&nbsp;solid&nbsp;color&nbsp;is&nbsp;a&nbsp;three-element<br>
-#&nbsp;list&nbsp;of&nbsp;a&nbsp;color&nbsp;as&nbsp;described&nbsp;for&nbsp;the&nbsp;_blankimage_&nbsp;function.<br>
+#&nbsp;list&nbsp;of&nbsp;a&nbsp;color&nbsp;as&nbsp;described&nbsp;for&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;function.<br>
 #<br>
 #&nbsp;def&nbsp;ditherBrush(color,&nbsp;palette=None):<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image=<a href="#-blankimage">blankimage</a>(8,8,color)<br>
@@ -912,34 +927,34 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;image</span></dd></dl>
  <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&amp;ndash;green&amp;ndash;blue<br>
 #&nbsp;space)&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-randomColorization"><strong>randomColorization</strong></a>(palette=None)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;colorization&nbsp;gradient<br>
 #&nbsp;Random&nbsp;beginning&nbsp;color.&nbsp;&nbsp;Palette&nbsp;is&nbsp;optional;<br>
 #&nbsp;if&nbsp;not&nbsp;None&nbsp;(the&nbsp;default),&nbsp;the&nbsp;beginning&nbsp;and&nbsp;end&nbsp;colors&nbsp;are&nbsp;limited<br>
 #&nbsp;to&nbsp;those&nbsp;in&nbsp;the&nbsp;given&nbsp;palette.</span></dd></dl>
  <dl><dt><a name="-randomPalettedFromThreeGrays"><strong>randomPalettedFromThreeGrays</strong></a>(image, width, height, palette=None)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
 #&nbsp;Default&nbsp;for&nbsp;palette&nbsp;is&nbsp;VGA&nbsp;palette&nbsp;(<a href="#-classiccolors">classiccolors</a>())<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-randomRotated"><strong>randomRotated</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randomRotated"><strong>randomRotated</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-randomTruchetTiles"><strong>randomTruchetTiles</strong></a>(image, width, height, columns, rows)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-randombackgroundimage"><strong>randombackgroundimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randomTruchetTiles"><strong>randomTruchetTiles</strong></a>(image, width, height, columns, rows)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randombackgroundimage"><strong>randombackgroundimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randomcheckimage"><strong>randomcheckimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;checkerboard&nbsp;pattern&nbsp;image&nbsp;(using&nbsp;the&nbsp;given&nbsp;palette,&nbsp;if&nbsp;any)<br>
-#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-randomhatchimage"><strong>randomhatchimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-randommaybemonochrome"><strong>randommaybemonochrome</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight, alpha=False)</dt><dd><span class="code">#&nbsp;Images&nbsp;in&nbsp;'sourceImages'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randomhatchimage"><strong>randomhatchimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randommaybemonochrome"><strong>randommaybemonochrome</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight, alpha=False)</dt><dd><span class="code">#&nbsp;Images&nbsp;in&nbsp;'sourceImages'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
- <dl><dt><a name="-setpixelalpha"><strong>setpixelalpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+ <dl><dt><a name="-setpixelalpha"><strong>setpixelalpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;blue,&nbsp;and<br>
 #&nbsp;alpha&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
- <dl><dt><a name="-setpixelbgr"><strong>setpixelbgr</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+ <dl><dt><a name="-setpixelbgr"><strong>setpixelbgr</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;and<br>
 #&nbsp;red&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
- <dl><dt><a name="-setpixelbgralpha"><strong>setpixelbgralpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+ <dl><dt><a name="-setpixelbgralpha"><strong>setpixelbgralpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and<br>
 #&nbsp;alpha&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-shadowedborderedbox"><strong>shadowedborderedbox</strong></a>(
@@ -954,21 +969,21 @@ Data descriptors defined here:<br>
     y0,
     x1,
     y1
-)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-shiftwrap"><strong>shiftwrap</strong></a>(xOrigin, yOrigin)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
- <dl><dt><a name="-simpleargyle"><strong>simpleargyle</strong></a>(fgcolor, bgcolor, linecolor, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+ <dl><dt><a name="-simpleargyle"><strong>simpleargyle</strong></a>(fgcolor, bgcolor, linecolor, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-simpleargyle2"><strong>simpleargyle2</strong></a>(fgcolor, bgcolor, linecolor, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-simpleargyle2"><strong>simpleargyle2</strong></a>(fgcolor, bgcolor, linecolor, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-simplebox"><strong>simplebox</strong></a>(image, width, height, color, x0, y0, x1, y1, wraparound=True)</dt></dl>
  <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
 #&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.<br>
-#&nbsp;The&nbsp;parameter&nbsp;'image'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+#&nbsp;The&nbsp;parameter&nbsp;'image'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;two&nbsp;elements,&nbsp;the&nbsp;color&nbsp;mask&nbsp;and&nbsp;the&nbsp;alpha&nbsp;mask,&nbsp;both<br>
-#&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-statusfieldbox"><strong>statusfieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-styledbrush1"><strong>styledbrush1</strong></a>(color1, color2, color3, spacing=3, hatchsize=1)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple)&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;equal&nbsp;to&nbsp;'spacing'*2.<br>
-#&nbsp;The&nbsp;image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;The&nbsp;image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Each&nbsp;color&nbsp;occurs&nbsp;equally&nbsp;in&nbsp;the&nbsp;image.<br>
 #&nbsp;Designed&nbsp;for&nbsp;drawing&nbsp;filled,&nbsp;unstroked,&nbsp;opaque&nbsp;vector&nbsp;paths,<br>
 #&nbsp;generally&nbsp;vector&nbsp;paths&nbsp;of&nbsp;an&nbsp;abstract&nbsp;design&nbsp;or&nbsp;symbol.<br>
@@ -978,7 +993,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-styledbrush2"><strong>styledbrush2</strong></a>(color1, color2, color3)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple)&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;8.<br>
 #&nbsp;color1&nbsp;occurs&nbsp;on&nbsp;1/2&nbsp;the&nbsp;brush&nbsp;pattern;&nbsp;the&nbsp;other<br>
 #&nbsp;colors&nbsp;on&nbsp;1/4&nbsp;each.<br>
-#&nbsp;The&nbsp;image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;The&nbsp;image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Designed&nbsp;for&nbsp;drawing&nbsp;filled,&nbsp;unstroked,&nbsp;opaque&nbsp;vector&nbsp;paths,<br>
 #&nbsp;generally&nbsp;vector&nbsp;paths&nbsp;of&nbsp;an&nbsp;abstract&nbsp;design&nbsp;or&nbsp;symbol.</span></dd></dl>
  <dl><dt><a name="-svgimagepattern"><strong>svgimagepattern</strong></a>(
@@ -989,7 +1004,7 @@ Data descriptors defined here:<br>
     transcolor=None,
     originX=0,
     originY=0
-)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
 #&nbsp;tileable.<br>
@@ -997,18 +1012,18 @@ Data descriptors defined here:<br>
 #&nbsp;"-flip"&nbsp;reverses&nbsp;the&nbsp;row&nbsp;order;&nbsp;"-flop"&nbsp;reverses&nbsp;the&nbsp;column&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-tileableImage"><strong>tileableImage</strong></a>(img, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Generate&nbsp;a&nbsp;tileable&nbsp;wallpaper&nbsp;pattern&nbsp;from&nbsp;an&nbsp;image&nbsp;that&nbsp;need&nbsp;not&nbsp;be&nbsp;tileable.<br>
 #&nbsp;Returns&nbsp;a&nbsp;three-element&nbsp;list&nbsp;with&nbsp;the&nbsp;new&nbsp;image,&nbsp;its&nbsp;width,&nbsp;and&nbsp;its&nbsp;height.<br>
-#&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+#&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-tiledImage"><strong>tiledImage</strong></a>(srcimage, srcwidth, srcheight, dstwidth, dstheight, alpha=False)</dt><dd><span class="code">#&nbsp;'srcimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with<br>
+ <dl><dt><a name="-tiledImage"><strong>tiledImage</strong></a>(srcimage, srcwidth, srcheight, dstwidth, dstheight, alpha=False)</dt><dd><span class="code">#&nbsp;'srcimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-toalpha"><strong>toalpha</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Converts&nbsp;an&nbsp;image&nbsp;without&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;an&nbsp;image&nbsp;with&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;by<br>
 #&nbsp;setting&nbsp;the&nbsp;alpha&nbsp;value&nbsp;of&nbsp;every&nbsp;pixel&nbsp;in&nbsp;the&nbsp;output&nbsp;to&nbsp;255.<br>
-#&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
-#&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
- <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+#&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
+ <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-twobyonestretch"><strong>twobyonestretch</strong></a>(image, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;horizontal&nbsp;doubling&nbsp;of&nbsp;pixels.<br>
 #&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;width&nbsp;2*'w'&nbsp;and&nbsp;height&nbsp;2*'h'.<br>
-#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-uicolorgradient"><strong>uicolorgradient</strong></a>(
     hilightColor=None,
@@ -1079,11 +1094,11 @@ Data descriptors defined here:<br>
 #&nbsp;[2,10,255]&nbsp;where&nbsp;each&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255.<br>
 #&nbsp;Inspired&nbsp;by&nbsp;the&nbsp;technique&nbsp;for&nbsp;generating&nbsp;backgrounds&nbsp;in&nbsp;heropatterns.com.</span></dd></dl>
  <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;vertical&nbsp;hatch&nbsp;pattern.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False, includeVga=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value<br>
 #&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;If&nbsp;'includeVga'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;unchanged&nbsp;any&nbsp;colors&nbsp;in&nbsp;the&nbsp;color&nbsp;palette&nbsp;returned<br>
 #&nbsp;by&nbsp;<a href="#-classiccolors">classiccolors</a>().&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
@@ -1101,7 +1116,7 @@ Data descriptors defined here:<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
  <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.<br>
-#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-windowborder"><strong>windowborder</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-writepalette"><strong>writepalette</strong></a>(f, palette, name=None, raiseIfExists=False)</dt></dl>
 </td></tr></table>
