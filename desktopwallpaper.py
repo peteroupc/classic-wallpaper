@@ -2,7 +2,7 @@
 # wallpapers based on existing image files.  Because they run on the CPU
 # and are implemented in pure Python, the methods are intended for
 # relatively small images that are suitable as tileable desktop wallpaper
-# patterns, especially with dimensions 256x256 or smaller.
+# patterns, especially with dimensions 256 &times; 256 or smaller.
 #
 # This script is released to the public domain; in case that is not possible, the
 # file is also licensed under the Unlicense: https://unlicense.org/
@@ -13,7 +13,7 @@
 # shifting, with each frame, the starting position for drawing the top left
 # corner of the wallpaper tiling (e.g., from the top left corner of the image
 # to some other position in the image).
-# 2. In Windows, if both an 8x8 monochrome pattern and a centered wallpaper
+# 2. In Windows, if both an 8 &times; 8 monochrome pattern and a centered wallpaper
 # are set as the desktop background, both the pattern and the wallpaper
 # will be drawn on the desktop, the latter appearing above the former.
 # The nonblack areas of the monochrome pattern are filled with the desktop
@@ -40,7 +40,7 @@ import struct
 def _listdir(p):
     return [os.path.abspath(p + "/" + x) for x in os.listdir(p)]
 
-_DitherMatrix4x4 = [  # Bayer 4x4 ordered dither matrix
+_DitherMatrix4x4 = [  # Bayer 4 &times; 4 ordered dither matrix
     0,
     8,
     2,
@@ -59,7 +59,7 @@ _DitherMatrix4x4 = [  # Bayer 4x4 ordered dither matrix
     5,
 ]
 
-_DitherMatrix = [  # Bayer 8x8 ordered dither matrix
+_DitherMatrix = [  # Bayer 8 &times; 8 ordered dither matrix
     0,
     32,
     8,
@@ -371,7 +371,7 @@ def magickgradientditherfilter(
             ")",
             "(",
             "-size",
-            "1x256",
+            "1 &times; x",
             "gradient:%s-%s" % (r1, r2),
             ")",
             "-delete",
@@ -384,23 +384,23 @@ def magickgradientditherfilter(
         bases = ["xc:#%02X%02X%02X" % (k[0], k[1], k[2]) for k in basecolors]
         # ImageMagick command to generate the palette image
         ret += (
-            ["(", "-size", "1x1"]
+            ["(", "-size", "1 &times; x"]
             + bases
             + ["+append", "-write", "mpr:z", "+delete", ")"]
         )
         # Apply Floyd-Steinberg error diffusion dither.
-        # NOTE: For abstractImage = True, ImageMagick's ordered 8x8 dithering
-        # algorithm ("-ordered-dither 8x8") is by default a per-channel monochrome
+        # NOTE: For abstractImage = True, ImageMagick's ordered 8 &times; 8 dithering
+        # algorithm ("-ordered-dither 8 &times; x") is by default a per-channel monochrome
         # (2-level) dither, not a true color dithering approach that takes much
         # account of the color palette.
         # As a result, for example, dithering a grayscale image with the algorithm will
         # lead to an image with only black and white pixels, even if the palette contains,
-        # say, ten shades of gray.  The number after "8x8" is the number of color levels
+        # say, ten shades of gray.  The number after "8 &times; x" is the number of color levels
         # per color channel in the ordered dither algorithm, and this number is taken
         # as the square root of the palette size, rounded up, minus 1, but not less
         # than 2.
         # ditherkind = (
-        #    "-ordered-dither 8x8,%d" % (min(2, _isqrtceil(len(basecolors)) - 1))
+        #    "-ordered-dither 8 &times; x,%d" % (min(2, _isqrtceil(len(basecolors)) - 1))
         #    if abstractImage
         #    else "-dither FloydSteinberg"
         # )
@@ -441,11 +441,11 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0 '
         + "-compose Multiply -composite "
         + "\\( mpr:z1 mpr:z2 -compose Screen -composite -negate \\) -compose Plus -composite "
-        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
+        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
         + 'mpr:z1 \\( mpr:z -negate -morphology Convolve "3:1,0,0 0,0,0 0,0,0" \\) -compose Multiply -composite '
-        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
+        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
         + '\\( mpr:z -negate -morphology Convolve "3:0,0,0 0,0,0 0,0,1" \\) mpr:z2 -compose Multiply -composite '
-        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite "
+        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite "
     ) % (bc, hc, sc)
 
 # ImageMagick command.
@@ -577,11 +577,11 @@ def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + '\\( -clone 0 -morphology Convolve "3:0,0,0 0,0,0 0,0,1" -write mpr:z1 \\) '
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0--1 '
         + "mpr:z2 \\( mpr:z -negate \\) -compose Multiply -composite -write mpr:a10 "
-        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
+        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
         + "\\( mpr:z -negate \\) mpr:z1 -compose Multiply -composite -write mpr:a20 "
-        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
+        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
         + "mpr:a10 mpr:a20 -compose Plus -composite -negate "
-        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite "
+        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite "
         + "mpr:a1 -compose Plus -composite "
     ) % (sc, hc, bc)
 
@@ -624,15 +624,15 @@ def _chopBeforeHAppendArray(withFarEnd=True):
             "-gravity",
             "West",
             "-chop",
-            "1x0",
+            "1 &times; x",
             "-gravity",
             "East",
             "-chop",
-            "1x0",
+            "1 &times; x",
             "+gravity",
         ]
     # Remove the left column
-    return ["+repage", "-gravity", "West", "-chop", "1x0", "+gravity"]
+    return ["+repage", "-gravity", "West", "-chop", "1 &times; x", "+gravity"]
 
 def _chopBeforeVAppendArray(withFarEnd=True):
     if withFarEnd:
@@ -913,6 +913,7 @@ def groupPmg():
 # Tiger (10.3, 10.4) and other Apple products
 # around the time of either OS's release.
 def brushedmetal():
+    sz = 50
     return [
         "(",
         "+clone",
@@ -920,7 +921,7 @@ def brushedmetal():
         "+append",
         "-morphology",
         "Convolve",
-        "50x1+49+0:" + (",".join([str(1 / 50) for i in range(50)])),
+        ("%dx1+%d+0:" % (sz, sz - 1)) + (",".join([str(1 / sz) for i in range(sz)])),
         "+repage",
         "-crop",
         "50%x0+0+0",
@@ -1673,20 +1674,18 @@ def _porterduff16bitalpha(d, di, s, si, op, sa65025, alpha=True):
         return
     match op:
         case 0:  # source over
-            den = da * (sa * sourceAlpha - 65025) - 255 * sa
+            den = da * (sa - 65025) - 255 * sa
             if den == 0:
                 d[di] = d[di + 1] = d[di + 2] = 0
                 if alpha:
                     d[di + 3] = 0
             else:
-                d[di] = (
-                    da * d[di] * (sa * sourceAlpha - 65025) - 255 * sa * s[si]
-                ) // den
+                d[di] = (da * d[di] * (sa - 65025) - 255 * sa * s[si]) // den
                 d[di + 1] = (
-                    da * d[di + 1] * (sa * sourceAlpha - 65025) - 255 * sa * s[si + 1]
+                    da * d[di + 1] * (sa - 65025) - 255 * sa * s[si + 1]
                 ) // den
                 d[di + 2] = (
-                    da * d[di + 2] * (sa * sourceAlpha - 65025) - 255 * sa * s[si + 2]
+                    da * d[di + 2] * (sa - 65025) - 255 * sa * s[si + 2]
                 ) // den
                 if alpha:
                     d[di + 3] = (da * 65025 + sa * 255 - da * sa) // 65025
@@ -3192,7 +3191,7 @@ def posterize(image, width, height, palette, alpha=False):
 # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
 # https://bisqwit.iki.fi/story/howto/dither/jy/
 # Image has the same format returned by the blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
-# Example: The following function generates an 8x8 image of a solid color simulated
+# Example: The following function generates an 8 &times; 8 image of a solid color simulated
 # by the colors in the given color palette.  By default, the palette is the same
 # as that returned by the _classiccolors_ function.  The solid color is a three-element
 # list of a color as described for the blankimage() function.

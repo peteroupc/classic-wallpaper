@@ -131,7 +131,7 @@ def _blackWhiteOnly(colortable, numuniques):
     )
 
 # Images have the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=True.
-# Note that, for mouse pointers (cursors), 32x32 pixels are the standard width and height.
+# Note that, for mouse pointers (cursors), 32 &times; 32 pixels are the standard width and height.
 def writeanicursor(
     outfile,
     images,
@@ -1531,8 +1531,8 @@ def reados2iconcore(f):
             # display height in pixels (the latter two
             # can be zero)
             # Combinations of display width/height seen
-            # include 640x200 (CGA, usually with half-height
-            # icons), 640x350 (EGA), 640x480, 1024x768.
+            # include 640 &times; 200 (CGA, usually with half-height
+            # icons), 640 &times; 350 (EGA), 640 &times; 480, 1024 &times; 768.
             endInfo = f.tell()
             infos.append(info)
             if info[1] == 0:
@@ -2062,8 +2062,8 @@ def _readicon(f, packedWinBitmap=False):
             print("unsupported compression: %d" % (andcompression))
             return None
         if andmaskhdr[7] != 0 or andmaskhdr[8] != 0:
-            # resolutions seen include 3622x3622 pixels per meter (about 92 dpi)
-            # Also seen: 2833x2833; 2834x2834; 2667x2667; 2667x2000 (EGA); 2667x1111 (CGA)
+            # resolutions seen include 3622 &times; 3622 pixels per meter (about 92 dpi)
+            # Also seen: 2833 &times; 2833; 2834 &times; 2834; 2667 &times; 2667; 2667 &times; 2000 (EGA); 2667 &times; 1111 (CGA)
             # print(
             #    "nonzero compression or resolution: %d %d %d"
             #    % (andmaskhdr[5], andmaskhdr[7], andmaskhdr[8])

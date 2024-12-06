@@ -2,15 +2,15 @@
 
 This repository is intended to hold open-source wallpaper images and source code for the following challenge.
 
-Given that desktop backgrounds today tend to cover the full computer screen, to employ thousands of colors, and to have a high-definition resolution (1920&times;1080 or larger), rendering tileable backgrounds with limited colors and pixel size ever harder to find, I make the following challenge.
+Given that desktop backgrounds today tend to cover the full computer screen, to employ thousands of colors, and to have a high-definition resolution (1920 &times; 1080 or larger), rendering tileable backgrounds with limited colors and pixel size ever harder to find, I make the following challenge.
 
 Create a tileable desktop wallpaper image [^1] meeting the following requirements.
 
 - The image is one of the following:
-    - It is a raster (bitmap) image with one of the color palettes and one of the pixel dimensions given later.[^3]
-    - It is a vector graphic in the Scalable Vector Graphics (SVG) format made only of two-dimensional vector paths with no stroke.  Excessive detail should be avoided.  Moreover:
-        - Each path is filled black and either opaque or translucent (semitransparent).  The image can then be scaled to any pixel dimension desired and turned into a grayscale (see later) bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).  Or...
-        - Each path is opaque and filled with one of up to ten colors from a color palette given later.  See [_colourlovers.com_](https://www.colourlovers.com/patterns) for examples.
+    - It is a raster (bitmap) image with one of the color palettes and one of the pixel dimensions given later.
+    - It is a vector graphic in the Scalable Vector Graphics (SVG) format made only of two-dimensional filled outlines with no stroke.  Excessive detail should be avoided.  Moreover:
+        - Each outline is filled black and either opaque or translucent (semitransparent).  The image can then be scaled to any pixel dimension desired and turned into a grayscale (see later) bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).  Or...
+        - Each outline is opaque and filled with one of up to ten colors from a color palette given later.  See [_colourlovers.com_](https://www.colourlovers.com/patterns) for examples.
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
 - The image does not contain text.  Images that contain depictions of people or human faces are not preferred.
 - The image should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
@@ -23,7 +23,7 @@ Also welcome would be computer code (released to the public domain or licensed u
 - procedural textures or patterns, or
 - arrangements of symbols or small images with partial transparency,
 
-meeting the requirements given above.
+meeting the requirements given earlier.
 
 > **Notes:**
 >
@@ -53,10 +53,10 @@ Additional color palettes allowed are as follows.
     - Allows for hue shifting to, say, a black-to-red palette.
 - The VGA palette plus the following four colors set by legacy versions of Windows: (192,220,192), (160,160,164), (255,251,240), (166,202,240).
 - The VGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 98 unique colors (each color component is 0, 64, 128, or 192; or each color component is 0, 128, or 255; or each color component is 96 or 160; or each color component is 96 or 224).
-- 16-color [**canonical Color/Graphics Adapter (CGA) palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).[^3]
+- 16-color [**canonical Color/Graphics Adapter (CGA) palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).
 - An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
 - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
-- The 64 colors displayable by Extended Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).[^3]
+- The 64 colors displayable by Extended Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).
 - Up to 16 colors from those displayable by 12-bit color displays (each color component is a multiple of 17).
 - Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - A palette of the 256 colors used by default in [VGA 256-color mode](https://github.com/canidlogic/vgapal).
@@ -84,30 +84,30 @@ The following color palettes are allowed, but not preferred:
 
 The pixel dimensions allowed are as follows.
 
-- Preferred: 8&times;8, 16&times;16, 32&times;32, 64&times;64, 64&times;32, 32&times;64, 96&times;96, 128&times;128, 256&times;256.
-- 32&times;32 or 64&times;64, where the second, fourth, etc. column is the same as the previous column (each logical pixel is 2&times;1).
-- Not preferred: 320&times;240, 320&times;200.
-- Not preferred: Custom size up to 96&times;96.
-- Not preferred: Custom size up to 256&times;256.
+- Preferred: 8 &times; 8, 16 &times; 16, 32 &times; 32, 64 &times; 64, 64 &times; 32, 32 &times; 64, 96 &times; 96, 128 &times; 128, 256 &times; 256.
+- 32 &times; 32 or 64 &times; 64, where the second, fourth, etc. column is the same as the previous column (each logical pixel is 2 &times; 1).
+- Not preferred: 320 &times; 240, 320 &times; 200.
+- Not preferred: Custom size up to 96 &times; 96.
+- Not preferred: Custom size up to 256 &times; 256.
 
 ## Examples
 
 |  Name  | Made by  |  Colors  |  Size  | License/Notes |
   --- | --- | --- | -- | --- |
-| dstripe.png | peteroupc | Black and white | 32x32 | Unlicense |
-| dzigzag.png | peteroupc | Black and white | 64x32 | Unlicense [^2] |
-| dzigzagcyan.png | peteroupc | Two colors (cyan and teal) | 64x32 | Unlicense |
-| truchet2color.png | peteroupc | Black and white | 32x32 | Unlicense |
-| truchet2colorthick.png | peteroupc | Black and white | 32x32 | Unlicense |
-| truchet3color.png | peteroupc | Black/gray/white | 32x32 | Unlicense [^5] |
-| smallslant.png | peteroupc | Four tones | 8x8 | Unlicense |
-| truchetff5500vga.png | peteroupc | VGA palette | 32x32 | Unlicense [^4] |
-| boxes.png | peteroupc | VGA palette | 128x128 | Unlicense |
-| circlec.png | peteroupc | VGA palette | 128x128 | Unlicense |
-| circlews.png | peteroupc | "Safety palette" | 128x128 | Unlicense |
-| check.png | peteroupc | VGA palette | 96x96 | Unlicense |
-| brushed.png | peteroupc | VGA palette | 96x96 | Unlicense |
-| [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100x100 | MIT License |
+| dstripe.png | peteroupc | Black and white | 32 &times; 32 | Unlicense |
+| dzigzag.png | peteroupc | Black and white | 64 &times; 32 | Unlicense [^2] |
+| dzigzagcyan.png | peteroupc | Two colors (cyan and teal) | 64 &times; 32 | Unlicense |
+| truchet2color.png | peteroupc | Black and white | 32 &times; 32 | Unlicense |
+| truchet2colorthick.png | peteroupc | Black and white | 32 &times; 32 | Unlicense |
+| truchet3color.png | peteroupc | Black/gray/white | 32 &times; 32 | Unlicense [^5] |
+| smallslant.png | peteroupc | Four tones | 8 &times; 8 | Unlicense |
+| truchetff5500vga.png | peteroupc | VGA palette | 32 &times; 32 | Unlicense [^4] |
+| boxes.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
+| circlec.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
+| circlews.png | peteroupc | "Safety palette" | 128 &times; 128 | Unlicense |
+| check.png | peteroupc | VGA palette | 96 &times; 96 | Unlicense |
+| brushed.png | peteroupc | VGA palette | 96 &times; 96 | Unlicense |
+| [JohnGWebDev/Background-Textures](https://github.com/JohnGWebDev/Background-Textures) | John Galiszewski | Black and white | All 100 &times; 100 | MIT License |
 
 The texture generator at [`schalkt/tgen`](https://github.com/schalkt/tgen), under an MIT License, is another example.
 
@@ -174,9 +174,9 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^2]: Can be generated from `dstripe` using the following ImageMagick command: `magick dstripe.png \( +clone -flop \) +append dzigzag.png`.
 
-[^4]: Can be generated from `truchet3color` using the following [ImageMagick](https://imagemagick.org/) command: `magick truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
+[^4]: Can be generated from `truchet3color` using the following [ImageMagick](https://imagemagick.org/) command: `magick truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1 &times; x gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1 &times; x xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
 
-[^5]: Can be generated from `truchet2color` using the following ImageMagick command: `magick truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1x2 gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF-808080` indicates the two colors white and gray, respectively.
+[^5]: Can be generated from `truchet2color` using the following ImageMagick command: `magick truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1 &times; x gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF` and `#808080` indicate the two colors white and gray, respectively.
 
 [^6]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
 
