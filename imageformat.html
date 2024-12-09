@@ -22,14 +22,15 @@
 
 <tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
 <td class="singlecolumn"><table><tr><td class="multicolumn"><a href="PIL.html">PIL</a><br>
+<a href="base64.html">base64</a><br>
 <a href="desktopwallpaper.html">desktopwallpaper</a><br>
 </td><td class="multicolumn"><a href="io.html">io</a><br>
 <a href="math.html">math</a><br>
-</td><td class="multicolumn"><a href="os.html">os</a><br>
-<a href="random.html">random</a><br>
-</td><td class="multicolumn"><a href="struct.html">struct</a><br>
+<a href="os.html">os</a><br>
+</td><td class="multicolumn"><a href="random.html">random</a><br>
+<a href="struct.html">struct</a><br>
 <a href="zlib.html">zlib</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor functions-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
@@ -41,9 +42,17 @@
 #&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;the&nbsp;source&nbsp;image's;&nbsp;if&nbsp;less,&nbsp;each<br>
 #&nbsp;frame's&nbsp;width.<br>
 #&nbsp;The&nbsp;source&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
-#&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
 #&nbsp;for&nbsp;this&nbsp;method&nbsp;to&nbsp;be&nbsp;successful.</span></dd></dl>
+ <dl><dt><a name="-getpngwidthheight"><strong>getpngwidthheight</strong></a>(f)</dt><dd><span class="code">#&nbsp;Gets&nbsp;the&nbsp;width&nbsp;and&nbsp;height&nbsp;of&nbsp;a&nbsp;PNG&nbsp;file&nbsp;from&nbsp;its<br>
+#&nbsp;header.&nbsp;'f'&nbsp;is&nbsp;the&nbsp;file's&nbsp;filename.<br>
+#&nbsp;Returns&nbsp;a&nbsp;two-element&nbsp;array&nbsp;with&nbsp;the&nbsp;width<br>
+#&nbsp;and&nbsp;height,&nbsp;in&nbsp;that&nbsp;order,&nbsp;in&nbsp;pixels,&nbsp;or&nbsp;[0,0]&nbsp;if<br>
+#&nbsp;the&nbsp;file&nbsp;is&nbsp;not&nbsp;detected&nbsp;as<br>
+#&nbsp;a&nbsp;PNG&nbsp;file.&nbsp;&nbsp;It&nbsp;bears&nbsp;mentioning&nbsp;that&nbsp;a&nbsp;positive&nbsp;value<br>
+#&nbsp;for&nbsp;the&nbsp;width&nbsp;and&nbsp;height&nbsp;is&nbsp;not&nbsp;a&nbsp;guarantee&nbsp;that&nbsp;the<br>
+#&nbsp;PNG&nbsp;file&nbsp;is&nbsp;well-formed.</span></dd></dl>
  <dl><dt><a name="-parallaxAvi"><strong>parallaxAvi</strong></a>(
     image,
     width,
@@ -53,9 +62,11 @@
     heightReverse=False,
     interlacing=False,
     fps=15
-)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
 #&nbsp;for&nbsp;this&nbsp;method&nbsp;to&nbsp;be&nbsp;successful.</span></dd></dl>
+ <dl><dt><a name="-pngbytes"><strong>pngbytes</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's<br>
+#&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-readanimicon"><strong>readanimicon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;from&nbsp;a&nbsp;Windows&nbsp;animated&nbsp;icon/cursor&nbsp;file.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
 #&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'readitr'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-readicns"><strong>readicns</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;icon&nbsp;images&nbsp;from&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;macOS&nbsp;icon&nbsp;format.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
@@ -78,7 +89,7 @@
 #&nbsp;Each&nbsp;five-element&nbsp;list&nbsp;in&nbsp;the&nbsp;returned&nbsp;list&nbsp;contains&nbsp;the&nbsp;image,<br>
 #&nbsp;its&nbsp;width,&nbsp;its&nbsp;height,&nbsp;its&nbsp;hot&nbsp;spot&nbsp;X&nbsp;coordinate,&nbsp;and&nbsp;its&nbsp;hot&nbsp;spot<br>
 #&nbsp;Y&nbsp;coordinate&nbsp;in&nbsp;that&nbsp;order.&nbsp;The&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
-#&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.&nbsp;Notes:<br>
+#&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=True.&nbsp;Notes:<br>
 #&nbsp;1.&nbsp;The&nbsp;hot&nbsp;spot&nbsp;is&nbsp;the&nbsp;point&nbsp;in&nbsp;the&nbsp;image<br>
 #&nbsp;that&nbsp;receives&nbsp;the&nbsp;system's&nbsp;mouse&nbsp;position&nbsp;when&nbsp;that&nbsp;image&nbsp;is<br>
 #&nbsp;drawn&nbsp;on&nbsp;the&nbsp;screen.&nbsp;&nbsp;The&nbsp;hot&nbsp;spot&nbsp;makes&nbsp;sense&nbsp;only&nbsp;for&nbsp;mouse&nbsp;pointers;<br>
@@ -99,6 +110,15 @@
 #&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'reados2icon'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-readxcursor"><strong>readxcursor</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;cursor&nbsp;images&nbsp;from&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;XCursor&nbsp;format.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
 #&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'reados2icon'&nbsp;method.</span></dd></dl>
+ <dl><dt><a name="-tiledSvgFromFile"><strong>tiledSvgFromFile</strong></a>(pngFile, screenwidth=1920, screenheight=1080)</dt></dl>
+ <dl><dt><a name="-tiledSvgFromImage"><strong>tiledSvgFromImage</strong></a>(
+    image,
+    width,
+    height,
+    alpha=False,
+    screenwidth=1920,
+    screenheight=1080
+)</dt></dl>
  <dl><dt><a name="-writeanicursor"><strong>writeanicursor</strong></a>(
     outfile,
     images,
@@ -110,7 +130,7 @@
     hotx=0,
     hoty=0,
     fps=20
-)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
+)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;Note&nbsp;that,&nbsp;for&nbsp;mouse&nbsp;pointers&nbsp;(cursors),&nbsp;32&nbsp;&amp;times;&nbsp;32&nbsp;pixels&nbsp;are&nbsp;the&nbsp;standard&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
  <dl><dt><a name="-writeavi"><strong>writeavi</strong></a>(
     f,
@@ -120,9 +140,10 @@
     raiseIfExists=False,
     singleFrameAsBmp=False,
     fps=20
-)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+)</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-writebmp"><strong>writebmp</strong></a>(f, image, width, height, raiseIfExists=False)</dt></dl>
- <dl><dt><a name="-writepng"><strong>writepng</strong></a>(f, image, width, height, raiseIfExists=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-writeppm"><strong>writeppm</strong></a>(f, image, width, height, raiseIfExists=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;_blankimage_&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-writepng"><strong>writepng</strong></a>(f, image, width, height, raiseIfExists=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's<br>
+#&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-writeppm"><strong>writeppm</strong></a>(f, image, width, height, raiseIfExists=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
 </td></tr></table>
 </body></html>

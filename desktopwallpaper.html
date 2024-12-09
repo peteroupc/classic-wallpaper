@@ -645,6 +645,7 @@ Data descriptors defined here:<br>
 #&nbsp;where&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner&nbsp;will&nbsp;be&nbsp;drawn.<br>
 #&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner<br>
 #&nbsp;and&nbsp;correspond&nbsp;to&nbsp;pixels&nbsp;in&nbsp;the&nbsp;source&nbsp;image.<br>
+#<br>
 #&nbsp;'ropForeground'&nbsp;is&nbsp;a&nbsp;foreground&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
 #&nbsp;destination,&nbsp;those&nbsp;of&nbsp;the&nbsp;source,&nbsp;and&nbsp;those&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern;&nbsp;the&nbsp;low&nbsp;4<br>
 #&nbsp;bits&nbsp;give&nbsp;the&nbsp;binary&nbsp;raster<br>
@@ -669,6 +670,31 @@ Data descriptors defined here:<br>
 #&nbsp;destination&nbsp;is&nbsp;left&nbsp;unchanged&nbsp;(since&nbsp;the&nbsp;low&nbsp;2&nbsp;bits&nbsp;give&nbsp;2).<br>
 #&nbsp;The&nbsp;default&nbsp;for&nbsp;'ropForeground'&nbsp;is&nbsp;0xCC&nbsp;(copy&nbsp;the&nbsp;source&nbsp;to&nbsp;the&nbsp;destination),&nbsp;and&nbsp;the<br>
 #&nbsp;default&nbsp;for&nbsp;'ropBackground'&nbsp;is&nbsp;0xAA&nbsp;(leave&nbsp;destination&nbsp;unchanged).<br>
+#<br>
+#&nbsp;The&nbsp;following&nbsp;are&nbsp;commonly&nbsp;seen&nbsp;ternary&nbsp;raster&nbsp;operations:<br>
+#&nbsp;0x00:&nbsp;Turn&nbsp;destination&nbsp;"black"&nbsp;(bits&nbsp;are&nbsp;all&nbsp;zeros).<br>
+#&nbsp;0x11:&nbsp;"Not&nbsp;source&nbsp;erase",&nbsp;"not&nbsp;merge&nbsp;pen"&nbsp;("pen"&nbsp;is&nbsp;understood&nbsp;as&nbsp;the&nbsp;source&nbsp;pixel).<br>
+#&nbsp;0x22:&nbsp;"Mask&nbsp;not&nbsp;pen".<br>
+#&nbsp;0x33:&nbsp;"Not&nbsp;source&nbsp;copy",&nbsp;"not&nbsp;copy&nbsp;pen".<br>
+#&nbsp;0x44:&nbsp;"Source&nbsp;erase",&nbsp;"Mask&nbsp;pen&nbsp;not".<br>
+#&nbsp;0x55:&nbsp;"Destination&nbsp;invert".<br>
+#&nbsp;0x66:&nbsp;"Source&nbsp;invert",&nbsp;"XOR&nbsp;pen".<br>
+#&nbsp;0x77:&nbsp;"Not&nbsp;mask&nbsp;pen".<br>
+#&nbsp;0x88:&nbsp;"Source&nbsp;AND".<br>
+#&nbsp;0x99:&nbsp;"Not&nbsp;XOR&nbsp;pen".<br>
+#&nbsp;0xAA:&nbsp;"No-op";&nbsp;destination&nbsp;is&nbsp;left&nbsp;unchanged.<br>
+#&nbsp;0xBB:&nbsp;"Merge&nbsp;paint",&nbsp;"merge&nbsp;not&nbsp;pen".<br>
+#&nbsp;0xCC:&nbsp;"Source&nbsp;copy";&nbsp;copy&nbsp;source&nbsp;to&nbsp;destination.<br>
+#&nbsp;0xDD:&nbsp;"Merge&nbsp;pen&nbsp;not".<br>
+#&nbsp;0xEE:&nbsp;"Source&nbsp;paint";&nbsp;"source&nbsp;pen&nbsp;not".<br>
+#&nbsp;0xFF:&nbsp;Turn&nbsp;destination&nbsp;"white"&nbsp;(bits&nbsp;are&nbsp;all&nbsp;ones).<br>
+#&nbsp;0x5A:&nbsp;Pattern&nbsp;invert.<br>
+#&nbsp;0xC0:&nbsp;"Merge&nbsp;copy";&nbsp;where&nbsp;pattern&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;all&nbsp;ones,&nbsp;copy&nbsp;the&nbsp;source&nbsp;to&nbsp;the<br>
+#&nbsp;destination;&nbsp;where&nbsp;pattern&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;all&nbsp;zeros,&nbsp;set&nbsp;the&nbsp;destination<br>
+#&nbsp;pixel's&nbsp;bits&nbsp;to&nbsp;all&nbsp;zeros.<br>
+#&nbsp;0xF0:&nbsp;Pattern&nbsp;copy.<br>
+#&nbsp;0xFB:&nbsp;"Pattern&nbsp;paint".<br>
+#<br>
 #&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;monochrome&nbsp;image&nbsp;(every&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;either&nbsp;all&nbsp;zeros<br>
 #&nbsp;[black]&nbsp;or&nbsp;all&nbsp;ones&nbsp;[white]),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.<br>
 #&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;or&nbsp;'maskimage',<br>
@@ -692,7 +718,8 @@ Data descriptors defined here:<br>
     sourceAlpha=255,
     screendoor=False
 )</dt><dd><span class="code">#&nbsp;Performs&nbsp;an&nbsp;image&nbsp;composition&nbsp;involving&nbsp;a&nbsp;source&nbsp;image&nbsp;and&nbsp;a&nbsp;destination&nbsp;image.&nbsp;&nbsp;The&nbsp;destination&nbsp;rectangle<br>
-#&nbsp;begins&nbsp;at&nbsp;x0&nbsp;and&nbsp;y0&nbsp;and&nbsp;has&nbsp;width&nbsp;('x1'-'x0')&nbsp;and&nbsp;height&nbsp;('y1'-'y0'),&nbsp;and&nbsp;wraps&nbsp;around&nbsp;the&nbsp;destination&nbsp;if&nbsp;'wraparound'<br>
+#&nbsp;begins&nbsp;at&nbsp;x0&nbsp;and&nbsp;y0&nbsp;and&nbsp;has&nbsp;width&nbsp;('x1'-'x0')&nbsp;and&nbsp;height&nbsp;('y1'-'y0'),&nbsp;and<br>
+#&nbsp;wraps&nbsp;around&nbsp;the&nbsp;destination&nbsp;if&nbsp;'wraparound'<br>
 #&nbsp;is&nbsp;True.&nbsp;&nbsp;Unlike&nbsp;with&nbsp;the&nbsp;original&nbsp;Porter&amp;ndash;Duff&nbsp;composition&nbsp;operators,&nbsp;areas&nbsp;of&nbsp;the&nbsp;destination&nbsp;outside<br>
 #&nbsp;the&nbsp;destination&nbsp;rectangle&nbsp;are&nbsp;left&nbsp;unchanged.<br>
 #&nbsp;'dstimage'&nbsp;and&nbsp;'srcimage'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
@@ -706,7 +733,9 @@ Data descriptors defined here:<br>
 #&nbsp;5&nbsp;=&nbsp;destination&nbsp;in;&nbsp;6&nbsp;=&nbsp;destination&nbsp;held&nbsp;out;&nbsp;7&nbsp;=&nbsp;destination&nbsp;atop;<br>
 #&nbsp;8&nbsp;=&nbsp;copy&nbsp;source;&nbsp;9&nbsp;=&nbsp;copy&nbsp;destination;&nbsp;10&nbsp;=&nbsp;clear;&nbsp;11&nbsp;=&nbsp;XOR;&nbsp;12&nbsp;=&nbsp;plus.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;is&nbsp;0,&nbsp;source&nbsp;over.<br>
-#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door&nbsp;transparency)<br>
+#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated<br>
+#&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled<br>
+#&nbsp;or&nbsp;screen-door&nbsp;transparency).<br>
 #<br>
 #&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
@@ -783,13 +812,16 @@ Data descriptors defined here:<br>
     screendoor=False
 )</dt><dd><span class="code">#&nbsp;Performs&nbsp;a&nbsp;source-over&nbsp;composition&nbsp;involving&nbsp;a&nbsp;source&nbsp;image&nbsp;with&nbsp;an&nbsp;alpha&nbsp;channel<br>
 #&nbsp;and&nbsp;a&nbsp;destination&nbsp;image&nbsp;without&nbsp;an&nbsp;alpha&nbsp;channel.&nbsp;&nbsp;The&nbsp;destination&nbsp;rectangle<br>
-#&nbsp;begins&nbsp;at&nbsp;x0&nbsp;and&nbsp;y0&nbsp;and&nbsp;has&nbsp;width&nbsp;('x1'-'x0')&nbsp;and&nbsp;height&nbsp;('y1'-'y0'),&nbsp;and&nbsp;wraps&nbsp;around&nbsp;the&nbsp;destination&nbsp;if&nbsp;'wraparound'<br>
+#&nbsp;begins&nbsp;at&nbsp;x0&nbsp;and&nbsp;y0&nbsp;and&nbsp;has&nbsp;width&nbsp;('x1'-'x0')&nbsp;and&nbsp;height&nbsp;('y1'-'y0'),<br>
+#&nbsp;and&nbsp;wraps&nbsp;around&nbsp;the&nbsp;destination&nbsp;if&nbsp;'wraparound'<br>
 #&nbsp;is&nbsp;True.<br>
 #&nbsp;'dstimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False;&nbsp;'srcimage',&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;If&nbsp;'srcimage'&nbsp;is&nbsp;None,&nbsp;a&nbsp;source&nbsp;image&nbsp;with&nbsp;all&nbsp;zeros&nbsp;and&nbsp;an&nbsp;alpha&nbsp;of&nbsp;0&nbsp;for&nbsp;all&nbsp;pixels&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;source,&nbsp;even&nbsp;if<br>
 #&nbsp;'alpha'&nbsp;is&nbsp;False.&nbsp;&nbsp;The&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;for&nbsp;'srcimage'&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;"non-premultiplied",&nbsp;that<br>
 #&nbsp;is,&nbsp;not&nbsp;multiplied&nbsp;beforehand&nbsp;by&nbsp;the&nbsp;alpha&nbsp;component&nbsp;divided&nbsp;by&nbsp;255.<br>
-#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door&nbsp;transparency)<br>
+#&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is<br>
+#&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known<br>
+#&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door&nbsp;transparency).<br>
 #<br>
 #&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
@@ -828,7 +860,7 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;All&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;and&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;(opacity&nbsp;channel)&nbsp;of&nbsp;the&nbsp;images,&nbsp;if&nbsp;any,&nbsp;is<br>
 #&nbsp;subject&nbsp;to&nbsp;the&nbsp;image&nbsp;operation&nbsp;in&nbsp;the&nbsp;same&nbsp;way&nbsp;as&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;channels.<br>
-#&nbsp;'ropForeground'&nbsp;and&nbsp;'ropBackground'&nbsp;are&nbsp;as&nbsp;in&nbsp;imageblitex,&nbsp;except&nbsp;that<br>
+#&nbsp;'ropForeground'&nbsp;and&nbsp;'ropBackground'&nbsp;are&nbsp;as&nbsp;in&nbsp;<a href="#-imageblitex">imageblitex</a>(),&nbsp;except&nbsp;that<br>
 #&nbsp;'ropForeground'&nbsp;is&nbsp;used&nbsp;where&nbsp;the&nbsp;source&nbsp;color&nbsp;is&nbsp;not&nbsp;'transcolor'&nbsp;or&nbsp;if<br>
 #&nbsp;'transcolor'&nbsp;is&nbsp;None&nbsp;(in&nbsp;this&nbsp;sense,&nbsp;if&nbsp;'transcolor'&nbsp;has&nbsp;three&nbsp;elements&nbsp;and&nbsp;'alpha'&nbsp;is&nbsp;True,<br>
 #&nbsp;the&nbsp;fourth&nbsp;element,&nbsp;the&nbsp;alpha&nbsp;component,&nbsp;is&nbsp;treated&nbsp;as&nbsp;255&nbsp;so&nbsp;that&nbsp;'transcolor'&nbsp;is&nbsp;an&nbsp;opaque<br>
@@ -912,10 +944,13 @@ Data descriptors defined here:<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
- <dl><dt><a name="-patternDither"><strong>patternDither</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;an&nbsp;arbitrary&nbsp;color&nbsp;palette.<br>
+ <dl><dt><a name="-patternDither"><strong>patternDither</strong></a>(image, width, height, palette, alpha=False, fast=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;an&nbsp;arbitrary&nbsp;color&nbsp;palette.<br>
 #&nbsp;Derived&nbsp;from&nbsp;Adobe's&nbsp;pattern&nbsp;dithering&nbsp;algorithm,&nbsp;described&nbsp;by&nbsp;J.&nbsp;Yliluoma&nbsp;at:<br>
 #&nbsp;<a href="https://bisqwit.iki.fi/story/howto/dither/jy/">https://bisqwit.iki.fi/story/howto/dither/jy/</a><br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given<br>
+#&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;If&nbsp;'fast'&nbsp;is&nbsp;True,&nbsp;use&nbsp;a&nbsp;smaller&nbsp;dither&nbsp;matrix.&nbsp;The&nbsp;default&nbsp;value&nbsp;for<br>
+#&nbsp;'fast'&nbsp;is&nbsp;False.<br>
 #&nbsp;Example:&nbsp;The&nbsp;following&nbsp;function&nbsp;generates&nbsp;an&nbsp;8&nbsp;&amp;times;&nbsp;8&nbsp;image&nbsp;of&nbsp;a&nbsp;solid&nbsp;color&nbsp;simulated<br>
 #&nbsp;by&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.&nbsp;&nbsp;By&nbsp;default,&nbsp;the&nbsp;palette&nbsp;is&nbsp;the&nbsp;same<br>
 #&nbsp;as&nbsp;that&nbsp;returned&nbsp;by&nbsp;the&nbsp;_classiccolors_&nbsp;function.&nbsp;&nbsp;The&nbsp;solid&nbsp;color&nbsp;is&nbsp;a&nbsp;three-element<br>

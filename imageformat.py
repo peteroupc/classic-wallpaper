@@ -8,6 +8,7 @@
 import os
 import math
 import random
+import base64
 import struct
 import zlib
 import io
@@ -50,7 +51,17 @@ class _LimitedIO:
         else:
             return self.f.read(min(count, self.size - self.tell()))
 
-# Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
+class _MemIO:
+    def __init__(self):
+        self.mem = b""
+
+    def write(self, data):
+        self.mem += data
+
+    def get(self):
+        return self.mem
+
+# Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 def writeppm(f, image, width, height, raiseIfExists=False):
     if not image:
         raise ValueError
@@ -63,7 +74,8 @@ def writeppm(f, image, width, height, raiseIfExists=False):
     fd.write(bytes(image))
     fd.close()
 
-# Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with the given value of 'alpha' (default value for 'alpha' is False).
+# Image has the same format returned by the _desktopwallpaper_ module's
+# blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
 def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     if not image:
         raise ValueError
@@ -72,6 +84,25 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     if len(image) != width * height * (4 if alpha else 3):
         raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
     fd = open(f, "xb" if raiseIfExists else "wb")
+    try:
+        _writepng(fd, image, width, height, alpha)
+    finally:
+        fd.close()
+
+# Image has the same format returned by the _desktopwallpaper_ module's
+# blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
+def pngbytes(image, width, height, alpha=False):
+    fd = _MemIO()
+    _writepng(fd, image, width, height, alpha=alpha)
+    return fd.get()
+
+def _writepng(fd, image, width, height, alpha=False):
+    if not image:
+        raise ValueError
+    if width < 0 or height < 0:
+        raise ValueError
+    if len(image) != width * height * (4 if alpha else 3):
+        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
     fd.write(b"\x89PNG\x0d\n\x1a\n")
     chunk = b"IHDR" + struct.pack(
         ">LLbbbbb", width, height, 8, 6 if alpha else 2, 0, 0, 0
@@ -90,7 +121,6 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     fd.write(chunk)
     fd.write(struct.pack(">L", zlib.crc32(chunk)))
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
-    fd.close()
 
 def _isRiffOrListChunk(chunk):
     return chunk[0] == b"RIFF" or chunk[0] == b"LIST"
@@ -130,7 +160,7 @@ def _blackWhiteOnly(colortable, numuniques):
         )
     )
 
-# Images have the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=True.
+# Images have the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=True.
 # Note that, for mouse pointers (cursors), 32 &times; 32 pixels are the standard width and height.
 def writeanicursor(
     outfile,
@@ -365,7 +395,7 @@ def writeanicursor(
     finally:
         f.close()
 
-# Images have the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
+# Images have the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 def writeavi(
     f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False, fps=20
 ):
@@ -1435,7 +1465,7 @@ def _rle4decompress(bitdata, dst, width, height):
 # Each five-element list in the returned list contains the image,
 # its width, its height, its hot spot X coordinate, and its hot spot
 # Y coordinate in that order. The image has the same format returned by the
-# _desktopwallpaper_ module's _blankimage_ method with alpha=True. Notes:
+# _desktopwallpaper_ module's blankimage() method with alpha=True. Notes:
 # 1. The hot spot is the point in the image
 # that receives the system's mouse position when that image is
 # drawn on the screen.  The hot spot makes sense only for mouse pointers;
@@ -2438,7 +2468,7 @@ def _readicon(f, packedWinBitmap=False):
         ret = bl
     return [ret, width, height, hotspotX, hotspotY]
 
-# Image has the same format returned by the _desktopwallpaper_ module's _blankimage_ method with alpha=False.
+# Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
 def parallaxAvi(
@@ -2480,7 +2510,7 @@ def parallaxAvi(
 # is the same as the source image's; if less, each
 # frame's width.
 # The source image has the same format returned by the
-# _desktopwallpaper_ module's _blankimage_ method with alpha=False.
+# _desktopwallpaper_ module's blankimage() method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
 def animationBitmap(image, width, height, destImage, firstFrame=0, fps=15):
@@ -2913,3 +2943,79 @@ def _icnsrle24decode(f, image, planes=3):
                     image[pos + i] = b[0]
                     pos += 4
     return True
+
+# Gets the width and height of a PNG file from its
+# header. 'f' is the file's filename.
+# Returns a two-element array with the width
+# and height, in that order, in pixels, or [0,0] if
+# the file is not detected as
+# a PNG file.  It bears mentioning that a positive value
+# for the width and height is not a guarantee that the
+# PNG file is well-formed.
+def getpngwidthheight(f):
+    ff = open(f, "rb")
+    if not ff:
+        return [0, 0]
+    hdr = ff.read(8)
+    if hdr != bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]):
+        ff.close()
+        return [0, 0]
+    hdr = struct.unpack(">LLLL", ff.read(16))
+    if hdr[0] != 0x0D or hdr[1] != 0x49484452:
+        ff.close()
+        return [0, 0]
+    width = hdr[2]  # PNG width
+    height = hdr[3]  # PNG height
+    ff.close()
+    return [width, height]
+
+def _tiledSvg(imagedata, width, height, screenwidth, screenheight):
+    dataurl = "data:image/png;base64," + str(base64.b64encode(imagedata), "utf-8")
+    svgbytes = bytes(
+        "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
+        + (
+            "<pattern patternUnits='userSpaceOnUse' id='pattern' width='%d' height='%d'>"
+        )
+        % (width, height)
+        + ("<image width='%d' height='%d' x='0' y='0' xlink:href='%s'/>")
+        % (width, height, dataurl)
+        + "</pattern><path style='stroke:none;fill:url(#pattern)' "
+        + "d='M0 0 L0 %d L%d %d L%d 0 Z'/>"
+        % (screenheight, screenwidth, screenheight, screenwidth)
+        + "</svg>",
+        "utf-8",
+    )
+    return svgbytes
+
+def tiledSvgFromImage(
+    image, width, height, alpha=False, screenwidth=1920, screenheight=1080
+):
+    return _tiledSvg(
+        pngbytes(image, width, height, alpha=alpha),
+        width,
+        height,
+        screenwidth,
+        screenheight,
+    )
+
+def tiledSvgFromFile(pngFile, screenwidth=1920, screenheight=1080):
+    ff = open(pngFile, "rb")
+    hdr = ff.read(8)
+    existingdata = hdr
+    if hdr != bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]):
+        ff.close()
+        raise ValueError("not a PNG")
+    hdr = ff.read(16)
+    existingdata += hdr
+    hdr = struct.unpack(">LLLL", hdr)
+    if hdr[0] != 0x0D or hdr[1] != 0x49484452:
+        ff.close()
+        raise ValueError("not a valid PNG")
+    width = hdr[2]  # PNG width
+    height = hdr[3]  # PNG height
+    if width == 0 or height == 0:
+        ff.close()
+        raise ValueError("not a valid PNG")
+    imagedata = existingdata + ff.read()
+    ff.close()
+    return _tiledSvg(imagedata, width, height, screenwidth, screenheight)

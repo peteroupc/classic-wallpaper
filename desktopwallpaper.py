@@ -363,6 +363,7 @@ def magickgradientditherfilter(
     if rgb1 != None and rgb2 != None:
         r1 = "#%02x%02x%02x" % (int(rgb1[0]), int(rgb1[1]), int(rgb1[2]))
         r2 = "#%02x%02x%02x" % (int(rgb2[0]), int(rgb2[1]), int(rgb2[2]))
+        sz = 256
         ret += [
             "(",
             "+clone",
@@ -371,7 +372,7 @@ def magickgradientditherfilter(
             ")",
             "(",
             "-size",
-            "1 &times; x",
+            "1x%d" % (sz),
             "gradient:%s-%s" % (r1, r2),
             ")",
             "-delete",
@@ -384,23 +385,23 @@ def magickgradientditherfilter(
         bases = ["xc:#%02X%02X%02X" % (k[0], k[1], k[2]) for k in basecolors]
         # ImageMagick command to generate the palette image
         ret += (
-            ["(", "-size", "1 &times; x"]
+            ["(", "-size", "1x1"]
             + bases
             + ["+append", "-write", "mpr:z", "+delete", ")"]
         )
         # Apply Floyd-Steinberg error diffusion dither.
         # NOTE: For abstractImage = True, ImageMagick's ordered 8 &times; 8 dithering
-        # algorithm ("-ordered-dither 8 &times; x") is by default a per-channel monochrome
+        # algorithm ("-ordered-dither 8x8") is by default a per-channel monochrome
         # (2-level) dither, not a true color dithering approach that takes much
         # account of the color palette.
         # As a result, for example, dithering a grayscale image with the algorithm will
         # lead to an image with only black and white pixels, even if the palette contains,
-        # say, ten shades of gray.  The number after "8 &times; x" is the number of color levels
+        # say, ten shades of gray.  The number after "8x8" is the number of color levels
         # per color channel in the ordered dither algorithm, and this number is taken
         # as the square root of the palette size, rounded up, minus 1, but not less
         # than 2.
         # ditherkind = (
-        #    "-ordered-dither 8 &times; x,%d" % (min(2, _isqrtceil(len(basecolors)) - 1))
+        #    "-ordered-dither 8x8,%d" % (min(2, _isqrtceil(len(basecolors)) - 1))
         #    if abstractImage
         #    else "-dither FloydSteinberg"
         # )
@@ -441,11 +442,11 @@ def hautrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0 '
         + "-compose Multiply -composite "
         + "\\( mpr:z1 mpr:z2 -compose Screen -composite -negate \\) -compose Plus -composite "
-        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
+        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
         + 'mpr:z1 \\( mpr:z -negate -morphology Convolve "3:1,0,0 0,0,0 0,0,0" \\) -compose Multiply -composite '
-        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
+        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
         + '\\( mpr:z -negate -morphology Convolve "3:0,0,0 0,0,0 0,0,1" \\) mpr:z2 -compose Multiply -composite '
-        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite "
+        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite mpr:a1 -compose Plus -composite "
     ) % (bc, hc, sc)
 
 # ImageMagick command.
@@ -577,11 +578,11 @@ def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
         + '\\( -clone 0 -morphology Convolve "3:0,0,0 0,0,0 0,0,1" -write mpr:z1 \\) '
         + '\\( -clone 0 -morphology Convolve "3:1,0,0 0,0,0 0,0,0" -write mpr:z2 \\) -delete 0--1 '
         + "mpr:z2 \\( mpr:z -negate \\) -compose Multiply -composite -write mpr:a10 "
-        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
+        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a2 -delete 0 "
         + "\\( mpr:z -negate \\) mpr:z1 -compose Multiply -composite -write mpr:a20 "
-        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
+        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut -write mpr:a1 -delete 0 "
         + "mpr:a10 mpr:a20 -compose Plus -composite -negate "
-        + "\\( -size 1 &times; x xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite "
+        + "\\( -size 1x1 xc:black xc:%s +append \\) -clut mpr:a2 -compose Plus -composite "
         + "mpr:a1 -compose Plus -composite "
     ) % (sc, hc, bc)
 
@@ -624,15 +625,15 @@ def _chopBeforeHAppendArray(withFarEnd=True):
             "-gravity",
             "West",
             "-chop",
-            "1 &times; x",
+            "1x0",
             "-gravity",
             "East",
             "-chop",
-            "1 &times; x",
+            "1x0",
             "+gravity",
         ]
     # Remove the left column
-    return ["+repage", "-gravity", "West", "-chop", "1 &times; x", "+gravity"]
+    return ["+repage", "-gravity", "West", "-chop", "1x0", "+gravity"]
 
 def _chopBeforeVAppendArray(withFarEnd=True):
     if withFarEnd:
@@ -1168,6 +1169,7 @@ def _applyrop(dst, src, rop):
 # where the source image's top left corner will be drawn.
 # 'x0mask' and 'y0mask' are offsets from the source image's top left corner
 # and correspond to pixels in the source image.
+#
 # 'ropForeground' is a foreground ternary raster operation between the bits of the
 # destination, those of the source, and those of the brush pattern; the low 4
 # bits give the binary raster
@@ -1192,6 +1194,31 @@ def _applyrop(dst, src, rop):
 # destination is left unchanged (since the low 2 bits give 2).
 # The default for 'ropForeground' is 0xCC (copy the source to the destination), and the
 # default for 'ropBackground' is 0xAA (leave destination unchanged).
+#
+# The following are commonly seen ternary raster operations:
+# 0x00: Turn destination "black" (bits are all zeros).
+# 0x11: "Not source erase", "not merge pen" ("pen" is understood as the source pixel).
+# 0x22: "Mask not pen".
+# 0x33: "Not source copy", "not copy pen".
+# 0x44: "Source erase", "Mask pen not".
+# 0x55: "Destination invert".
+# 0x66: "Source invert", "XOR pen".
+# 0x77: "Not mask pen".
+# 0x88: "Source AND".
+# 0x99: "Not XOR pen".
+# 0xAA: "No-op"; destination is left unchanged.
+# 0xBB: "Merge paint", "merge not pen".
+# 0xCC: "Source copy"; copy source to destination.
+# 0xDD: "Merge pen not".
+# 0xEE: "Source paint"; "source pen not".
+# 0xFF: Turn destination "white" (bits are all ones).
+# 0x5A: Pattern invert.
+# 0xC0: "Merge copy"; where pattern pixel's bits are all ones, copy the source to the
+# destination; where pattern pixel's bits are all zeros, set the destination
+# pixel's bits to all zeros.
+# 0xF0: Pattern copy.
+# 0xFB: "Pattern paint".
+#
 # 'maskimage' is ideally a monochrome image (every pixel's bits are either all zeros
 # [black] or all ones [white]), but it doesn't have to be.
 # 'dstimage' may be the same as 'srcimage', 'patternimage', or 'maskimage',
@@ -1367,7 +1394,7 @@ def imageblitex(
 # All images have the same format returned by the blankimage() method with the given value of 'alpha'.
 # The default value for 'alpha' is False, and the alpha channel (opacity channel) of the images, if any, is
 # subject to the image operation in the same way as the red, green, and blue channels.
-# 'ropForeground' and 'ropBackground' are as in imageblitex, except that
+# 'ropForeground' and 'ropBackground' are as in imageblitex(), except that
 # 'ropForeground' is used where the source color is not 'transcolor' or if
 # 'transcolor' is None (in this sense, if 'transcolor' has three elements and 'alpha' is True,
 # the fourth element, the alpha component, is treated as 255 so that 'transcolor' is an opaque
@@ -1795,13 +1822,16 @@ def _porterduff16bitalpha(d, di, s, si, op, sa65025, alpha=True):
 
 # Performs a source-over composition involving a source image with an alpha channel
 # and a destination image without an alpha channel.  The destination rectangle
-# begins at x0 and y0 and has width ('x1'-'x0') and height ('y1'-'y0'), and wraps around the destination if 'wraparound'
+# begins at x0 and y0 and has width ('x1'-'x0') and height ('y1'-'y0'),
+# and wraps around the destination if 'wraparound'
 # is True.
 # 'dstimage' has the same format returned by the blankimage() method with alpha=False; 'srcimage', with alpha=True.
 # If 'srcimage' is None, a source image with all zeros and an alpha of 0 for all pixels is used as the source, even if
 # 'alpha' is False.  The red, green, and blue components for 'srcimage' are assumed to be "non-premultiplied", that
 # is, not multiplied beforehand by the alpha component divided by 255.
-# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated by scattering transparent and opaque pixels, or dithering (a process also known as stippled or screen-door transparency)
+# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is
+# simulated by scattering transparent and opaque pixels, or dithering (a process also known
+# as stippled or screen-door transparency).
 #
 # Blending Note: Operations that involve the blending of two RGB (red-green-
 # blue) colors work best if the RGB color space is linear.  This is not the case
@@ -1921,7 +1951,8 @@ def imagesrcover(
                     ) // 65025
 
 # Performs an image composition involving a source image and a destination image.  The destination rectangle
-# begins at x0 and y0 and has width ('x1'-'x0') and height ('y1'-'y0'), and wraps around the destination if 'wraparound'
+# begins at x0 and y0 and has width ('x1'-'x0') and height ('y1'-'y0'), and
+# wraps around the destination if 'wraparound'
 # is True.  Unlike with the original Porter&ndash;Duff composition operators, areas of the destination outside
 # the destination rectangle are left unchanged.
 # 'dstimage' and 'srcimage' have the same format returned by the blankimage() method with the given value of 'alpha'.
@@ -1935,7 +1966,9 @@ def imagesrcover(
 # 5 = destination in; 6 = destination held out; 7 = destination atop;
 # 8 = copy source; 9 = copy destination; 10 = clear; 11 = XOR; 12 = plus.
 # The default value is 0, source over.
-# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated by scattering transparent and opaque pixels, or dithering (a process also known as stippled or screen-door transparency)
+# If 'screendoor' is True (default is 'False'), translucency (semitransparency) is simulated
+# by scattering transparent and opaque pixels, or dithering (a process also known as stippled
+# or screen-door transparency).
 #
 # Blending Note: Operations that involve the blending of two RGB (red-green-
 # blue) colors work best if the RGB color space is linear.  This is not the case
@@ -2742,6 +2775,8 @@ def _nearest_rgb3(pal, r, g, b):
         if i == 0 or dist < best:
             ret = i
             best = dist
+            if dist == 0:
+                break
     return ret
 
 def _nearest_rgb(pal, rgb):
@@ -3190,7 +3225,10 @@ def posterize(image, width, height, palette, alpha=False):
 # Dithers in place the given image to the colors in an arbitrary color palette.
 # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
 # https://bisqwit.iki.fi/story/howto/dither/jy/
-# Image has the same format returned by the blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
+# Image has the same format returned by the blankimage() method with the given
+# value of 'alpha' (default value for 'alpha' is False).
+# If 'fast' is True, use a smaller dither matrix. The default value for
+# 'fast' is False.
 # Example: The following function generates an 8 &times; 8 image of a solid color simulated
 # by the colors in the given color palette.  By default, the palette is the same
 # as that returned by the _classiccolors_ function.  The solid color is a three-element
@@ -3201,9 +3239,10 @@ def posterize(image, width, height, palette, alpha=False):
 #     patternDither(image,8,8,palette if palette else classiccolors())
 #     return image
 #
-def patternDither(image, width, height, palette, alpha=False):
+def patternDither(image, width, height, palette, alpha=False, fast=False):
     pixelSize = 4 if alpha else 3
-    candidates = [[] for i in range(len(_DitherMatrix))]
+    ditherMatrixLen = len(_DitherMatrix4x4) if fast else len(_DitherMatrix)
+    candidates = [[] for i in range(ditherMatrixLen)]
     paletteLum = [
         (can[0] * 2126 + can[1] * 7152 + can[2] * 722) // 10000 for can in palette
     ]
@@ -3219,7 +3258,7 @@ def patternDither(image, width, height, palette, alpha=False):
             ir = image[xp]
             ig = image[xp + 1]
             ib = image[xp + 2]
-            for i in range(len(_DitherMatrix)):
+            for i in range(ditherMatrixLen):
                 # "// 4" is equiv. to "* 0.25" where 0.25
                 # is the dithering strength
                 t0 = ir + e[0] // 4
@@ -3263,7 +3302,11 @@ def patternDither(image, width, height, palette, alpha=False):
             if exact:
                 continue
             candidates.sort()
-            bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
+            bdither = (
+                _DitherMatrix4x4[(y & 3) * 4 + (x & 3)]
+                if fast
+                else _DitherMatrix[(y & 7) * 8 + (x & 7)]
+            )
             fcan = candidates[bdither][1]
             fcan = palette[fcan]
             image[xp] = fcan[0]

@@ -112,7 +112,7 @@ The following points are observed in general in user interface graphics, includi
     - areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette), and
     - color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
-- Larger versions of icons originally in size 32 &times; x (for example, the 48 &times; 48 version) tend to appear the same as the original icon but with finer but non-essential detail.
+- Larger versions of icons originally in size 32x32 (for example, the 48 &times; 48 version) tend to appear the same as the original icon but with finer but non-essential detail.
 
 After about 2003, icons, cursors, and illustrations for user interfaces tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions tend to be derived from those images through _dithering_[^6] or similar techniques.
 
