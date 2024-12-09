@@ -4024,14 +4024,23 @@ def maketileable(image, width, height, alpha=False):
             m2 = 1 - _linearmask(width, height, xp, yp)
             m1 = max(0.001, m1)
             m2 = max(0.001, m2)
-            o1 = getpixel(image, width, height, x, y)
-            o2 = getpixel(image, width, height, xp, yp)
+            o1 = (
+                getpixelalpha(image, width, height, x, y)
+                if alpha
+                else getpixel(image, width, height, x, y)
+            )
+            o2 = (
+                getpixelalpha(image, width, height, xp, yp)
+                if alpha
+                else getpixel(image, width, height, xp, yp)
+            )
             if alpha:
                 t = [
                     m1 * ov1 / (m1 + m2) + m2 * ov2 / (m1 + m2)
                     for ov1, ov2 in zip(o1, o2)
                 ]
-                t[3] = o1[3]  # adopt source image's alpha
+                if alpha:
+                    t[3] = o1[3]  # adopt source image's alpha
                 t = [max(0, min(255, int(v))) for v in t]
                 setpixelalpha(ret, width, height, x, y, t)
             else:
