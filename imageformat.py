@@ -1798,9 +1798,13 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
         colortablesize = min(colortablesize, bmih[9])
     if bmih[7] != 0 or bmih[8] != 0:
         _errprint("unusual: resolution given")
-    if entry and (bmih[1] != entry[0] or bmih[2] != entry[1] * 2):
-        _errprint("bad header")
-        return None
+    # if entry and (bmih[1] != entry[0] or bmih[2] != entry[1] * 2):
+    #    # Non-matching width and height
+    #    _errprint("bad header: bmih=%dx%d entry=%dx%d"%(bmih[1],bmih[2],entry[0],entry[1]*2))
+    #    return None
+    # if entry and isicon and entry[3]!=bmih[4]:
+    #   # non-matching bit count
+    #   return None
     if (
         bmih[1] < 0
         or bmih[2] < 0
@@ -1818,9 +1822,6 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
     ):
         _errprint(["bad header", bmih])
         return None
-    # if entry and isicon and entry[3]!=bmih[4]:
-    #   # non-matching bit count
-    #   return None
     sizeImage = bmih[6]
     width = bmih[1]
     if bmih[2] % 2 != 0:
@@ -3039,3 +3040,36 @@ def tiledSvgFromFile(pngFile, screenwidth=1920, screenheight=1080):
     imagedata = existingdata + ff.read()
     ff.close()
     return _tiledSvg(imagedata, width, height, screenwidth, screenheight)
+
+def imageToSvg(image, width, height, alpha=False):
+    pixelBytes = 4 if alpha else 3
+    ret = "<svg xmlns='http://www.w3.org/2000/svg' " + (
+        "viewBox='0 0 %d %d'>" % (width, height)
+    )
+    pos = 0
+    uniques = {}
+    for y in range(height):
+        for x in range(width):
+            if (not alpha) or image[pos + 3] > 0:
+                col = (
+                    image[pos],
+                    image[pos + 1],
+                    image[pos + 2],
+                    image[pos + 3] if alpha else 255,
+                )
+                path = "M%d %dh1v1h-1Z" % (x, y)
+                if col not in uniques:
+                    uniques[col] = [path]
+                else:
+                    uniques[col].append(path)
+            pos += pixelBytes
+    for k in uniques:
+        path = uniques[k]
+        color = "#%02X%02X%02X" % (k[0], k[1], k[2])
+        opacity = "" if (k[3] == 255) else ";fill-opacity:%.03f" % (k[3] / 255)
+        ret += "<path style='stroke:none;fill:%s%s' d='%s'/>\n" % (
+            color,
+            opacity,
+            "".join(path),
+        )
+    return bytes(ret + "</svg>", "utf-8")
