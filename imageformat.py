@@ -12,6 +12,7 @@ import base64
 import struct
 import zlib
 import io
+import sys
 
 import desktopwallpaper as dw
 
@@ -60,6 +61,9 @@ class _MemIO:
 
     def get(self):
         return self.mem
+
+def _errprint(s):
+    print(s, file=sys.stderr)
 
 # Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 def writeppm(f, image, width, height, raiseIfExists=False):
@@ -471,7 +475,7 @@ def writeavi(
     dowriteavi = len(images) > 1 or not singleFrameAsBmp
     if dowriteavi:
         if numuniques > 256:
-            print("AVI writing in more than 256 colors is not supported")
+            _errprint("AVI writing in more than 256 colors is not supported")
             return
         numuniques = 256  # Apparently needed for GStreamer compatibility
     rle4 = numuniques <= 16 and not dowriteavi
@@ -650,7 +654,7 @@ def writeavi(
                                     raise ValueError
                                 newbytes += bytes([realcnt, lastbyte])
                                 scanPixelCount += realcnt
-                                # if index==0 and sindex==height-1: print(["cnt",bytes([realcnt, lastbyte])])
+                                # if index==0 and sindex==height-1: _errprint(["cnt",bytes([realcnt, lastbyte])])
                                 cnt -= realcnt
                             lastIndex = i
                             isConsecutive = False
@@ -680,8 +684,8 @@ def writeavi(
                                 scanPixelCount += realcnt * runMult
                                 rc = imagebytes[cntpos : cntpos + realcnt]
                                 # if index==0 and sindex==height-1:
-                                #  print(rc)
-                                #  print([realcnt*runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
+                                #  _errprint(rc)
+                                #  _errprint([realcnt*runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
                                 if len(rc) != realcnt:
                                     raise ValueError
                                 nb += rc
@@ -693,7 +697,7 @@ def writeavi(
                             for j in range(0, cnt):
                                 nb += bytes([runMult, imagebytes[cntpos + j]])
                                 scanPixelCount += runMult
-                            # if index==0 and sindex==height-1: print([runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
+                            # if index==0 and sindex==height-1: _errprint([runMult,"spc",scanPixelCount,"i",i,"li",lastIndex,"lr",lastRun])
                             cnt = i - lastRun
                             cnt = cnt * runMult
                             if (
@@ -711,13 +715,13 @@ def writeavi(
                                 if rle4 and cnt != realcnt and realcnt % 2 != 0:
                                     raise ValueError
                                 nb += bytes([realcnt, lastbyte])
-                                # if index==0 and sindex==height-1: print(bytes([realcnt, lastbyte]))
+                                # if index==0 and sindex==height-1: _errprint(bytes([realcnt, lastbyte]))
                                 scanPixelCount += realcnt
-                                # if index==0 and sindex==height-1: print(["run",realcnt, "spc", scanPixelCount,"i", i,"li",lastIndex,"lr", lastRun])
+                                # if index==0 and sindex==height-1: _errprint(["run",realcnt, "spc", scanPixelCount,"i", i,"li",lastIndex,"lr", lastRun])
                                 cnt -= realcnt
                             if (len(nb) & 1) != 0:
                                 raise ValueError
-                            # if index==0 and sindex==height-1: print(nb)
+                            # if index==0 and sindex==height-1: _errprint(nb)
                             newbytes += nb
                             lastIndex = i
                             isConsecutive = True
@@ -725,8 +729,8 @@ def writeavi(
                     if i < len(imagebytes):
                         lastbyte = imagebytes[i]
                 # if index==0 and sindex==height-1:
-                #   print(imagebytes)
-                #   print(newbytes[nbindex:len(newbytes)])
+                #   _errprint(imagebytes)
+                #   _errprint(newbytes[nbindex:len(newbytes)])
                 if scanPixelCount != width:
                     raise ValueError(str([scanPixelCount, width]))
                 firstRow = False
@@ -1502,7 +1506,7 @@ def readxcursor(infile):
             f.seek(toc[2])
             chunk = struct.unpack("<LLLL", f.read(16))
             if chunk[0] < 16 or chunk[1] != toc[0] or chunk[2] != toc[1]:
-                print(chunk)
+                _errprint(chunk)
                 raise ValueError
             # There are also comments with chunk[1]==0xfffe0001,
             # but ignore them
@@ -1654,7 +1658,7 @@ def _readwinpal(f):
 # Returns a list of elements, each of which has the format described
 # in the _reados2icon_ method.
 def readitr(infile):
-    print(infile)
+    _errprint(infile)
     f = open(infile, "rb")
     try:
         ret = []
@@ -1761,6 +1765,8 @@ def _pilReadImage(imagebytes):
 def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
     ft = f.tell()
     tagbytes = f.read(4)
+    if len(tagbytes) < 4:
+        return None
     tag = struct.unpack("<L", tagbytes)
     if tag[0] != 0x28:
         if (
@@ -1780,20 +1786,20 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
                 hotspot[1] if hotspot else 1,
             ]
         else:
-            print("unsupported header size: %d [%08X]" % (tag[0], ft))
+            _errprint("unsupported header size: %d [%08X]" % (tag[0], ft))
             return None
     bmih = tag + struct.unpack("<llHHLLllLL", f.read(0x24))
     bitcount = bmih[4]
     colortablesize = 1 << bitcount if bitcount <= 8 else 0
     if colortablesize > 0 and bmih[9] != 0:
         if bmih[9] > colortablesize:
-            print("bad biClrUsed")
+            _errprint("bad biClrUsed")
             return None
         colortablesize = min(colortablesize, bmih[9])
     if bmih[7] != 0 or bmih[8] != 0:
-        print("unusual: resolution given")
+        _errprint("unusual: resolution given")
     if entry and (bmih[1] != entry[0] or bmih[2] != entry[1] * 2):
-        print("bad header")
+        _errprint("bad header")
         return None
     if (
         bmih[1] < 0
@@ -1810,7 +1816,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
             )
         )
     ):
-        print(["bad header", bmih])
+        _errprint(["bad header", bmih])
         return None
     # if entry and isicon and entry[3]!=bmih[4]:
     #   # non-matching bit count
@@ -1818,7 +1824,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
     sizeImage = bmih[6]
     width = bmih[1]
     if bmih[2] % 2 != 0:
-        print("odd height value")
+        _errprint("odd height value")
         return None
     height = bmih[2] // 2
     if (
@@ -1828,14 +1834,14 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
         and bitcount != 24
         and bitcount != 32
     ):
-        print("unsupported bit count")
+        _errprint("unsupported bit count")
         return None
     xormaskscan = ((width * bitcount + 31) >> 5) << 2
     andmaskscan = ((width * 1 + 31) >> 5) << 2
     xormaskbytes = xormaskscan * height
     andmaskbytes = andmaskscan * height
     if isicon and bitcount <= 8 and entry and entry[2] > colortablesize:
-        print("too few colors")
+        _errprint("too few colors")
         return None
     colortable = []
     failed = False
@@ -1849,7 +1855,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
             failed = True
             break
     if failed:
-        print("color table read failed")
+        _errprint("color table read failed")
         return None
     xormask = f.read(xormaskbytes)
     if len(xormask) != xormaskbytes:
@@ -1986,22 +1992,23 @@ def _readwinicon(f):
         colorcount = dirent[2]
         if iscursor:
             if dirent[4] == 0xFFFF and dirent[5] == 0xFFFF:
-                print("no hotspot?")
+                _errprint("no hot spot?")
             elif dirent[4] > width or dirent[5] > height:
-                print(
-                    "hotspot out of bounds: %d/%d %d/%d"
-                    % (dirent[4], width, dirent[5], height)
-                )
+                if i < 20:
+                    _errprint(
+                        "hot spot out of bounds: %d/%d %d/%d"
+                        % (dirent[4], width, dirent[5], height)
+                    )
                 entries.append(None)
                 continue
         elif isicon:
             # Apparently, planes and bit count are ignored and can be 0.
             # if dirent[4]!=1:
-            # print("unsupported planes")
+            # _errprint("unsupported planes")
             # entries.append(None); continue
             # if dirent[5]!=1 and dirent[5]!=4 and dirent[5]!=8 and \
             # dirent[5]!=24:
-            # print("unsupported bit count")
+            # _errprint("unsupported bit count")
             # entries.append(None); continue
             pass
         entries.append(
@@ -2041,7 +2048,7 @@ def _readicon(f, packedWinBitmap=False):
             and tag != b"PT"
             and tag != b"BM"
         ):
-            print("unrecognized tag: %s" % (tag))
+            _errprint("unrecognized tag: %s" % (tag))
             return None
         isColor = tag == b"CI" or tag == b"CP"  # color icon or color pointer
         isIcon = tag == b"CI" or tag == b"IC"
@@ -2050,8 +2057,8 @@ def _readicon(f, packedWinBitmap=False):
         andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
         offsetToImage = andmaskinfo[3]
         if not isBitmap:
-            hotspotX = andmaskinfo[1]  # hotspot is valid for icons and pointers
-            hotspotY = andmaskinfo[2]  # hotspot is valid for icons and pointers
+            hotspotX = andmaskinfo[1]  # hot spot is valid for icons and pointers
+            hotspotY = andmaskinfo[2]  # hot spot is valid for icons and pointers
     else:
         isBitmap = True
     # Read info on the AND mask or bitmap
@@ -2069,7 +2076,7 @@ def _readicon(f, packedWinBitmap=False):
         if andmaskhdr[4] <= 8:
             andpalette = 1 << andmaskhdr[4]
     elif andmaskhdr[0] < 0x10:
-        print("unsupported header size")
+        _errprint("unsupported header size")
         return None
     elif andmaskhdr[0] >= 40:
         andmaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
@@ -2081,7 +2088,7 @@ def _readicon(f, packedWinBitmap=False):
             andpalette = min(andpalette, andmaskhdr[9])
         andcompression = andmaskhdr[5]
         if andcompression > 4:
-            print("unsupported compression: %d" % (andcompression))
+            _errprint("unsupported compression: %d" % (andcompression))
             return None
         if (
             (andcompression == 1 and andmaskhdr[4] != 8)
@@ -2089,12 +2096,12 @@ def _readicon(f, packedWinBitmap=False):
             or (andcompression == 4 and andmaskhdr[4] != 24)
             or (andcompression == 3 and andmaskhdr[4] != 1)
         ):
-            print("unsupported compression: %d" % (andcompression))
+            _errprint("unsupported compression: %d" % (andcompression))
             return None
         if andmaskhdr[7] != 0 or andmaskhdr[8] != 0:
             # resolutions seen include 3622 &times; 3622 pixels per meter (about 92 dpi)
             # Also seen: 2833 &times; 2833; 2834 &times; 2834; 2667 &times; 2667; 2667 &times; 2000 (EGA); 2667 &times; 1111 (CGA)
-            # print(
+            # _errprint(
             #    "nonzero compression or resolution: %d %d %d"
             #    % (andmaskhdr[5], andmaskhdr[7], andmaskhdr[8])
             # )
@@ -2104,8 +2111,9 @@ def _readicon(f, packedWinBitmap=False):
             if slack[i] != 0:
                 allzeros = False
         if not allzeros:
-            print("nonzero slack")
-            return None
+            # andmaskhdr[0] == 0x6c indicates BITMAPV4HEADER
+            # andmaskhdr[0] == 0x7c indicates BITMAPV5HEADER
+            _errprint("nonzero slack; ignore the slack")
     elif andmaskhdr[0] >= 0x10:
         andmaskhdr += struct.unpack("<llHH", f.read(12))
         if andmaskhdr[4] <= 8:
@@ -2116,18 +2124,18 @@ def _readicon(f, packedWinBitmap=False):
             if slack[i] != 0:
                 allzeros = False
         if not allzeros:
-            print("nonzero slack")
+            _errprint("nonzero slack")
             return None
     if andmaskhdr[2] < 0:
-        print("top-down bitmaps not supported")
+        _errprint("top-down bitmaps not supported")
         return None
     if andmaskhdr[1] == 0 or andmaskhdr[2] == 0:
-        print("zero image size not supported")
+        _errprint("zero image size not supported")
         return None
     if (isIcon or isPointer) and andmaskhdr[2] % 2 != 0:
         raise ValueError("mask height is odd")
     if andmaskhdr[3] != 1:
-        print("unsupported no. of planes")
+        _errprint("unsupported no. of planes")
         return None
     if isBitmap:
         if (
@@ -2137,13 +2145,13 @@ def _readicon(f, packedWinBitmap=False):
             and andmaskhdr[4] != 24
             and andmaskhdr[4] != 32
         ):
-            print("unsupported bits per pixel: %d" % (andmaskhdr[4]))
+            _errprint("unsupported bits per pixel: %d" % (andmaskhdr[4]))
             return None
     else:
         if andmaskhdr[4] != 1:  # Only 1-bpp AND/XOR masks are supported
             raise ValueError("unsupported bits per pixel: %d" % (andmaskhdr[4]))
         if andpalette != 2:
-            print("unusual palette size: %d" % (andpalette))
+            _errprint("unusual palette size: %d" % (andpalette))
             unusual = None
     if andmaskhdr[1] < 0:
         return None
@@ -2176,7 +2184,7 @@ def _readicon(f, packedWinBitmap=False):
             if colormaskhdr[4] <= 8:
                 colorpalette = 1 << colormaskhdr[4]
         elif colormaskhdr[0] < 0x10:
-            print("unsupported header size")
+            _errprint("unsupported header size")
             return None
         elif colormaskhdr[0] >= 40:
             colormaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
@@ -2188,7 +2196,7 @@ def _readicon(f, packedWinBitmap=False):
             if colormaskhdr[4] <= 8 and colormaskhdr[9] != 0:  # biClrUsed
                 colorpalette = min(colorpalette, colormaskhdr[9])
             if colorcompression > 4:
-                print("unsupported compression: %d" % (colorcompression))
+                _errprint("unsupported compression: %d" % (colorcompression))
                 return None
             if (
                 (colorcompression == 1 and colormaskhdr[4] != 8)
@@ -2196,10 +2204,10 @@ def _readicon(f, packedWinBitmap=False):
                 or (colorcompression == 4 and colormaskhdr[4] != 24)
                 or (colorcompression == 3 and colormaskhdr[4] != 1)
             ):
-                print("unsupported compression: %d" % (andcompression))
+                _errprint("unsupported compression: %d" % (andcompression))
                 return None
             if colormaskhdr[7] != 0 or colormaskhdr[8] != 0:
-                # print(
+                # _errprint(
                 #    "nonzero compression or resolution: %d %d %d"
                 #    % (colormaskhdr[5], colormaskhdr[7], colormaskhdr[8])
                 # )
@@ -2209,7 +2217,7 @@ def _readicon(f, packedWinBitmap=False):
                 if slack[i] != 0:
                     allzeros = False
             if not allzeros:
-                print("nonzero slack")
+                _errprint("nonzero slack")
                 return None
         elif colormaskhdr[0] >= 0x10:
             colormaskhdr += struct.unpack("<llHH", f.read(12))
@@ -2219,31 +2227,31 @@ def _readicon(f, packedWinBitmap=False):
                 if slack[i] != 0:
                     allzeros = False
             if not allzeros:
-                print("nonzero slack")
+                _errprint("nonzero slack")
                 return None
         if colormaskhdr[1] < 0:
             return None
         colorbpp = colormaskhdr[4]
         if colormaskhdr[2] < 0:
-            print("top-down bitmaps not supported")
+            _errprint("top-down bitmaps not supported")
             return None
         if colorbpp == 3:
             # NOTE: A 3 BPP color icon was attested, but it is unclear whether
             # OS/2 supports such 3 BPP icons.
-            print("3 bits per pixel not supported")
+            _errprint("3 bits per pixel not supported")
             return None
         if colormaskhdr[1] == 0 or colormaskhdr[2] == 0:
-            print("zero image size not supported")
+            _errprint("zero image size not supported")
             return None
         if colormaskhdr[1] != andmaskhdr[1]:
             raise ValueError("unsupported width")
         if colormaskhdr[2] * 2 != andmaskhdr[2]:
             raise ValueError("unsupported height")
         if colormaskhdr[3] != 1:
-            print("unsupported no. of planes")
+            _errprint("unsupported no. of planes")
             return None
         if colorbpp != 1 and colorbpp != 4 and colorbpp != 8 and colorbpp != 24:
-            print("unsupported bits per pixel: %d" % (colorbpp))
+            _errprint("unsupported bits per pixel: %d" % (colorbpp))
             return None
         colorpalette = 0
         if colorbpp <= 8:
@@ -2259,11 +2267,11 @@ def _readicon(f, packedWinBitmap=False):
     if not isBitmap:
         hotspotY = realHeight - 1 - hotspotY
         if hotspotY < 0 or hotspotY >= realHeight:
-            # hotspot outside of image
+            # hot spot outside of image
             if isPointer:
                 raise ValueError
         if hotspotX < 0 or hotspotX >= andmaskhdr[1]:
-            # hotspot outside of image
+            # hot spot outside of image
             if isPointer:
                 raise ValueError
     tablesize = (1 << andmaskhdr[4]) if andpalette > 0 else 0
@@ -2293,39 +2301,39 @@ def _readicon(f, packedWinBitmap=False):
     # from the beginning of the bitmap/icon/cursor header.
     # If packedWinBitmap is true, this is instead the offset
     # immediately after the header and color table.
-    # print(["offsetToImage",offsetToImage])
+    # _errprint(["offsetToImage",offsetToImage])
     f.seek(offsetToImage)
     sz = andsizeImage if andsizeImage > 0 and andcompression > 0 else andmaskbits
-    # print(["andSizeImage",andsizeImage,"andmaskbits",andmaskbits])
+    # _errprint(["andSizeImage",andsizeImage,"andmaskbits",andmaskbits])
     andmask = f.read(sz)
     if len(andmask) != sz:
-        print("Failure: %d %d [%d]" % (len(andmask), sz, andcompression))
+        _errprint("Failure: %d %d [%d]" % (len(andmask), sz, andcompression))
         return None
     if andcompression > 0:
         deco = [0 for i in range(andmaskbits)]
         if andcompression == 1 and not _rle8decompress(
             andmask, deco, andmaskhdr[1], andmaskhdr[2]
         ):
-            print("Failed to decompress")
+            _errprint("Failed to decompress")
             return None
         elif andcompression == 2 and not _rle4decompress(
             andmask, deco, andmaskhdr[1], andmaskhdr[2]
         ):
-            print("Failed to decompress")
+            _errprint("Failed to decompress")
             return None
         elif andcompression == 3 and not _huffmandecompress(
             andmask, deco, andmaskhdr[1], andmaskhdr[2]
         ):
-            print("Failed to decompress")
+            _errprint("Failed to decompress")
             return None
         elif andcompression == 4 and not _rle24decompress(
             andmask, deco, andmaskhdr[1], andmaskhdr[2]
         ):
-            print("Failed to decompress")
+            _errprint("Failed to decompress")
             return None
         andmask = bytes(deco)
     if len(andmask) != andmaskbits:
-        print("Failure: %d %d" % (len(andmask), andmaskbits))
+        _errprint("Failure: %d %d" % (len(andmask), andmaskbits))
         return None
     bitspixel = andmaskhdr[4]
     if isColor:
@@ -2349,33 +2357,33 @@ def _readicon(f, packedWinBitmap=False):
         sz = colorsizeImage if colorsizeImage > 0 else colormaskbits
         colormask = f.read(sz)
         if len(colormask) != sz:
-            print("Failure: %d %d" % (len(andmask), sz))
+            _errprint("Failure: %d %d" % (len(andmask), sz))
             return None
         if colorcompression > 0:
             deco = [0 for i in range(colormaskbits)]
             if colorcompression == 1 and not _rle8decompress(
                 colormask, deco, colormaskhdr[1], colormaskhdr[2]
             ):
-                print("Failed to decompress")
+                _errprint("Failed to decompress")
                 return None
             elif colorcompression == 2 and not _rle4decompress(
                 colormask, deco, colormaskhdr[1], colormaskhdr[2]
             ):
-                print("Failed to decompress")
+                _errprint("Failed to decompress")
                 return None
             elif colorcompression == 3 and not _huffmandecompress(
                 colormask, deco, colormaskhdr[1], colormaskhdr[2]
             ):
-                print("Failed to decompress")
+                _errprint("Failed to decompress")
                 return None
             elif colorcompression == 4 and not _rle24decompress(
                 colormask, deco, colormaskhdr[1], colormaskhdr[2]
             ):
-                print("Failed to decompress")
+                _errprint("Failed to decompress")
                 return None
             colormask = bytes(deco)
         if len(colormask) != colormaskbits:
-            print("Failure: %d %d" % (len(colormask), colormaskbits))
+            _errprint("Failure: %d %d" % (len(colormask), colormaskbits))
             return None
     width = 0
     height = 0
@@ -2505,24 +2513,36 @@ def parallaxAvi(
     dw.writeavi(destParallax, images, width, outputHeight, fps=fps)
 
 # Generates an AVI video file consisting of images arranged
-# in a row or column.  If the source image's width
-# is greater than its height, then each frame's height
-# is the same as the source image's; if less, each
-# frame's width.
+# in a row or column.  Each frame's width and height are determined
+# as follows.
+# - If the source image's width is greater than its height,
+#   then each frame is 'crossSize' &times; (source height).
+# - If the source image's width is less than its height,
+#   then each frame is (source width) &times; 'crossSize'.
+# If 'crossSize' is None, which is the default, then 'crossSize'
+# is the source's width or the source's height, whichever is smaller.
+# Raises an error if 'crossSize' is not None and the source image's
+# width equals its height.
 # The source image has the same format returned by the
 # _desktopwallpaper_ module's blankimage() method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
-def animationBitmap(image, width, height, destImage, firstFrame=0, fps=15):
+def animationBitmap(
+    image, width, height, destImage, firstFrame=0, fps=15, crossSize=None
+):
     frameSize = min(width, height)
     if frameSize <= 0:
         raise ValueError
+    if crossSize:
+        if crossSize <= 0 or width == height:
+            return ValueError
+        frameSize = crossSize
     animWidth = frameSize if width > height else width
     animHeight = frameSize if height > width else height
     images = []
     for i in range(firstFrame, max(width, height) // frameSize):
         dst = dw.blankimage(animWidth, animHeight)
-        imageblitex(
+        dw.imageblitex(
             dst,
             animWidth,
             animHeight,
@@ -2588,7 +2608,7 @@ def readicns(infile):
             if size < 8:
                 raise ValueError
             if tag in tags:
-                print("tag already exists: %s" % (tag))
+                _errprint("tag already exists: %s" % (tag))
                 return None
             tags[tag] = [lp.tell(), size - 8, index]
             lp.seek(lp.tell() + size - 8)
@@ -2626,7 +2646,7 @@ def readicns(infile):
                         if not _icnsrle24decode(
                             io.BytesIO(imagebytes[4:]), icon, planes=4
                         ):
-                            print("decoding failed: %s" % (tag))
+                            _errprint("decoding failed: %s" % (tag))
                             continue
                     image = [0 for i in range(width * height * 4)]
                     for i in range(width * height):
@@ -2662,7 +2682,7 @@ def readicns(infile):
                 or tag == b"ICON"
             ):
                 if _masktag(tag) not in tags and _masktag(tag) != b"":
-                    print("mask tag not found")
+                    _errprint("mask tag not found")
                     break
                 info = tags[tag]
                 width = _iconsize(tag)
@@ -2694,11 +2714,11 @@ def readicns(infile):
                         or tag == b"SICN"
                         or tag == b"ICON"
                     ):
-                        print("compression unsupported")
+                        _errprint("compression unsupported")
                         continue
                     icon = [0 for i in range(width * height * 4)]
                     if not _icnsrle24decode(_LimitedIO(lp, info[1]), icon):
-                        print("decoding failed: %s" % (tag))
+                        _errprint("decoding failed: %s" % (tag))
                         continue
                 else:
                     icon = lp.read(info[1])
@@ -2794,7 +2814,7 @@ def readicns(infile):
                         else width * height
                     )
                     if masksize != info[1]:
-                        print("compressed mask is unsupported")
+                        _errprint("compressed mask is unsupported")
                         continue
                     mask = lp.read(info[1])
                     if masktag[3] == 0x23:
@@ -2817,12 +2837,12 @@ def readicns(infile):
                     # -1.0 or 120.0
                     ret[info[2]] = True
                 else:
-                    print("unrecognized: %s" % (tag))
+                    _errprint("unrecognized: %s" % (tag))
             elif tag == b"info":
                 info = tags[tag]
                 ret[info[2]] = True
             else:
-                print("unrecognized: %s" % (tag))
+                _errprint("unrecognized: %s" % (tag))
         ret2 = []
         for v in ret:
             if v is not True:

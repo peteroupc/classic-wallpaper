@@ -29,18 +29,33 @@
 <a href="os.html">os</a><br>
 </td><td class="multicolumn"><a href="random.html">random</a><br>
 <a href="struct.html">struct</a><br>
-<a href="zlib.html">zlib</a><br>
-</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<a href="sys.html">sys</a><br>
+</td><td class="multicolumn"><a href="zlib.html">zlib</a><br>
+</td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor functions-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
 
 <tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><dl><dt><a name="-animationBitmap"><strong>animationBitmap</strong></a>(image, width, height, destImage, firstFrame=0, fps=15)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;AVI&nbsp;video&nbsp;file&nbsp;consisting&nbsp;of&nbsp;images&nbsp;arranged<br>
-#&nbsp;in&nbsp;a&nbsp;row&nbsp;or&nbsp;column.&nbsp;&nbsp;If&nbsp;the&nbsp;source&nbsp;image's&nbsp;width<br>
-#&nbsp;is&nbsp;greater&nbsp;than&nbsp;its&nbsp;height,&nbsp;then&nbsp;each&nbsp;frame's&nbsp;height<br>
-#&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;the&nbsp;source&nbsp;image's;&nbsp;if&nbsp;less,&nbsp;each<br>
-#&nbsp;frame's&nbsp;width.<br>
+<td class="singlecolumn"><dl><dt><a name="-animationBitmap"><strong>animationBitmap</strong></a>(
+    image,
+    width,
+    height,
+    destImage,
+    firstFrame=0,
+    fps=15,
+    crossSize=None
+)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;AVI&nbsp;video&nbsp;file&nbsp;consisting&nbsp;of&nbsp;images&nbsp;arranged<br>
+#&nbsp;in&nbsp;a&nbsp;row&nbsp;or&nbsp;column.&nbsp;&nbsp;Each&nbsp;frame's&nbsp;width&nbsp;and&nbsp;height&nbsp;are&nbsp;determined<br>
+#&nbsp;as&nbsp;follows.<br>
+#&nbsp;-&nbsp;If&nbsp;the&nbsp;source&nbsp;image's&nbsp;width&nbsp;is&nbsp;greater&nbsp;than&nbsp;its&nbsp;height,<br>
+#&nbsp;&nbsp;&nbsp;then&nbsp;each&nbsp;frame&nbsp;is&nbsp;'crossSize'&nbsp;&amp;times;&nbsp;(source&nbsp;height).<br>
+#&nbsp;-&nbsp;If&nbsp;the&nbsp;source&nbsp;image's&nbsp;width&nbsp;is&nbsp;less&nbsp;than&nbsp;its&nbsp;height,<br>
+#&nbsp;&nbsp;&nbsp;then&nbsp;each&nbsp;frame&nbsp;is&nbsp;(source&nbsp;width)&nbsp;&amp;times;&nbsp;'crossSize'.<br>
+#&nbsp;If&nbsp;'crossSize'&nbsp;is&nbsp;None,&nbsp;which&nbsp;is&nbsp;the&nbsp;default,&nbsp;then&nbsp;'crossSize'<br>
+#&nbsp;is&nbsp;the&nbsp;source's&nbsp;width&nbsp;or&nbsp;the&nbsp;source's&nbsp;height,&nbsp;whichever&nbsp;is&nbsp;smaller.<br>
+#&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;'crossSize'&nbsp;is&nbsp;not&nbsp;None&nbsp;and&nbsp;the&nbsp;source&nbsp;image's<br>
+#&nbsp;width&nbsp;equals&nbsp;its&nbsp;height.<br>
 #&nbsp;The&nbsp;source&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
 #&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>

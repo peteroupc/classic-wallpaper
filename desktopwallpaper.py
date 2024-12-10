@@ -658,6 +658,12 @@ def _chopBeforeVAppendArray(withFarEnd=True):
 # tileable.
 # NOTE: "-append" is a vertical append; "+append" is a horizontal append;
 # "-flip" reverses the row order; "-flop" reverses the column order.
+# NOTE: Of the seventeen wallpaper groups, four can be
+# applied to areas with arbitrary contents to create tileable images:
+# Pmm (1/4 of a rectangle is reflected and repeated).
+# P4m (1/8 of a rectangle).
+# P3m1 (1/6 of a hexagon).
+# P6m (1/12 of a hexagon).
 def tileable():
     return (
         ["(", "+clone", "-flip"]
@@ -2642,6 +2648,11 @@ def argyle(
 ):
     if expo <= 0:
         raise ValueError
+    pixelBytes = 4 if alpha else 3
+    if width * height * pixelBytes > len(foregroundImage):
+        raise ValueError
+    if width * height * pixelBytes > len(backgroundImage):
+        raise ValueError
     if shiftImageBg:
         i2 = blankimage(width, height, alpha=alpha)
         imageblit(
@@ -2660,7 +2671,6 @@ def argyle(
         )
     ret = blankimage(width, height, alpha=alpha)
     pos = 0
-    pixelBytes = 4 if alpha else 3
     for y in range(height):
         yp = (y / height) * 2 - 1
         for x in range(width):
@@ -2674,6 +2684,8 @@ def argyle(
                 for i in range(pixelBytes):
                     ret[pos + i] = backgroundImage[pos + i]
             pos += pixelBytes
+    if width * height * pixelBytes > len(ret):
+        raise ValueError
     return ret
 
 # Generates a tileable checkerboard pattern using two images of the same size;
@@ -2687,6 +2699,11 @@ def checkerboardtile(
     upperLeftImage, otherImage, width, height, columns=2, rows=2, alpha=False
 ):
     if rows <= 0 or columns <= 0 or rows % 2 == 1 or columns % 2 == 1:
+        raise ValueError
+    pixelBytes = 4 if alpha else 3
+    if width * height * pixelBytes > len(upperLeftImage):
+        raise ValueError
+    if width * height * pixelBytes > len(otherImage):
         raise ValueError
     ret = blankimage(width * columns, height * rows, alpha=alpha)
     for y in range(rows):
@@ -4015,6 +4032,8 @@ def maketileable(image, width, height, alpha=False):
     # Use tiling method described by Paul Bourke,
     # Tiling Textures on the Plane (Part 1)
     # https://paulbourke.net/geometry/tiling/
+    if width * height * (4 if alpha else 3) > len(image):
+        raise ValueError
     ret = blankimage(width, height, alpha=alpha)
     for y in range(height):
         yp = (y + height // 2) % height
@@ -4035,12 +4054,15 @@ def maketileable(image, width, height, alpha=False):
                 else getpixel(image, width, height, xp, yp)
             )
             if alpha:
+                if len(o1) != 4 or len(o2) != 4:
+                    raise ValueError
                 t = [
                     m1 * ov1 / (m1 + m2) + m2 * ov2 / (m1 + m2)
                     for ov1, ov2 in zip(o1, o2)
                 ]
-                if alpha:
-                    t[3] = o1[3]  # adopt source image's alpha
+                if len(t) != 4:
+                    raise ValueError
+                t[3] = o1[3]  # adopt source image's alpha
                 t = [max(0, min(255, int(v))) for v in t]
                 setpixelalpha(ret, width, height, x, y, t)
             else:

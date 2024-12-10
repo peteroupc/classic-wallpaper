@@ -1044,7 +1044,13 @@ Data descriptors defined here:<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
 #&nbsp;tileable.<br>
 #&nbsp;NOTE:&nbsp;"-append"&nbsp;is&nbsp;a&nbsp;vertical&nbsp;append;&nbsp;"+append"&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;append;<br>
-#&nbsp;"-flip"&nbsp;reverses&nbsp;the&nbsp;row&nbsp;order;&nbsp;"-flop"&nbsp;reverses&nbsp;the&nbsp;column&nbsp;order.</span></dd></dl>
+#&nbsp;"-flip"&nbsp;reverses&nbsp;the&nbsp;row&nbsp;order;&nbsp;"-flop"&nbsp;reverses&nbsp;the&nbsp;column&nbsp;order.<br>
+#&nbsp;NOTE:&nbsp;Of&nbsp;the&nbsp;seventeen&nbsp;wallpaper&nbsp;groups,&nbsp;four&nbsp;can&nbsp;be<br>
+#&nbsp;applied&nbsp;to&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents&nbsp;to&nbsp;create&nbsp;tileable&nbsp;images:<br>
+#&nbsp;Pmm&nbsp;(1/4&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;is&nbsp;reflected&nbsp;and&nbsp;repeated).<br>
+#&nbsp;P4m&nbsp;(1/8&nbsp;of&nbsp;a&nbsp;rectangle).<br>
+#&nbsp;P3m1&nbsp;(1/6&nbsp;of&nbsp;a&nbsp;hexagon).<br>
+#&nbsp;P6m&nbsp;(1/12&nbsp;of&nbsp;a&nbsp;hexagon).</span></dd></dl>
  <dl><dt><a name="-tileableImage"><strong>tileableImage</strong></a>(img, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Generate&nbsp;a&nbsp;tileable&nbsp;wallpaper&nbsp;pattern&nbsp;from&nbsp;an&nbsp;image&nbsp;that&nbsp;need&nbsp;not&nbsp;be&nbsp;tileable.<br>
 #&nbsp;Returns&nbsp;a&nbsp;three-element&nbsp;list&nbsp;with&nbsp;the&nbsp;new&nbsp;image,&nbsp;its&nbsp;width,&nbsp;and&nbsp;its&nbsp;height.<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
