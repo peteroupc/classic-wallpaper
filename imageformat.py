@@ -1717,9 +1717,41 @@ def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
     # Returns 255 if bpp is not 32.
     if bpp == 32:
         row = scanSize * (height - 1 - y)
-        return byteData[row + x * 4 + 3]
+        return byteData[row + x * 4 + 3 : row + x * 4 + 4]
     else:
         return 255
+
+def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields):
+    # Reads the pixel color value at the given position of a bitmap image
+    # that uses a bitfield format and is
+    # represented by an array of bottom-up Windows bitmap data.
+    # The color value is returned as an array containing the blue, green,
+    # and red components, in that order.
+    match bpp:
+        case 16:
+            row = scanSize * (height - 1 - y)
+            ret = byteData[row + x * 2 : row + x * 2 + 2]
+            v = ret[0] | (ret[1] << 8)
+            return bytes(
+                [
+                    ((v & bitfields[2][0]) >> bitfields[2][2]) << bitfields[2][1],
+                    ((v & bitfields[1][0]) >> bitfields[1][2]) << bitfields[1][1],
+                    ((v & bitfields[0][0]) >> bitfields[0][2]) << bitfields[0][1],
+                ]
+            )
+        case 32:
+            row = scanSize * (height - 1 - y)
+            ret = byteData[row + x * 4 : row + x * 4 + 4]
+            v = ret[0] | (ret[1] << 8) | (ret[2] << 16) | (ret[3] << 24)
+            return bytes(
+                [
+                    ((v & bitfields[2][0]) >> bitfields[2][2]) << bitfields[2][1],
+                    ((v & bitfields[1][0]) >> bitfields[1][2]) << bitfields[1][1],
+                    ((v & bitfields[0][0]) >> bitfields[0][2]) << bitfields[0][1],
+                ]
+            )
+        case _:
+            raise ValueError("Bits per pixel not supported")
 
 def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
     # Reads the pixel color value at the given position of a bitmap image,
@@ -1733,6 +1765,13 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
             return palette[_read4bppBitmap(byteData, scanSize, height, x, y)]
         case 8:
             return palette[byteData[scanSize * (height - 1 - y) + x]]
+        case 16:
+            row = scanSize * (height - 1 - y)
+            ret = byteData[row + x * 2 : row + x * 2 + 2]
+            v = ret[0] | (ret[1] << 8)
+            return bytes(
+                [((v) & 0x1F) << 3, ((v >> 5) & 0x1F) << 3, ((v >> 10) & 0x1F) << 3]
+            )
         case 24:
             row = scanSize * (height - 1 - y)
             return byteData[row + x * 3 : row + x * 3 + 3]
@@ -1832,6 +1871,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
         bitcount != 1
         and bitcount != 4
         and bitcount != 8
+        and bitcount != 16
         and bitcount != 24
         and bitcount != 32
     ):
@@ -2030,6 +2070,26 @@ def _readwinicon(f):
             raise ValueError
     return entries
 
+def _maskToLeftShift(mask):
+    if mask == 0:
+        return 0
+    while (mask & 1) == 0:
+        mask >>= 1
+    shift = 0
+    while (mask & 1) != 0:
+        mask >>= 1
+        shift += 1
+    return 8 - shift
+
+def _maskToRightShift(mask):
+    if mask == 0:
+        return 0
+    shift = 0
+    while (mask & 1) == 0:
+        mask >>= 1
+        shift += 1
+    return shift
+
 def _readicon(f, packedWinBitmap=False):
     unusual = False
     isColor = False
@@ -2056,6 +2116,7 @@ def _readicon(f, packedWinBitmap=False):
         isPointer = tag == b"CP" or tag == b"PT"
         isBitmap = tag == b"BM"
         andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
+        # The meaning of this field differs in Windows and OS/2 bitmaps
         offsetToImage = andmaskinfo[3]
         if not isBitmap:
             hotspotX = andmaskinfo[1]  # hot spot is valid for icons and pointers
@@ -2072,6 +2133,7 @@ def _readicon(f, packedWinBitmap=False):
     andpalette = 0
     andcompression = 0
     andsizeImage = 0
+    andTopdown = False
     if andmaskhdr[0] == 0x0C:
         andmaskhdr += struct.unpack("<HHHH", f.read(8))
         if andmaskhdr[4] <= 8:
@@ -2095,7 +2157,12 @@ def _readicon(f, packedWinBitmap=False):
             (andcompression == 1 and andmaskhdr[4] != 8)
             or (andcompression == 2 and andmaskhdr[4] != 4)
             or (andcompression == 4 and andmaskhdr[4] != 24)
-            or (andcompression == 3 and andmaskhdr[4] != 1)
+            or (
+                andcompression == 3
+                and andmaskhdr[4] != 1
+                and andmaskhdr[4] != 16
+                and andmaskhdr[4] != 32
+            )
         ):
             _errprint("unsupported compression: %d" % (andcompression))
             return None
@@ -2127,13 +2194,22 @@ def _readicon(f, packedWinBitmap=False):
         if not allzeros:
             _errprint("nonzero slack")
             return None
-    if andmaskhdr[2] < 0:
-        _errprint("top-down bitmaps not supported")
+    if andmaskhdr[2] < 0 and not (
+        isBitmap
+        and (
+            andcompression == 0
+            or (andcompression == 3 and (andmaskhdr[4] == 16 or andmaskhdr[4] == 32))
+        )
+    ):
+        if isBitmap:
+            _errprint("top-down bitmaps not supported for this kind of bitmap")
+        else:
+            _errprint("top-down bitmaps not supported for OS/2 icons and cursors")
         return None
     if andmaskhdr[1] == 0 or andmaskhdr[2] == 0:
         _errprint("zero image size not supported")
         return None
-    if (isIcon or isPointer) and andmaskhdr[2] % 2 != 0:
+    if (isIcon or isPointer) and abs(andmaskhdr[2]) % 2 != 0:
         raise ValueError("mask height is odd")
     if andmaskhdr[3] != 1:
         _errprint("unsupported no. of planes")
@@ -2143,6 +2219,7 @@ def _readicon(f, packedWinBitmap=False):
             andmaskhdr[4] != 1
             and andmaskhdr[4] != 4
             and andmaskhdr[4] != 8
+            and andmaskhdr[4] != 16
             and andmaskhdr[4] != 24
             and andmaskhdr[4] != 32
         ):
@@ -2161,7 +2238,7 @@ def _readicon(f, packedWinBitmap=False):
     if packedWinBitmap:
         offsetToImage = f.tell()
     w = andmaskhdr[1]
-    h = andmaskhdr[2]
+    h = abs(andmaskhdr[2])
     andmaskscan = ((w * andmaskhdr[4] + 31) >> 5) << 2
     andmaskbits = andmaskscan * h
     if isColor:
@@ -2234,7 +2311,7 @@ def _readicon(f, packedWinBitmap=False):
             return None
         colorbpp = colormaskhdr[4]
         if colormaskhdr[2] < 0:
-            _errprint("top-down bitmaps not supported")
+            _errprint("top-down color masks not supported for OS/2 icons and cursors")
             return None
         if colorbpp == 3:
             # NOTE: A 3 BPP color icon was attested, but it is unclear whether
@@ -2246,7 +2323,7 @@ def _readicon(f, packedWinBitmap=False):
             return None
         if colormaskhdr[1] != andmaskhdr[1]:
             raise ValueError("unsupported width")
-        if colormaskhdr[2] * 2 != andmaskhdr[2]:
+        if colormaskhdr[2] * 2 != abs(andmaskhdr[2]):
             raise ValueError("unsupported height")
         if colormaskhdr[3] != 1:
             _errprint("unsupported no. of planes")
@@ -2262,7 +2339,7 @@ def _readicon(f, packedWinBitmap=False):
         h = colormaskhdr[2]
         colormaskscan = ((w * colorbpp + 31) >> 5) << 2
         colormaskbits = colormaskscan * h
-    realHeight = andmaskhdr[2] if isBitmap else andmaskhdr[2] // 2
+    realHeight = abs(andmaskhdr[2] if isBitmap else andmaskhdr[2] // 2)
     # hot spot Y counts from the bottom left row up, so adjust
     # for top-down convention
     if not isBitmap:
@@ -2282,9 +2359,24 @@ def _readicon(f, packedWinBitmap=False):
     # It may be, but I am not sure, that OS/2
     # ignores the color table of icons' and pointers' AND/XOR mask.
     andmaskcolors = []
+    bitfields = None
     if not (isIcon or isPointer):
         # Gather bitmap's color table if not an icon or pointer
         tablesize = 2
+        if andcompression == 3 and (andmaskhdr[4] == 16 or andmaskhdr[4] == 32):
+            # BI_BITFIELDS
+            f.seek(andcolortable)
+            masks = f.read(12)
+            if len(masks) < 12:
+                return None
+            masks = struct.unpack("<LLL", masks)
+            bitfields = [[m, _maskToLeftShift(m), _maskToRightShift(m)] for m in masks]
+            for bf in bitfields:
+                if bf[1] < 0 or (bf[0] >> bf[2]) > 255:
+                    _errprint(["unsupported color masks", masks])
+                    return None
+            if packedWinBitmap:
+                offsetToImage += 12
         if andpalette > 0:
             f.seek(andcolortable)
             cts = 3 if andmaskhdr[0] <= 0x0C else 4
@@ -2306,11 +2398,14 @@ def _readicon(f, packedWinBitmap=False):
     f.seek(offsetToImage)
     sz = andsizeImage if andsizeImage > 0 and andcompression > 0 else andmaskbits
     # _errprint(["andSizeImage",andsizeImage,"andmaskbits",andmaskbits])
-    andmask = f.read(sz)
+    try:
+        andmask = f.read(sz)
+    except:
+        return None
     if len(andmask) != sz:
         _errprint("Failure: %d %d [%d]" % (len(andmask), sz, andcompression))
         return None
-    if andcompression > 0:
+    if andcompression > 0 and not bitfields:
         deco = [0 for i in range(andmaskbits)]
         if andcompression == 1 and not _rle8decompress(
             andmask, deco, andmaskhdr[1], andmaskhdr[2]
@@ -2322,8 +2417,10 @@ def _readicon(f, packedWinBitmap=False):
         ):
             _errprint("Failed to decompress")
             return None
-        elif andcompression == 3 and not _huffmandecompress(
-            andmask, deco, andmaskhdr[1], andmaskhdr[2]
+        elif (
+            andcompression == 3
+            and andmaskhdr[4] == 1
+            and not _huffmandecompress(andmask, deco, andmaskhdr[1], andmaskhdr[2])
         ):
             _errprint("Failed to decompress")
             return None
@@ -2390,26 +2487,30 @@ def _readicon(f, packedWinBitmap=False):
     height = 0
     ret = None
     if isBitmap:
+        # OS/2 or Windows bitmap
         cw = andmaskhdr[1]
-        ch = andmaskhdr[2]
+        ch = abs(andmaskhdr[2])
         bpp = andmaskhdr[4]
         ci = dw.blankimage(cw, ch, alpha=True)
         alpha1 = bytes([255])
         for y in range(ch):
             for x in range(cw):
-                col = _readBitmapAsColorBGR(
-                    andmask, andmaskscan, ch, bpp, x, y, andmaskcolors
-                )
-                alpha = (
-                    alpha1
-                    if bpp
-                    else bytes(_readBitmapAlpha(andmask, andmaskscan, ch, bpp, x, y))
-                )
+                yy = ch - 1 - y if andmaskhdr[2] < 0 else y
+                if bitfields:
+                    col = _readBitmapAsColorBitfields(
+                        andmask, andmaskscan, ch, bpp, x, yy, bitfields
+                    )
+                else:
+                    col = _readBitmapAsColorBGR(
+                        andmask, andmaskscan, ch, bpp, x, yy, andmaskcolors
+                    )
+                alpha = alpha1
                 dw.setpixelbgralpha(ci, cw, ch, x, y, col + alpha)
         ret = ci
         width = cw
         height = ch
     elif isColor:
+        # OS/2 color icon
         cw = colormaskhdr[1]
         ch = colormaskhdr[2]
         bpp = colormaskhdr[4]
@@ -2438,22 +2539,13 @@ def _readicon(f, packedWinBitmap=False):
                     else _readBitmapAsColorBGR(
                         colormask, colormaskscan, ch, bpp, x, y, colormaskcolors
                     )
-                ) + (
-                    (
-                        alpha1
-                        if bpp
-                        else bytes(
-                            _readBitmapAlpha(colormask, colormaskscan, ch, bpp, x, y)
-                        )
-                    )
-                    if bitand == 0
-                    else alpha0
-                )
+                ) + ((alpha1) if bitand == 0 else alpha0)
                 dw.setpixelbgralpha(bl, cw, ch, x, y, px)
         width = cw
         height = ch
         ret = bl
     else:
+        # OS/2 two-color icon
         trueheight = andmaskhdr[2] // 2
         bl = dw.blankimage(andmaskhdr[1], trueheight, alpha=True)
         blackalpha0 = [0, 0, 0, 0]

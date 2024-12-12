@@ -1163,7 +1163,7 @@ Data descriptors defined here:<br>
     sy0,
     sx1,
     sy1,
-    groupFunc=&lt;function pmm at 0x7f35bba2fec0&gt;,
+    groupFunc=&lt;function pmm at 0x7fd15624fec0&gt;,
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Creates&nbsp;an&nbsp;image&nbsp;based&nbsp;on&nbsp;a&nbsp;portion&nbsp;of&nbsp;a&nbsp;source<br>
 #&nbsp;image,&nbsp;with&nbsp;the&nbsp;help&nbsp;of&nbsp;a&nbsp;wallpaper&nbsp;group&nbsp;function.<br>
@@ -1186,7 +1186,9 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;wallpaper&nbsp;group&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;are&nbsp;intended&nbsp;to<br>
 #&nbsp;result&nbsp;in&nbsp;seamless&nbsp;tileable&nbsp;images&nbsp;from&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents:<br>
 #&nbsp;<a href="#-pmm">pmm</a>(),&nbsp;<a href="#-p4m">p4m</a>(),&nbsp;<a href="#-p4malt">p4malt</a>(),&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;<a href="#-p6m">p6m</a>(),&nbsp;<a href="#-p6malt">p6malt</a>(),&nbsp;<a href="#-p3m1alt1">p3m1alt1</a>(),&nbsp;<a href="#-p3m1alt2">p3m1alt2</a>(),<br>
-#&nbsp;<a href="#-p6malt1a">p6malt1a</a>(),&nbsp;<a href="#-p6malt1b">p6malt1b</a>(),&nbsp;<a href="#-p6malt2a">p6malt2a</a>(),&nbsp;<a href="#-p6malt2b">p6malt2b</a>().</span></dd></dl>
+#&nbsp;<a href="#-p6malt1a">p6malt1a</a>(),&nbsp;<a href="#-p6malt1b">p6malt1b</a>(),&nbsp;<a href="#-p6malt2a">p6malt2a</a>(),&nbsp;<a href="#-p6malt2b">p6malt2b</a>().&nbsp;&nbsp;The&nbsp;functions&nbsp;implement<br>
+#&nbsp;variations&nbsp;of&nbsp;wallpaper&nbsp;groups&nbsp;Pmm,&nbsp;P4m,&nbsp;P3m1,&nbsp;and&nbsp;P6m,&nbsp;which&nbsp;are&nbsp;the&nbsp;only<br>
+#&nbsp;four&nbsp;that&nbsp;produce&nbsp;seamless&nbsp;images&nbsp;from&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents.</span></dd></dl>
  <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False, includeVga=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value<br>
 #&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>

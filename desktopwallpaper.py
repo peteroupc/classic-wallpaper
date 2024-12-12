@@ -2385,7 +2385,9 @@ def p6malt2b(x, y):
 # The wallpaper group functions in this module are intended to
 # result in seamless tileable images from areas with arbitrary contents:
 # pmm(), p4m(), p4malt(), p3m1(), p6m(), p6malt(), p3m1alt1(), p3m1alt2(),
-# p6malt1a(), p6malt1b(), p6malt2a(), p6malt2b().
+# p6malt1a(), p6malt1b(), p6malt2a(), p6malt2b().  The functions implement
+# variations of wallpaper groups Pmm, P4m, P3m1, and P6m, which are the only
+# four that produce seamless images from areas with arbitrary contents.
 def wallpaperImage(
     width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=pmm, alpha=False
 ):
