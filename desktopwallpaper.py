@@ -36,6 +36,7 @@ import os
 import math
 import random
 import struct
+import sys
 
 def _listdir(p):
     return [os.path.abspath(p + "/" + x) for x in os.listdir(p)]
@@ -2125,15 +2126,15 @@ def imagept(image, width, height, x, y, alpha=False):
         raise ValueError
     if not image:
         raise ValueError
-    if x < 0:
-        x = x % width
-    if y < 0:
-        y = y % height
+    pixelBytes = 4 if alpha else 3
+    if width * height * pixelBytes > len(image):
+        raise ValueError
+    x = x % width
+    y = y % height
     xi = int(x)
     xi1 = (xi + 1) % width
     yi = int(y)
     yi1 = (yi + 1) % height
-    pixelBytes = 4 if alpha else 3
     index = (yi * width + xi) * pixelBytes
     y0x0 = image[index : index + pixelBytes]
     index = (yi * width + xi1) * pixelBytes
@@ -2143,7 +2144,7 @@ def imagept(image, width, height, x, y, alpha=False):
     index = (yi1 * width + xi1) * pixelBytes
     y1x1 = image[index : index + pixelBytes]
     ret = [
-        int(_bilerp(y0x0[i], y0x1[i], y1x0[i], y1x1[i], x - xi, y - yi))
+        ((int(_bilerp(y0x0[i], y0x1[i], y1x0[i], y1x1[i], x - xi, y - yi))))
         for i in range(pixelBytes)
     ]
     return ret
@@ -2303,10 +2304,72 @@ def p6malt(x, y):
         rx = 1 - rx
     return (rx, ry)
 
+def p3m1alt1(x, y):
+    # Wallpaper group P3m1, alternative definition.
+    # Source triangle is isosceles and is formed from a rectangle
+    # by using the left edge as the triangle's
+    # and the right-hand point as the rectangle's
+    # right-hand midpoint, assuming X axis points
+    # to the right and the Y axis down
+    rx, ry = p3m1(y, 1 - x)
+    return (1 - ry, rx)
+
+def p3m1alt2(x, y):
+    # Wallpaper group P3m1, alternative definition.
+    # Source triangle is isosceles and is formed from a rectangle
+    # by using the right edge as the triangle's
+    # and the left-hand point as the rectangle's
+    # left-hand midpoint, assuming X axis points
+    # to the right and the Y axis down
+    rx, ry = p3m1(y, x)
+    return (ry, rx)
+
+def p6malt1a(x, y):
+    # Wallpaper group P6m, alternative definition (upper half of
+    # triangle mentioned for P3m1alt1).
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = p3m1alt1(x, y)
+    if ry > 0.5:
+        ry = 1 - ry
+    return (rx, ry)
+
+def p6malt1b(x, y):
+    # Wallpaper group P6m, alternative definition (lower half of
+    # triangle mentioned for P3m1alt1).
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = p3m1alt1(x, y)
+    if ry < 0.5:
+        ry = 1 - ry
+    return (rx, ry)
+
+def p6malt2a(x, y):
+    # Wallpaper group P6m, alternative definition (upper half of
+    # triangle mentioned for P3m1alt2).
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = p3m1alt2(x, y)
+    if ry > 0.5:
+        ry = 1 - ry
+    return (rx, ry)
+
+def p6malt2b(x, y):
+    # Wallpaper group P6m, alternative definition (lower half of
+    # triangle mentioned for P3m1alt2).
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = p3m1alt2(x, y)
+    if ry < 0.5:
+        ry = 1 - ry
+    return (rx, ry)
+
 # Creates an image based on a portion of a source
 # image, with the help of a wallpaper group function.
 # 'srcImage' and the return value have the same format returned by the
 # blankimage() method with the given value of 'alpha'.
+# 'sx0', 'sy0', 'sx1', and 'sy1' mark the source rectangle, which is
+# allowed to wrap around the source image.
 # 'sw' and 'sh' are the source image's width and height in pixels.
 # 'width' and 'height' are the width and height of the image to create.
 # 'groupFunc' is a wallpaper group function that translates output image
@@ -2321,7 +2384,8 @@ def p6malt(x, y):
 # rightmost or bottommost, with the assumption given earlier.
 # The wallpaper group functions in this module are intended to
 # result in seamless tileable images from areas with arbitrary contents:
-# pmm(), p4m(), p4malt(), p3m1(), p6m(), p6malt().
+# pmm(), p4m(), p4malt(), p3m1(), p6m(), p6malt(), p3m1alt1(), p3m1alt2(),
+# p6malt1a(), p6malt1b(), p6malt2a(), p6malt2b().
 def wallpaperImage(
     width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=pmm, alpha=False
 ):
@@ -2329,9 +2393,14 @@ def wallpaperImage(
     for y in range(height):
         for x in range(width):
             px, py = groupFunc(x / width, y / height)
+            if px < 0 or py < 0 or px > 1 or py > 1:
+                print(["oob", px, py, groupFunc], file=sys.stderr)
             sx = sx0 + (sx1 - sx0) * px
             sy = sy0 + (sy1 - sy0) * py
             pixel = imagept(srcImage, sw, sh, sx, sy, alpha=alpha)
+            # pixel=[int(px*255),int(py*255),255]
+            if max(pixel) > 255 or min(pixel) < 0:
+                print(["oob", px, py, pixel, groupFunc], file=sys.stderr)
             if alpha:
                 setpixelalpha(img, width, height, x, y, pixel)
             else:

@@ -49,10 +49,11 @@
 
 <tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
 <td class="singlecolumn"><table><tr><td class="multicolumn"><a href="math.html">math</a><br>
-</td><td class="multicolumn"><a href="os.html">os</a><br>
+<a href="os.html">os</a><br>
 </td><td class="multicolumn"><a href="random.html">random</a><br>
-</td><td class="multicolumn"><a href="struct.html">struct</a><br>
-</td></tr></table></td></tr></table><p>
+<a href="struct.html">struct</a><br>
+</td><td class="multicolumn"><a href="sys.html">sys</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor index-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
@@ -942,10 +943,16 @@ Data descriptors defined here:<br>
 #&nbsp;'lt'&nbsp;is&nbsp;the&nbsp;light&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[128,128,128].<br>
 #&nbsp;'sh'&nbsp;is&nbsp;the&nbsp;shadow&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[0,0,0].</span></dd></dl>
  <dl><dt><a name="-p3m1"><strong>p3m1</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p3m1alt1"><strong>p3m1alt1</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p3m1alt2"><strong>p3m1alt2</strong></a>(x, y)</dt></dl>
  <dl><dt><a name="-p4m"><strong>p4m</strong></a>(x, y)</dt></dl>
  <dl><dt><a name="-p4malt"><strong>p4malt</strong></a>(x, y)</dt></dl>
  <dl><dt><a name="-p6m"><strong>p6m</strong></a>(x, y)</dt></dl>
  <dl><dt><a name="-p6malt"><strong>p6malt</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p6malt1a"><strong>p6malt1a</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p6malt1b"><strong>p6malt1b</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p6malt2a"><strong>p6malt2a</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p6malt2b"><strong>p6malt2b</strong></a>(x, y)</dt></dl>
  <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;containing&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette&nbsp;plus&nbsp;their<br>
 #&nbsp;"half-and&nbsp;half"&nbsp;versions.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
@@ -1156,12 +1163,14 @@ Data descriptors defined here:<br>
     sy0,
     sx1,
     sy1,
-    groupFunc=&lt;function pmm at 0x7f1c18fcbec0&gt;,
+    groupFunc=&lt;function pmm at 0x7f35bba2fec0&gt;,
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Creates&nbsp;an&nbsp;image&nbsp;based&nbsp;on&nbsp;a&nbsp;portion&nbsp;of&nbsp;a&nbsp;source<br>
 #&nbsp;image,&nbsp;with&nbsp;the&nbsp;help&nbsp;of&nbsp;a&nbsp;wallpaper&nbsp;group&nbsp;function.<br>
 #&nbsp;'srcImage'&nbsp;and&nbsp;the&nbsp;return&nbsp;value&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
 #&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;'sx0',&nbsp;'sy0',&nbsp;'sx1',&nbsp;and&nbsp;'sy1'&nbsp;mark&nbsp;the&nbsp;source&nbsp;rectangle,&nbsp;which&nbsp;is<br>
+#&nbsp;allowed&nbsp;to&nbsp;wrap&nbsp;around&nbsp;the&nbsp;source&nbsp;image.<br>
 #&nbsp;'sw'&nbsp;and&nbsp;'sh'&nbsp;are&nbsp;the&nbsp;source&nbsp;image's&nbsp;width&nbsp;and&nbsp;height&nbsp;in&nbsp;pixels.<br>
 #&nbsp;'width'&nbsp;and&nbsp;'height'&nbsp;are&nbsp;the&nbsp;width&nbsp;and&nbsp;height&nbsp;of&nbsp;the&nbsp;image&nbsp;to&nbsp;create.<br>
 #&nbsp;'groupFunc'&nbsp;is&nbsp;a&nbsp;wallpaper&nbsp;group&nbsp;function&nbsp;that&nbsp;translates&nbsp;output&nbsp;image<br>
@@ -1176,7 +1185,8 @@ Data descriptors defined here:<br>
 #&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;with&nbsp;the&nbsp;assumption&nbsp;given&nbsp;earlier.<br>
 #&nbsp;The&nbsp;wallpaper&nbsp;group&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;are&nbsp;intended&nbsp;to<br>
 #&nbsp;result&nbsp;in&nbsp;seamless&nbsp;tileable&nbsp;images&nbsp;from&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents:<br>
-#&nbsp;<a href="#-pmm">pmm</a>(),&nbsp;<a href="#-p4m">p4m</a>(),&nbsp;<a href="#-p4malt">p4malt</a>(),&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;<a href="#-p6m">p6m</a>(),&nbsp;<a href="#-p6malt">p6malt</a>().</span></dd></dl>
+#&nbsp;<a href="#-pmm">pmm</a>(),&nbsp;<a href="#-p4m">p4m</a>(),&nbsp;<a href="#-p4malt">p4malt</a>(),&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;<a href="#-p6m">p6m</a>(),&nbsp;<a href="#-p6malt">p6malt</a>(),&nbsp;<a href="#-p3m1alt1">p3m1alt1</a>(),&nbsp;<a href="#-p3m1alt2">p3m1alt2</a>(),<br>
+#&nbsp;<a href="#-p6malt1a">p6malt1a</a>(),&nbsp;<a href="#-p6malt1b">p6malt1b</a>(),&nbsp;<a href="#-p6malt2a">p6malt2a</a>(),&nbsp;<a href="#-p6malt2b">p6malt2b</a>().</span></dd></dl>
  <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False, includeVga=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value<br>
 #&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
