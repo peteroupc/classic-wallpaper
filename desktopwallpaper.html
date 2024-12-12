@@ -753,8 +753,10 @@ Data descriptors defined here:<br>
 #&nbsp;'image'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;True.<br>
 #&nbsp;'width'&nbsp;and&nbsp;'height'&nbsp;is&nbsp;the&nbsp;image's&nbsp;width&nbsp;and&nbsp;height.<br>
-#&nbsp;'x'&nbsp;is&nbsp;the&nbsp;point's&nbsp;X&nbsp;coordinate,&nbsp;0&nbsp;or&nbsp;greater,&nbsp;('width'-1)&nbsp;or&nbsp;less.<br>
-#&nbsp;'y'&nbsp;is&nbsp;the&nbsp;point's&nbsp;Y&nbsp;coordinate,&nbsp;0&nbsp;or&nbsp;greater,&nbsp;('height'-1)&nbsp;or&nbsp;less.<br>
+#&nbsp;'x'&nbsp;is&nbsp;the&nbsp;point's&nbsp;X&nbsp;coordinate,&nbsp;which&nbsp;need&nbsp;not&nbsp;be&nbsp;an&nbsp;integer.<br>
+#&nbsp;'y'&nbsp;is&nbsp;the&nbsp;point's&nbsp;Y&nbsp;coordinate,&nbsp;which&nbsp;need&nbsp;not&nbsp;be&nbsp;an&nbsp;integer.<br>
+#&nbsp;An&nbsp;out-of-bounds&nbsp;point&nbsp;('x','y')&nbsp;will&nbsp;undergo&nbsp;a&nbsp;wraparound&nbsp;adjustment,&nbsp;as&nbsp;though<br>
+#&nbsp;the&nbsp;given&nbsp;image&nbsp;were&nbsp;part&nbsp;of&nbsp;an&nbsp;"infinite"&nbsp;tiling.<br>
 #<br>
 #&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>
@@ -939,6 +941,11 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'lt'&nbsp;is&nbsp;the&nbsp;light&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[128,128,128].<br>
 #&nbsp;'sh'&nbsp;is&nbsp;the&nbsp;shadow&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[0,0,0].</span></dd></dl>
+ <dl><dt><a name="-p3m1"><strong>p3m1</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p4m"><strong>p4m</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p4malt"><strong>p4malt</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p6m"><strong>p6m</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p6malt"><strong>p6malt</strong></a>(x, y)</dt></dl>
  <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;containing&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette&nbsp;plus&nbsp;their<br>
 #&nbsp;"half-and&nbsp;half"&nbsp;versions.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
@@ -960,6 +967,7 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image=<a href="#-blankimage">blankimage</a>(8,8,color)<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#-patternDither">patternDither</a>(image,8,8,palette&nbsp;if&nbsp;palette&nbsp;else&nbsp;<a href="#-classiccolors">classiccolors</a>())<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;image</span></dd></dl>
+ <dl><dt><a name="-pmm"><strong>pmm</strong></a>(x, y)</dt></dl>
  <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&amp;ndash;green&amp;ndash;blue<br>
 #&nbsp;space)&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
@@ -1042,11 +1050,11 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
-#&nbsp;tileable.<br>
+#&nbsp;seamlessly&nbsp;tileable.<br>
 #&nbsp;NOTE:&nbsp;"-append"&nbsp;is&nbsp;a&nbsp;vertical&nbsp;append;&nbsp;"+append"&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;append;<br>
 #&nbsp;"-flip"&nbsp;reverses&nbsp;the&nbsp;row&nbsp;order;&nbsp;"-flop"&nbsp;reverses&nbsp;the&nbsp;column&nbsp;order.<br>
 #&nbsp;NOTE:&nbsp;Of&nbsp;the&nbsp;seventeen&nbsp;wallpaper&nbsp;groups,&nbsp;four&nbsp;can&nbsp;be<br>
-#&nbsp;applied&nbsp;to&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents&nbsp;to&nbsp;create&nbsp;tileable&nbsp;images:<br>
+#&nbsp;applied&nbsp;to&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents&nbsp;to&nbsp;create&nbsp;seamlessly&nbsp;tileable&nbsp;images:<br>
 #&nbsp;Pmm&nbsp;(1/4&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;is&nbsp;reflected&nbsp;and&nbsp;repeated).<br>
 #&nbsp;P4m&nbsp;(1/8&nbsp;of&nbsp;a&nbsp;rectangle).<br>
 #&nbsp;P3m1&nbsp;(1/6&nbsp;of&nbsp;a&nbsp;hexagon).<br>
@@ -1138,6 +1146,37 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-wallpaperImage"><strong>wallpaperImage</strong></a>(
+    width,
+    height,
+    srcImage,
+    sw,
+    sh,
+    sx0,
+    sy0,
+    sx1,
+    sy1,
+    groupFunc=&lt;function pmm at 0x7f1c18fcbec0&gt;,
+    alpha=False
+)</dt><dd><span class="code">#&nbsp;Creates&nbsp;an&nbsp;image&nbsp;based&nbsp;on&nbsp;a&nbsp;portion&nbsp;of&nbsp;a&nbsp;source<br>
+#&nbsp;image,&nbsp;with&nbsp;the&nbsp;help&nbsp;of&nbsp;a&nbsp;wallpaper&nbsp;group&nbsp;function.<br>
+#&nbsp;'srcImage'&nbsp;and&nbsp;the&nbsp;return&nbsp;value&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
+#&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;'sw'&nbsp;and&nbsp;'sh'&nbsp;are&nbsp;the&nbsp;source&nbsp;image's&nbsp;width&nbsp;and&nbsp;height&nbsp;in&nbsp;pixels.<br>
+#&nbsp;'width'&nbsp;and&nbsp;'height'&nbsp;are&nbsp;the&nbsp;width&nbsp;and&nbsp;height&nbsp;of&nbsp;the&nbsp;image&nbsp;to&nbsp;create.<br>
+#&nbsp;'groupFunc'&nbsp;is&nbsp;a&nbsp;wallpaper&nbsp;group&nbsp;function&nbsp;that&nbsp;translates&nbsp;output&nbsp;image<br>
+#&nbsp;coordinates&nbsp;to&nbsp;input&nbsp;image&nbsp;(source&nbsp;image)&nbsp;coordinates;&nbsp;default&nbsp;is&nbsp;<a href="#-pmm">pmm</a>().<br>
+#&nbsp;'groupFunc'&nbsp;takes&nbsp;two&nbsp;parameters:&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less,&nbsp;and&nbsp;are&nbsp;in&nbsp;relation&nbsp;to&nbsp;the&nbsp;destination&nbsp;image;&nbsp;0&nbsp;is&nbsp;leftmost<br>
+#&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;assuming&nbsp;the&nbsp;X&nbsp;axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down.&nbsp;&nbsp;'groupFunc'&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;indicating<br>
+#&nbsp;a&nbsp;point&nbsp;in&nbsp;relation&nbsp;to&nbsp;the&nbsp;source&nbsp;rectangle.&nbsp;The&nbsp;tuple&nbsp;has&nbsp;two&nbsp;elements,<br>
+#&nbsp;each&nbsp;0&nbsp;or&nbsp;greater&nbsp;and&nbsp;1&nbsp;or&nbsp;less:&nbsp;the&nbsp;first&nbsp;is&nbsp;the&nbsp;X&nbsp;coordinate&nbsp;and&nbsp;the<br>
+#&nbsp;second,&nbsp;the&nbsp;Y&nbsp;coordinate;&nbsp;0&nbsp;is&nbsp;leftmost&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is<br>
+#&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;with&nbsp;the&nbsp;assumption&nbsp;given&nbsp;earlier.<br>
+#&nbsp;The&nbsp;wallpaper&nbsp;group&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;are&nbsp;intended&nbsp;to<br>
+#&nbsp;result&nbsp;in&nbsp;seamless&nbsp;tileable&nbsp;images&nbsp;from&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents:<br>
+#&nbsp;<a href="#-pmm">pmm</a>(),&nbsp;<a href="#-p4m">p4m</a>(),&nbsp;<a href="#-p4malt">p4malt</a>(),&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;<a href="#-p6m">p6m</a>(),&nbsp;<a href="#-p6malt">p6malt</a>().</span></dd></dl>
  <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False, includeVga=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value<br>
 #&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>

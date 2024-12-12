@@ -1,6 +1,6 @@
 # Traditional User Interface Graphics
 
-This section discusses aspects of the traditional design of user interface graphics, such as button and border styles, icons, and mouse pointers.
+This page discusses aspects of the traditional design of user interface graphics, such as button and border styles, icons, and mouse pointers.
 
 ## Logical Resolutions
 

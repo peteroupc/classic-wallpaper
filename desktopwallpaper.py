@@ -655,11 +655,11 @@ def _chopBeforeVAppendArray(withFarEnd=True):
 
 # ImageMagick command to generate a Pmm wallpaper group tiling pattern.
 # This command can be applied to arbitrary images to render them
-# tileable.
+# seamlessly tileable.
 # NOTE: "-append" is a vertical append; "+append" is a horizontal append;
 # "-flip" reverses the row order; "-flop" reverses the column order.
 # NOTE: Of the seventeen wallpaper groups, four can be
-# applied to areas with arbitrary contents to create tileable images:
+# applied to areas with arbitrary contents to create seamlessly tileable images:
 # Pmm (1/4 of a rectangle is reflected and repeated).
 # P4m (1/8 of a rectangle).
 # P3m1 (1/6 of a hexagon).
@@ -2108,8 +2108,10 @@ def _bilerp(y0x0, y0x1, y1x0, y1x1, tx, ty):
 # 'image' has the same format returned by the blankimage() method with the given value of 'alpha'.
 # The default value for 'alpha' is True.
 # 'width' and 'height' is the image's width and height.
-# 'x' is the point's X coordinate, 0 or greater, ('width'-1) or less.
-# 'y' is the point's Y coordinate, 0 or greater, ('height'-1) or less.
+# 'x' is the point's X coordinate, which need not be an integer.
+# 'y' is the point's Y coordinate, which need not be an integer.
+# An out-of-bounds point ('x','y') will undergo a wraparound adjustment, as though
+# the given image were part of an "infinite" tiling.
 #
 # Blending Note: Operations that involve the blending of two RGB (red-green-
 # blue) colors work best if the RGB color space is linear.  This is not the case
@@ -2119,25 +2121,222 @@ def _bilerp(y0x0, y0x1, y1x0, y1x1, tx, ty):
 # components are 8 bits or fewer in length (as with images returned by blankimage()).
 # This function does not do any such conversion.
 def imagept(image, width, height, x, y, alpha=False):
-    if x < 0 or x > width - 1 or y < 0 or y > height - 1:
+    if width <= 0 or height <= 0:
         raise ValueError
+    if not image:
+        raise ValueError
+    if x < 0:
+        x = x % width
+    if y < 0:
+        y = y % height
     xi = int(x)
-    xi1 = min(xi + 1, width - 1)
+    xi1 = (xi + 1) % width
     yi = int(y)
-    yi1 = min(yi + 1, height - 1)
+    yi1 = (yi + 1) % height
     pixelBytes = 4 if alpha else 3
-    index = (yi * height + xi) * pixelBytes
+    index = (yi * width + xi) * pixelBytes
     y0x0 = image[index : index + pixelBytes]
-    index = (yi * height + xi1) * pixelBytes
+    index = (yi * width + xi1) * pixelBytes
     y0x1 = image[index : index + pixelBytes]
-    index = (yi1 * height + xi) * pixelBytes
+    index = (yi1 * width + xi) * pixelBytes
     y1x0 = image[index : index + pixelBytes]
-    index = (yi1 * height + xi1) * pixelBytes
+    index = (yi1 * width + xi1) * pixelBytes
     y1x1 = image[index : index + pixelBytes]
-    return [
+    ret = [
         int(_bilerp(y0x0[i], y0x1[i], y1x0[i], y1x1[i], x - xi, y - yi))
         for i in range(pixelBytes)
     ]
+    return ret
+
+def pmm(x, y):
+    # Wallpaper group Pmm.  Source rectangle
+    # takes the upper left quarter of the image
+    # and is reflected and repeated to cover the
+    # remaining image, assuming X axis points
+    # to the right and the Y axis down.
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    if x > 0.5:
+        if y < 0.5:
+            return ((0.5 - (x - 0.5)) * 2, y * 2)
+        else:
+            return ((0.5 - (x - 0.5)) * 2, (0.5 - (y - 0.5)) * 2)
+    else:
+        if y < 0.5:
+            return (x * 2, y * 2)
+        else:
+            return (x * 2, (0.5 - (y - 0.5)) * 2)
+
+def p4m(x, y):
+    # Wallpaper group P4m (triangle formed
+    # from a rectangle and by
+    # taking the lower-left corner of the rectangle
+    # as its right angle, assuming X axis points
+    # to the right and the Y axis down)
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = pmm(x, y)
+    if rx + (1 - ry) > 1.0:
+        return (ry, rx)
+    return (rx, ry)
+
+def p4malt(x, y):
+    # Wallpaper group P4m, alternative definition
+    # (triangle formed from a rectangle and by
+    # taking the upper-right corner of the rectangle
+    # as its right angle, assuming X axis points
+    # to the right and the Y axis down)
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = pmm(x, y)
+    if rx + (1 - ry) < 1.0:
+        return (ry, rx)
+    return (rx, ry)
+
+def p3m1(x, y):
+    # Wallpaper group P3m1.  Source triangle
+    # is isosceles and is formed from a rectangle
+    # by using the bottom edge as the triangle's
+    # and the top point as the rectangle's
+    # upper midpoint, assuming X axis points
+    # to the right and the Y axis down
+    xx = x * 6
+    xarea = min(5, int(xx))
+    xpos = xx - xarea
+    yarea = 0 if y < 0.5 else 1
+    ypos = y * 2 if y < 0.5 else (y - 0.5) * 2
+    isdiag1 = (xarea + yarea) % 2 == 0
+    leftHalf = (xpos + ypos) < 1.0 if isdiag1 else (xpos + (1 - ypos)) < 1.0
+    match (xarea, yarea, leftHalf):
+        case (1, 1, False) | (4, 0, False):
+            return (xpos / 2, ypos)
+        case (2, 1, True) | (5, 0, True):
+            return (xpos / 2 + 0.5, ypos)
+        case (1, 0, False) | (4, 1, False):
+            return ((xpos / 2), 1 - ypos)
+        case (2, 0, True) | (5, 1, True):
+            return ((xpos / 2 + 0.5), 1 - ypos)
+        case (0, 1, False) | (3, 0, False):
+            xp = xpos / 2
+            yp = ypos
+            newx = -xp / 2 - 3 * yp / 4 + 1
+            newy = -xp + yp / 2 + 1
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case (1, 1, True) | (4, 0, True):
+            xp = (xpos / 2) + 0.5
+            yp = ypos
+            newx = -xp / 2 - 3 * yp / 4 + 1
+            newy = -xp + yp / 2 + 1
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case (0, 0, False) | (3, 1, False):
+            xp = xpos / 2
+            yp = 1 - ypos
+            newx = -xp / 2 - 3 * yp / 4 + 1
+            newy = -xp + yp / 2 + 1
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case (1, 0, True) | (4, 1, True):
+            xp = (xpos / 2) + 0.5
+            yp = 1 - ypos
+            newx = -xp / 2 - 3 * yp / 4 + 1
+            newy = -xp + yp / 2 + 1
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case (2, 1, False) | (5, 0, False):
+            xp = xpos / 2
+            yp = ypos
+            newx = -xp / 2 + 3 * yp / 4 + 0.5
+            newy = xp + yp / 2
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case (3, 1, True) | (0, 0, True):
+            xp = (xpos / 2) + 0.5
+            yp = ypos
+            newx = -xp / 2 + 3 * yp / 4 + 0.5
+            newy = xp + yp / 2
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case (2, 0, False) | (5, 1, False):
+            xp = xpos / 2
+            yp = 1 - ypos
+            newx = -xp / 2 + 3 * yp / 4 + 0.5
+            newy = xp + yp / 2
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case (3, 0, True) | (0, 1, True):
+            xp = (xpos / 2) + 0.5
+            yp = 1 - ypos
+            newx = -xp / 2 + 3 * yp / 4 + 0.5
+            newy = xp + yp / 2
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            return (newx, newy)
+        case _:
+            return (0, 0)
+
+def p6m(x, y):
+    # Wallpaper group P6m (left half of
+    # triangle mentioned for P3m1).
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = p3m1(x, y)
+    if rx > 0.5:
+        rx = 1 - rx
+    return (rx, ry)
+
+def p6malt(x, y):
+    # Wallpaper group P6m, alternative definition
+    # (right half of triangle mentioned for P3m1).
+    # 'x' and 'y' are each 0 or greater
+    # and 1 or less.
+    rx, ry = p3m1(x, y)
+    if rx < 0.5:
+        rx = 1 - rx
+    return (rx, ry)
+
+# Creates an image based on a portion of a source
+# image, with the help of a wallpaper group function.
+# 'srcImage' and the return value have the same format returned by the
+# blankimage() method with the given value of 'alpha'.
+# 'sw' and 'sh' are the source image's width and height in pixels.
+# 'width' and 'height' are the width and height of the image to create.
+# 'groupFunc' is a wallpaper group function that translates output image
+# coordinates to input image (source image) coordinates; default is pmm().
+# 'groupFunc' takes two parameters: 'x' and 'y' are each 0 or greater
+# and 1 or less, and are in relation to the destination image; 0 is leftmost
+# or uppermost, and 1 is rightmost or bottommost, assuming the X axis points
+# to the right and the Y axis down.  'groupFunc' returns a tuple indicating
+# a point in relation to the source rectangle. The tuple has two elements,
+# each 0 or greater and 1 or less: the first is the X coordinate and the
+# second, the Y coordinate; 0 is leftmost or uppermost, and 1 is
+# rightmost or bottommost, with the assumption given earlier.
+# The wallpaper group functions in this module are intended to
+# result in seamless tileable images from areas with arbitrary contents:
+# pmm(), p4m(), p4malt(), p3m1(), p6m(), p6malt().
+def wallpaperImage(
+    width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=pmm, alpha=False
+):
+    img = blankimage(width, height, alpha=alpha)
+    for y in range(height):
+        for x in range(width):
+            px, py = groupFunc(x / width, y / height)
+            sx = sx0 + (sx1 - sx0) * px
+            sy = sy0 + (sy1 - sy0) * py
+            pixel = imagept(srcImage, sw, sh, sx, sy, alpha=alpha)
+            if alpha:
+                setpixelalpha(img, width, height, x, y, pixel)
+            else:
+                setpixel(img, width, height, x, y, pixel)
+    return img
 
 # 'dstimage' and 'srcimage' have the same format returned by the blankimage() method with
 # the given value of 'alpha' (the default value for 'alpha' is False).
