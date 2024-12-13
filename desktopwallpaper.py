@@ -1207,7 +1207,7 @@ def _applyrop(dst, src, rop):
 # 0x11: "Not source erase", "not merge pen" ("pen" is understood as the source pixel).
 # 0x22: "Mask not pen".
 # 0x33: "Not source copy", "not copy pen".
-# 0x44: "Source erase", "Mask pen not".
+# 0x44: "Source erase", "mask pen not".
 # 0x55: "Destination invert".
 # 0x66: "Source invert", "XOR pen".
 # 0x77: "Not mask pen".
@@ -2149,14 +2149,14 @@ def imagept(image, width, height, x, y, alpha=False):
     ]
     return ret
 
+# Wallpaper group Pmm.  Source rectangle
+# takes the upper left quarter of the image
+# and is reflected and repeated to cover the
+# remaining image, assuming X axis points
+# to the right and the Y axis down.
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def pmm(x, y):
-    # Wallpaper group Pmm.  Source rectangle
-    # takes the upper left quarter of the image
-    # and is reflected and repeated to cover the
-    # remaining image, assuming X axis points
-    # to the right and the Y axis down.
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     if x > 0.5:
         if y < 0.5:
             return ((0.5 - (x - 0.5)) * 2, y * 2)
@@ -2168,39 +2168,39 @@ def pmm(x, y):
         else:
             return (x * 2, (0.5 - (y - 0.5)) * 2)
 
+# Wallpaper group P4m (triangle formed
+# from a rectangle and by
+# taking the lower-left corner of the rectangle
+# as its right angle, assuming X axis points
+# to the right and the Y axis down)
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p4m(x, y):
-    # Wallpaper group P4m (triangle formed
-    # from a rectangle and by
-    # taking the lower-left corner of the rectangle
-    # as its right angle, assuming X axis points
-    # to the right and the Y axis down)
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = pmm(x, y)
     if rx + (1 - ry) > 1.0:
         return (ry, rx)
     return (rx, ry)
 
+# Wallpaper group P4m, alternative definition
+# (triangle formed from a rectangle and by
+# taking the upper-right corner of the rectangle
+# as its right angle, assuming X axis points
+# to the right and the Y axis down)
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p4malt(x, y):
-    # Wallpaper group P4m, alternative definition
-    # (triangle formed from a rectangle and by
-    # taking the upper-right corner of the rectangle
-    # as its right angle, assuming X axis points
-    # to the right and the Y axis down)
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = pmm(x, y)
     if rx + (1 - ry) < 1.0:
         return (ry, rx)
     return (rx, ry)
 
+# Wallpaper group P3m1.  Source triangle
+# is isosceles and is formed from a rectangle
+# by using the bottom edge as the triangle's
+# and the top point as the rectangle's
+# upper midpoint, assuming X axis points
+# to the right and the Y axis down
 def p3m1(x, y):
-    # Wallpaper group P3m1.  Source triangle
-    # is isosceles and is formed from a rectangle
-    # by using the bottom edge as the triangle's
-    # and the top point as the rectangle's
-    # upper midpoint, assuming X axis points
-    # to the right and the Y axis down
     xx = x * 6
     xarea = min(5, int(xx))
     xpos = xx - xarea
@@ -2284,81 +2284,87 @@ def p3m1(x, y):
         case _:
             return (0, 0)
 
+# Wallpaper group P6m (same source rectangle
+# as p3m1(), but exposing only the left half of
+# the triangle mentioned there).
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p6m(x, y):
-    # Wallpaper group P6m (left half of
-    # triangle mentioned for P3m1).
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = p3m1(x, y)
     if rx > 0.5:
         rx = 1 - rx
     return (rx, ry)
 
+# Wallpaper group P6m, alternative definition
+# (same source rectangle as p3m1(), but exposing
+# only the right half of the triangle described there).
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p6malt(x, y):
-    # Wallpaper group P6m, alternative definition
-    # (right half of triangle mentioned for P3m1).
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = p3m1(x, y)
     if rx < 0.5:
         rx = 1 - rx
     return (rx, ry)
 
+# Wallpaper group P3m1, alternative definition.
+# Source triangle is isosceles and is formed from a rectangle
+# by using the left edge as the triangle's
+# and the right-hand point as the rectangle's
+# right-hand midpoint, assuming X axis points
+# to the right and the Y axis down
 def p3m1alt1(x, y):
-    # Wallpaper group P3m1, alternative definition.
-    # Source triangle is isosceles and is formed from a rectangle
-    # by using the left edge as the triangle's
-    # and the right-hand point as the rectangle's
-    # right-hand midpoint, assuming X axis points
-    # to the right and the Y axis down
     rx, ry = p3m1(y, 1 - x)
     return (1 - ry, rx)
 
+# Wallpaper group P3m1, alternative definition.
+# Source triangle is isosceles and is formed from a rectangle
+# by using the right edge as the triangle's
+# and the left-hand point as the rectangle's
+# left-hand midpoint, assuming X axis points
+# to the right and the Y axis down
 def p3m1alt2(x, y):
-    # Wallpaper group P3m1, alternative definition.
-    # Source triangle is isosceles and is formed from a rectangle
-    # by using the right edge as the triangle's
-    # and the left-hand point as the rectangle's
-    # left-hand midpoint, assuming X axis points
-    # to the right and the Y axis down
     rx, ry = p3m1(y, x)
     return (ry, rx)
 
+# Wallpaper group P6m, alternative definition
+# (same source rectangle as p3m1alt1(), but exposing
+# only the upper half of the triangle described there).
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p6malt1a(x, y):
-    # Wallpaper group P6m, alternative definition (upper half of
-    # triangle mentioned for P3m1alt1).
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = p3m1alt1(x, y)
     if ry > 0.5:
         ry = 1 - ry
     return (rx, ry)
 
+# Wallpaper group P6m, alternative definition
+# (same source rectangle as p3m1alt1(), but exposing
+# only the lower half of the triangle described there).
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p6malt1b(x, y):
-    # Wallpaper group P6m, alternative definition (lower half of
-    # triangle mentioned for P3m1alt1).
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = p3m1alt1(x, y)
     if ry < 0.5:
         ry = 1 - ry
     return (rx, ry)
 
+# Wallpaper group P6m, alternative definition
+# (same source rectangle as p3m1alt2(), but exposing
+# only the upper half of the triangle described there).
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p6malt2a(x, y):
-    # Wallpaper group P6m, alternative definition (upper half of
-    # triangle mentioned for P3m1alt2).
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = p3m1alt2(x, y)
     if ry > 0.5:
         ry = 1 - ry
     return (rx, ry)
 
+# Wallpaper group P6m, alternative definition
+# (same source rectangle as p3m1alt2(), but exposing
+# only the lower half of the triangle described there).
+# 'x' and 'y' are each 0 or greater
+# and 1 or less.
 def p6malt2b(x, y):
-    # Wallpaper group P6m, alternative definition (lower half of
-    # triangle mentioned for P3m1alt2).
-    # 'x' and 'y' are each 0 or greater
-    # and 1 or less.
     rx, ry = p3m1alt2(x, y)
     if ry < 0.5:
         ry = 1 - ry

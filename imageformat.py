@@ -3410,15 +3410,15 @@ def _pathFromBitmapEx(ibi, width, height, rcExtent, path, targetPixel):
                         )
             bitindex += 1
 
-DIR_LEFT = 0
-DIR_RIGHT = 1
-DIR_UP = 2
-DIR_DOWN = 3
+_DIR_LEFT = 0
+_DIR_RIGHT = 1
+_DIR_UP = 2
+_DIR_DOWN = 3
 
 def _traceShape(rows, width, height, rc, x, y, target, bits, path):
     # Start from the right, then go clockwise around
     # the path
-    direction = DIR_RIGHT
+    direction = _DIR_RIGHT
     xBegin = x
     yBegin = y
     xLast = x
@@ -3437,19 +3437,19 @@ def _traceShape(rows, width, height, rc, x, y, target, bits, path):
             raise ValueError
         # Console.WriteLine("%d | %d %d [%d
         # %d]",direction,xLast,yLast,xBegin,yBegin);
-        if direction == DIR_RIGHT:
+        if direction == _DIR_RIGHT:
             xLast = x + 1
             if not (x < rc[2]):
                 raise ValueError
             if x != right1 and _isInside(rows, width, height, target, x + 1, y):
                 if y != rc[1] and _isInside(rows, width, height, target, x + 1, y - 1):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_UP
+                    direction = _DIR_UP
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_DOWN
+                direction = _DIR_DOWN
             x += 1
-        elif direction == DIR_LEFT:
+        elif direction == _DIR_LEFT:
             xLast = x - 1
             if not (x > rc[0]):
                 raise ValueError
@@ -3460,34 +3460,34 @@ def _traceShape(rows, width, height, rc, x, y, target, bits, path):
             ):
                 if y != rc[3] and _isInside(rows, width, height, target, x - 2, y):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_DOWN
+                    direction = _DIR_DOWN
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_UP
+                direction = _DIR_UP
             x -= 1
-        elif direction == DIR_DOWN:
+        elif direction == _DIR_DOWN:
             yLast = y + 1
             if not (x > rc[0]):
                 raise ValueError
             if y != bottom1 and _isInside(rows, width, height, target, x - 1, y + 1):
                 if x != rc[2] and _isInside(rows, width, height, target, x, y + 1):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_RIGHT
+                    direction = _DIR_RIGHT
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_LEFT
+                direction = _DIR_LEFT
             y += 1
-        elif direction == DIR_UP:
+        elif direction == _DIR_UP:
             yLast = y - 1
             if not (x < rc[2]):
                 raise ValueError
             if y > rc[1] + 1 and _isInside(rows, width, height, target, x, y - 2):
                 if x != rc[0] and _isInside(rows, width, height, target, x - 1, y - 2):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_LEFT
+                    direction = _DIR_LEFT
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_RIGHT
+                direction = _DIR_RIGHT
             y -= 1
         if not (x != xBegin or y != yBegin):
             break
@@ -3582,7 +3582,7 @@ def _floodFillInnerCheck(rows, width, height, rc, x, y, target, fillbits, point)
 def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
     # Start down, then go clockwise around
     # the path
-    direction = DIR_DOWN
+    direction = _DIR_DOWN
     xBegin = x
     yBegin = y
     xLast = x
@@ -3601,7 +3601,7 @@ def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
             raise ValueError
         # Console.WriteLine("" + direction + " | " + xLast + " " + yLast + " [" +
         # xBegin + " " + yBegin + "]");
-        if direction == DIR_RIGHT:
+        if direction == _DIR_RIGHT:
             xLast = x + 1
             if not (x < rc[2]):
                 raise ValueError
@@ -3612,12 +3612,12 @@ def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
             ):
                 if y != rc[3] and _isInside(rows, width, height, target, x + 1, y):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_DOWN
+                    direction = _DIR_DOWN
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_UP
+                direction = _DIR_UP
             x += 1
-        elif direction == DIR_LEFT:
+        elif direction == _DIR_LEFT:
             xLast = x - 1
             if not (x > rc[0]):
                 raise ValueError
@@ -3628,12 +3628,12 @@ def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
             ):
                 if y != rc[1] and _isInside(rows, width, height, target, x - 2, y - 1):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_UP
+                    direction = _DIR_UP
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_DOWN
+                direction = _DIR_DOWN
             x -= 1
-        elif direction == DIR_DOWN:
+        elif direction == _DIR_DOWN:
             yLast = y + 1
             if not (x > rc[0]):
                 raise ValueError
@@ -3644,12 +3644,12 @@ def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
             ):
                 if x != rc[0] and _isInside(rows, width, height, target, x - 1, y + 1):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_LEFT
+                    direction = _DIR_LEFT
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_RIGHT
+                direction = _DIR_RIGHT
             y += 1
-        elif direction == DIR_UP:
+        elif direction == _DIR_UP:
             yLast = y - 1
             if not (x < rc[2]):
                 raise ValueError
@@ -3660,10 +3660,10 @@ def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
             ):
                 if x != rc[2] and _isInside(rows, width, height, target, x, y - 2):
                     path.LineTo(xLast, yLast)
-                    direction = DIR_RIGHT
+                    direction = _DIR_RIGHT
             else:
                 path.LineTo(xLast, yLast)
-                direction = DIR_LEFT
+                direction = _DIR_LEFT
             y -= 1
         if not (x != xBegin or y != yBegin):
             break

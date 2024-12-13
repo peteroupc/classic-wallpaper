@@ -678,7 +678,7 @@ Data descriptors defined here:<br>
 #&nbsp;0x11:&nbsp;"Not&nbsp;source&nbsp;erase",&nbsp;"not&nbsp;merge&nbsp;pen"&nbsp;("pen"&nbsp;is&nbsp;understood&nbsp;as&nbsp;the&nbsp;source&nbsp;pixel).<br>
 #&nbsp;0x22:&nbsp;"Mask&nbsp;not&nbsp;pen".<br>
 #&nbsp;0x33:&nbsp;"Not&nbsp;source&nbsp;copy",&nbsp;"not&nbsp;copy&nbsp;pen".<br>
-#&nbsp;0x44:&nbsp;"Source&nbsp;erase",&nbsp;"Mask&nbsp;pen&nbsp;not".<br>
+#&nbsp;0x44:&nbsp;"Source&nbsp;erase",&nbsp;"mask&nbsp;pen&nbsp;not".<br>
 #&nbsp;0x55:&nbsp;"Destination&nbsp;invert".<br>
 #&nbsp;0x66:&nbsp;"Source&nbsp;invert",&nbsp;"XOR&nbsp;pen".<br>
 #&nbsp;0x77:&nbsp;"Not&nbsp;mask&nbsp;pen".<br>
@@ -944,17 +944,68 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'lt'&nbsp;is&nbsp;the&nbsp;light&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[128,128,128].<br>
 #&nbsp;'sh'&nbsp;is&nbsp;the&nbsp;shadow&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[0,0,0].</span></dd></dl>
- <dl><dt><a name="-p3m1"><strong>p3m1</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p3m1alt1"><strong>p3m1alt1</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p3m1alt2"><strong>p3m1alt2</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p4m"><strong>p4m</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p4malt"><strong>p4malt</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p6m"><strong>p6m</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p6malt"><strong>p6malt</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p6malt1a"><strong>p6malt1a</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p6malt1b"><strong>p6malt1b</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p6malt2a"><strong>p6malt2a</strong></a>(x, y)</dt></dl>
- <dl><dt><a name="-p6malt2b"><strong>p6malt2b</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-p3m1"><strong>p3m1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1.&nbsp;&nbsp;Source&nbsp;triangle<br>
+#&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
+#&nbsp;by&nbsp;using&nbsp;the&nbsp;bottom&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
+#&nbsp;and&nbsp;the&nbsp;top&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
+#&nbsp;upper&nbsp;midpoint,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down</span></dd></dl>
+ <dl><dt><a name="-p3m1alt1"><strong>p3m1alt1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1,&nbsp;alternative&nbsp;definition.<br>
+#&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
+#&nbsp;by&nbsp;using&nbsp;the&nbsp;left&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
+#&nbsp;and&nbsp;the&nbsp;right-hand&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
+#&nbsp;right-hand&nbsp;midpoint,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down</span></dd></dl>
+ <dl><dt><a name="-p3m1alt2"><strong>p3m1alt2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1,&nbsp;alternative&nbsp;definition.<br>
+#&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
+#&nbsp;by&nbsp;using&nbsp;the&nbsp;right&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
+#&nbsp;and&nbsp;the&nbsp;left-hand&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
+#&nbsp;left-hand&nbsp;midpoint,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down</span></dd></dl>
+ <dl><dt><a name="-p4m"><strong>p4m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m&nbsp;(triangle&nbsp;formed<br>
+#&nbsp;from&nbsp;a&nbsp;rectangle&nbsp;and&nbsp;by<br>
+#&nbsp;taking&nbsp;the&nbsp;lower-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;rectangle<br>
+#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down)<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+ <dl><dt><a name="-p4malt"><strong>p4malt</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m,&nbsp;alternative&nbsp;definition<br>
+#&nbsp;(triangle&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle&nbsp;and&nbsp;by<br>
+#&nbsp;taking&nbsp;the&nbsp;upper-right&nbsp;corner&nbsp;of&nbsp;the&nbsp;rectangle<br>
+#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down)<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+ <dl><dt><a name="-p6m"><strong>p6m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m&nbsp;(same&nbsp;source&nbsp;rectangle<br>
+#&nbsp;as&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;but&nbsp;exposing&nbsp;only&nbsp;the&nbsp;left&nbsp;half&nbsp;of<br>
+#&nbsp;the&nbsp;triangle&nbsp;mentioned&nbsp;there).<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+ <dl><dt><a name="-p6malt"><strong>p6malt</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
+#&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;but&nbsp;exposing<br>
+#&nbsp;only&nbsp;the&nbsp;right&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+ <dl><dt><a name="-p6malt1a"><strong>p6malt1a</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
+#&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt1">p3m1alt1</a>(),&nbsp;but&nbsp;exposing<br>
+#&nbsp;only&nbsp;the&nbsp;upper&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+ <dl><dt><a name="-p6malt1b"><strong>p6malt1b</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
+#&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt1">p3m1alt1</a>(),&nbsp;but&nbsp;exposing<br>
+#&nbsp;only&nbsp;the&nbsp;lower&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+ <dl><dt><a name="-p6malt2a"><strong>p6malt2a</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
+#&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt2">p3m1alt2</a>(),&nbsp;but&nbsp;exposing<br>
+#&nbsp;only&nbsp;the&nbsp;upper&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+ <dl><dt><a name="-p6malt2b"><strong>p6malt2b</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
+#&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt2">p3m1alt2</a>(),&nbsp;but&nbsp;exposing<br>
+#&nbsp;only&nbsp;the&nbsp;lower&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
  <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;containing&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette&nbsp;plus&nbsp;their<br>
 #&nbsp;"half-and&nbsp;half"&nbsp;versions.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
@@ -976,7 +1027,13 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image=<a href="#-blankimage">blankimage</a>(8,8,color)<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#-patternDither">patternDither</a>(image,8,8,palette&nbsp;if&nbsp;palette&nbsp;else&nbsp;<a href="#-classiccolors">classiccolors</a>())<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;image</span></dd></dl>
- <dl><dt><a name="-pmm"><strong>pmm</strong></a>(x, y)</dt></dl>
+ <dl><dt><a name="-pmm"><strong>pmm</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Pmm.&nbsp;&nbsp;Source&nbsp;rectangle<br>
+#&nbsp;takes&nbsp;the&nbsp;upper&nbsp;left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;image<br>
+#&nbsp;and&nbsp;is&nbsp;reflected&nbsp;and&nbsp;repeated&nbsp;to&nbsp;cover&nbsp;the<br>
+#&nbsp;remaining&nbsp;image,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down.<br>
+#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
  <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&amp;ndash;green&amp;ndash;blue<br>
 #&nbsp;space)&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
