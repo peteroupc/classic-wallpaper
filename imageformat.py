@@ -1920,7 +1920,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
             px = _readBitmapAsColorBGR(
                 xormask, xormaskscan, height, bitcount, x, y, colortable
             ) + (
-                (bytes([pxalpha]) if pxalpha != 255 else alpha1)
+                (bytes(pxalpha) if pxalpha != 255 else alpha1)
                 if bitand == 0
                 else alpha0
             )
