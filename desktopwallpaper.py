@@ -2389,8 +2389,10 @@ def p6malt2b(x, y):
 # variations of wallpaper groups Pmm, P4m, P3m1, and P6m, which are the only
 # four that produce seamless images from areas with arbitrary contents.
 def wallpaperImage(
-    width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=pmm, alpha=False
+    width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=None, alpha=False
 ):
+    if not groupFunc:
+        groupFunc = pmm
     img = blankimage(width, height, alpha=alpha)
     for y in range(height):
         for x in range(width):
@@ -4160,21 +4162,33 @@ def affine(
     m21,  # lower left of matrix
     m22,  # lower right of matrix
     alpha=False,
+    smoothing=True,
 ):
     bypp = 4 if alpha else 3
     for y in range(dstheight):
         yp = y / srcheight
         for x in range(dstwidth):
             xp = x / srcwidth
-            tx = int((xp * m11 + yp * m21) * srcwidth) % srcwidth
-            ty = int((xp * m12 + yp * m22) * srcheight) % srcheight
-            dstindex = (y * dstwidth + x) * bypp
-            srcindex = (ty * srcwidth + tx) * bypp
-            if dstindex < 0 or dstindex > len(dstimage):
-                raise ValueError([x, y, tx, ty])
-            if srcindex < 0 or srcindex > len(srcimage):
-                raise ValueError([x, y, tx, ty])
-            dstimage[dstindex : dstindex + bypp] = srcimage[srcindex : srcindex + bypp]
+            tx = (xp * m11 + yp * m21) * srcwidth
+            ty = (xp * m12 + yp * m22) * srcheight
+            if smoothing:
+                pixel = imagept(srcimage, srcwidth, srcheight, tx, ty, alpha=alpha)
+                if alpha:
+                    setpixelalpha(img, width, height, x, y, pixel)
+                else:
+                    setpixel(img, width, height, x, y, pixel)
+            else:
+                tx = int(tx) % srcwidth
+                ty = int(ty) % srcheight
+                dstindex = (y * dstwidth + x) * bypp
+                srcindex = (ty * srcwidth + tx) * bypp
+                if dstindex < 0 or dstindex > len(dstimage):
+                    raise ValueError([x, y, tx, ty])
+                if srcindex < 0 or srcindex > len(srcimage):
+                    raise ValueError([x, y, tx, ty])
+                dstimage[dstindex : dstindex + bypp] = srcimage[
+                    srcindex : srcindex + bypp
+                ]
     return dstimage
 
 # Generates an image with a horizontal doubling of pixels.
@@ -4183,7 +4197,18 @@ def affine(
 # given value of 'alpha' (default value for 'alpha' is False).
 def twobyonestretch(image, w, h, alpha=False):
     return affine(
-        blankimage(w * 2, h), w * 2, h, image, w, h, 1 / 2, 0, 0, 1, alpha=alpha
+        blankimage(w * 2, h),
+        w * 2,
+        h,
+        image,
+        w,
+        h,
+        1 / 2,
+        0,
+        0,
+        1,
+        alpha=alpha,
+        smoothing=False,
     )
 
 # Image has the same format returned by the blankimage() method with the
@@ -4216,7 +4241,14 @@ def vertskew(image, width, height, skew, alpha=False):
 # Input and output images have the same format returned by the blankimage() method with the
 # given value of 'alpha' (default value for 'alpha' is False).
 def imageshear(
-    img, width, height, newwidth=None, newheight=None, alpha=False, upward=True
+    img,
+    width,
+    height,
+    newwidth=None,
+    newheight=None,
+    alpha=False,
+    upward=True,
+    smoothing=True,
 ):
     if not newwidth:
         newwidth = width
@@ -4241,6 +4273,7 @@ def imageshear(
         0 if upward else height / newheight,
         height / newheight,
         alpha=alpha,
+        smoothing=smoothing,
     )
     return img2
 
@@ -4272,6 +4305,7 @@ def randomRotated(image, width, height, alpha=False):
             r2 * (size / slant),
             (size * stretch / slant),
             alpha=alpha,
+            smoothing=True,
         ),
         image2width,
         image2height,

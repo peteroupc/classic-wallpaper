@@ -153,7 +153,8 @@ Data descriptors defined here:<br>
     m12,
     m21,
     m22,
-    alpha=False
+    alpha=False,
+    smoothing=True
 )</dt><dd><span class="code">#&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-alphaToTwoLevel"><strong>alphaToTwoLevel</strong></a>(image, width, height, dither=False)</dt><dd><span class="code">#&nbsp;Modifies&nbsp;the&nbsp;given&nbsp;4-byte-per-pixel&nbsp;image&nbsp;by<br>
 #&nbsp;converting&nbsp;its&nbsp;256-level&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;two&nbsp;levels&nbsp;(opaque<br>
@@ -787,7 +788,8 @@ Data descriptors defined here:<br>
     newwidth=None,
     newheight=None,
     alpha=False,
-    upward=True
+    upward=True,
+    smoothing=True
 )</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;sheared&nbsp;image,&nbsp;with&nbsp;optional&nbsp;resizing.<br>
 #&nbsp;'newwidth'&nbsp;is&nbsp;the&nbsp;new&nbsp;width&nbsp;of&nbsp;the&nbsp;image&nbsp;in&nbsp;pixels.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;same&nbsp;as&nbsp;'width'.<br>
 #&nbsp;'newheight'&nbsp;is&nbsp;the&nbsp;new&nbsp;height&nbsp;of&nbsp;the&nbsp;image&nbsp;in&nbsp;pixels.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;same&nbsp;as&nbsp;'height'.<br>
@@ -1163,7 +1165,7 @@ Data descriptors defined here:<br>
     sy0,
     sx1,
     sy1,
-    groupFunc=&lt;function pmm at 0x7fd15624fec0&gt;,
+    groupFunc=None,
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Creates&nbsp;an&nbsp;image&nbsp;based&nbsp;on&nbsp;a&nbsp;portion&nbsp;of&nbsp;a&nbsp;source<br>
 #&nbsp;image,&nbsp;with&nbsp;the&nbsp;help&nbsp;of&nbsp;a&nbsp;wallpaper&nbsp;group&nbsp;function.<br>

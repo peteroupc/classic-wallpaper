@@ -33,6 +33,45 @@
 </td><td class="multicolumn"><a href="zlib.html">zlib</a><br>
 </td></tr></table></td></tr></table><p>
 <table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="imageformat.html#SvgPath">SvgPath</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="SvgPath">class <strong>SvgPath</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+
+<tr><td class="decor title-decor"><span class="code">&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="SvgPath-Close"><strong>Close</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="SvgPath-LineTo"><strong>LineTo</strong></a>(self, x, y)</dt></dl>
+
+<dl><dt><a name="SvgPath-MoveTo"><strong>MoveTo</strong></a>(self, x, y)</dt></dl>
+
+<dl><dt><a name="SvgPath-__init__"><strong>__init__</strong></a>(self)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="SvgPath-__str__"><strong>__str__</strong></a>(self)</dt><dd><span class="code">Return&nbsp;str(self).</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
 <tr class="decor functions-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
 
@@ -81,6 +120,11 @@
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
 #&nbsp;for&nbsp;this&nbsp;method&nbsp;to&nbsp;be&nbsp;successful.</span></dd></dl>
+ <dl><dt><a name="-pathFromBitmap"><strong>pathFromBitmap</strong></a>(ibi, width, height)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;SVG&nbsp;path&nbsp;string&nbsp;of&nbsp;the&nbsp;outline&nbsp;traced&nbsp;by&nbsp;the<br>
+#&nbsp;black&nbsp;pixels&nbsp;in&nbsp;the&nbsp;given&nbsp;image.&nbsp;&nbsp;A&nbsp;black&nbsp;pixel&nbsp;has&nbsp;a&nbsp;red<br>
+#&nbsp;component,&nbsp;green&nbsp;component,&nbsp;and&nbsp;blue&nbsp;component&nbsp;of&nbsp;0.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's<br>
+#&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-pngbytes"><strong>pngbytes</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's<br>
 #&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-readanimicon"><strong>readanimicon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;from&nbsp;a&nbsp;Windows&nbsp;animated&nbsp;icon/cursor&nbsp;file.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
@@ -115,7 +159,7 @@
 #&nbsp;the&nbsp;screen&nbsp;colors,&nbsp;this&nbsp;feature&nbsp;is&nbsp;not&nbsp;supported&nbsp;in&nbsp;images&nbsp;returned&nbsp;by<br>
 #&nbsp;this&nbsp;function;&nbsp;areas&nbsp;where&nbsp;the&nbsp;icon&nbsp;or&nbsp;cursor&nbsp;would&nbsp;invert&nbsp;screen&nbsp;colors<br>
 #&nbsp;are&nbsp;treated&nbsp;as&nbsp;transparent&nbsp;instead.</span></dd></dl>
- <dl><dt><a name="-reados2iconcore"><strong>reados2iconcore</strong></a>(f)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;'reados2icon',&nbsp;but&nbsp;takes&nbsp;an&nbsp;I/O&nbsp;object&nbsp;such&nbsp;as&nbsp;one<br>
+ <dl><dt><a name="-reados2iconcore"><strong>reados2iconcore</strong></a>(f)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;'reados2icon',&nbsp;but&nbsp;takes&nbsp;an&nbsp;I/O&nbsp;<a href="builtins.html#object">object</a>&nbsp;such&nbsp;as&nbsp;one<br>
 #&nbsp;returned&nbsp;by&nbsp;Python's&nbsp;'open'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;or&nbsp;Windows&nbsp;palette&nbsp;file.<br>
 #&nbsp;Returns&nbsp;an&nbsp;list&nbsp;of&nbsp;the&nbsp;colors&nbsp;read&nbsp;from&nbsp;the&nbsp;file.<br>
@@ -161,5 +205,14 @@
  <dl><dt><a name="-writepng"><strong>writepng</strong></a>(f, image, width, height, raiseIfExists=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's<br>
 #&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-writeppm"><strong>writeppm</strong></a>(f, image, width, height, raiseIfExists=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
-</td></tr></table>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>DIR_DOWN</strong> = 3<br>
+<strong>DIR_LEFT</strong> = 0<br>
+<strong>DIR_RIGHT</strong> = 1<br>
+<strong>DIR_UP</strong> = 2</td></tr></table>
 </body></html>

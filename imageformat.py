@@ -3165,3 +3165,506 @@ def imageToSvg(image, width, height, alpha=False):
             "".join(path),
         )
     return bytes(ret + "</svg>", "utf-8")
+
+class _BitArray:
+    def __init__(self, count):
+        self.bits = [0 for i in range((count + 31) // 32)]
+        self.count = count
+
+    def set(self, i, v):
+        if v:
+            self.bits[i >> 5] |= 1 << (i & 31)
+        else:
+            self.bits[i >> 5] &= ~(1 << (i & 31))
+
+    def setAll(self, v):
+        if v:
+            for i in range(len(self.bits)):
+                self.bits[i] = 0xFFFFFFFF
+        else:
+            for i in range(len(self.bits)):
+                self.bits[i] = 0x00000000
+
+    def get(self, i):
+        return (self.bits[i >> 5] & (1 << (i & 31))) != 0
+
+class SvgPath:
+    def __init__(self):
+        self.path = ""
+
+    def MoveTo(self, x, y):
+        if int(x) == x and int(y) == y:
+            self.path += "M%d %d" % (x, y)
+        else:
+            self.path += "M%f %f" % (x, y)
+
+    def LineTo(self, x, y):
+        if int(x) == x and int(y) == y:
+            self.path += "L%d %d" % (x, y)
+        else:
+            self.path += "L%f %f" % (x, y)
+
+    def Close(self):
+        self.path += "Z"
+
+    def __str__(self):
+        return self.path
+
+def _isInside(rows, width, height, target, x, y):
+    pos = (y * width + x) * 3
+    # Right-hand side is true if the specified pixel is "black" (all zeros)
+    return target == ((rows[pos] | rows[pos + 1] | rows[pos + 2]) == 0)
+
+def _floodFillOuter(rows, width, height, rc, x, y, target, bits, fillbits):
+    # four-neighbor flood fill
+    w = rc[2] - rc[0]
+    xLeft = x
+    xRight = x
+    yFromOrg = y - rc[1]
+    xFromOrg = x - rc[0]
+    curpos = yFromOrg * w + xFromOrg
+    while True:
+        bits.set(curpos, True)
+        fillbits.set(curpos, True)
+        curpos -= 1
+        xLeft -= 1
+        if not (
+            xLeft >= rc[0]
+            and _isInside(rows, width, height, target, xLeft, y)
+            and not fillbits.get(curpos)
+        ):
+            break
+    xLeft += 1
+    curpos = yFromOrg * w + xFromOrg
+    while True:
+        bits.set(curpos, True)
+        fillbits.set(curpos, True)
+        curpos += 1
+        xRight += 1
+        if not (
+            xRight < rc[2]
+            and _isInside(rows, width, height, target, xRight, y)
+            and not fillbits.get(curpos)
+        ):
+            break
+    xRight -= 1
+    curpos = yFromOrg - w + (xLeft - rc[0])
+    for i in range(xLeft, xRight + 1):
+        above = (yFromOrg - 1) * w + (i - rc[0])
+        below = (yFromOrg + 1) * w + (i - rc[0])
+        if (
+            y > rc[1]
+            and _isInside(rows, width, height, target, i, y - 1)
+            and not fillbits.get(above)
+        ):
+            _floodFillOuter(rows, width, height, rc, i, y - 1, target, bits, fillbits)
+        if (
+            y < (rc[3] - 1)
+            and _isInside(rows, width, height, target, i, y + 1)
+            and not fillbits.get(below)
+        ):
+            _floodFillOuter(rows, width, height, rc, i, y + 1, target, bits, fillbits)
+
+def _floodFillInner(rows, width, height, rc, x, y, target, bits, fillbits):
+    # eight-neighbor flood fill
+    w = rc[2] - rc[0]
+    xLeft = x
+    xRight = x
+    yFromOrg = y - rc[1]
+    xFromOrg = x - rc[0]
+    curpos = yFromOrg * w + xFromOrg
+    while True:
+        bits.set(curpos, True)
+        fillbits.set(curpos, True)
+        curpos -= 1
+        xLeft -= 1
+        if not (
+            xLeft >= rc[0]
+            and _isInside(rows, width, height, target, xLeft, y)
+            and not fillbits.get(curpos)
+        ):
+            break
+    xLeft += 1
+    curpos = yFromOrg * w + xFromOrg
+    while True:
+        bits.set(curpos, True)
+        fillbits.set(curpos, True)
+        curpos += 1
+        xRight += 1
+        if not (
+            xRight < rc[2]
+            and _isInside(rows, width, height, target, xRight, y)
+            and not fillbits.get(curpos)
+        ):
+            break
+    xRight -= 1
+    curpos = yFromOrg - w + (xLeft - rc[0])
+    for i in range(xLeft, xRight + 1):
+        above = (yFromOrg - 1) * w + (i - rc[0])
+        below = (yFromOrg + 1) * w + (i - rc[0])
+        if y > rc[1]:
+            if _isInside(rows, width, height, target, i, y - 1) and not fillbits.get(
+                above
+            ):
+                _floodFillInner(
+                    rows, width, height, rc, i, y - 1, target, bits, fillbits
+                )
+            if (
+                i > rc[0]
+                and _isInside(rows, width, height, target, i - 1, y - 1)
+                and not fillbits.get(above - 1)
+            ):
+                _floodFillInner(
+                    rows, width, height, rc, i - 1, y - 1, target, bits, fillbits
+                )
+            if (
+                i < rc[2] - 1
+                and _isInside(rows, width, height, target, i + 1, y - 1)
+                and not fillbits.get(above + 1)
+            ):
+                _floodFillInner(
+                    rows, width, height, rc, i + 1, y - 1, target, bits, fillbits
+                )
+        if y < (rc[3] - 1):
+            if _isInside(rows, width, height, target, i, y + 1) and not fillbits.get(
+                below
+            ):
+                _floodFillInner(
+                    rows, width, height, rc, i, y + 1, target, bits, fillbits
+                )
+            if (
+                i > rc[0]
+                and _isInside(rows, width, height, target, i - 1, y + 1)
+                and not fillbits.get(below - 1)
+            ):
+                _floodFillInner(
+                    rows, width, height, rc, i - 1, y + 1, target, bits, fillbits
+                )
+            if (
+                i < rc[2] - 1
+                and _isInside(rows, width, height, target, i + 1, y + 1)
+                and not fillbits.get(below + 1)
+            ):
+                _floodFillInner(
+                    rows, width, height, rc, i + 1, y + 1, target, bits, fillbits
+                )
+
+# Returns an SVG path string of the outline traced by the
+# black pixels in the given image.  A black pixel has a red
+# component, green component, and blue component of 0.
+# Image has the same format returned by the _desktopwallpaper_ module's
+# blankimage() method with alpha=False.
+def pathFromBitmap(ibi, width, height):
+    path = SvgPath()
+    _pathFromBitmapEx(ibi, width, height, [0, 0, width, height], path, 1)
+    return str(path)
+
+def _pathFromBitmapEx(ibi, width, height, rcExtent, path, targetPixel):
+    rows = None
+    if not ibi:
+        raise ValueError
+    if not path:
+        raise ValueError
+    target = targetPixel != 0
+    notTarget = targetPixel == 0
+    rows = ibi
+    rcClip = [0, 0, 0, 0]
+    rcClip[0] = max(0, min(rcExtent[0], rcExtent[2]))
+    rcClip[1] = max(0, min(rcExtent[1], rcExtent[3]))
+    rcClip[2] = min(width, max(rcExtent[0], rcExtent[2]))
+    rcClip[3] = min(height, max(rcExtent[1], rcExtent[3]))
+    rc = rcExtent
+    w = rc[2] - rc[0]
+    h = rc[3] - rc[1]
+    bits = _BitArray(w * h)
+    fillbits = _BitArray(w * h)
+    bitindex = 0
+    for y in range(rc[1], rc[3]):
+        for x in range(rc[0], rc[2]):
+            if not bits.get(bitindex):
+                if _isInside(rows, width, height, target, x, y):
+                    _traceShape(rows, width, height, rc, x, y, target, bits, path)
+                    fillbits.setAll(False)
+                    _floodFillOuter(
+                        rows, width, height, rc, x, y, target, bits, fillbits
+                    )
+                else:
+                    if x == rc[0] or x == rc[2] - 1 or y == rc[1] or y == rc[3] - 1:
+                        fillbits.setAll(False)
+                        _floodFillInner(
+                            rows, width, height, rc, x, y, notTarget, bits, fillbits
+                        )
+                    else:
+                        point = [0, 0]
+                        fillbits.setAll(False)
+                        _floodFillInnerCheck(
+                            rows, width, height, rc, x, y, notTarget, fillbits, point
+                        )
+                        if point[0] != rc[2] - 1 and point[1] != rc[3] - 1:
+                            _traceShapeInner(
+                                rows, width, height, rc, x, y, notTarget, bits, path
+                            )
+                        fillbits.setAll(False)
+                        _floodFillInner(
+                            rows, width, height, rc, x, y, notTarget, bits, fillbits
+                        )
+            bitindex += 1
+
+DIR_LEFT = 0
+DIR_RIGHT = 1
+DIR_UP = 2
+DIR_DOWN = 3
+
+def _traceShape(rows, width, height, rc, x, y, target, bits, path):
+    # Start from the right, then go clockwise around
+    # the path
+    direction = DIR_RIGHT
+    xBegin = x
+    yBegin = y
+    xLast = x
+    yLast = y
+    right1 = rc[2] - 1
+    bottom1 = rc[3] - 1
+    path.MoveTo(x, y)
+    while True:
+        if not (x >= rc[0]):
+            raise ValueError
+        if not (y >= rc[1]):
+            raise ValueError
+        if not (x <= rc[2]):
+            raise ValueError
+        if not (y <= rc[3]):
+            raise ValueError
+        # Console.WriteLine("%d | %d %d [%d
+        # %d]",direction,xLast,yLast,xBegin,yBegin);
+        if direction == DIR_RIGHT:
+            xLast = x + 1
+            if not (x < rc[2]):
+                raise ValueError
+            if x != right1 and _isInside(rows, width, height, target, x + 1, y):
+                if y != rc[1] and _isInside(rows, width, height, target, x + 1, y - 1):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_UP
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_DOWN
+            x += 1
+        elif direction == DIR_LEFT:
+            xLast = x - 1
+            if not (x > rc[0]):
+                raise ValueError
+            if (
+                x > rc[0] + 1
+                and y != rc[1]
+                and _isInside(rows, width, height, target, x - 2, y - 1)
+            ):
+                if y != rc[3] and _isInside(rows, width, height, target, x - 2, y):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_DOWN
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_UP
+            x -= 1
+        elif direction == DIR_DOWN:
+            yLast = y + 1
+            if not (x > rc[0]):
+                raise ValueError
+            if y != bottom1 and _isInside(rows, width, height, target, x - 1, y + 1):
+                if x != rc[2] and _isInside(rows, width, height, target, x, y + 1):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_RIGHT
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_LEFT
+            y += 1
+        elif direction == DIR_UP:
+            yLast = y - 1
+            if not (x < rc[2]):
+                raise ValueError
+            if y > rc[1] + 1 and _isInside(rows, width, height, target, x, y - 2):
+                if x != rc[0] and _isInside(rows, width, height, target, x - 1, y - 2):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_LEFT
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_RIGHT
+            y -= 1
+        if not (x != xBegin or y != yBegin):
+            break
+    path.Close()
+
+def _floodFillInnerCheck(rows, width, height, rc, x, y, target, fillbits, point):
+    # eight-neighbor flood fill
+    w = rc[2] - rc[0]
+    xLeft = x
+    xRight = x
+    yFromOrg = y - rc[1]
+    xFromOrg = x - rc[0]
+    curpos = yFromOrg * w + xFromOrg
+    while True:
+        fillbits.set(curpos, True)
+        point[0] = max(point[0], xLeft)
+        point[1] = max(point[1], y)
+        curpos -= 1
+        xLeft -= 1
+        if not (
+            xLeft >= rc[0]
+            and _isInside(rows, width, height, target, xLeft, y)
+            and not fillbits.get(curpos)
+        ):
+            break
+    xLeft += 1
+    curpos = yFromOrg * w + xFromOrg
+    while True:
+        fillbits.set(curpos, True)
+        point[0] = max(point[0], xRight)
+        point[1] = max(point[1], y)
+        curpos += 1
+        xRight += 1
+        if not (
+            xRight < rc[2]
+            and _isInside(rows, width, height, target, xRight, y)
+            and not fillbits.get(curpos)
+        ):
+            break
+    xRight -= 1
+    curpos = yFromOrg - w + (xLeft - rc[0])
+    for i in range(xLeft, xRight + 1):
+        above = (yFromOrg - 1) * w + (i - rc[0])
+        below = (yFromOrg + 1) * w + (i - rc[0])
+        if y > rc[1]:
+            if _isInside(rows, width, height, target, i, y - 1) and not fillbits.get(
+                above
+            ):
+                _floodFillInnerCheck(
+                    rows, width, height, rc, i, y - 1, target, fillbits, point
+                )
+            if (
+                i > rc[0]
+                and _isInside(rows, width, height, target, i - 1, y - 1)
+                and not fillbits.get(above - 1)
+            ):
+                _floodFillInnerCheck(
+                    rows, width, height, rc, i - 1, y - 1, target, fillbits, point
+                )
+            if (
+                i < rc[2] - 1
+                and _isInside(rows, width, height, target, i + 1, y - 1)
+                and not fillbits.get(above + 1)
+            ):
+                _floodFillInnerCheck(
+                    rows, width, height, rc, i + 1, y - 1, target, fillbits, point
+                )
+        if y < (rc[3] - 1):
+            if _isInside(rows, width, height, target, i, y + 1) and not fillbits.get(
+                below
+            ):
+                _floodFillInnerCheck(
+                    rows, width, height, rc, i, y + 1, target, fillbits, point
+                )
+            if (
+                i > rc[0]
+                and _isInside(rows, width, height, target, i - 1, y + 1)
+                and not fillbits.get(below - 1)
+            ):
+                _floodFillInnerCheck(
+                    rows, width, height, rc, i - 1, y + 1, target, fillbits, point
+                )
+            if (
+                i < rc[2] - 1
+                and _isInside(rows, width, height, target, i + 1, y + 1)
+                and not fillbits.get(below + 1)
+            ):
+                _floodFillInnerCheck(
+                    rows, width, height, rc, i + 1, y + 1, target, fillbits, point
+                )
+
+def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
+    # Start down, then go clockwise around
+    # the path
+    direction = DIR_DOWN
+    xBegin = x
+    yBegin = y
+    xLast = x
+    yLast = y
+    right1 = rc[2] - 1
+    bottom1 = rc[3] - 1
+    path.MoveTo(x, y)
+    while True:
+        if not (x >= rc[0]):
+            raise ValueError
+        if not (y >= rc[1]):
+            raise ValueError
+        if not (x <= rc[2]):
+            raise ValueError
+        if not (y <= rc[3]):
+            raise ValueError
+        # Console.WriteLine("" + direction + " | " + xLast + " " + yLast + " [" +
+        # xBegin + " " + yBegin + "]");
+        if direction == DIR_RIGHT:
+            xLast = x + 1
+            if not (x < rc[2]):
+                raise ValueError
+            if (
+                x != right1
+                and y != rc[1]
+                and _isInside(rows, width, height, target, x + 1, y - 1)
+            ):
+                if y != rc[3] and _isInside(rows, width, height, target, x + 1, y):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_DOWN
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_UP
+            x += 1
+        elif direction == DIR_LEFT:
+            xLast = x - 1
+            if not (x > rc[0]):
+                raise ValueError
+            if (
+                x > rc[0] + 1
+                and y != rc[3]
+                and _isInside(rows, width, height, target, x - 2, y)
+            ):
+                if y != rc[1] and _isInside(rows, width, height, target, x - 2, y - 1):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_UP
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_DOWN
+            x -= 1
+        elif direction == DIR_DOWN:
+            yLast = y + 1
+            if not (x > rc[0]):
+                raise ValueError
+            if (
+                y != bottom1
+                and x != rc[2]
+                and _isInside(rows, width, height, target, x, y + 1)
+            ):
+                if x != rc[0] and _isInside(rows, width, height, target, x - 1, y + 1):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_LEFT
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_RIGHT
+            y += 1
+        elif direction == DIR_UP:
+            yLast = y - 1
+            if not (x < rc[2]):
+                raise ValueError
+            if (
+                y > rc[1] + 1
+                and x != rc[0]
+                and _isInside(rows, width, height, target, x - 1, y - 2)
+            ):
+                if x != rc[2] and _isInside(rows, width, height, target, x, y - 2):
+                    path.LineTo(xLast, yLast)
+                    direction = DIR_RIGHT
+            else:
+                path.LineTo(xLast, yLast)
+                direction = DIR_LEFT
+            y -= 1
+        if not (x != xBegin or y != yBegin):
+            break
+    path.Close()
