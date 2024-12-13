@@ -4180,9 +4180,9 @@ def affine(
             if smoothing:
                 pixel = imagept(srcimage, srcwidth, srcheight, tx, ty, alpha=alpha)
                 if alpha:
-                    setpixelalpha(img, width, height, x, y, pixel)
+                    setpixelalpha(dstimage, dstwidth, dstheight, x, y, pixel)
                 else:
-                    setpixel(img, width, height, x, y, pixel)
+                    setpixel(dstimage, dstwidth, dstheight, x, y, pixel)
             else:
                 tx = int(tx) % srcwidth
                 ty = int(ty) % srcheight

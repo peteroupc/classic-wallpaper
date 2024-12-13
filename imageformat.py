@@ -287,6 +287,10 @@ def writeanicursor(
             0x16,
         )
         iconheaders.append(iconheader)
+        # Assert icon chunk size is even, to avoid problems
+        # when the file is read
+        if imagesize % 2 == 0:
+            raise ValueError
         listchunk[2].append([b"icon", 0x16 + imagesize])
     f = open(outfile, "xb" if raiseIfExists else "wb")
     multiIcon = len(images) > 1 or not singleFrameAsCur
@@ -321,6 +325,8 @@ def writeanicursor(
                     if multiIcon:
                         _writeChunkHead(f, sub2)
                     if sub2[0] == b"icon":
+                        # NOTE: Size of this chunk is always even, so no
+                        # padding at the end of the chunk is necessary
                         numuniques = numuniqueslist[i]
                         bpp = bpplist[i]
                         scansize = ((width * bpp + 31) >> 5) << 2
@@ -1943,7 +1949,7 @@ def readanimicon(infile):
         sz = struct.unpack("<L", f.read(4))[0]
         if sz < 4:
             return ret
-        endpos = f.tell() + sz
+        endpos = f.tell() + sz + (sz & 1)
         fcc = f.read(4)
         if fcc != b"ACON":
             return ret
@@ -1965,23 +1971,31 @@ def readanimicon(infile):
                     if not haveAnih:
                         return ret
                     content = io.BytesIO(f.read(sz - 4))
+                    # adjust in case chunk size is odd (see Win32
+                    # documentation for mmioAscend function).
+                    if (sz & 1) == 1:
+                        f.read(1)
                     while True:
                         if content.tell() == listSz - 4:
                             break
                         fcc = content.read(4)
+                        if len(fcc) != 4:
+                            return []
                         sz = struct.unpack("<L", content.read(4))[0]
                         if fcc == b"icon":
                             icon = _readwinicon(io.BytesIO(content.read(sz)))
+                            if (sz & 1) == 1:
+                                content.read(1)
                             ret.append(icon)
                         else:
-                            content.seek(f.tell() + sz)
+                            content.seek(f.tell() + sz + (sz & 1))
                     if len(ret) != anih[1]:
                         raise ValueError
                     if seq:
                         ret = [_dup(ret[frame]) for frame in seq]
                     return ret
                 else:
-                    f.seek(f.tell() + sz - 4)
+                    f.seek(f.tell() + sz - 4 + (sz & 1))
             elif fcc == b"anih":
                 if haveAnih:
                     return ret
@@ -2005,7 +2019,7 @@ def readanimicon(infile):
                         raise ValueError
                     seq.append(frame)
             else:
-                f.seek(f.tell() + sz)
+                f.seek(f.tell() + sz + (sz & 1))
     finally:
         f.close()
 
