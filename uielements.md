@@ -92,12 +92,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 - In a single pixel dimension, generally 32 &times; 32, except to account for [logical display resolution](#logical-display-resolutions).
 - In black and white or in grayscale (with colors limited to white, black, and other gray tones), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
-> **Note:** Icons and cursors with no translucent pixels are often stored in the form of an _XOR mask_ (color mask) as well as an _AND mask_ ("inverted alpha" mask) where each pixel is either 0 or 1, a format that additionally allows for so-called "inverted pixels".
->
->  1. First, the output pixels are combined using a bit-by-bit AND operation with the pixels in the AND mask, so that the output pixels become "black" (all bits zeros) where the AND mask pixel equals 0, in the _opaque_ areas of the icon or cursor, and left unchanged elsewhere.
->  2. Then, the output pixels are combined using a bit-by-bit exclusive-OR (XOR) operation with the pixels in the XOR mask, so that, among other things, the mask is copied to the output where the output is "black" (all its bits are zeros), and the rest of the output is inverted where the mask is "white" (all its bits are ones).
->
->  For icons and cursors with only colored and transparent pixels (and no inverted pixels), the XOR mask should be "black" (all bits zeros) wherever the AND mask pixel equals 1.
+> **Note:** Icon formats for OS/2 and Windows allow for icons with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [`imageformat` module documentation](./imageformat.html).
 
 ## Animations
 

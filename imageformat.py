@@ -1465,9 +1465,9 @@ def _rle4decompress(bitdata, dst, width, height):
                         bits += 1
 
 # Reads an OS/2 icon, mouse pointer (cursor), bitmap, or bitmap array,
-# or a Windows icon or cursor.
+# or a Windows bitmap, icon, or cursor.
 # OS/2 and Windows icons have the '.ico' file extension; OS/2 cursors, '.ptr';
-# OS/2 bitmaps, '.bmp'; and Windows cursors, '.cur'.
+# OS/2 and Windows bitmaps, '.bmp'; and Windows cursors, '.cur'.
 # Returns a list of five-element lists, representing the decoded images
 # in the order in which they were read.  If an icon, pointer, or
 # bitmap could not be read, the value None takes the place of the
@@ -1485,6 +1485,36 @@ def _rle4decompress(bitdata, dst, width, height):
 # the screen colors, this feature is not supported in images returned by
 # this function; areas where the icon or cursor would invert screen colors
 # are treated as transparent instead.
+#
+# NOTE: Windows icons and cursors (and OS/2 two-color icons and cursors) are
+# stored in the form of an _XOR mask_ (color mask) as well as an _AND mask_
+# ("inverted alpha" mask) where each pixel is either 0 or 1, a format that
+# additionally allows for so-called "inverted pixels", where some existing
+# pixels have their colors inverted.
+# 1. First, the output pixels are combined using a bit-by-bit AND operation
+# with the pixels in the AND mask, so that the output pixels become "black"
+# (all bits zeros) where the AND mask pixel equals 0, in the _opaque_ areas
+# of the icon or cursor, and left unchanged elsewhere.
+# 2. Then, the output pixels are combined using a bit-by-bit exclusive-OR
+# (XOR) operation with the pixels in the XOR mask, so that, among other things,
+# the mask is copied to the output where the output is "black" (all its bits
+# are zeros), and the rest of the output is inverted where the mask is "white"
+# (all its bits are ones).
+# For icons and cursors with only colored and transparent pixels (and no
+# inverted, translucent, or semitransparent pixels), the XOR mask should be
+# "black" (all bits zeros) wherever
+# the AND mask pixel equals 1.  Later versions of Windows also allow for icons
+# in Portable Network Graphics (PNG) format and icons where the XOR mask is 32
+# bits per pixel, 8 of which is an _alpha component_ (an opacity value from 0,
+# transparent, through 255, opaque); the latter kind of icon is drawn as
+# follows: Where the AND mask is 0, the XOR mask's pixels are blended onto
+# the output pixels with the given alpha component as opacity, and where
+# the AND mask is 1, the output pixels are left unchanged.
+# OS/2 color icons employ three masks: a two-level AND mask, a two level XOR
+# mask, and a color mask: where the AND mask is 0, the color mask is copied to
+# the output; otherwise, where the XOR mask is 1, the output's colors are
+# inverted; otherwise, the output is left unchanged (see "Bitmap File Format",
+# in the _Presentation Manager Programming Guide and Reference_).
 def reados2icon(infile):
     f = open(infile, "rb")
     try:
@@ -1647,11 +1677,14 @@ def _readwinpal(f):
             if sz < 4:
                 raise ValueError
             info = struct.unpack("<HH", f.read(4))
-            if info[0] != 0x300 or info[1] * 4 + 4 != sz:
+            print([info[0], info[1] * 4 + 8, sz])
+            if info[0] != 0x300:
                 raise ValueError
+            if info[1] * 4 + 4 != sz:
+                return None
             for i in range(info[1]):
                 color = struct.unpack("<BBBB", f.read(4))
-                ret.append(color[0], color[1], color[2])
+                ret.append([color[0], color[1], color[2]])
             return ret
         else:
             f.seek(f.tell() + sz)
@@ -1775,8 +1808,17 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
             row = scanSize * (height - 1 - y)
             ret = byteData[row + x * 2 : row + x * 2 + 2]
             v = ret[0] | (ret[1] << 8)
+            vr, vg, vb = (
+                ((v) & 0x1F) << 3,
+                ((v >> 5) & 0x1F) << 3,
+                ((v >> 10) & 0x1F) << 3,
+            )
             return bytes(
-                [((v) & 0x1F) << 3, ((v >> 5) & 0x1F) << 3, ((v >> 10) & 0x1F) << 3]
+                [
+                    0xFF if vr == 0x1F else vr,
+                    0xFF if vg == 0x1F else vg,
+                    0xFF if vb == 0x1F else vb,
+                ]
             )
         case 24:
             row = scanSize * (height - 1 - y)

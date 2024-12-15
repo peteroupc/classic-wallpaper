@@ -2731,8 +2731,8 @@ def bordereddithergradientbox(
 # pixels between the two extremes. (Reducing the alpha channel
 # by dithering is also known as stippled or screen-door
 # transparency.)  If False, the conversion is
-# done by thresholding: alpha values 127 or below become 0, and
-# alpha values 128 or higher become 255.  Default is False
+# done by thresholding: alpha values 127 or below become 0 (transparent), and
+# alpha values 128 or higher become 255 (opaque).  Default is False
 def alphaToTwoLevel(image, width, height, dither=False):
     i = 0
     for y in range(height):
@@ -2878,8 +2878,8 @@ def interlace(image, width, height, alpha=False):
 # the third, its red component; the fourth, if present, is the color's alpha
 # component or _opacity_ (0 if the color is transparent; 255 if opaque; otherwise,
 # the color is translucent or semitransparent). Each component is an integer
-# from 0 through 255.  In this format, lower-intensity values are
-# generally "darker", higher-intensity values "lighter", so that [0,0,0,255] (4 bytes per pixel)
+# from 0 through 255.  In this format, lower-intensity red, green, or blue components are
+# generally "darker", higher-intensity components "lighter", so that [0,0,0,255] (4 bytes per pixel)
 # or [0,0,0] (3 bytes per pixel) is "black", and [255,255,255,255] or [255,255,255] is "white".
 # Each color in the returned image is assumed to be in the nonlinear sRGB color space.
 #
@@ -4327,9 +4327,10 @@ def _linearmask(width, height, x, y):
     vy = abs((y / height) * 2.0 - 1.0)
     return max(vx, vy)
 
-# Makes a tileable image from a not necessarily tileable images, by blending
+# Makes a tileable image from a not necessarily tileable image, by blending
 # the image's edge with its middle.
-# Image has the same format returned by the blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
+# Image has the same format returned by the blankimage() method
+# with the given value of 'alpha' (default value for 'alpha' is False).
 #
 # Blending Note: Operations that involve the blending of two RGB (red-green-
 # blue) colors work best if the RGB color space is linear.  This is not the case

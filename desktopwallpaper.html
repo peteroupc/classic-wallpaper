@@ -165,8 +165,8 @@ Data descriptors defined here:<br>
 #&nbsp;pixels&nbsp;between&nbsp;the&nbsp;two&nbsp;extremes.&nbsp;(Reducing&nbsp;the&nbsp;alpha&nbsp;channel<br>
 #&nbsp;by&nbsp;dithering&nbsp;is&nbsp;also&nbsp;known&nbsp;as&nbsp;stippled&nbsp;or&nbsp;screen-door<br>
 #&nbsp;transparency.)&nbsp;&nbsp;If&nbsp;False,&nbsp;the&nbsp;conversion&nbsp;is<br>
-#&nbsp;done&nbsp;by&nbsp;thresholding:&nbsp;alpha&nbsp;values&nbsp;127&nbsp;or&nbsp;below&nbsp;become&nbsp;0,&nbsp;and<br>
-#&nbsp;alpha&nbsp;values&nbsp;128&nbsp;or&nbsp;higher&nbsp;become&nbsp;255.&nbsp;&nbsp;Default&nbsp;is&nbsp;False</span></dd></dl>
+#&nbsp;done&nbsp;by&nbsp;thresholding:&nbsp;alpha&nbsp;values&nbsp;127&nbsp;or&nbsp;below&nbsp;become&nbsp;0&nbsp;(transparent),&nbsp;and<br>
+#&nbsp;alpha&nbsp;values&nbsp;128&nbsp;or&nbsp;higher&nbsp;become&nbsp;255&nbsp;(opaque).&nbsp;&nbsp;Default&nbsp;is&nbsp;False</span></dd></dl>
  <dl><dt><a name="-argyle"><strong>argyle</strong></a>(
     foregroundImage,
     backgroundImage,
@@ -201,8 +201,8 @@ Data descriptors defined here:<br>
 #&nbsp;the&nbsp;third,&nbsp;its&nbsp;red&nbsp;component;&nbsp;the&nbsp;fourth,&nbsp;if&nbsp;present,&nbsp;is&nbsp;the&nbsp;color's&nbsp;alpha<br>
 #&nbsp;component&nbsp;or&nbsp;_opacity_&nbsp;(0&nbsp;if&nbsp;the&nbsp;color&nbsp;is&nbsp;transparent;&nbsp;255&nbsp;if&nbsp;opaque;&nbsp;otherwise,<br>
 #&nbsp;the&nbsp;color&nbsp;is&nbsp;translucent&nbsp;or&nbsp;semitransparent).&nbsp;Each&nbsp;component&nbsp;is&nbsp;an&nbsp;integer<br>
-#&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;In&nbsp;this&nbsp;format,&nbsp;lower-intensity&nbsp;values&nbsp;are<br>
-#&nbsp;generally&nbsp;"darker",&nbsp;higher-intensity&nbsp;values&nbsp;"lighter",&nbsp;so&nbsp;that&nbsp;[0,0,0,255]&nbsp;(4&nbsp;bytes&nbsp;per&nbsp;pixel)<br>
+#&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;In&nbsp;this&nbsp;format,&nbsp;lower-intensity&nbsp;red,&nbsp;green,&nbsp;or&nbsp;blue&nbsp;components&nbsp;are<br>
+#&nbsp;generally&nbsp;"darker",&nbsp;higher-intensity&nbsp;components&nbsp;"lighter",&nbsp;so&nbsp;that&nbsp;[0,0,0,255]&nbsp;(4&nbsp;bytes&nbsp;per&nbsp;pixel)<br>
 #&nbsp;or&nbsp;[0,0,0]&nbsp;(3&nbsp;bytes&nbsp;per&nbsp;pixel)&nbsp;is&nbsp;"black",&nbsp;and&nbsp;[255,255,255,255]&nbsp;or&nbsp;[255,255,255]&nbsp;is&nbsp;"white".<br>
 #&nbsp;Each&nbsp;color&nbsp;in&nbsp;the&nbsp;returned&nbsp;image&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;in&nbsp;the&nbsp;nonlinear&nbsp;sRGB&nbsp;color&nbsp;space.<br>
 #<br>
@@ -917,9 +917,10 @@ Data descriptors defined here:<br>
 #&nbsp;image's&nbsp;colors&nbsp;are&nbsp;then&nbsp;scattered&nbsp;so&nbsp;that&nbsp;they&nbsp;appear&nbsp;close&nbsp;to&nbsp;the&nbsp;original&nbsp;colors.<br>
 #&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;'basecolors'&nbsp;has&nbsp;a&nbsp;length&nbsp;greater&nbsp;than&nbsp;256.</span></dd></dl>
  <dl><dt><a name="-magickgradientditherfilterrandom"><strong>magickgradientditherfilterrandom</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
- <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Makes&nbsp;a&nbsp;tileable&nbsp;image&nbsp;from&nbsp;a&nbsp;not&nbsp;necessarily&nbsp;tileable&nbsp;images,&nbsp;by&nbsp;blending<br>
+ <dl><dt><a name="-maketileable"><strong>maketileable</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Makes&nbsp;a&nbsp;tileable&nbsp;image&nbsp;from&nbsp;a&nbsp;not&nbsp;necessarily&nbsp;tileable&nbsp;image,&nbsp;by&nbsp;blending<br>
 #&nbsp;the&nbsp;image's&nbsp;edge&nbsp;with&nbsp;its&nbsp;middle.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method<br>
+#&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #<br>
 #&nbsp;Blending&nbsp;Note:&nbsp;Operations&nbsp;that&nbsp;involve&nbsp;the&nbsp;blending&nbsp;of&nbsp;two&nbsp;RGB&nbsp;(red-green-<br>
 #&nbsp;blue)&nbsp;colors&nbsp;work&nbsp;best&nbsp;if&nbsp;the&nbsp;RGB&nbsp;color&nbsp;space&nbsp;is&nbsp;linear.&nbsp;&nbsp;This&nbsp;is&nbsp;not&nbsp;the&nbsp;case<br>

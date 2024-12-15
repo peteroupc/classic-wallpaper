@@ -139,9 +139,9 @@ Data descriptors defined here:<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;elements,&nbsp;each&nbsp;of&nbsp;which&nbsp;has&nbsp;the&nbsp;format&nbsp;described<br>
 #&nbsp;in&nbsp;the&nbsp;_reados2icon_&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-reados2icon"><strong>reados2icon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;an&nbsp;OS/2&nbsp;icon,&nbsp;mouse&nbsp;pointer&nbsp;(cursor),&nbsp;bitmap,&nbsp;or&nbsp;bitmap&nbsp;array,<br>
-#&nbsp;or&nbsp;a&nbsp;Windows&nbsp;icon&nbsp;or&nbsp;cursor.<br>
+#&nbsp;or&nbsp;a&nbsp;Windows&nbsp;bitmap,&nbsp;icon,&nbsp;or&nbsp;cursor.<br>
 #&nbsp;OS/2&nbsp;and&nbsp;Windows&nbsp;icons&nbsp;have&nbsp;the&nbsp;'.ico'&nbsp;file&nbsp;extension;&nbsp;OS/2&nbsp;cursors,&nbsp;'.ptr';<br>
-#&nbsp;OS/2&nbsp;bitmaps,&nbsp;'.bmp';&nbsp;and&nbsp;Windows&nbsp;cursors,&nbsp;'.cur'.<br>
+#&nbsp;OS/2&nbsp;and&nbsp;Windows&nbsp;bitmaps,&nbsp;'.bmp';&nbsp;and&nbsp;Windows&nbsp;cursors,&nbsp;'.cur'.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;five-element&nbsp;lists,&nbsp;representing&nbsp;the&nbsp;decoded&nbsp;images<br>
 #&nbsp;in&nbsp;the&nbsp;order&nbsp;in&nbsp;which&nbsp;they&nbsp;were&nbsp;read.&nbsp;&nbsp;If&nbsp;an&nbsp;icon,&nbsp;pointer,&nbsp;or<br>
 #&nbsp;bitmap&nbsp;could&nbsp;not&nbsp;be&nbsp;read,&nbsp;the&nbsp;value&nbsp;None&nbsp;takes&nbsp;the&nbsp;place&nbsp;of&nbsp;the<br>
@@ -158,7 +158,37 @@ Data descriptors defined here:<br>
 #&nbsp;2.&nbsp;Although&nbsp;OS/2&nbsp;and&nbsp;Windows&nbsp;icons&nbsp;and&nbsp;cursors&nbsp;support&nbsp;pixels&nbsp;that&nbsp;invert<br>
 #&nbsp;the&nbsp;screen&nbsp;colors,&nbsp;this&nbsp;feature&nbsp;is&nbsp;not&nbsp;supported&nbsp;in&nbsp;images&nbsp;returned&nbsp;by<br>
 #&nbsp;this&nbsp;function;&nbsp;areas&nbsp;where&nbsp;the&nbsp;icon&nbsp;or&nbsp;cursor&nbsp;would&nbsp;invert&nbsp;screen&nbsp;colors<br>
-#&nbsp;are&nbsp;treated&nbsp;as&nbsp;transparent&nbsp;instead.</span></dd></dl>
+#&nbsp;are&nbsp;treated&nbsp;as&nbsp;transparent&nbsp;instead.<br>
+#<br>
+#&nbsp;NOTE:&nbsp;Windows&nbsp;icons&nbsp;and&nbsp;cursors&nbsp;(and&nbsp;OS/2&nbsp;two-color&nbsp;icons&nbsp;and&nbsp;cursors)&nbsp;are<br>
+#&nbsp;stored&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;an&nbsp;_XOR&nbsp;mask_&nbsp;(color&nbsp;mask)&nbsp;as&nbsp;well&nbsp;as&nbsp;an&nbsp;_AND&nbsp;mask_<br>
+#&nbsp;("inverted&nbsp;alpha"&nbsp;mask)&nbsp;where&nbsp;each&nbsp;pixel&nbsp;is&nbsp;either&nbsp;0&nbsp;or&nbsp;1,&nbsp;a&nbsp;format&nbsp;that<br>
+#&nbsp;additionally&nbsp;allows&nbsp;for&nbsp;so-called&nbsp;"inverted&nbsp;pixels",&nbsp;where&nbsp;some&nbsp;existing<br>
+#&nbsp;pixels&nbsp;have&nbsp;their&nbsp;colors&nbsp;inverted.<br>
+#&nbsp;1.&nbsp;First,&nbsp;the&nbsp;output&nbsp;pixels&nbsp;are&nbsp;combined&nbsp;using&nbsp;a&nbsp;bit-by-bit&nbsp;AND&nbsp;operation<br>
+#&nbsp;with&nbsp;the&nbsp;pixels&nbsp;in&nbsp;the&nbsp;AND&nbsp;mask,&nbsp;so&nbsp;that&nbsp;the&nbsp;output&nbsp;pixels&nbsp;become&nbsp;"black"<br>
+#&nbsp;(all&nbsp;bits&nbsp;zeros)&nbsp;where&nbsp;the&nbsp;AND&nbsp;mask&nbsp;pixel&nbsp;equals&nbsp;0,&nbsp;in&nbsp;the&nbsp;_opaque_&nbsp;areas<br>
+#&nbsp;of&nbsp;the&nbsp;icon&nbsp;or&nbsp;cursor,&nbsp;and&nbsp;left&nbsp;unchanged&nbsp;elsewhere.<br>
+#&nbsp;2.&nbsp;Then,&nbsp;the&nbsp;output&nbsp;pixels&nbsp;are&nbsp;combined&nbsp;using&nbsp;a&nbsp;bit-by-bit&nbsp;exclusive-OR<br>
+#&nbsp;(XOR)&nbsp;operation&nbsp;with&nbsp;the&nbsp;pixels&nbsp;in&nbsp;the&nbsp;XOR&nbsp;mask,&nbsp;so&nbsp;that,&nbsp;among&nbsp;other&nbsp;things,<br>
+#&nbsp;the&nbsp;mask&nbsp;is&nbsp;copied&nbsp;to&nbsp;the&nbsp;output&nbsp;where&nbsp;the&nbsp;output&nbsp;is&nbsp;"black"&nbsp;(all&nbsp;its&nbsp;bits<br>
+#&nbsp;are&nbsp;zeros),&nbsp;and&nbsp;the&nbsp;rest&nbsp;of&nbsp;the&nbsp;output&nbsp;is&nbsp;inverted&nbsp;where&nbsp;the&nbsp;mask&nbsp;is&nbsp;"white"<br>
+#&nbsp;(all&nbsp;its&nbsp;bits&nbsp;are&nbsp;ones).<br>
+#&nbsp;For&nbsp;icons&nbsp;and&nbsp;cursors&nbsp;with&nbsp;only&nbsp;colored&nbsp;and&nbsp;transparent&nbsp;pixels&nbsp;(and&nbsp;no<br>
+#&nbsp;inverted,&nbsp;translucent,&nbsp;or&nbsp;semitransparent&nbsp;pixels),&nbsp;the&nbsp;XOR&nbsp;mask&nbsp;should&nbsp;be<br>
+#&nbsp;"black"&nbsp;(all&nbsp;bits&nbsp;zeros)&nbsp;wherever<br>
+#&nbsp;the&nbsp;AND&nbsp;mask&nbsp;pixel&nbsp;equals&nbsp;1.&nbsp;&nbsp;Later&nbsp;versions&nbsp;of&nbsp;Windows&nbsp;also&nbsp;allow&nbsp;for&nbsp;icons<br>
+#&nbsp;in&nbsp;Portable&nbsp;Network&nbsp;Graphics&nbsp;(PNG)&nbsp;format&nbsp;and&nbsp;icons&nbsp;where&nbsp;the&nbsp;XOR&nbsp;mask&nbsp;is&nbsp;32<br>
+#&nbsp;bits&nbsp;per&nbsp;pixel,&nbsp;8&nbsp;of&nbsp;which&nbsp;is&nbsp;an&nbsp;_alpha&nbsp;component_&nbsp;(an&nbsp;opacity&nbsp;value&nbsp;from&nbsp;0,<br>
+#&nbsp;transparent,&nbsp;through&nbsp;255,&nbsp;opaque);&nbsp;the&nbsp;latter&nbsp;kind&nbsp;of&nbsp;icon&nbsp;is&nbsp;drawn&nbsp;as<br>
+#&nbsp;follows:&nbsp;Where&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;0,&nbsp;the&nbsp;XOR&nbsp;mask's&nbsp;pixels&nbsp;are&nbsp;blended&nbsp;onto<br>
+#&nbsp;the&nbsp;output&nbsp;pixels&nbsp;with&nbsp;the&nbsp;given&nbsp;alpha&nbsp;component&nbsp;as&nbsp;opacity,&nbsp;and&nbsp;where<br>
+#&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;1,&nbsp;the&nbsp;output&nbsp;pixels&nbsp;are&nbsp;left&nbsp;unchanged.<br>
+#&nbsp;OS/2&nbsp;color&nbsp;icons&nbsp;employ&nbsp;three&nbsp;masks:&nbsp;a&nbsp;two-level&nbsp;AND&nbsp;mask,&nbsp;a&nbsp;two&nbsp;level&nbsp;XOR<br>
+#&nbsp;mask,&nbsp;and&nbsp;a&nbsp;color&nbsp;mask:&nbsp;where&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;0,&nbsp;the&nbsp;color&nbsp;mask&nbsp;is&nbsp;copied&nbsp;to<br>
+#&nbsp;the&nbsp;output;&nbsp;otherwise,&nbsp;where&nbsp;the&nbsp;XOR&nbsp;mask&nbsp;is&nbsp;1,&nbsp;the&nbsp;output's&nbsp;colors&nbsp;are<br>
+#&nbsp;inverted;&nbsp;otherwise,&nbsp;the&nbsp;output&nbsp;is&nbsp;left&nbsp;unchanged&nbsp;(see&nbsp;"Bitmap&nbsp;File&nbsp;Format",<br>
+#&nbsp;in&nbsp;the&nbsp;_Presentation&nbsp;Manager&nbsp;Programming&nbsp;Guide&nbsp;and&nbsp;Reference_).</span></dd></dl>
  <dl><dt><a name="-reados2iconcore"><strong>reados2iconcore</strong></a>(f)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;'reados2icon',&nbsp;but&nbsp;takes&nbsp;an&nbsp;I/O&nbsp;<a href="builtins.html#object">object</a>&nbsp;such&nbsp;as&nbsp;one<br>
 #&nbsp;returned&nbsp;by&nbsp;Python's&nbsp;'open'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;or&nbsp;Windows&nbsp;palette&nbsp;file.<br>
