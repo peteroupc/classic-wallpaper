@@ -6,7 +6,7 @@
 import random
 import desktopwallpaper as dw
 
-def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40, palette=None):
+def scatteredIconAnimationOverlay(icons, bgwidth, bgheight, framecount=40):
     if (not icons) or bgwidth <= 0 or bgheight <= 0 or framecount <= 0:
         raise ValueError
     exposures = []
@@ -16,9 +16,7 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40, palette=None
         x0 = random.randint(0, bgwidth - 1)
         y0 = random.randint(0, bgheight - 1)
         exposures.append([firstframe, expo, x0, y0])
-    if not palette:
-        palette = dw.classiccolors()
-    bg = dw.randombackgroundimage(bgwidth, bgheight, palette, tileable=False)
+    bg = dw.blankimage(bgwidth, bgheight, [0, 0, 0, 0], alpha=True)
     animation = []
     for i in range(framecount):
         bgi = [x for x in bg]
@@ -47,7 +45,7 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40, palette=None
                 y0 = exposures[j][3]
                 x1 = x0 + icons[j][1]
                 y1 = y0 + icons[j][2]
-                dw.imagesrcover(
+                dw.imagecomposite(
                     bgi,
                     bgwidth,
                     bgheight,
@@ -60,15 +58,52 @@ def scatteredIconAnimation(icons, bgwidth, bgheight, framecount=40, palette=None
                     icons[j][2],
                     0,
                     0,
+                    alpha=True,
                     wraparound=True,
                     sourceAlpha=iconalpha,
                     screendoor=False,
                 )
-        dw.patternDither(bgi, bgwidth, bgheight, palette)
         animation.append(bgi)
     return animation
 
+import imageformat as ifmt
+
+def scatteredIconAnimation(
+    icons, bgImage, bgwidth, bgheight, framecount=40, palette=None
+):
+    anim = scatteredIconAnimationOverlay(
+        icons, bgwidth, bgheight, framecount=framecount
+    )
+    bg = dw.toalpha(bgImage, bgwidth, bgheight)
+    for i in range(len(anim)):
+        dw.imagecomposite(
+            anim[i],
+            bgwidth,
+            bgheight,
+            0,
+            0,
+            bgwidth,
+            bgheight,
+            bg,
+            bgwidth,
+            bgheight,
+            0,
+            0,
+            porterDuffOp=4,  # destination copy
+            alpha=True,
+        )
+        anim[i] = dw.noalpha(anim[i], bgwidth, bgheight)
+        if palette:
+            dw.patternDither(anim[i], bgwidth, bgheight, palette, alpha=False)
+    return anim
+
 def randomdiamondtile(icon, iconwidth, iconheight, palette=None):
+    ovl, ow, oh = randomdiamondtileoverlay(icon, iconwidth, iconheight)
+    bg = dw.randombackgroundimage(ow, oh, palette)
+    dw.imagesrcover(bg, ow, oh, 0, 0, ow, oh, 0, 0, ovl, ow, oh, 0, 0, wraparound=True)
+    return [bg, ow, oh]
+
+def randomdiamondtileoverlay(icon, iconwidth, iconheight):
     padding = random.randint(0, iconwidth)
     imgwidth = 0
     imgheight = 0
@@ -91,8 +126,8 @@ def randomdiamondtile(icon, iconwidth, iconheight, palette=None):
             iconpos1 = [padding // 2, padding // 2]
             iconpos2 = [imgwidth // 2 + padding // 2, imgheight // 2 + padding // 2]
     # Generate a random background for the icon tiling
-    bg = dw.randombackgroundimage(imgwidth, imgheight, palette)
-    dw.imagesrcover(
+    bg = dw.blankimage(imgwidth, imgheight, [0, 0, 0, 0], alpha=True)
+    dw.imagecomposite(
         bg,
         imgwidth,
         imgheight,
@@ -106,8 +141,9 @@ def randomdiamondtile(icon, iconwidth, iconheight, palette=None):
         0,
         0,
         wraparound=True,
+        alpha=True,
     )
-    dw.imagesrcover(
+    dw.imagecomposite(
         bg,
         imgwidth,
         imgheight,
@@ -121,6 +157,7 @@ def randomdiamondtile(icon, iconwidth, iconheight, palette=None):
         0,
         0,
         wraparound=True,
+        alpha=True,
     )
     return [bg, imgwidth, imgheight]
 

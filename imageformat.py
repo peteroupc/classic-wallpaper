@@ -1510,7 +1510,7 @@ def _rle4decompress(bitdata, dst, width, height):
 # follows: Where the AND mask is 0, the XOR mask's pixels are blended onto
 # the output pixels with the given alpha component as opacity, and where
 # the AND mask is 1, the output pixels are left unchanged.
-# OS/2 color icons employ three masks: a two-level AND mask, a two level XOR
+# OS/2 color icons employ three masks: a two-level AND mask, a two-level XOR
 # mask, and a color mask: where the AND mask is 0, the color mask is copied to
 # the output; otherwise, where the XOR mask is 1, the output's colors are
 # inverted; otherwise, the output is left unchanged (see "Bitmap File Format",
@@ -2636,19 +2636,26 @@ def parallaxAvi(
     widthReverse=False,
     heightReverse=False,
     interlacing=False,
+    numframes=32,
     fps=15,
 ):
     if not image:
         raise ValueError
+    if numframes <= 0:
+        raise ValueError
     outputHeight = height // 2 if interlacing else height
-    images = [dw.blankimage(width, height) for i in range(32)]
-    for i in range(32):
+    images = [dw.blankimage(width, height) for i in range(numframes)]
+    for i in range(numframes):
         dw.imageblit(
             images[i],
             width,
             height,
-            width - width * i // 32 if widthReverse else width * i // 32,
-            height - height * i // 32 if heightReverse else height * i // 32,
+            width - width * i // numframes if widthReverse else width * i // numframes,
+            (
+                height - height * i // numframes
+                if heightReverse
+                else height * i // numframes
+            ),
             image,
             width,
             height,
@@ -2659,7 +2666,7 @@ def parallaxAvi(
             images[i] = a if i % 2 == 0 else b
         if len(images[i]) != width * outputHeight * 3:
             raise ValueError
-    dw.writeavi(destParallax, images, width, outputHeight, fps=fps)
+    writeavi(destParallax, images, width, outputHeight, fps=fps)
 
 # Generates an AVI video file consisting of images arranged
 # in a row or column.  Each frame's width and height are determined

@@ -116,6 +116,7 @@ Data descriptors defined here:<br>
     widthReverse=False,
     heightReverse=False,
     interlacing=False,
+    numframes=32,
     fps=15
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;_desktopwallpaper_&nbsp;module's&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;NOTE:&nbsp;Currently,&nbsp;there&nbsp;must&nbsp;be&nbsp;256&nbsp;or&nbsp;fewer&nbsp;unique&nbsp;colors&nbsp;used&nbsp;in&nbsp;the&nbsp;image<br>
@@ -184,7 +185,7 @@ Data descriptors defined here:<br>
 #&nbsp;follows:&nbsp;Where&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;0,&nbsp;the&nbsp;XOR&nbsp;mask's&nbsp;pixels&nbsp;are&nbsp;blended&nbsp;onto<br>
 #&nbsp;the&nbsp;output&nbsp;pixels&nbsp;with&nbsp;the&nbsp;given&nbsp;alpha&nbsp;component&nbsp;as&nbsp;opacity,&nbsp;and&nbsp;where<br>
 #&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;1,&nbsp;the&nbsp;output&nbsp;pixels&nbsp;are&nbsp;left&nbsp;unchanged.<br>
-#&nbsp;OS/2&nbsp;color&nbsp;icons&nbsp;employ&nbsp;three&nbsp;masks:&nbsp;a&nbsp;two-level&nbsp;AND&nbsp;mask,&nbsp;a&nbsp;two&nbsp;level&nbsp;XOR<br>
+#&nbsp;OS/2&nbsp;color&nbsp;icons&nbsp;employ&nbsp;three&nbsp;masks:&nbsp;a&nbsp;two-level&nbsp;AND&nbsp;mask,&nbsp;a&nbsp;two-level&nbsp;XOR<br>
 #&nbsp;mask,&nbsp;and&nbsp;a&nbsp;color&nbsp;mask:&nbsp;where&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;0,&nbsp;the&nbsp;color&nbsp;mask&nbsp;is&nbsp;copied&nbsp;to<br>
 #&nbsp;the&nbsp;output;&nbsp;otherwise,&nbsp;where&nbsp;the&nbsp;XOR&nbsp;mask&nbsp;is&nbsp;1,&nbsp;the&nbsp;output's&nbsp;colors&nbsp;are<br>
 #&nbsp;inverted;&nbsp;otherwise,&nbsp;the&nbsp;output&nbsp;is&nbsp;left&nbsp;unchanged&nbsp;(see&nbsp;"Bitmap&nbsp;File&nbsp;Format",<br>

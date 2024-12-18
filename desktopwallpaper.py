@@ -2900,12 +2900,15 @@ def blankimage(width, height, color=None, alpha=False):
     # default background is white; default alpha is 255
     image = [255 for i in range(width * height * (4 if alpha else 3))]
     if color:
+        pos = 0
+        pixelBytes = 4 if alpha else 3
         for i in range(height * width):
-            image[i * 3] = color[0]
-            image[i * 3 + 1] = color[1]
-            image[i * 3 + 2] = color[2]
+            image[pos] = color[0]
+            image[pos + 1] = color[1]
+            image[pos + 2] = color[2]
             if alpha:
-                image[i * 3 + 3] = color[3]
+                image[pos + 3] = color[3]
+            pos += pixelBytes
     return image
 
 # Generates a tileable argyle pattern from two images of the
@@ -3285,6 +3288,8 @@ def graymap(image, width, height, colors=None, alpha=False, ignoreNonGrays=False
 # The input image has the same format returned by the blankimage() method with alpha=False.
 # The output image has the same format returned by the blankimage() method with alpha=True.
 def toalpha(image, width, height):
+    if width * height * 3 != len(image):
+        raise ValueError
     ret = [0 for x in range(width * height * 4)]
     pos = 0
     apos = 0
@@ -3302,6 +3307,8 @@ def toalpha(image, width, height):
 # The input image has the same format returned by the blankimage() method with alpha=True.
 # The output image has the same format returned by the blankimage() method with alpha=False.
 def noalpha(image, width, height):
+    if width * height * 4 != len(image):
+        raise ValueError
     ret = [0 for x in range(width * height * 3)]
     pos = 0
     apos = 0
