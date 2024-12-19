@@ -3045,11 +3045,24 @@ def simpleargyle(fgcolor, bgcolor, linecolor, w, h, alpha=False):
     linedraw(bg, w, h, linecolor, 0, h, w, 0)
     return bg
 
-# Returns an image with the same format returned by the blankimage() method with alpha=False.
-def doubleargyle(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h):
-    f1 = simpleargyle(fgcolor1, bgcolor, linecolor1, w, h)
-    f2 = simpleargyle(fgcolor2, bgcolor, linecolor2, w, h)
-    return checkerboardtile(f1, f2, w, h)
+# The returned image has the same format returned by the blankimage() method with
+# the given value of 'alpha' (the default value for 'alpha' is False).
+# Returned image's width is twice 'w' and its height is twice 'h'.
+def doubleargyle(
+    fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h, alpha=False
+):
+    f1 = simpleargyle(fgcolor1, bgcolor, linecolor1, w, h, alpha=alpha)
+    f2 = simpleargyle(fgcolor2, bgcolor, linecolor2, w, h, alpha=alpha)
+    return checkerboardtile(f1, f2, w, h, alpha=alpha)
+
+# 'fg1Image', 'fg2Image', and 'bgImage' have width 'w' and height 'h'.
+# These images and the return value have the same format returned by the blankimage() method with
+# the given value of 'alpha' (the default value for 'alpha' is False).
+# Returned image's width is twice 'w' and its height is twice 'h'.
+def doubleargyleimage(fg1Image, fg2Image, bgImage, w, h, alpha=False):
+    img1 = argyle(fg1Image, bgImage, w, h, shiftImageBg=True, alpha=alpha)
+    img2 = argyle(fg2Image, bgImage, w, h, shiftImageBg=True, alpha=alpha)
+    return checkerboardtile(img1, img2, w, h, alpha=alpha)
 
 # Returns an image with the same format returned by the blankimage() method with alpha=False.
 def simpleargyle2(fgcolor, bgcolor, linecolor, w, h):
@@ -3256,7 +3269,7 @@ def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=F
 # the mapping step is skipped.
 # Image has the same format returned by the blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
 # If 'ignoreNonGrays' is True, leave colors other than gray tones
-# colors in the image unchanged.  Default is False.
+# in the image unchanged.  Default is False.
 def graymap(image, width, height, colors=None, alpha=False, ignoreNonGrays=False):
     pixelSize = 4 if alpha else 3
     for y in range(height):
@@ -3385,6 +3398,25 @@ def setpixelbgralpha(image, width, height, x, y, c):
     image[pos + 1] = c[1]
     image[pos + 2] = c[0]
     image[pos + 3] = c[3]
+
+# Image has the same format returned by the blankimage() method with alpha=False.
+def convolveRow(image, width, height):
+    pos = 0
+    for y in range(height):
+        rowstart = pos
+        for x in range(width):
+            r = 0
+            g = 0
+            b = 0
+            for i in range(50):
+                xx = (x + i - 25) % width
+                r += image[rowstart + xx * 3]
+                g += image[rowstart + xx * 3 + 1]
+                b += image[rowstart + xx * 3 + 2]
+            image[pos] = r // 50
+            image[pos + 1] = g // 50
+            image[pos + 2] = b // 50
+            pos += 3
 
 # Image has the same format returned by the blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
 def imagetranspose(image, width, height, alpha=False):
@@ -3738,7 +3770,7 @@ def noiseimage(width=64, height=64):
         image.append(row)
     return [px for row in image for px in row]
 
-# Generate an image of white noise.
+# Generate an image of white noise.  The noise image will have only gray tones.
 # Returns an image with the same format returned by the blankimage() method with alpha=False.
 def whitenoiseimage(width=64, height=64):
     if width <= 0 or int(width) != width:
@@ -3758,6 +3790,8 @@ def whitenoiseimage(width=64, height=64):
 
 # Alternate way to generate an image of noise.
 # Returns an image with the same format returned by the blankimage() method with alpha=False.
+# If 'bgcolor' is None or not given, it becomes (255,255,255).
+# If 'noisecolor' is None or not given, it becomes (0,0,0).
 def noiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
     if width <= 0 or int(width) != width:
         raise ValueError
@@ -5603,11 +5637,14 @@ def _randombrushednoiseimage(w, h, palette=None, tileable=True):
     transpose = random.randint(0, 1) == 0
     ww = h if transpose else w
     hh = w if transpose else h
-    r = random.randint(0, 2)
+    r = random.randint(0, 4)
     if r == 0:
         image = brushednoise(ww, hh, tileable=tileable)
     elif r == 1:
         image = brushednoise2(ww, hh, tileable=tileable)
+    elif r == 2:
+        image = noiseimage(ww, hh)
+        convolveRow(image, ww, hh)
     else:
         image = brushednoise3(ww, hh, tileable=tileable)
     if transpose:

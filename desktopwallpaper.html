@@ -324,6 +324,7 @@ Data descriptors defined here:<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;'blackColor'&nbsp;and&nbsp;ending&nbsp;at&nbsp;'whiteColor'.<br>
 #&nbsp;'blackColor'&nbsp;and&nbsp;'whiteColor'&nbsp;are&nbsp;each&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.</span></dd></dl>
+ <dl><dt><a name="-convolveRow"><strong>convolveRow</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;gray&nbsp;(128,128,128)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;black&nbsp;(0,0,0)&nbsp;background.</span></dd></dl>
  <dl><dt><a name="-diamondTiled"><strong>diamondTiled</strong></a>(bgcolor=None, kind=0)</dt><dd><span class="code">#&nbsp;kind=0:&nbsp;image&nbsp;drawn&nbsp;in&nbsp;middle&nbsp;and&nbsp;padded<br>
 #&nbsp;kind=1:&nbsp;brick&nbsp;drawn&nbsp;at&nbsp;top<br>
@@ -348,7 +349,22 @@ Data descriptors defined here:<br>
 #&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;The&nbsp;list&nbsp;must&nbsp;have&nbsp;a&nbsp;length&nbsp;of&nbsp;2&nbsp;or&nbsp;greater.<br>
 #&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;just&nbsp;dither&nbsp;the&nbsp;gray&nbsp;tones&nbsp;and&nbsp;leave&nbsp;the&nbsp;other<br>
 #&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
- <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(fgcolor1, fgcolor2, bgcolor, linecolor1, linecolor2, w, h)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(
+    fgcolor1,
+    fgcolor2,
+    bgcolor,
+    linecolor1,
+    linecolor2,
+    w,
+    h,
+    alpha=False
+)</dt><dd><span class="code">#&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
+#&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Returned&nbsp;image's&nbsp;width&nbsp;is&nbsp;twice&nbsp;'w'&nbsp;and&nbsp;its&nbsp;height&nbsp;is&nbsp;twice&nbsp;'h'.</span></dd></dl>
+ <dl><dt><a name="-doubleargyleimage"><strong>doubleargyleimage</strong></a>(fg1Image, fg2Image, bgImage, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;'fg1Image',&nbsp;'fg2Image',&nbsp;and&nbsp;'bgImage'&nbsp;have&nbsp;width&nbsp;'w'&nbsp;and&nbsp;height&nbsp;'h'.<br>
+#&nbsp;These&nbsp;images&nbsp;and&nbsp;the&nbsp;return&nbsp;value&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
+#&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Returned&nbsp;image's&nbsp;width&nbsp;is&nbsp;twice&nbsp;'w'&nbsp;and&nbsp;its&nbsp;height&nbsp;is&nbsp;twice&nbsp;'h'.</span></dd></dl>
  <dl><dt><a name="-draw16button"><strong>draw16button</strong></a>(
     helper,
     x0,
@@ -511,7 +527,7 @@ Data descriptors defined here:<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;colors&nbsp;other&nbsp;than&nbsp;gray&nbsp;tones<br>
-#&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
+#&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-groupCmm"><strong>groupCmm</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Cmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
 #&nbsp;last&nbsp;row's&nbsp;and&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its<br>
@@ -939,7 +955,9 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-noiseimage"><strong>noiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-noiseimage2"><strong>noiseimage2</strong></a>(width=64, height=64, bgcolor=None, noisecolor=None)</dt><dd><span class="code">#&nbsp;Alternate&nbsp;way&nbsp;to&nbsp;generate&nbsp;an&nbsp;image&nbsp;of&nbsp;noise.<br>
-#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;If&nbsp;'bgcolor'&nbsp;is&nbsp;None&nbsp;or&nbsp;not&nbsp;given,&nbsp;it&nbsp;becomes&nbsp;(255,255,255).<br>
+#&nbsp;If&nbsp;'noisecolor'&nbsp;is&nbsp;None&nbsp;or&nbsp;not&nbsp;given,&nbsp;it&nbsp;becomes&nbsp;(0,0,0).</span></dd></dl>
  <dl><dt><a name="-outlineimage"><strong>outlineimage</strong></a>(image, width, height, lt=None, sh=None)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3D&nbsp;outline&nbsp;over&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;with&nbsp;transparent<br>
 #&nbsp;pixels,&nbsp;assuming&nbsp;a&nbsp;light&nbsp;source&nbsp;from&nbsp;the&nbsp;upper&nbsp;left.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
@@ -1267,7 +1285,7 @@ Data descriptors defined here:<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
- <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.<br>
+ <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.&nbsp;&nbsp;The&nbsp;noise&nbsp;image&nbsp;will&nbsp;have&nbsp;only&nbsp;gray&nbsp;tones.<br>
 #&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-windowborder"><strong>windowborder</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-writepalette"><strong>writepalette</strong></a>(f, palette, name=None, raiseIfExists=False)</dt></dl>

@@ -11,7 +11,7 @@ def scatteredIconAnimationOverlay(icons, bgwidth, bgheight, framecount=40):
         raise ValueError
     exposures = []
     for i in range(len(icons)):
-        expo = 1 + random.randint(framecount * 1 // 4, framecount * 3 // 4)
+        expo = 1 + random.randint(framecount // 4, framecount * 3 // 4)
         firstframe = random.randint(0, framecount - 1)
         x0 = random.randint(0, bgwidth - 1)
         y0 = random.randint(0, bgheight - 1)
@@ -66,8 +66,6 @@ def scatteredIconAnimationOverlay(icons, bgwidth, bgheight, framecount=40):
         animation.append(bgi)
     return animation
 
-import imageformat as ifmt
-
 def scatteredIconAnimation(
     icons, bgImage, bgwidth, bgheight, framecount=40, palette=None
 ):
@@ -97,35 +95,42 @@ def scatteredIconAnimation(
             dw.patternDither(anim[i], bgwidth, bgheight, palette, alpha=False)
     return anim
 
-def randomdiamondtile(icon, iconwidth, iconheight, palette=None):
-    ovl, ow, oh = randomdiamondtileoverlay(icon, iconwidth, iconheight)
-    bg = dw.randombackgroundimage(ow, oh, palette)
-    dw.imagesrcover(bg, ow, oh, 0, 0, ow, oh, 0, 0, ovl, ow, oh, 0, 0, wraparound=True)
-    return [bg, ow, oh]
-
-def randomdiamondtileoverlay(icon, iconwidth, iconheight):
-    padding = random.randint(0, iconwidth)
-    imgwidth = 0
-    imgheight = 0
-    iconpos1 = []
-    iconpos2 = []
-    match random.randint(0, 2):
-        case 0:
-            imgwidth = (iconwidth + padding) * 2
-            imgheight = (iconwidth + padding) * 2
-            iconpos1 = [(imgwidth - iconwidth) // 2, (imgheight - iconheight) // 2]
-            iconpos2 = [imgwidth - (iconwidth) // 2, imgheight - (iconheight) // 2]
-        case 1:
-            imgwidth = (iconwidth + padding) * 2
-            imgheight = iconwidth + padding
-            iconpos1 = [padding // 2, padding // 2]
-            iconpos2 = [imgwidth // 2 + padding // 2, imgheight // 2 + padding // 2]
+def randomdiamondtileoverlay(imgwidth, imgheight, icon, iconwidth, iconheight):
+    iconpos1 = [0, 0]
+    iconpos2 = [0, 0]
+    match random.randint(0, 5):
+        case 0 | 1:
+            iconpos1 = [imgwidth // 2, imgheight // 2]
+            iconpos2 = [imgwidth, 0]
         case 2:
-            imgwidth = iconwidth + padding
-            imgheight = (iconwidth + padding) * 2
-            iconpos1 = [padding // 2, padding // 2]
-            iconpos2 = [imgwidth // 2 + padding // 2, imgheight // 2 + padding // 2]
-    # Generate a random background for the icon tiling
+            iconpos1 = [imgwidth // 3, imgheight // 2]
+            iconpos2 = [imgwidth * 2 // 3, 0]
+        case 3:
+            iconpos1 = [imgwidth * 2 // 3, imgheight // 2]
+            iconpos2 = [imgwidth // 3, 0]
+        case 4:
+            iconpos1 = [imgwidth // 2, imgheight // 3]
+            iconpos2 = [0, imgheight * 2 // 3]
+        case 5:
+            iconpos1 = [imgwidth // 2, imgheight * 2 // 3]
+            iconpos2 = [0, imgheight // 3]
+    iconpos1[0] -= iconwidth // 2
+    iconpos2[0] -= iconwidth // 2
+    iconpos1[1] -= iconheight // 2
+    iconpos2[1] -= iconheight // 2
+    return _diamondtileoverlay(
+        imgwidth,
+        imgheight,
+        icon,
+        iconwidth,
+        iconheight,
+        iconpos1=iconpos1,
+        iconpos2=iconpos2,
+    )
+
+def _diamondtileoverlay(
+    imgwidth, imgheight, icon, iconwidth, iconheight, iconpos1, iconpos2
+):
     bg = dw.blankimage(imgwidth, imgheight, [0, 0, 0, 0], alpha=True)
     dw.imagecomposite(
         bg,
@@ -167,8 +172,6 @@ def randomwallpaper3(palette=None):
     h = random.randint(32, 192)
     h -= h % 8
     image = dw.randombackgroundimage(w, h, palette)
-    image, w, h = dw.randomRotated(image, w, h)
-    image = dw.randommaybemonochrome(image, w, h)
     match random.randint(0, 4):
         case 0:
             image, w, h = dw.groupPmImage(image, w, h)
@@ -178,6 +181,8 @@ def randomwallpaper3(palette=None):
             image, w, h = dw.tileableImage(image, w, h)
         case _:
             pass
+    image, w, h = dw.randomRotated(image, w, h)
+    image = dw.randommaybemonochrome(image, w, h)
     return [image, w, h]
 
 def randomwallpaper2(palette=None):
