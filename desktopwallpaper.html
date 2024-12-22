@@ -21,8 +21,8 @@
 #&nbsp;NOTES:<br>
 #<br>
 #&nbsp;1.&nbsp;Animation&nbsp;of&nbsp;tilings&nbsp;composed&nbsp;from&nbsp;a&nbsp;wallpaper&nbsp;image&nbsp;can&nbsp;be&nbsp;implemented&nbsp;by<br>
-#&nbsp;shifting,&nbsp;with&nbsp;each&nbsp;frame,&nbsp;the&nbsp;starting&nbsp;position&nbsp;for&nbsp;drawing&nbsp;the&nbsp;top&nbsp;left<br>
-#&nbsp;corner&nbsp;of&nbsp;the&nbsp;wallpaper&nbsp;tiling&nbsp;(e.g.,&nbsp;from&nbsp;the&nbsp;top&nbsp;left&nbsp;corner&nbsp;of&nbsp;the&nbsp;image<br>
+#&nbsp;shifting,&nbsp;with&nbsp;each&nbsp;frame,&nbsp;the&nbsp;starting&nbsp;position&nbsp;for&nbsp;drawing&nbsp;the&nbsp;upper&nbsp;left<br>
+#&nbsp;corner&nbsp;of&nbsp;the&nbsp;wallpaper&nbsp;tiling&nbsp;(e.g.,&nbsp;from&nbsp;the&nbsp;toplower-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;image<br>
 #&nbsp;to&nbsp;some&nbsp;other&nbsp;position&nbsp;in&nbsp;the&nbsp;image).<br>
 #&nbsp;2.&nbsp;In&nbsp;Windows,&nbsp;if&nbsp;both&nbsp;an&nbsp;8&nbsp;&amp;times;&nbsp;8&nbsp;monochrome&nbsp;pattern&nbsp;and&nbsp;a&nbsp;centered&nbsp;wallpaper<br>
 #&nbsp;are&nbsp;set&nbsp;as&nbsp;the&nbsp;desktop&nbsp;background,&nbsp;both&nbsp;the&nbsp;pattern&nbsp;and&nbsp;the&nbsp;wallpaper<br>
@@ -425,11 +425,11 @@ Data descriptors defined here:<br>
 )</dt></dl>
  <dl><dt><a name="-drawdiagstripe"><strong>drawdiagstripe</strong></a>(image, width, height, stripesize, reverse, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'stripesize'&nbsp;is&nbsp;in&nbsp;pixels<br>
-#&nbsp;reverse=false:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;top&nbsp;left&nbsp;to&nbsp;bottom<br>
+#&nbsp;reverse=false:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;upper&nbsp;left&nbsp;to&nbsp;bottom<br>
 #&nbsp;right&nbsp;assuming&nbsp;the&nbsp;image's&nbsp;first&nbsp;row&nbsp;is&nbsp;the&nbsp;top&nbsp;row<br>
-#&nbsp;reverse=true:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;top&nbsp;right&nbsp;to&nbsp;bottom<br>
+#&nbsp;reverse=true:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;upper&nbsp;right&nbsp;to&nbsp;bottom<br>
 #&nbsp;left</span></dd></dl>
- <dl><dt><a name="-drawedgebotdom"><strong>drawedgebotdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(bottom&nbsp;right&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawedgebotdom"><strong>drawedgebotdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(lower&nbsp;right&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawedgenodom"><strong>drawedgenodom</strong></a>(
     helper,
     x0,
@@ -462,17 +462,17 @@ Data descriptors defined here:<br>
 )</dt></dl>
  <dl><dt><a name="-drawloweredge"><strong>drawloweredge</strong></a>(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1)</dt></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
- <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"bottom&nbsp;right&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
- <dl><dt><a name="-drawraisedbordertopdom"><strong>drawraisedbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"top&nbsp;left&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawraisedbordertopdom"><strong>drawraisedbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedinnerwindow"><strong>drawraisedinnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawraisedinnerwindowbutton"><strong>drawraisedinnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawraisedouterwindow"><strong>drawraisedouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawraisedouterwindowbutton"><strong>drawraisedouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
- <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"bottom&nbsp;right&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkenbordernodom"><strong>drawsunkenbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
- <dl><dt><a name="-drawsunkenbordertopdom"><strong>drawsunkenbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"top&nbsp;left&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawsunkenbordertopdom"><strong>drawsunkenbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkeninnerwindow"><strong>drawsunkeninnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawsunkeninnerwindowbutton"><strong>drawsunkeninnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-drawsunkenouterwindow"><strong>drawsunkenouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
@@ -491,7 +491,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-emboss"><strong>emboss</strong></a>(bgColor=None, fgColor=None, hiltColor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;emboss&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;into&nbsp;a&nbsp;3-color&nbsp;(black/gray/white)&nbsp;image.<br>
 #&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'hiltColor'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;embossing&nbsp;an&nbsp;outline&nbsp;will&nbsp;result&nbsp;in&nbsp;its<br>
 #&nbsp;appearing&nbsp;raised&nbsp;above&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper<br>
-#&nbsp;left&nbsp;corner.<br>
+#&nbsp;lower-left&nbsp;corner.<br>
 #&nbsp;If&nbsp;'fgColor'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'hiltColor',&nbsp;the&nbsp;outline&nbsp;instead&nbsp;appears&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;into&nbsp;the<br>
 #&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>
 #&nbsp;In&nbsp;this&nbsp;description,&nbsp;lower-intensity&nbsp;values&nbsp;are&nbsp;generally&nbsp;"darker",&nbsp;higher-intensity&nbsp;values&nbsp;"lighter".</span></dd></dl>
@@ -656,13 +656,13 @@ Data descriptors defined here:<br>
 #&nbsp;transparent&nbsp;or&nbsp;opaque;&nbsp;in&nbsp;line&nbsp;and&nbsp;shape&nbsp;drawing&nbsp;operations&nbsp;(which&nbsp;this<br>
 #&nbsp;method&nbsp;doesn't&nbsp;belong&nbsp;in),&nbsp;if&nbsp;the&nbsp;background&nbsp;mode&nbsp;is&nbsp;transparent,&nbsp;only<br>
 #&nbsp;the&nbsp;nontransparent&nbsp;pixels&nbsp;are&nbsp;drawn&nbsp;and&nbsp;affected&nbsp;by&nbsp;raster&nbsp;operations.)<br>
-#&nbsp;'patternOrgX'&nbsp;and&nbsp;'patternOrgY'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination's&nbsp;top&nbsp;left<br>
-#&nbsp;corner&nbsp;where&nbsp;the&nbsp;top&nbsp;left&nbsp;corner&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;would<br>
+#&nbsp;'patternOrgX'&nbsp;and&nbsp;'patternOrgY'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination's&nbsp;upper&nbsp;left<br>
+#&nbsp;corner&nbsp;where&nbsp;the&nbsp;toplower-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;would<br>
 #&nbsp;be&nbsp;drawn&nbsp;if&nbsp;a&nbsp;repetition&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;were&nbsp;to&nbsp;be&nbsp;drawn&nbsp;across&nbsp;the<br>
 #&nbsp;whole&nbsp;destination&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;for&nbsp;both&nbsp;parameters&nbsp;is&nbsp;0.<br>
-#&nbsp;'x0src'&nbsp;and&nbsp;'y0src'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner<br>
-#&nbsp;where&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner&nbsp;will&nbsp;be&nbsp;drawn.<br>
-#&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;top&nbsp;left&nbsp;corner<br>
+#&nbsp;'x0src'&nbsp;and&nbsp;'y0src'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination&nbsp;image's&nbsp;toplower-left&nbsp;corner<br>
+#&nbsp;where&nbsp;the&nbsp;source&nbsp;image's&nbsp;toplower-left&nbsp;corner&nbsp;will&nbsp;be&nbsp;drawn.<br>
+#&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;toplower-left&nbsp;corner<br>
 #&nbsp;and&nbsp;correspond&nbsp;to&nbsp;pixels&nbsp;in&nbsp;the&nbsp;source&nbsp;image.<br>
 #<br>
 #&nbsp;'ropForeground'&nbsp;is&nbsp;a&nbsp;foreground&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
@@ -1206,7 +1206,7 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;render&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;in&nbsp;an&nbsp;unavailable&nbsp;appearance.<br>
 #&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'buttonHighlight'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;this&nbsp;method&nbsp;will&nbsp;result&nbsp;in<br>
 #&nbsp;the&nbsp;image's&nbsp;appearing&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;onto&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light<br>
-#&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper&nbsp;left&nbsp;corner.<br>
+#&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upperlower-left&nbsp;corner.<br>
 #&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'buttonHighlight',&nbsp;the&nbsp;image&nbsp;instead&nbsp;appears&nbsp;embossed,&nbsp;that&nbsp;is,&nbsp;raised&nbsp;above&nbsp;the<br>
 #&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>
 #&nbsp;If&nbsp;'drawShiftedImageOver'&nbsp;is&nbsp;True,&nbsp;the&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonShadow'&nbsp;color&nbsp;is&nbsp;drawn&nbsp;above&nbsp;the<br>

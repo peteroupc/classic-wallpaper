@@ -2396,7 +2396,7 @@ def _readicon(f, packedWinBitmap=False):
         colormaskscan = ((w * colorbpp + 31) >> 5) << 2
         colormaskbits = colormaskscan * h
     realHeight = abs(andmaskhdr[2] if isBitmap else andmaskhdr[2] // 2)
-    # hot spot Y counts from the bottom left row up, so adjust
+    # hot spot Y counts from the lower left row up, so adjust
     # for top-down convention
     if not isBitmap:
         hotspotY = realHeight - 1 - hotspotY

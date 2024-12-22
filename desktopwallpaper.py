@@ -10,8 +10,8 @@
 # NOTES:
 #
 # 1. Animation of tilings composed from a wallpaper image can be implemented by
-# shifting, with each frame, the starting position for drawing the top left
-# corner of the wallpaper tiling (e.g., from the top left corner of the image
+# shifting, with each frame, the starting position for drawing the upper left
+# corner of the wallpaper tiling (e.g., from the toplower-left corner of the image
 # to some other position in the image).
 # 2. In Windows, if both an 8 &times; 8 monochrome pattern and a centered wallpaper
 # are set as the desktop background, both the pattern and the wallpaper
@@ -469,7 +469,7 @@ def shiftwrap(xOrigin, yOrigin):
 # ImageMagick command to render an input image described in 'versatilePattern' in an unavailable appearance.
 # If 'buttonShadow' is darker than 'buttonHighlight' (as is the default), then this method will result in
 # the image's appearing engraved, that is, sunken onto the background, given the existence of a light
-# source that shines from the upper left corner.
+# source that shines from the upperlower-left corner.
 # If 'buttonShadow' is lighter than 'buttonHighlight', the image instead appears embossed, that is, raised above the
 # background, given the light source just described.
 # If 'drawShiftedImageOver' is True, the image drawn in the 'buttonShadow' color is drawn above the
@@ -504,7 +504,7 @@ def unavailable(
 # ImageMagick command to emboss an input image described in 'versatilePattern' into a 3-color (black/gray/white) image.
 # If 'fgColor' is lighter than 'hiltColor' (as is the default), then embossing an outline will result in its
 # appearing raised above the background, given the existence of a light source that shines from the upper
-# left corner.
+# lower-left corner.
 # If 'fgColor' is darker than 'hiltColor', the outline instead appears engraved, that is, sunken into the
 # background, given the light source just described.
 # In this description, lower-intensity values are generally "darker", higher-intensity values "lighter".
@@ -1168,13 +1168,13 @@ def _applyrop(dst, src, rop):
 # transparent or opaque; in line and shape drawing operations (which this
 # method doesn't belong in), if the background mode is transparent, only
 # the nontransparent pixels are drawn and affected by raster operations.)
-# 'patternOrgX' and 'patternOrgY' are offsets from the destination's top left
-# corner where the top left corner of the brush pattern image would
+# 'patternOrgX' and 'patternOrgY' are offsets from the destination's upper left
+# corner where the toplower-left corner of the brush pattern image would
 # be drawn if a repetition of the brush pattern were to be drawn across the
 # whole destination image.  The default for both parameters is 0.
-# 'x0src' and 'y0src' are offsets from the destination image's top left corner
-# where the source image's top left corner will be drawn.
-# 'x0mask' and 'y0mask' are offsets from the source image's top left corner
+# 'x0src' and 'y0src' are offsets from the destination image's toplower-left corner
+# where the source image's toplower-left corner will be drawn.
+# 'x0mask' and 'y0mask' are offsets from the source image's toplower-left corner
 # and correspond to pixels in the source image.
 #
 # 'ropForeground' is a foreground ternary raster operation between the bits of the
@@ -2792,7 +2792,7 @@ def outlineimage(image, width, height, lt=None, sh=None):
                 image[xp] = lt[0] if lt else 0x80
                 image[xp + 1] = lt[1] if lt else 0x80
                 image[xp + 2] = lt[2] if lt else 0x80
-            # "Then" draw bottom right outline black
+            # "Then" draw lower right outline black
             if (
                 image[xp + 3] == 255
                 and (x == width - 1 or image[(xp + 4) + 3] != 255)
@@ -3142,9 +3142,9 @@ def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)
 
 # Image has the same format returned by the blankimage() method with alpha=False.
 # 'stripesize' is in pixels
-# reverse=false: stripe runs from top left to bottom
+# reverse=false: stripe runs from upper left to bottom
 # right assuming the image's first row is the top row
-# reverse=true: stripe runs from top right to bottom
+# reverse=true: stripe runs from upper right to bottom
 # left
 def drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
     if stripesize > max(width, height) or stripesize < 0:
@@ -4764,9 +4764,9 @@ def _drawupperedgecore(helper, x0, y0, x1, y1, color, edgesize=1):
         helper.rect(x0, y0, x0 + edgesize, y1, color)
         helper.rect(x0 + edgesize, y0, x1, y1, color)
     else:
-        # left edge (includes bottom left and top left "pixels")
+        # left edge (includes lower left and upper left "pixels")
         helper.rect(x0, y0, x0 + edgesize, y1, color)
-        # top edge (includes top right "pixel")
+        # top edge (includes upper right "pixel")
         helper.rect(x0 + edgesize, y0, x1, y0 + edgesize, color)
 
 # helper for lower edge drawing
@@ -4781,9 +4781,9 @@ def _drawloweredgecore(helper, x0, y0, x1, y1, color, edgesize=1):
         helper.rect(x0, y0, x0 + edgesize, y1, color)
         helper.rect(x1 - edgesize, y0, x1, y1, color)
     else:
-        # left edge (includes top right and bottom right "pixels")
+        # left edge (includes upper right and lower right "pixels")
         helper.rect(x1 - edgesize, y0, x1, y1, color)  # right edge
-        # bottom edge (includes bottom left "pixel")
+        # bottom edge (includes lower left "pixel")
         helper.rect(x0, y1 - edgesize, x1 - edgesize, y1, color)
 
 # hilt = upper part of edge, dksh = lower part of edge
@@ -4850,7 +4850,7 @@ def drawedgetopdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=
         x1 -= edgesize
         y1 -= edgesize
 
-# helper for edge drawing (bottom right edge "dominates")
+# helper for edge drawing (lower right edge "dominates")
 def drawedgebotdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
     for i in range(bordersize):
         drawupperedge(
@@ -4964,11 +4964,11 @@ def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
 
 ####
 
-# Raised border where the "top left dominates"
+# Raised border where the "upper left dominates"
 def drawraisedbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgetopdom(helper, x0, y0, x1, y1, hilt, sh, bordersize=bordersize)
 
-# Sunken border where the "top left dominates"
+# Sunken border where the "upper left dominates"
 def drawsunkenbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgetopdom(helper, x0, y0, x1, y1, sh, hilt, bordersize=bordersize)
 
@@ -4980,11 +4980,11 @@ def drawraisedbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize
 def drawsunkenbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgenodom(helper, x0, y0, x1, y1, sh, hilt, lt, bordersize=bordersize)
 
-# Raised border where the "bottom right dominates"
+# Raised border where the "lower right dominates"
 def drawraisedborderbotdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh, bordersize=bordersize)
 
-# Sunken border where the "bottom right dominates"
+# Sunken border where the "lower right dominates"
 def drawsunkenborderbotdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt, bordersize=bordersize)
 
