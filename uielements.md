@@ -92,7 +92,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given above as well, 
 - In a single pixel dimension, generally 32 &times; 32, except to account for [logical display resolution](#logical-display-resolutions).
 - In black and white or in grayscale (with colors limited to white, black, and other gray tones), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
-> **Note:** Icon formats for OS/2 and Windows allow for icons with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [`imageformat` module documentation](./imageformat.html).
+> **Note:** Icon formats for OS/2 and Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [`imageformat` module documentation](./imageformat.html).
 
 ## Animations
 

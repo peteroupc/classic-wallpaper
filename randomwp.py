@@ -166,6 +166,15 @@ def _diamondtileoverlay(
     )
     return [bg, imgwidth, imgheight]
 
+def randomwallpaper(palette=None):
+    match random.randint(0, 2):
+        case 0:
+            return randomwallpaper1(palette=palette)
+        case 1:
+            return randomwallpaper2(palette=palette)
+        case _:
+            return randomwallpaper3(palette=palette)
+
 def randomwallpaper3(palette=None):
     w = random.randint(32, 192)
     w -= w % 8
@@ -216,7 +225,7 @@ def randomwallpaper2(palette=None):
     image3 = dw.randommaybemonochrome(image3, width, height)
     return [image3, width, height]
 
-def randomwallpaper(palette=None):
+def randomwallpaper1(palette=None):
     w = random.randint(96, 256)
     h = random.randint(96, 256)
     columns = random.choice([1, 1, 1, 2, 3, 4, 5])

@@ -347,6 +347,7 @@ Data descriptors defined here:<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;'grays'&nbsp;is&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Each&nbsp;gray&nbsp;tone&nbsp;must&nbsp;be&nbsp;an&nbsp;integer<br>
 #&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;The&nbsp;list&nbsp;must&nbsp;have&nbsp;a&nbsp;length&nbsp;of&nbsp;2&nbsp;or&nbsp;greater.<br>
+#&nbsp;'grays'&nbsp;can&nbsp;be&nbsp;None,&nbsp;in&nbsp;which&nbsp;case&nbsp;this&nbsp;method&nbsp;behaves&nbsp;like&nbsp;'graymap'.<br>
 #&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;just&nbsp;dither&nbsp;the&nbsp;gray&nbsp;tones&nbsp;and&nbsp;leave&nbsp;the&nbsp;other<br>
 #&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(
@@ -1070,7 +1071,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-randomcheckimage"><strong>randomcheckimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Generates&nbsp;a&nbsp;random&nbsp;checkerboard&nbsp;pattern&nbsp;image&nbsp;(using&nbsp;the&nbsp;given&nbsp;palette,&nbsp;if&nbsp;any)<br>
 #&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randomhatchimage"><strong>randomhatchimage</strong></a>(w, h, palette=None, tileable=True)</dt><dd><span class="code">#&nbsp;Image&nbsp;returned&nbsp;by&nbsp;this&nbsp;method&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-randommaybemonochrome"><strong>randommaybemonochrome</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-randommaybemonochrome"><strong>randommaybemonochrome</strong></a>(image, width, height, vga=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight, alpha=False)</dt><dd><span class="code">#&nbsp;Images&nbsp;in&nbsp;'sourceImages'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
@@ -1231,6 +1232,7 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-vertskew"><strong>vertskew</strong></a>(image, width, height, skew, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-vgaPaletteDither"><strong>vgaPaletteDither</strong></a>(image, width, height, alpha=False)</dt></dl>
  <dl><dt><a name="-wallpaperImage"><strong>wallpaperImage</strong></a>(
     width,
     height,

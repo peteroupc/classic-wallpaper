@@ -3221,11 +3221,14 @@ def getgrays(palette):
 # given value of 'alpha' (default value for 'alpha' is False).
 # 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
 # from 0 through 255.  The list must have a length of 2 or greater.
+# 'grays' can be None, in which case this method behaves like 'graymap'.
 # If 'ignoreNonGrays' is True, just dither the gray tones and leave the other
 # colors in the image unchanged.  Default is False.
 def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=False):
     if not grays:
-        return graymap(image, width, height)
+        if ignoreNonGrays:
+            return image
+        return graymap(image, width, height, alpha=alpha)
     if len(grays) < 2:
         raise ValueError
     for i in range(1, len(grays)):
@@ -3512,6 +3515,49 @@ def websafeDither(image, width, height, alpha=False, includeVga=False):
                 image[xp + i] = (c - cm) + 51 if bdither < cm * 64 // 51 else c - cm
     return image
 
+def vgaPaletteDither(image, width, height, alpha=False):
+    pixelSize = 4 if alpha else 3
+    if len(image) < width * height * pixelSize:
+        raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
+    for y in range(height):
+        yp = y * width * pixelSize
+        for x in range(width):
+            xp = yp + x * pixelSize
+            r = image[xp]
+            g = image[xp + 1]
+            b = image[xp + 2]
+            if (
+                (g == 0 and b == 0)
+                or (r == 0 and b == 0)
+                or (r == 0 and g == 0)
+                or (g == 0 and b == r)
+                or (r == 0 and b == g)
+                or (b == 0 and g == r)
+            ):
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
+                for i in range(3):
+                    v = image[xp + i]
+                    if v < 128:
+                        image[xp + i] = 128 if bdither < v * 64 // 128 else 0
+                    else:
+                        image[xp + i] = 255 if bdither < (v - 128) * 64 // 127 else 128
+            elif (
+                (g == 255 and b == 255)
+                or (r == 255 and b == 255)
+                or (r == 255 and g == 255)
+                or (g == 255 and b == r)
+                or (r == 255 and b == g)
+                or (b == 255 and g == r)
+            ):
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
+                for i in range(3):
+                    c = image[xp + i]
+                    cm = c
+                    image[xp + i] = (
+                        (c - cm) + 255 if bdither < cm * 64 // 255 else c - cm
+                    )
+    return patternDither(image, width, height, classiccolors(), alpha=alpha)
+
 # Dithers in place the given image to the colors in an 8-bit color palette returned by ega8colors().
 # Image has the same format returned by the blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
 def eightColorDither(image, width, height, alpha=False):
@@ -3526,10 +3572,10 @@ def eightColorDither(image, width, height, alpha=False):
         yp = y * width * pixelSize
         for x in range(width):
             xp = yp + x * pixelSize
+            bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
             for i in range(3):
                 c = image[xp + i]
                 cm = c
-                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
                 image[xp + i] = (c - cm) + 255 if bdither < cm * 64 // 255 else c - cm
     return image
 
@@ -3630,6 +3676,9 @@ def patternDither(image, width, height, palette, alpha=False, fast=False):
                     ]  # sort key consisting of gray value then color
                 candidates[i] = canvalue
                 cv1 = palette[canvalue[1]]
+                if i == 0 and cv1[0] == ir and cv1[1] == ig and cv1[2] == ib:
+                    exact = True
+                    break
                 e[0] += ir - cv1[0]
                 e[1] += ig - cv1[1]
                 e[2] += ib - cv1[2]
@@ -5354,60 +5403,41 @@ def _randomgradientfill(width, height, palette, tileable=True):
     return _randomgradientfillex(width, height, palette, _randomcontour(tileable))
 
 # Image has the same format returned by the blankimage() method with alpha=False.
-def randommaybemonochrome(image, width, height):
+def randommaybemonochrome(image, width, height, vga=False):
     r = random.randint(0, 99)
-    if r < 8:
-        # dither the input image to three grays from the VGA palette
-        image = dithertograyimage([x for x in image], width, height, [0, 128, 255])
-        r = random.randint(0, 6)
-        colors = [
-            [128, 128, 128],
-            [192, 192, 192],
-        ]  # dark gray and light gray from the VGA palette
-        black = [0, 0, 0]
-        white = [255, 255, 255]
-        if r > 0:
+    black = [0, 0, 0]
+    white = [255, 255, 255]
+    if r < 16:
+        r2 = random.randint(0, 6)
+        # dark gray and light gray from the VGA palette
+        color0 = [128, 128, 128]
+        color1 = [192, 192, 192]
+        if r2 > 0:
             # use a "colored" dark gray and light gray from the VGA palette instead
-            colors = [
-                [(r & 1) * 0x80, ((r >> 1) & 1) * 0x80, ((r >> 2) & 1) * 0x80],
-                [(r & 1) * 0xFF, ((r >> 1) & 1) * 0xFF, ((r >> 2) & 1) * 0xFF],
-            ]
-        minipal = random.choice(
-            [
-                [black, colors[0], colors[1]],  # dark
-                [black, colors[0], white],  # gray
-                [black, colors[1], white],  # light gray
-                [colors[0], colors[1], white],  # light
-            ]
-        )
-        # replace the grays with the colors
-        gcolors = [[] for i in range(256)]
-        gcolors[0] = minipal[0]
-        gcolors[128] = minipal[1]
-        gcolors[255] = minipal[2]
-        return graymap([x for x in image], width, height, gcolors)
-    elif r < 16:
-        r = random.randint(0, 6)
-        colors = [
-            [128, 128, 128],
-            [192, 192, 192],
-        ]  # dark gray and light gray from the VGA palette
-        black = [0, 0, 0]
-        white = [255, 255, 255]
-        if r > 0:
-            # use a "colored" dark gray and light gray from the VGA palette instead
-            colors = [
-                [(r & 1) * 0x80, ((r >> 1) & 1) * 0x80, ((r >> 2) & 1) * 0x80],
-                [(r & 1) * 0xFF, ((r >> 1) & 1) * 0xFF, ((r >> 2) & 1) * 0xFF],
-            ]
-        # dither the input image to four grays from the VGA palette
-        image = dithertograyimage([x for x in image], width, height, [0, 128, 192, 255])
-        # replace the grays with the colors
-        gcolors = [[] for i in range(256)]
-        gcolors[0] = black
-        gcolors[128] = colors[0]
-        gcolors[192] = colors[1]
-        gcolors[255] = white
+            color0 = [(r2 & 1) * 0x80, ((r2 >> 1) & 1) * 0x80, ((r2 >> 2) & 1) * 0x80]
+            color1 = [(r2 & 1) * 0xFF, ((r2 >> 1) & 1) * 0xFF, ((r2 >> 2) & 1) * 0xFF]
+        if r < 8:
+            image = dithertograyimage(
+                [x for x in image], width, height, [0, 128, 255] if vga else None
+            )
+            minipal = random.choice(
+                [
+                    [black, color0, color1],  # dark
+                    [black, color0, white],  # gray
+                    [black, color1, white],  # light gray
+                    [color0, color1, white],  # light
+                ]
+            )
+            # replace the grays with the colors
+            gcolors = _gradient([[0, minipal[0]], [128, minipal[1]], [255, minipal[2]]])
+        else:
+            image = dithertograyimage(
+                [x for x in image], width, height, [0, 128, 192, 255] if vga else None
+            )
+            # replace the grays with the colors
+            gcolors = _gradient(
+                [[0, black], [128, color0], [192, color1], [255, white]]
+            )
         return graymap([x for x in image], width, height, gcolors)
     else:
         return image
