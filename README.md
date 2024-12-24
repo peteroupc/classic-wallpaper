@@ -15,7 +15,7 @@ Create a tileable desktop wallpaper image [^1] meeting the following requirement
 - The image does not contain text.  Images that contain depictions of people or human faces are not preferred.
 - The image should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
 - The image is in the public domain or licensed under the [Unlicense](https://unlicense.org/) or, less preferably, another open-source license approved by the Open Source Initiative.
-- The image was not produced by artificial intelligence tools or with their help.
+- The image was not produced by artificial-intelligence tools or with their help.
 
 Also welcome would be computer code (released to the public domain or licensed under the Unlicense) to generate tileable or seamless&mdash;
 
@@ -27,9 +27,9 @@ meeting the requirements given earlier.
 
 > **Notes:**
 >
-> 1. If a wallpaper image is _monochrome_, then a _grayscale_ version of the image is preferred, since then the image could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.  (_Grayscale_ means having colors limited to gray tones, black, and white.  _Monochrome_ means the image is grayscale or its colors are of the same hue and the same chroma or "saturation".) If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the full VGA palette; see below) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
+> 1. If a wallpaper image is _monochrome_, then a _grayscale_ version of the image is preferred, since then the image could be color shifted and then adapted to have the colors of any limited-color palette by known [dithering techniques](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.  (_Grayscale_ means having colors limited to gray tones, black, and white.  _Monochrome_ means the image is grayscale or its colors are of the same hue and the same chroma or "saturation".) If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the full VGA palette; see later) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
 > 2. Photographic images are not within the scope of this challenge.  Other tileable wallpapers employing more than 256 colors and otherwise satisfying the requirements above are acceptable, though not preferable.  Indeed, if the image has more than 256 colors and otherwise meets those requirements, it can be adapted to have the colors of a limited-color palette (see the "Color Palettes" section below) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
-> 3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper file `RIBBONS.BMP and the Memphis Group-style wallpaper file PARTY.BMP`, both of which were distributed with Microsoft Windows 3.0.
+> 3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper file `RIBBONS.BMP and the Memphis Group-style wallpaper file PARTY.BMP`, both of which were distributed with Windows 3.0.
 > 4. One example of tileable noise can be generated using the "[diamond-square algorithm](https://en.wikipedia.org/wiki/Diamond-square_algorithm)".
 
 ## Color Palettes
@@ -43,7 +43,7 @@ The color palettes allowed are as follows.
 - 216-color "safety palette" plus VGA palette.
 - A subset of a color palette given earlier.
 
-Any 16-color or 256-color repertoire that was used in a significant volume of application and video game graphics before the year 2000 is also allowed.
+Any 16-color or 256-color repertoire that was used in a significant volume of application and video-game graphics before the year 2000 is also allowed.
 
 Additional color palettes allowed are as follows.
 
@@ -77,7 +77,7 @@ The following color palettes are allowed, but not preferred:
 
 > **Notes:**
 >
-> 1. The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described above.  The palette files are designed for use in software programs for drawing, especially those devoted to pixel art.
+> 1. The [_palettes_ directory](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes) of this repository hosts palette files for many of the color combinations described earlier.  The palette files are designed for use in software programs for drawing, especially those devoted to pixel art.
 > 2. The palette can have one or more sequences of colors that smoothly range from one color to another, to aid in achieving gradient fills or other specialized shading techniques in a _ramp color model_.  For example, a palette can have ten colors (indexed from 0 through 9) that range from black to green, and ten additional colors (indexed from 10 through 19) that range from black to red.
 
 ## Pixel Dimensions

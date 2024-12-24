@@ -22,7 +22,7 @@
 #<br>
 #&nbsp;1.&nbsp;Animation&nbsp;of&nbsp;tilings&nbsp;composed&nbsp;from&nbsp;a&nbsp;wallpaper&nbsp;image&nbsp;can&nbsp;be&nbsp;implemented&nbsp;by<br>
 #&nbsp;shifting,&nbsp;with&nbsp;each&nbsp;frame,&nbsp;the&nbsp;starting&nbsp;position&nbsp;for&nbsp;drawing&nbsp;the&nbsp;upper&nbsp;left<br>
-#&nbsp;corner&nbsp;of&nbsp;the&nbsp;wallpaper&nbsp;tiling&nbsp;(e.g.,&nbsp;from&nbsp;the&nbsp;toplower-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;image<br>
+#&nbsp;corner&nbsp;of&nbsp;the&nbsp;wallpaper&nbsp;tiling&nbsp;(for&nbsp;example,&nbsp;from&nbsp;the&nbsp;upper-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;image<br>
 #&nbsp;to&nbsp;some&nbsp;other&nbsp;position&nbsp;in&nbsp;the&nbsp;image).<br>
 #&nbsp;2.&nbsp;In&nbsp;Windows,&nbsp;if&nbsp;both&nbsp;an&nbsp;8&nbsp;&amp;times;&nbsp;8&nbsp;monochrome&nbsp;pattern&nbsp;and&nbsp;a&nbsp;centered&nbsp;wallpaper<br>
 #&nbsp;are&nbsp;set&nbsp;as&nbsp;the&nbsp;desktop&nbsp;background,&nbsp;both&nbsp;the&nbsp;pattern&nbsp;and&nbsp;the&nbsp;wallpaper<br>
@@ -185,7 +185,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-backgroundColorUnder"><strong>backgroundColorUnder</strong></a>(bgcolor=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;put&nbsp;a&nbsp;background&nbsp;color&nbsp;behind&nbsp;the&nbsp;input&nbsp;image.<br>
 #&nbsp;'bgcolor'&nbsp;is&nbsp;the&nbsp;background&nbsp;color,<br>
 #&nbsp;either&nbsp;None&nbsp;or&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
-#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;for&nbsp;example,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255;&nbsp;default&nbsp;is&nbsp;None,&nbsp;or&nbsp;no&nbsp;background&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-blankimage"><strong>blankimage</strong></a>(width, height, color=None, alpha=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;blank&nbsp;image&nbsp;with&nbsp;3&nbsp;or&nbsp;4&nbsp;bytes&nbsp;per&nbsp;pixel&nbsp;and&nbsp;the&nbsp;given&nbsp;width,&nbsp;height,<br>
@@ -657,12 +657,12 @@ Data descriptors defined here:<br>
 #&nbsp;method&nbsp;doesn't&nbsp;belong&nbsp;in),&nbsp;if&nbsp;the&nbsp;background&nbsp;mode&nbsp;is&nbsp;transparent,&nbsp;only<br>
 #&nbsp;the&nbsp;nontransparent&nbsp;pixels&nbsp;are&nbsp;drawn&nbsp;and&nbsp;affected&nbsp;by&nbsp;raster&nbsp;operations.)<br>
 #&nbsp;'patternOrgX'&nbsp;and&nbsp;'patternOrgY'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination's&nbsp;upper&nbsp;left<br>
-#&nbsp;corner&nbsp;where&nbsp;the&nbsp;toplower-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;would<br>
+#&nbsp;corner&nbsp;where&nbsp;the&nbsp;upper-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;image&nbsp;would<br>
 #&nbsp;be&nbsp;drawn&nbsp;if&nbsp;a&nbsp;repetition&nbsp;of&nbsp;the&nbsp;brush&nbsp;pattern&nbsp;were&nbsp;to&nbsp;be&nbsp;drawn&nbsp;across&nbsp;the<br>
 #&nbsp;whole&nbsp;destination&nbsp;image.&nbsp;&nbsp;The&nbsp;default&nbsp;for&nbsp;both&nbsp;parameters&nbsp;is&nbsp;0.<br>
-#&nbsp;'x0src'&nbsp;and&nbsp;'y0src'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination&nbsp;image's&nbsp;toplower-left&nbsp;corner<br>
-#&nbsp;where&nbsp;the&nbsp;source&nbsp;image's&nbsp;toplower-left&nbsp;corner&nbsp;will&nbsp;be&nbsp;drawn.<br>
-#&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;toplower-left&nbsp;corner<br>
+#&nbsp;'x0src'&nbsp;and&nbsp;'y0src'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;destination&nbsp;image's&nbsp;upper-left&nbsp;corner<br>
+#&nbsp;where&nbsp;the&nbsp;source&nbsp;image's&nbsp;upper-left&nbsp;corner&nbsp;will&nbsp;be&nbsp;drawn.<br>
+#&nbsp;'x0mask'&nbsp;and&nbsp;'y0mask'&nbsp;are&nbsp;offsets&nbsp;from&nbsp;the&nbsp;source&nbsp;image's&nbsp;upper-left&nbsp;corner<br>
 #&nbsp;and&nbsp;correspond&nbsp;to&nbsp;pixels&nbsp;in&nbsp;the&nbsp;source&nbsp;image.<br>
 #<br>
 #&nbsp;'ropForeground'&nbsp;is&nbsp;a&nbsp;foreground&nbsp;ternary&nbsp;raster&nbsp;operation&nbsp;between&nbsp;the&nbsp;bits&nbsp;of&nbsp;the<br>
@@ -745,7 +745,7 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;True.&nbsp;&nbsp;If&nbsp;'alpha'&nbsp;is&nbsp;False,&nbsp;this&nbsp;method&nbsp;behaves&nbsp;as&nbsp;though&nbsp;both&nbsp;images<br>
 #&nbsp;had&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;with&nbsp;all&nbsp;pixel's&nbsp;alpha&nbsp;components&nbsp;set&nbsp;to&nbsp;255&nbsp;(so&nbsp;that&nbsp;the&nbsp;two&nbsp;images&nbsp;are&nbsp;treated&nbsp;as&nbsp;opaque).<br>
 #&nbsp;If&nbsp;'srcimage'&nbsp;is&nbsp;None,&nbsp;a&nbsp;source&nbsp;image&nbsp;with&nbsp;all&nbsp;zeros&nbsp;and&nbsp;an&nbsp;alpha&nbsp;of&nbsp;0&nbsp;for&nbsp;all&nbsp;pixels&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;source,&nbsp;even&nbsp;if<br>
-#&nbsp;'alpha'&nbsp;is&nbsp;False.&nbsp;&nbsp;The&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;for&nbsp;each&nbsp;image&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;"non-premultiplied",&nbsp;that<br>
+#&nbsp;'alpha'&nbsp;is&nbsp;False.&nbsp;&nbsp;The&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;for&nbsp;each&nbsp;image&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;"nonpremultiplied",&nbsp;that<br>
 #&nbsp;is,&nbsp;not&nbsp;multiplied&nbsp;beforehand&nbsp;by&nbsp;the&nbsp;alpha&nbsp;component&nbsp;divided&nbsp;by&nbsp;255.<br>
 #&nbsp;'porterDuffOp'&nbsp;is&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;operators:&nbsp;0&nbsp;=&nbsp;source&nbsp;over;<br>
 #&nbsp;1&nbsp;=&nbsp;source&nbsp;in;&nbsp;2&nbsp;=&nbsp;source&nbsp;held&nbsp;out;&nbsp;3&nbsp;=&nbsp;source&nbsp;atop;&nbsp;4&nbsp;=&nbsp;destination&nbsp;over;<br>
@@ -772,8 +772,8 @@ Data descriptors defined here:<br>
 #&nbsp;'image'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;True.<br>
 #&nbsp;'width'&nbsp;and&nbsp;'height'&nbsp;is&nbsp;the&nbsp;image's&nbsp;width&nbsp;and&nbsp;height.<br>
-#&nbsp;'x'&nbsp;is&nbsp;the&nbsp;point's&nbsp;X&nbsp;coordinate,&nbsp;which&nbsp;need&nbsp;not&nbsp;be&nbsp;an&nbsp;integer.<br>
-#&nbsp;'y'&nbsp;is&nbsp;the&nbsp;point's&nbsp;Y&nbsp;coordinate,&nbsp;which&nbsp;need&nbsp;not&nbsp;be&nbsp;an&nbsp;integer.<br>
+#&nbsp;'x'&nbsp;is&nbsp;the&nbsp;point's&nbsp;x-coordinate,&nbsp;which&nbsp;need&nbsp;not&nbsp;be&nbsp;an&nbsp;integer.<br>
+#&nbsp;'y'&nbsp;is&nbsp;the&nbsp;point's&nbsp;y-coordinate,&nbsp;which&nbsp;need&nbsp;not&nbsp;be&nbsp;an&nbsp;integer.<br>
 #&nbsp;An&nbsp;out-of-bounds&nbsp;point&nbsp;('x','y')&nbsp;will&nbsp;undergo&nbsp;a&nbsp;wraparound&nbsp;adjustment,&nbsp;as&nbsp;though<br>
 #&nbsp;the&nbsp;given&nbsp;image&nbsp;were&nbsp;part&nbsp;of&nbsp;an&nbsp;"infinite"&nbsp;tiling.<br>
 #<br>
@@ -839,7 +839,7 @@ Data descriptors defined here:<br>
 #&nbsp;is&nbsp;True.<br>
 #&nbsp;'dstimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False;&nbsp;'srcimage',&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;If&nbsp;'srcimage'&nbsp;is&nbsp;None,&nbsp;a&nbsp;source&nbsp;image&nbsp;with&nbsp;all&nbsp;zeros&nbsp;and&nbsp;an&nbsp;alpha&nbsp;of&nbsp;0&nbsp;for&nbsp;all&nbsp;pixels&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;source,&nbsp;even&nbsp;if<br>
-#&nbsp;'alpha'&nbsp;is&nbsp;False.&nbsp;&nbsp;The&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;for&nbsp;'srcimage'&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;"non-premultiplied",&nbsp;that<br>
+#&nbsp;'alpha'&nbsp;is&nbsp;False.&nbsp;&nbsp;The&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;for&nbsp;'srcimage'&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;"nonpremultiplied",&nbsp;that<br>
 #&nbsp;is,&nbsp;not&nbsp;multiplied&nbsp;beforehand&nbsp;by&nbsp;the&nbsp;alpha&nbsp;component&nbsp;divided&nbsp;by&nbsp;255.<br>
 #&nbsp;If&nbsp;'screendoor'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;'False'),&nbsp;translucency&nbsp;(semitransparency)&nbsp;is<br>
 #&nbsp;simulated&nbsp;by&nbsp;scattering&nbsp;transparent&nbsp;and&nbsp;opaque&nbsp;pixels,&nbsp;or&nbsp;dithering&nbsp;(a&nbsp;process&nbsp;also&nbsp;known<br>
@@ -922,7 +922,7 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;ImageMagick&nbsp;filter&nbsp;string&nbsp;to&nbsp;generate&nbsp;a&nbsp;desktop&nbsp;background&nbsp;from&nbsp;an&nbsp;image,&nbsp;in&nbsp;three&nbsp;steps.<br>
 #&nbsp;1.&nbsp;If&nbsp;rgb1&nbsp;and&nbsp;rgb2&nbsp;are&nbsp;not&nbsp;nil,&nbsp;converts&nbsp;the&nbsp;input&nbsp;image&nbsp;to&nbsp;grayscale,&nbsp;then&nbsp;translates&nbsp;the&nbsp;grayscale<br>
 #&nbsp;palette&nbsp;to&nbsp;a&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;rgb1&nbsp;for&nbsp;grayscale&nbsp;level&nbsp;0&nbsp;(a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
-#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
+#&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;for&nbsp;example,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255)&nbsp;and&nbsp;ending&nbsp;at&nbsp;rgb2&nbsp;for&nbsp;grayscale&nbsp;level&nbsp;255&nbsp;(same&nbsp;format&nbsp;as&nbsp;rgb1).<br>
 #&nbsp;Raises&nbsp;an&nbsp;error&nbsp;if&nbsp;rgb1&nbsp;or&nbsp;rgb2&nbsp;has&nbsp;a&nbsp;length&nbsp;less&nbsp;than&nbsp;3.<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;is&nbsp;the&nbsp;input&nbsp;for&nbsp;the&nbsp;next&nbsp;step.<br>
@@ -968,32 +968,32 @@ Data descriptors defined here:<br>
 #&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
 #&nbsp;by&nbsp;using&nbsp;the&nbsp;bottom&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
 #&nbsp;and&nbsp;the&nbsp;top&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
-#&nbsp;upper&nbsp;midpoint,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down</span></dd></dl>
+#&nbsp;upper&nbsp;midpoint,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down</span></dd></dl>
  <dl><dt><a name="-p3m1alt1"><strong>p3m1alt1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1,&nbsp;alternative&nbsp;definition.<br>
 #&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
 #&nbsp;by&nbsp;using&nbsp;the&nbsp;left&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
 #&nbsp;and&nbsp;the&nbsp;right-hand&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
-#&nbsp;right-hand&nbsp;midpoint,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down</span></dd></dl>
+#&nbsp;right-hand&nbsp;midpoint,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down</span></dd></dl>
  <dl><dt><a name="-p3m1alt2"><strong>p3m1alt2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1,&nbsp;alternative&nbsp;definition.<br>
 #&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
 #&nbsp;by&nbsp;using&nbsp;the&nbsp;right&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
 #&nbsp;and&nbsp;the&nbsp;left-hand&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
-#&nbsp;left-hand&nbsp;midpoint,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down</span></dd></dl>
+#&nbsp;left-hand&nbsp;midpoint,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down</span></dd></dl>
  <dl><dt><a name="-p4m"><strong>p4m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m&nbsp;(triangle&nbsp;formed<br>
 #&nbsp;from&nbsp;a&nbsp;rectangle&nbsp;and&nbsp;by<br>
 #&nbsp;taking&nbsp;the&nbsp;lower-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;rectangle<br>
-#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down)<br>
+#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down)<br>
 #&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
 #&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
  <dl><dt><a name="-p4malt"><strong>p4malt</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m,&nbsp;alternative&nbsp;definition<br>
 #&nbsp;(triangle&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle&nbsp;and&nbsp;by<br>
 #&nbsp;taking&nbsp;the&nbsp;upper-right&nbsp;corner&nbsp;of&nbsp;the&nbsp;rectangle<br>
-#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down)<br>
+#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down)<br>
 #&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
 #&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
  <dl><dt><a name="-p6m"><strong>p6m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m&nbsp;(same&nbsp;source&nbsp;rectangle<br>
@@ -1050,8 +1050,8 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-pmm"><strong>pmm</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Pmm.&nbsp;&nbsp;Source&nbsp;rectangle<br>
 #&nbsp;takes&nbsp;the&nbsp;upper&nbsp;left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;image<br>
 #&nbsp;and&nbsp;is&nbsp;reflected&nbsp;and&nbsp;repeated&nbsp;to&nbsp;cover&nbsp;the<br>
-#&nbsp;remaining&nbsp;image,&nbsp;assuming&nbsp;X&nbsp;axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down.<br>
+#&nbsp;remaining&nbsp;image,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down.<br>
 #&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
 #&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
  <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&amp;ndash;green&amp;ndash;blue<br>
@@ -1206,7 +1206,7 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;render&nbsp;an&nbsp;input&nbsp;image&nbsp;described&nbsp;in&nbsp;'versatilePattern'&nbsp;in&nbsp;an&nbsp;unavailable&nbsp;appearance.<br>
 #&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;darker&nbsp;than&nbsp;'buttonHighlight'&nbsp;(as&nbsp;is&nbsp;the&nbsp;default),&nbsp;then&nbsp;this&nbsp;method&nbsp;will&nbsp;result&nbsp;in<br>
 #&nbsp;the&nbsp;image's&nbsp;appearing&nbsp;engraved,&nbsp;that&nbsp;is,&nbsp;sunken&nbsp;onto&nbsp;the&nbsp;background,&nbsp;given&nbsp;the&nbsp;existence&nbsp;of&nbsp;a&nbsp;light<br>
-#&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upperlower-left&nbsp;corner.<br>
+#&nbsp;source&nbsp;that&nbsp;shines&nbsp;from&nbsp;the&nbsp;upper-left&nbsp;corner.<br>
 #&nbsp;If&nbsp;'buttonShadow'&nbsp;is&nbsp;lighter&nbsp;than&nbsp;'buttonHighlight',&nbsp;the&nbsp;image&nbsp;instead&nbsp;appears&nbsp;embossed,&nbsp;that&nbsp;is,&nbsp;raised&nbsp;above&nbsp;the<br>
 #&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>
 #&nbsp;If&nbsp;'drawShiftedImageOver'&nbsp;is&nbsp;True,&nbsp;the&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonShadow'&nbsp;color&nbsp;is&nbsp;drawn&nbsp;above&nbsp;the<br>
@@ -1225,7 +1225,7 @@ Data descriptors defined here:<br>
 #&nbsp;gray&nbsp;tones,&nbsp;where&nbsp;the&nbsp;closer&nbsp;the&nbsp;gray&nbsp;level&nbsp;is&nbsp;to&nbsp;0,&nbsp;the&nbsp;less&nbsp;transparent.<br>
 #&nbsp;'bgcolor'&nbsp;can&nbsp;be&nbsp;None&nbsp;so&nbsp;that&nbsp;an&nbsp;alpha<br>
 #&nbsp;background&nbsp;is&nbsp;used.&nbsp;&nbsp;Each&nbsp;color&nbsp;is&nbsp;a<br>
-#&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;e.g.,<br>
+#&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;for&nbsp;example,<br>
 #&nbsp;[2,10,255]&nbsp;where&nbsp;each&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255.<br>
 #&nbsp;Inspired&nbsp;by&nbsp;the&nbsp;technique&nbsp;for&nbsp;generating&nbsp;backgrounds&nbsp;in&nbsp;heropatterns.com.</span></dd></dl>
  <dl><dt><a name="-verthatchedbox"><strong>verthatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;vertical&nbsp;hatch&nbsp;pattern.<br>
@@ -1257,11 +1257,11 @@ Data descriptors defined here:<br>
 #&nbsp;coordinates&nbsp;to&nbsp;input&nbsp;image&nbsp;(source&nbsp;image)&nbsp;coordinates;&nbsp;default&nbsp;is&nbsp;<a href="#-pmm">pmm</a>().<br>
 #&nbsp;'groupFunc'&nbsp;takes&nbsp;two&nbsp;parameters:&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
 #&nbsp;and&nbsp;1&nbsp;or&nbsp;less,&nbsp;and&nbsp;are&nbsp;in&nbsp;relation&nbsp;to&nbsp;the&nbsp;destination&nbsp;image;&nbsp;0&nbsp;is&nbsp;leftmost<br>
-#&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;assuming&nbsp;the&nbsp;X&nbsp;axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;Y&nbsp;axis&nbsp;down.&nbsp;&nbsp;'groupFunc'&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;indicating<br>
+#&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;assuming&nbsp;the&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down.&nbsp;&nbsp;'groupFunc'&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;indicating<br>
 #&nbsp;a&nbsp;point&nbsp;in&nbsp;relation&nbsp;to&nbsp;the&nbsp;source&nbsp;rectangle.&nbsp;The&nbsp;tuple&nbsp;has&nbsp;two&nbsp;elements,<br>
-#&nbsp;each&nbsp;0&nbsp;or&nbsp;greater&nbsp;and&nbsp;1&nbsp;or&nbsp;less:&nbsp;the&nbsp;first&nbsp;is&nbsp;the&nbsp;X&nbsp;coordinate&nbsp;and&nbsp;the<br>
-#&nbsp;second,&nbsp;the&nbsp;Y&nbsp;coordinate;&nbsp;0&nbsp;is&nbsp;leftmost&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is<br>
+#&nbsp;each&nbsp;0&nbsp;or&nbsp;greater&nbsp;and&nbsp;1&nbsp;or&nbsp;less:&nbsp;the&nbsp;first&nbsp;is&nbsp;the&nbsp;x-coordinate&nbsp;and&nbsp;the<br>
+#&nbsp;second,&nbsp;the&nbsp;y-coordinate;&nbsp;0&nbsp;is&nbsp;leftmost&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is<br>
 #&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;with&nbsp;the&nbsp;assumption&nbsp;given&nbsp;earlier.<br>
 #&nbsp;The&nbsp;wallpaper&nbsp;group&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;are&nbsp;intended&nbsp;to<br>
 #&nbsp;result&nbsp;in&nbsp;seamless&nbsp;tileable&nbsp;images&nbsp;from&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents:<br>

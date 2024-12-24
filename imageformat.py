@@ -409,7 +409,7 @@ def writeanicursor(
 def writeavi(
     f, images, width, height, raiseIfExists=False, singleFrameAsBmp=False, fps=20
 ):
-    # NOTE: 20 fps or higher is adequate for fluid animations
+    # NOTE: at least 20 frames per second is adequate for fluid animations
     if not images:
         raise ValueError
     if len(images) == 0:
@@ -823,7 +823,7 @@ def _rle8decompress(bitdata, dst, width, height):
     bits = 0
     length = 0
     escape_code = 0
-    linesz = ((width * 8 + 31) >> 5) << 2  # bytes per scanline
+    linesz = ((width * 8 + 31) >> 5) << 2  # bytes per scan line
     dstln = 0
     x = 0
     y = height - 1
@@ -904,7 +904,7 @@ def _rle24decompress(bitdata, dst, width, height):
     bits = 0
     length = 0
     escape_code = 0
-    linesz = ((width * 24 + 31) >> 5) << 2  # bytes per scanline
+    linesz = ((width * 24 + 31) >> 5) << 2  # bytes per scan line
     dstln = 0
     x = 0
     y = height - 1
@@ -1185,7 +1185,7 @@ _HUFFBLACKS = {
 }
 
 def _createhuffctx(bitdata, dst, width, height):
-    linesz = ((width + 31) >> 5) << 2  # bytes per scanline
+    linesz = ((width + 31) >> 5) << 2  # bytes per scan line
     # bitdata, dst, width, height, dstbytepos, dstbitpos, dstX, linesz,
     # color, srcbytepos, srcbitpos
     return [bitdata, dst, width, height, 0, 0, 0, linesz, 0, 0, 0]
@@ -1313,7 +1313,7 @@ def _huffmandecompress(bitdata, dst, width, height):
     # This method assumes that all the elements in 'dst' are zeros.
     if (not dst) or (not bitdata):
         return False
-    linesz = ((width + 31) >> 5) << 2  # bytes per scanline
+    linesz = ((width + 31) >> 5) << 2  # bytes per scan line
     ctx = _createhuffctx(bitdata, dst, width, height)
     starting = True
     consecstartcodes = 0
@@ -1366,7 +1366,7 @@ def _rle4decompress(bitdata, dst, width, height):
     escapecode = 0
     begin = 0
     bits = 0
-    linesz = ((width * 4 + 31) >> 5) << 2  # bytes per scanline
+    linesz = ((width * 4 + 31) >> 5) << 2  # bytes per scan line
     dstln = 0
     masks = [0xF0, 0x0F]
     shifts = [4, 0]
@@ -1473,13 +1473,13 @@ def _rle4decompress(bitdata, dst, width, height):
 # bitmap could not be read, the value None takes the place of the
 # corresponding five-element list.
 # Each five-element list in the returned list contains the image,
-# its width, its height, its hot spot X coordinate, and its hot spot
-# Y coordinate in that order. The image has the same format returned by the
+# its width, its height, its hot spot x-coordinate, and its hot spot
+# y-coordinate in that order. The image has the same format returned by the
 # _desktopwallpaper_ module's blankimage() method with alpha=True. Notes:
 # 1. The hot spot is the point in the image
 # that receives the system's mouse position when that image is
 # drawn on the screen.  The hot spot makes sense only for mouse pointers;
-# the hot spot X and Y coordinates are each 0 if the image relates to
+# the hot spot x- and y-coordinates are each 0 if the image relates to
 # an icon or bitmap, rather than a pointer.
 # 2. Although OS/2 and Windows icons and cursors support pixels that invert
 # the screen colors, this feature is not supported in images returned by
@@ -1886,11 +1886,11 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
     if bmih[7] != 0 or bmih[8] != 0:
         _errprint("unusual: resolution given")
     # if entry and (bmih[1] != entry[0] or bmih[2] != entry[1] * 2):
-    #    # Non-matching width and height
+    #    # Nonmatching width and height
     #    _errprint("bad header: bmih=%dx%d entry=%dx%d"%(bmih[1],bmih[2],entry[0],entry[1]*2))
     #    return None
     # if entry and isicon and entry[3]!=bmih[4]:
-    #   # non-matching bit count
+    #   # nonmatching bit count
     #   return None
     if (
         bmih[1] < 0
@@ -2401,11 +2401,11 @@ def _readicon(f, packedWinBitmap=False):
     if not isBitmap:
         hotspotY = realHeight - 1 - hotspotY
         if hotspotY < 0 or hotspotY >= realHeight:
-            # hot spot outside of image
+            # hot spot outside image
             if isPointer:
                 raise ValueError
         if hotspotX < 0 or hotspotX >= andmaskhdr[1]:
-            # hot spot outside of image
+            # hot spot outside image
             if isPointer:
                 raise ValueError
     tablesize = (1 << andmaskhdr[4]) if andpalette > 0 else 0

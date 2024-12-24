@@ -11,7 +11,7 @@
 #
 # 1. Animation of tilings composed from a wallpaper image can be implemented by
 # shifting, with each frame, the starting position for drawing the upper left
-# corner of the wallpaper tiling (e.g., from the toplower-left corner of the image
+# corner of the wallpaper tiling (for example, from the upper-left corner of the image
 # to some other position in the image).
 # 2. In Windows, if both an 8 &times; 8 monochrome pattern and a centered wallpaper
 # are set as the desktop background, both the pattern and the wallpaper
@@ -333,7 +333,7 @@ def _isqrtceil(i):
 # Returns an ImageMagick filter string to generate a desktop background from an image, in three steps.
 # 1. If rgb1 and rgb2 are not nil, converts the input image to grayscale, then translates the grayscale
 # palette to a gradient starting at rgb1 for grayscale level 0 (a 3-element array of the red,
-# green, and blue components in that order; e.g., [2,10,255] where each
+# green, and blue components in that order; for example, [2,10,255] where each
 # component is from 0 through 255) and ending at rgb2 for grayscale level 255 (same format as rgb1).
 # Raises an error if rgb1 or rgb2 has a length less than 3.
 # The output image is the input for the next step.
@@ -469,7 +469,7 @@ def shiftwrap(xOrigin, yOrigin):
 # ImageMagick command to render an input image described in 'versatilePattern' in an unavailable appearance.
 # If 'buttonShadow' is darker than 'buttonHighlight' (as is the default), then this method will result in
 # the image's appearing engraved, that is, sunken onto the background, given the existence of a light
-# source that shines from the upperlower-left corner.
+# source that shines from the upper-left corner.
 # If 'buttonShadow' is lighter than 'buttonHighlight', the image instead appears embossed, that is, raised above the
 # background, given the light source just described.
 # If 'drawShiftedImageOver' is True, the image drawn in the 'buttonShadow' color is drawn above the
@@ -543,7 +543,7 @@ def versatileForeground(foregroundImage):
 # gray tones, where the closer the gray level is to 0, the less transparent.
 # 'bgcolor' can be None so that an alpha
 # background is used.  Each color is a
-# 3-element array of the red, green, and blue components in that order; e.g.,
+# 3-element array of the red, green, and blue components in that order; for example,
 # [2,10,255] where each component is from 0 through 255.
 # Inspired by the technique for generating backgrounds in heropatterns.com.
 def versatilePattern(fgcolor, bgcolor=None):
@@ -775,7 +775,7 @@ def groupCmm():
 # ImageMagick command to put a background color behind the input image.
 # 'bgcolor' is the background color,
 # either None or a 3-element array of the red,
-# green, and blue components in that order; e.g., [2,10,255] where each
+# green, and blue components in that order; for example, [2,10,255] where each
 # component is from 0 through 255; default is None, or no background color.
 def backgroundColorUnder(bgcolor=None):
     return (
@@ -1169,12 +1169,12 @@ def _applyrop(dst, src, rop):
 # method doesn't belong in), if the background mode is transparent, only
 # the nontransparent pixels are drawn and affected by raster operations.)
 # 'patternOrgX' and 'patternOrgY' are offsets from the destination's upper left
-# corner where the toplower-left corner of the brush pattern image would
+# corner where the upper-left corner of the brush pattern image would
 # be drawn if a repetition of the brush pattern were to be drawn across the
 # whole destination image.  The default for both parameters is 0.
-# 'x0src' and 'y0src' are offsets from the destination image's toplower-left corner
-# where the source image's toplower-left corner will be drawn.
-# 'x0mask' and 'y0mask' are offsets from the source image's toplower-left corner
+# 'x0src' and 'y0src' are offsets from the destination image's upper-left corner
+# where the source image's upper-left corner will be drawn.
+# 'x0mask' and 'y0mask' are offsets from the source image's upper-left corner
 # and correspond to pixels in the source image.
 #
 # 'ropForeground' is a foreground ternary raster operation between the bits of the
@@ -1834,7 +1834,7 @@ def _porterduff16bitalpha(d, di, s, si, op, sa65025, alpha=True):
 # is True.
 # 'dstimage' has the same format returned by the blankimage() method with alpha=False; 'srcimage', with alpha=True.
 # If 'srcimage' is None, a source image with all zeros and an alpha of 0 for all pixels is used as the source, even if
-# 'alpha' is False.  The red, green, and blue components for 'srcimage' are assumed to be "non-premultiplied", that
+# 'alpha' is False.  The red, green, and blue components for 'srcimage' are assumed to be "nonpremultiplied", that
 # is, not multiplied beforehand by the alpha component divided by 255.
 # If 'screendoor' is True (default is 'False'), translucency (semitransparency) is
 # simulated by scattering transparent and opaque pixels, or dithering (a process also known
@@ -1966,7 +1966,7 @@ def imagesrcover(
 # The default value for 'alpha' is True.  If 'alpha' is False, this method behaves as though both images
 # had an alpha channel with all pixel's alpha components set to 255 (so that the two images are treated as opaque).
 # If 'srcimage' is None, a source image with all zeros and an alpha of 0 for all pixels is used as the source, even if
-# 'alpha' is False.  The red, green, and blue components for each image are assumed to be "non-premultiplied", that
+# 'alpha' is False.  The red, green, and blue components for each image are assumed to be "nonpremultiplied", that
 # is, not multiplied beforehand by the alpha component divided by 255.
 # 'porterDuffOp' is one of the following operators: 0 = source over;
 # 1 = source in; 2 = source held out; 3 = source atop; 4 = destination over;
@@ -2109,8 +2109,8 @@ def _bilerp(y0x0, y0x1, y1x0, y1x1, tx, ty):
 # 'image' has the same format returned by the blankimage() method with the given value of 'alpha'.
 # The default value for 'alpha' is True.
 # 'width' and 'height' is the image's width and height.
-# 'x' is the point's X coordinate, which need not be an integer.
-# 'y' is the point's Y coordinate, which need not be an integer.
+# 'x' is the point's x-coordinate, which need not be an integer.
+# 'y' is the point's y-coordinate, which need not be an integer.
 # An out-of-bounds point ('x','y') will undergo a wraparound adjustment, as though
 # the given image were part of an "infinite" tiling.
 #
@@ -2152,8 +2152,8 @@ def imagept(image, width, height, x, y, alpha=False):
 # Wallpaper group Pmm.  Source rectangle
 # takes the upper left quarter of the image
 # and is reflected and repeated to cover the
-# remaining image, assuming X axis points
-# to the right and the Y axis down.
+# remaining image, assuming x-axis points
+# to the right and the y-axis down.
 # 'x' and 'y' are each 0 or greater
 # and 1 or less.
 def pmm(x, y):
@@ -2171,8 +2171,8 @@ def pmm(x, y):
 # Wallpaper group P4m (triangle formed
 # from a rectangle and by
 # taking the lower-left corner of the rectangle
-# as its right angle, assuming X axis points
-# to the right and the Y axis down)
+# as its right angle, assuming x-axis points
+# to the right and the y-axis down)
 # 'x' and 'y' are each 0 or greater
 # and 1 or less.
 def p4m(x, y):
@@ -2184,8 +2184,8 @@ def p4m(x, y):
 # Wallpaper group P4m, alternative definition
 # (triangle formed from a rectangle and by
 # taking the upper-right corner of the rectangle
-# as its right angle, assuming X axis points
-# to the right and the Y axis down)
+# as its right angle, assuming x-axis points
+# to the right and the y-axis down)
 # 'x' and 'y' are each 0 or greater
 # and 1 or less.
 def p4malt(x, y):
@@ -2198,8 +2198,8 @@ def p4malt(x, y):
 # is isosceles and is formed from a rectangle
 # by using the bottom edge as the triangle's
 # and the top point as the rectangle's
-# upper midpoint, assuming X axis points
-# to the right and the Y axis down
+# upper midpoint, assuming x-axis points
+# to the right and the y-axis down
 def p3m1(x, y):
     xx = x * 6
     xarea = min(5, int(xx))
@@ -2310,8 +2310,8 @@ def p6malt(x, y):
 # Source triangle is isosceles and is formed from a rectangle
 # by using the left edge as the triangle's
 # and the right-hand point as the rectangle's
-# right-hand midpoint, assuming X axis points
-# to the right and the Y axis down
+# right-hand midpoint, assuming x-axis points
+# to the right and the y-axis down
 def p3m1alt1(x, y):
     rx, ry = p3m1(y, 1 - x)
     return (1 - ry, rx)
@@ -2320,8 +2320,8 @@ def p3m1alt1(x, y):
 # Source triangle is isosceles and is formed from a rectangle
 # by using the right edge as the triangle's
 # and the left-hand point as the rectangle's
-# left-hand midpoint, assuming X axis points
-# to the right and the Y axis down
+# left-hand midpoint, assuming x-axis points
+# to the right and the y-axis down
 def p3m1alt2(x, y):
     rx, ry = p3m1(y, x)
     return (ry, rx)
@@ -2382,11 +2382,11 @@ def p6malt2b(x, y):
 # coordinates to input image (source image) coordinates; default is pmm().
 # 'groupFunc' takes two parameters: 'x' and 'y' are each 0 or greater
 # and 1 or less, and are in relation to the destination image; 0 is leftmost
-# or uppermost, and 1 is rightmost or bottommost, assuming the X axis points
-# to the right and the Y axis down.  'groupFunc' returns a tuple indicating
+# or uppermost, and 1 is rightmost or bottommost, assuming the x-axis points
+# to the right and the y-axis down.  'groupFunc' returns a tuple indicating
 # a point in relation to the source rectangle. The tuple has two elements,
-# each 0 or greater and 1 or less: the first is the X coordinate and the
-# second, the Y coordinate; 0 is leftmost or uppermost, and 1 is
+# each 0 or greater and 1 or less: the first is the x-coordinate and the
+# second, the y-coordinate; 0 is leftmost or uppermost, and 1 is
 # rightmost or bottommost, with the assumption given earlier.
 # The wallpaper group functions in this module are intended to
 # result in seamless tileable images from areas with arbitrary contents:
@@ -5845,16 +5845,16 @@ def randomColorization(palette=None):
 
 # palette generation
 
-def _writeu16(ff, x):  # big endian write of 16-bit value
+def _writeu16(ff, x):  # big-endian write of 16-bit value
     ff.write(bytes([(x >> 8) & 0xFF, (x) & 0xFF]))
 
-def _writeu32(ff, x):  # big endian write of 32-bit value
+def _writeu32(ff, x):  # big-endian write of 32-bit value
     ff.write(bytes([(x >> 24) & 0xFF, (x >> 16) & 0xFF, (x >> 8) & 0xFF, (x) & 0xFF]))
 
-def _writeu16le(ff, x):  # little endian write of 16-bit value
+def _writeu16le(ff, x):  # little-endian write of 16-bit value
     ff.write(bytes([(x) & 0xFF, (x >> 8) & 0xFF]))
 
-def _writeu32le(ff, x):  # big endian write of 32-bit value
+def _writeu32le(ff, x):  # big-endian write of 32-bit value
     ff.write(bytes([(x) & 0xFF, (x >> 8) & 0xFF, (x >> 16) & 0xFF, (x >> 24) & 0xFF]))
 
 def _writef32(ff, x):
