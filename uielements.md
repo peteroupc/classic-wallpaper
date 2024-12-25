@@ -1,26 +1,26 @@
-# Traditional User Interface Graphics
+# Traditional User-Interface Graphics
 
-This page discusses aspects of the traditional design of user interface graphics, such as button and border styles, icons, and mouse pointers.
+This page discusses aspects of the traditional design of user-interface graphics, such as button and border styles, icons, and mouse pointers.
 
 ## Logical Resolutions
 
-A _display mode_ is a way to set up a computer display to show graphics.  One thing associated with a display mode is a _logical resolution_, or the number of pixels per inch the display can logically fit horizontally and vertically.  Some display modes follow, and others are found in a table in the [OpenType 1.8 specification](https://learn.microsoft.com/en-us/typography/opentype/otspec180/recom#device-resolutions) (which the recent version doesn't have):
+A _display mode_ is a way to set up a computer display to show graphics.  Some display modes follow:
 
-- VGA's (video graphics array) 640 &times; 480 display mode: 96 horizontal and vertical pixels per inch (pixels are "squares").
+- VGA's (video graphics array) 640 &times; 480 display mode: A _logical resolution_ of 96 horizontal and vertical pixels per inch (pixels are "squares").
 - IBM Extended Graphics Adapter's (EGA) 640 &times; 350 color display mode: 96 horizontal and 72 vertical pixels per inch (pixels are not squares).
 - IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-tone display mode: 96 horizontal and 48 vertical pixels per inch (pixels are not squares).
 
 An image can be adapted for display modes with logical resolutions that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).
 
-Logical resolutions also include the special case of _pixel density_, or a number to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Pixel densities include the factors 1.25 (IBM 8514/a), 2, and 3.
+Logical resolutions also cover the special case of _pixel density_, or a number to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Examples of pixel densities are 1.25 (IBM 8514/a), 2, and 3.
 
-More generally, units similar to pixels may be employed as units of measure for user interface elements, for design purposes to promote right-sized user interfaces.  Examples include [_dialog box units_](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [_effective pixels_](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display, its size, and its resolution).
+More generally, units similar to pixels may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [_dialog box units_](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [_effective pixels_](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display, its size, and its resolution).
 
 ## Button and Border Styles
 
 Here is a challenge.  Write computer code (released to the public domain or licensed under the Unlicense) to draw the following ways to style borders and buttons:
 
-- Window border, field border, status field border, and grouping border.[^7]
+- Window border, text box border, status field border, and grouping border.[^7]
 - Buttons, buttons selected by default:
     - Unpressed, pressed, mixed value ("indeterminate" or "third state"), unavailable ("disabled").
 - Toolbar buttons:
@@ -31,7 +31,7 @@ Here is a challenge.  Write computer code (released to the public domain or lice
     - Unpressed, pressed, mixed value (same for both), unavailable.
 - Option buttons ("radio buttons") when set, option buttons when unset, sliders:
     - Unpressed, pressed, unavailable.
-- Optionally, other user interface elements (such as scroll bars).
+- Optionally, other user-interface elements (such as scroll bars).
 
 Using only the following colors and with some pixels allowed to be transparent:
 
@@ -58,7 +58,7 @@ The following appearances are traditionally seen in ordinary buttons:
 
     in each case with transparency and opacity in the label preserved.
 - _Unavailable appearance_: The button's text and icons have an _embossed appearance_ [^3], are drawn with 50% opacity, or are drawn such that only every other pixel is rendered in a checkerboard pattern.
-- _Mixed value appearance_: The button's inner background is drawn&mdash;
+- _Mixed appearance_: The button's inner background is drawn&mdash;
 
     - such that the button face color and the button highlight color alternate every other pixel in a checkerboard pattern, or
     - as a solid color that's a mixture of the button face color and the button highlight color.
@@ -66,60 +66,60 @@ The following appearances are traditionally seen in ordinary buttons:
 Traditionally, to draw buttons, default buttons, and toolbar buttons:
 
 - For the pressed button style, the button's text and icons are shifted one pixel to the right and one pixel down, compared to the unpressed style.
-- The mixed value style tends to be drawn as the unpressed variant, except the button's text and icons have a _monochrome appearance_ and its inner background has a _mixed value appearance_.
+- The mixed value style tends to be drawn as the unpressed variant, except the button's text and icons have a _monochrome appearance_ and its inner background has a _mixed appearance_.
 - The unavailable style tends to be drawn as the unpressed variant, except the button's text and icons have an _unavailable appearance_.
 - For the option-set style, the button tends to be drawn as the normal pressed variant, except:
-    - For the unpressed style, its inner background has a _mixed value appearance_. [^2]
+    - For the unpressed style, its inner background has a _mixed appearance_. [^2]
     - For the unavailable style, its text and icons have an _unavailable appearance_.
 
-Traditionally, the three dimensional effects of buttons, icons, and other user interface elements are based on a light source shining from the upper left. [^3]
+Traditionally, the three dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3]
 
 ## Icons and Cursors
 
-An icon (a small graphic representing a computer program) should be present in a set of variations in color and dimensions:
+An icon (a small graphic representing a computer program) should come in a set of variations in color and dimensions:
 
 - The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
 - The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
-- Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive such icons from 8-bpc and 256-color icons, respectively, through an automated method.
+- Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.
 
-Of these variations, 32 &times; 32 icons with the VGA palette are traditionally most common.
+Traditionally, 32 &times; 32 icons with the VGA palette are the most common variation.
 
 Cursors (mouse pointer graphics) can follow the guidelines given earlier as well, but most cursors are traditionally drawn:
 
-- In a single pixel dimension, generally 32 &times; 32, except to account for [logical display resolution](#logical-display-resolutions).
+- In a single width and height, generally 32 &times; 32 pixels, except to account for [logical display resolution](#logical-display-resolutions).
 - In black and white or in grayscale (with colors limited to white, black, and other gray tones), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** Icon formats for OS/2 and Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [`imageformat` module documentation](./imageformat.html).
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound, this control appears to be rarely in use.  More usually, in traditional desktop applications, animations are implemented manually, with the frames of the animation either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames).  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
+Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound, this control appears to be rarely used.  More usually, traditional desktop applications don't store an  animation as a video file; rather, its frames are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames).  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
 
 ## Drawing Style
 
-The following points are observed in general in user interface graphics, including icons, cursors, and illustrations, from about 1995 to about 2003, when they are drawn using a limited color palette:
+In general, when user-interface graphics, including icons, cursors, and illustrations, from about 1995 to about 2003 are drawn using a limited color palette, the following is observed:
 
 - Curves and straight line segments are drawn unsmoothed and one pixel thick.
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
-- The three-dimensional (3-D) appearance of graphics (including buttons, window borders, and real-world objects) is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
-    - If it is desired to give a real-world object a 3-D look with a limited number of colors, that object is generally drawn in an _isometric_ view (rather than straight on).
-- Real-world objects depicted in icons and other graphics tend to have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
-- In general, in icons, cursors, and digital illustrations limited to the 16-color VGA palette[^1]:
+- The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
+    - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).
+- Real-world objects depicted in user-interface graphics tend to have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
+- For graphics limited to the 16-color VGA palette[^1]:
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
 - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) tend to appear the same as the original icon but with finer but nonessential detail.
 
-After about 2003, icons, cursors, and illustrations for user interfaces tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions tend to be derived from those images through _dithering_[^6] or similar techniques.
+After about 2003, user-interface graphics tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
 
 ## Flexible User Interface Graphics
 
 For a high degree of flexibility, new graphical user interface systems should allow for the following:
 
-- Designing icons, cursors, and other user interface elements in the form of vector graphics.
+- Designing icons, cursors, and other user-interface elements in the form of vector graphics.
 - Having certain outlines of shapes in vector graphics be filled with user-specified system colors, or _system colors_ for short (such as a button face color or button highlight color).
-- Designing user interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
+- Designing user-interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
     - in multiple sizes, each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html), for example, in order to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm), and
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
@@ -141,4 +141,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^6]: Dithering is the scattering of colors in a limited set to simulate colors outside that set.
 
-[^7]: _Window borders_ are the outer edges of desktop windows.  _Field borders_ are the edges of text boxes.  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.
+[^7]: _Window borders_ are the outer edges of desktop windows.  Text box borders are also known as "field borders".  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.

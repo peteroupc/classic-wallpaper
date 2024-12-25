@@ -3745,7 +3745,7 @@ def _gradient(stops, count=256):
                         ]
     return ret
 
-# Returns a 256-element color gradient for coloring user interface elements (for example,
+# Returns a 256-element color gradient for coloring user-interface elements (for example,
 # using the 'graymap' function).
 # The parameters are all three-element lists identifying colors.  Each parameter can
 # be None.  The examples for this function are similar to those given in the
@@ -3762,7 +3762,7 @@ def uicolorgradient(
         ]
     )
 
-# Returns a 256-element color gradient for coloring user interface elements (for example,
+# Returns a 256-element color gradient for coloring user-interface elements (for example,
 # using the 'graymap' function), given a desired button face color.  The parameters are all
 # three-element lists identifying colors.  Each parameter can be None.
 #
@@ -4481,7 +4481,7 @@ def maketileable(image, width, height, alpha=False):
 # by definition, they are pixelated just as they would appear in classic OSs.
 #
 # NOTE: A more flexible approach for this kind of drawing
-# is to prepare an SVG defining the frame of a user interface element
+# is to prepare an SVG defining the frame of a user-interface element
 # with five different parts (in the form of 2D shapes): an "upper outer part", a
 # "lower outer part", an "upper inner part", a "lower inner part", and a "middle part".
 # Each of these five parts can be colored separately or filled with a pattern.
