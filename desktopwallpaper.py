@@ -2403,14 +2403,9 @@ def wallpaperImage(
     for y in range(height):
         for x in range(width):
             px, py = groupFunc(x / width, y / height)
-            if px < 0 or py < 0 or px > 1 or py > 1:
-                print(["oob", px, py, groupFunc], file=sys.stderr)
             sx = sx0 + (sx1 - sx0) * px
             sy = sy0 + (sy1 - sy0) * py
             pixel = imagept(srcImage, sw, sh, sx, sy, alpha=alpha)
-            # pixel=[int(px*255),int(py*255),255]
-            if max(pixel) > 255 or min(pixel) < 0:
-                print(["oob", px, py, pixel, groupFunc], file=sys.stderr)
             if alpha:
                 setpixelalpha(img, width, height, x, y, pixel)
             else:
@@ -2813,8 +2808,11 @@ def borderedbox(
 ):
     if x1 < x0 or y1 < y0:
         raise ValueError
-    if width <= 0 or height <= 0:
+    if width < 0 or height < 0:
         raise ValueError
+    # Nothing to do for zero-width images
+    if width == 0 or height == 0:
+        return
     if (not color1) or (not image) or (not color2):
         raise ValueError
     if x0 == x1 or y0 == y1:
@@ -3508,10 +3506,10 @@ def websafeDither(image, width, height, alpha=False, includeVga=False):
                         image[xp + 2] == 0 or image[xp + 2] == 0x80
                     ):
                         continue
+            bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
             for i in range(3):
                 c = image[xp + i]
                 cm = c % 51
-                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
                 image[xp + i] = (c - cm) + 51 if bdither < cm * 64 // 51 else c - cm
     return image
 
