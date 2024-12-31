@@ -32,6 +32,27 @@ fn mod32(a: i32, b: u32) -> u32 {
   }
 }
 
+fn classiccolors() -> Vec<[u8;3]> {
+  return vec![
+        [0, 0, 0],
+        [128, 128, 128],
+        [192, 192, 192],
+        [255, 0, 0],
+        [128, 0, 0],
+        [0, 255, 0],
+        [0, 128, 0],
+        [0, 0, 255],
+        [0, 0, 128],
+        [255, 0, 255],
+        [128, 0, 128],
+        [0, 255, 255],
+        [0, 128, 128],
+        [255, 255, 0],
+        [128, 128, 0],
+        [255, 255, 255],
+    ];
+}
+
 fn blankimage(width:u32, height:u32, color: [u8;3]) -> RgbImage {
   let mut image=RgbImage::new(width,height);
   let rc=Rgb(color);
@@ -67,7 +88,7 @@ fn borderedbox(
     if x0 == x1 || y0 == y1 {
         return Ok(0);
     }
-    if wraparound.is_some() {
+    if !wraparound {
         x0 = max(x0, 0);
         y0 = max(y0, 0);
         x1=min32(x1,image.width());
@@ -110,12 +131,15 @@ fn borderedbox(
 fn main() {
     let w:u32 = 64;
     let h:u32 = 64;
-    let mut image = RgbImage::new(w,h);
+    let mut image = blankimage(w,h,[0,0,0]);
+    let vga=classiccolors();
+    let c0=(rand::random::<u8>()&0x0F) as usize;
+    let c1=(rand::random::<u8>()&0x0F) as usize;
     borderedbox(
         &mut image,
         None,
-        [128, 128, 128],
-        [192, 192, 192],
+        vga[c0],
+        vga[c1],
         0,
         0,
         w.try_into().unwrap(),
@@ -123,5 +147,4 @@ fn main() {
         true,
     ).expect("failure");
     image.save("/tmp/image.png").expect("failure");
-    println!("success");
 }

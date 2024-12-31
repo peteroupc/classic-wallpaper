@@ -5,9 +5,11 @@
 *.map
 *.nupkg
 *.pyc
+*.lock
 *.userprefs
 .nuget/
 .vs/
 encodingfldr/
 packages/
 target/
+rust/target/
