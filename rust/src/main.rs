@@ -33,7 +33,6 @@ fn mod32(a: i32, b: u32) -> u32 {
         return au32 % b;
     }
 }
-/*
 fn classiccolors() -> Vec<[u8; 3]> {
     return vec![
         [0, 0, 0],
@@ -54,7 +53,6 @@ fn classiccolors() -> Vec<[u8; 3]> {
         [255, 255, 255],
     ];
 }
-*/
 
 static DITHER_MATRIX: [u8; 64] = [
     // Bayer 8 &times; 8 ordered dither matrix
@@ -120,6 +118,90 @@ fn websafedither(image: &mut RgbImage, include_vga: bool) -> &mut RgbImage {
     return image;
 }
 
+fn nearestrgb3(palette: &Vec<[u8; 3]>, r: i32, g: i32, b: i32) -> usize {
+    let mut best: usize = 0;
+    let mut ret: usize = 0;
+    for i in 0..palette.len() {
+        let cr = palette[i][0] as i32;
+        let cg = palette[i][1] as i32;
+        let cb = palette[i][2] as i32;
+        let dist = ((r - cr) * (r - cr) + (g - cg) * (g - cg) + (b - cb) * (b - cb))
+            .try_into()
+            .unwrap();
+        if i == 0 || dist < best {
+            best = dist;
+            ret = i;
+            if dist == 0 {
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
+fn floyd_steinberg_dither(image: &mut RgbImage, palette: &Vec<[u8; 3]>) {
+    if image.width() == 0 || image.height() == 0 {
+        return;
+    }
+    let mut err = Vec::<i32>::new();
+    err.resize((image.width() * 6).try_into().unwrap(), 0);
+    let rerr1: usize = 0;
+    let uswidth: usize = image.width() as usize;
+    let rerr2 = rerr1 + uswidth;
+    let gerr1 = rerr2 + uswidth;
+    let gerr2 = gerr1 + uswidth;
+    let berr1 = gerr2 + uswidth;
+    let berr2 = berr1 + uswidth;
+    for j in 0..image.height() {
+        for i in 0..image.width() {
+            let cr = image.get_pixel(i, j);
+            let ui = i as usize;
+            err[rerr1 + ui] = err[rerr2 + ui] + (cr.0[0] as i32);
+            err[gerr1 + ui] = err[gerr2 + ui] + (cr.0[1] as i32);
+            err[berr1 + ui] = err[berr2 + ui] + (cr.0[2] as i32);
+            err[rerr2 + ui] = 0;
+            err[gerr2 + ui] = 0;
+            err[berr2 + ui] = 0;
+        }
+        err[rerr1] = max(0, min(255, err[rerr1]));
+        err[gerr1] = max(0, min(255, err[gerr1]));
+        err[berr1] = max(0, min(255, err[berr1]));
+        let mut idx = nearestrgb3(&palette, err[rerr1], err[gerr1], err[berr1]);
+        image.put_pixel(0, j, Rgb(palette[idx]));
+        for i in 0..(image.width() - 1) {
+            let ui = i as usize;
+            err[rerr1 + ui] = max(0, min(255, err[rerr1 + ui]));
+            err[gerr1 + ui] = max(0, min(255, err[gerr1 + ui]));
+            err[berr1 + ui] = max(0, min(255, err[berr1 + ui]));
+            idx = nearestrgb3(&palette, err[rerr1 + ui], err[gerr1 + ui], err[berr1 + ui]);
+            image.put_pixel(i as u32, j, Rgb(palette[idx]));
+            let rerr = err[rerr1 + ui] - (palette[idx][0] as i32);
+            let gerr = err[gerr1 + ui] - (palette[idx][1] as i32);
+            let berr = err[berr1 + ui] - (palette[idx][2] as i32);
+            // diffuse red error
+            err[rerr1 + ui + 1] += (rerr * 7) >> 4;
+            err[rerr2 + ui - 1] += (rerr * 3) >> 4;
+            err[rerr2 + ui] += (rerr * 5) >> 4;
+            err[rerr2 + ui + 1] += (rerr) >> 4;
+            // diffuse green error
+            err[gerr1 + ui + 1] += (gerr * 7) >> 4;
+            err[gerr2 + ui - 1] += (gerr * 3) >> 4;
+            err[gerr2 + ui] += (gerr * 5) >> 4;
+            err[gerr2 + ui + 1] += (gerr) >> 4;
+            // diffuse red error
+            err[berr1 + ui + 1] += (berr * 7) >> 4;
+            err[berr2 + ui - 1] += (berr * 3) >> 4;
+            err[berr2 + ui] += (berr * 5) >> 4;
+            err[berr2 + ui + 1] += (berr) >> 4;
+        }
+        err[rerr1] = max(0, min(255, err[rerr1]));
+        err[gerr1] = max(0, min(255, err[gerr1]));
+        err[berr1] = max(0, min(255, err[berr1]));
+        idx = nearestrgb3(&palette, err[rerr1], err[gerr1], err[berr1]);
+        image.put_pixel(0, j, Rgb(palette[idx]));
+    }
+}
+
 fn borderedbox(
     image: &mut RgbImage,
     border: Option<[u8; 3]>,
@@ -130,7 +212,7 @@ fn borderedbox(
     x1: i32,
     y1: i32,
     wraparound: bool,
-) -> &mut RgbImage {
+) {
     let mut x0 = x0;
     let mut x1 = x1;
     let mut y0 = y0;
@@ -139,10 +221,10 @@ fn borderedbox(
         panic!();
     }
     if image.width() == 0 || image.height() == 0 {
-        return image;
+        return;
     }
     if x0 == x1 || y0 == y1 {
-        return image;
+        return;
     }
     if !wraparound {
         x0 = max(x0, 0);
@@ -150,7 +232,7 @@ fn borderedbox(
         x1 = min32(x1, image.width());
         y1 = min32(y1, image.height());
         if x0 >= x1 || y0 >= y1 {
-            return image;
+            return;
         }
     }
     let rc1 = Rgb(color1);
@@ -175,7 +257,6 @@ fn borderedbox(
             }
         }
     }
-    return image;
 }
 
 fn randomboxes(image: &mut RgbImage) -> &mut RgbImage {
@@ -214,7 +295,8 @@ fn main() {
     let h: u32 = 128;
     let mut image = blankimage(w, h, [0, 0, 0]);
     randomboxes(&mut image);
-    websafedither(&mut image, true);
+    let cc = classiccolors();
+    floyd_steinberg_dither(&mut image, &cc);
     image
         .save_with_format("/tmp/image.png", image::ImageFormat::Png)
         .expect("failure");
