@@ -3600,6 +3600,78 @@ def posterize(image, width, height, palette, alpha=False):
             image[xp + 2] = can[2]
     return image
 
+# Same as patternDither(), but uses the Floyd-Steinberg algorithm.
+# There is no 'fast' parameter.
+def floydSteinbergDither(image, width, height, palette, alpha=False):
+    if width < 0 or height < 0 or not palette:
+        raise ValueError
+    if width == 0 or height == 0:
+        return image
+    err = [0 for i in range(width * 6)]
+    rerr1 = 0
+    rerr2 = rerr1 + width
+    gerr1 = rerr2 + width
+    gerr2 = gerr1 + width
+    berr1 = gerr2 + width
+    berr2 = berr1 + width
+    pixelBytes = 4 if alpha else 3
+    pos = 0
+    for j in range(height):
+        for i in range(width):
+            cr = (
+                getpixelalpha(image, width, height, i, j)
+                if alpha
+                else getpixel(image, width, height, i, j)
+            )
+            err[rerr1 + i] = err[rerr2 + i] + cr[0]
+            err[gerr1 + i] = err[gerr2 + i] + cr[1]
+            err[berr1 + i] = err[berr2 + i] + cr[2]
+            err[rerr2 + i] = err[gerr2 + i] = err[berr2 + i] = 0
+        err[rerr1] = max(0, min(255, err[rerr1]))
+        err[gerr1] = max(0, min(255, err[gerr1]))
+        err[berr1] = max(0, min(255, err[berr1]))
+        idx = _nearest_rgb3(palette, err[rerr1], err[gerr1], err[berr1])
+        pos = (j * width) * pixelBytes
+        image[pos] = palette[idx][0]
+        image[pos + 1] = palette[idx][1]
+        image[pos + 2] = palette[idx][2]
+        for i in range(width - 1):
+            err[rerr1 + i] = max(0, min(255, err[rerr1 + i]))
+            err[gerr1 + i] = max(0, min(255, err[gerr1 + i]))
+            err[berr1 + i] = max(0, min(255, err[berr1 + i]))
+            idx = _nearest_rgb3(palette, err[rerr1 + i], err[gerr1 + i], err[berr1 + i])
+            pos = (j * width + i) * pixelBytes
+            image[pos] = palette[idx][0]
+            image[pos + 1] = palette[idx][1]
+            image[pos + 2] = palette[idx][2]
+            rerr = err[rerr1 + i] - palette[idx][0]
+            gerr = err[gerr1 + i] - palette[idx][1]
+            berr = err[berr1 + i] - palette[idx][2]
+            # diffuse red error
+            err[rerr1 + i + 1] += (rerr * 7) >> 4
+            err[rerr2 + i - 1] += (rerr * 3) >> 4
+            err[rerr2 + i] += (rerr * 5) >> 4
+            err[rerr2 + i + 1] += (rerr) >> 4
+            # diffuse green error
+            err[gerr1 + i + 1] += (gerr * 7) >> 4
+            err[gerr2 + i - 1] += (gerr * 3) >> 4
+            err[gerr2 + i] += (gerr * 5) >> 4
+            err[gerr2 + i + 1] += (gerr) >> 4
+            # diffuse red error
+            err[berr1 + i + 1] += (berr * 7) >> 4
+            err[berr2 + i - 1] += (berr * 3) >> 4
+            err[berr2 + i] += (berr * 5) >> 4
+            err[berr2 + i + 1] += (berr) >> 4
+        err[rerr1] = max(0, min(255, err[rerr1]))
+        err[gerr1] = max(0, min(255, err[gerr1]))
+        err[berr1] = max(0, min(255, err[berr1]))
+        idx = _nearest_rgb3(palette, err[rerr1], err[gerr1], err[berr1])
+        pos = (j * width) * pixelBytes
+        image[pos] = palette[idx][0]
+        image[pos + 1] = palette[idx][1]
+        image[pos + 2] = palette[idx][2]
+    return image
+
 # Dithers in place the given image to the colors in an arbitrary color palette.
 # Derived from Adobe's pattern dithering algorithm, described by J. Yliluoma at:
 # https://bisqwit.iki.fi/story/howto/dither/jy/

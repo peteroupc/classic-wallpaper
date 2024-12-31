@@ -160,13 +160,7 @@ fn borderedbox(
         for x in x0..x1 {
             let xp: u32 = mod32(x, image.width());
             let is_border = match border {
-                Some(_) => {
-                    if y == y0 || y == y1 - 1 || x == x0 || x == x1 - 1 {
-                        true
-                    } else {
-                        false
-                    }
-                }
+                Some(_) => y == y0 || y == y1 - 1 || x == x0 || x == x1 - 1,
                 None => false,
             };
             if is_border {
@@ -201,7 +195,15 @@ fn randomboxes(image: &mut RgbImage) -> &mut RgbImage {
             rand::random::<u8>(),
         ];
         borderedbox(
-            image, Some([0,0,0]), c0, c0, x0 as i32, y0 as i32, x1 as i32, y1 as i32, true,
+            image,
+            Some([0, 0, 0]),
+            c0,
+            c0,
+            x0 as i32,
+            y0 as i32,
+            x1 as i32,
+            y1 as i32,
+            true,
         );
     }
     return image;
@@ -212,6 +214,8 @@ fn main() {
     let h: u32 = 128;
     let mut image = blankimage(w, h, [0, 0, 0]);
     randomboxes(&mut image);
-    websafedither(&mut image,true);
-    image.save_with_format("/tmp/image.png",image::ImageFormat::Png).expect("failure");
+    websafedither(&mut image, true);
+    image
+        .save_with_format("/tmp/image.png", image::ImageFormat::Png)
+        .expect("failure");
 }
