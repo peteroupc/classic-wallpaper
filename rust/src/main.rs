@@ -13,10 +13,10 @@ fn _min32(a: i32, b: u32) -> i32 {
     if a < 0 {
         // If negative, return 'a', since no
         // u32 value can be negative
-        return a;
+        a
     } else {
         let au32: u32 = a.wrapping_abs() as u32;
-        return min(au32, b) as i32;
+        min(au32, b) as i32
     }
 }
 
@@ -25,18 +25,19 @@ fn _min32(a: i32, b: u32) -> i32 {
 fn _mod32(a: i32, b: u32) -> u32 {
     if a < 0 {
         let au32: u32 = a.wrapping_abs() as u32;
-        let mut ret: u32 = au32 % b;
+        let ret: u32 = au32 % b;
         if ret != 0 {
-            ret = b - ret
+            b - ret
+        } else {
+            ret
         }
-        return ret;
     } else {
         let au32: u32 = a.try_into().unwrap();
-        return au32 % b;
+        au32 % b
     }
 }
 fn classiccolors() -> Vec<[u8; 3]> {
-    return vec![
+    vec![
         [0, 0, 0],
         [128, 128, 128],
         [192, 192, 192],
@@ -53,7 +54,7 @@ fn classiccolors() -> Vec<[u8; 3]> {
         [255, 255, 0],
         [128, 128, 0],
         [255, 255, 255],
-    ];
+    ]
 }
 
 static DITHER_MATRIX: [u8; 64] = [
@@ -71,7 +72,7 @@ fn blankimage(width: u32, height: u32, color: [u8; 3]) -> RgbImage {
             image.put_pixel(x, y, rc);
         }
     }
-    return image;
+    image
 }
 
 fn websafedither(image: &mut RgbImage, include_vga: bool) -> &mut RgbImage {
@@ -89,10 +90,11 @@ fn websafedither(image: &mut RgbImage, include_vga: bool) -> &mut RgbImage {
                     if rg == 0xC0 && rb == 0xC0 {
                         continue;
                     }
-                } else if c0 == 0x80 || c0 == 0 {
-                    if (rg == 0 || rg == 0x80) && (rb == 0 || rb == 0x80) {
-                        continue;
-                    }
+                } else if (c0 == 0x80 || c0 == 0)
+                    && (rg == 0 || rg == 0x80)
+                    && (rb == 0 || rb == 0x80)
+                {
+                    continue;
                 }
             }
             let mut cm: u32 = rr % 51;
@@ -100,36 +102,33 @@ fn websafedither(image: &mut RgbImage, include_vga: bool) -> &mut RgbImage {
             if bdither < (cm * 64) / 51 {
                 rr = (rr - cm) + 51;
             } else {
-                rr = rr - cm;
+                rr -= cm;
             }
             cm = rg % 51;
             if bdither < (cm * 64) / 51 {
                 rg = (rg - cm) + 51;
             } else {
-                rg = rg - cm;
+                rg -= cm;
             }
             cm = rb % 51;
             if bdither < (cm * 64) / 51 {
                 rb = (rb - cm) + 51;
             } else {
-                rb = rb - cm;
+                rb -= cm;
             }
             image.put_pixel(x, y, Rgb([rr as u8, rg as u8, rb as u8]));
         }
     }
-    return image;
+    image
 }
 
-fn nearestrgb3(palette: &Vec<[u8; 3]>, r: u8, g: u8, b: u8) -> usize {
+fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
     let mut best: usize = 0;
     let mut ret: usize = 0;
-    for i in 0..palette.len() {
-        let cr = palette[i][0] as i32;
-        let cg = palette[i][1] as i32;
-        let cb = palette[i][2] as i32;
-        let dr: i32 = (r as i32) - cr;
-        let dg: i32 = (g as i32) - cg;
-        let db: i32 = (b as i32) - cb;
+    for (i, color) in palette.iter().enumerate() {
+        let dr: i32 = (r as i32) - (color[0] as i32);
+        let dg: i32 = (g as i32) - (color[1] as i32);
+        let db: i32 = (b as i32) - (color[2] as i32);
         let dist: usize = (dr * dr + dg * dg + db * db).try_into().unwrap();
         if i == 0 || dist < best {
             best = dist;
@@ -139,15 +138,14 @@ fn nearestrgb3(palette: &Vec<[u8; 3]>, r: u8, g: u8, b: u8) -> usize {
             }
         }
     }
-    return ret;
+    ret
 }
 
-fn floyd_steinberg_dither(image: &mut RgbImage, palette: &Vec<[u8; 3]>) {
+fn floyd_steinberg_dither(image: &mut RgbImage, palette: &[[u8; 3]]) {
     if image.width() == 0 || image.height() == 0 {
         return;
     }
-    let mut err = Vec::<i32>::new();
-    err.resize((image.width() * 6).try_into().unwrap(), 0);
+    let mut err = vec![0; (image.width() * 6).try_into().unwrap()];
     let rerr1: usize = 0;
     let uswidth: usize = image.width() as usize;
     let rerr2 = rerr1 + uswidth;
@@ -166,11 +164,11 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &Vec<[u8; 3]>) {
             err[gerr2 + ui] = 0;
             err[berr2 + ui] = 0;
         }
-        err[rerr1] = max(0, min(255, err[rerr1]));
-        err[gerr1] = max(0, min(255, err[gerr1]));
-        err[berr1] = max(0, min(255, err[berr1]));
+        err[rerr1] = err[rerr1].clamp(0, 255);
+        err[gerr1] = err[gerr1].clamp(0, 255);
+        err[berr1] = err[berr1].clamp(0, 255);
         let mut idx = nearestrgb3(
-            &palette,
+            palette,
             err[rerr1] as u8,
             err[gerr1] as u8,
             err[berr1] as u8,
@@ -178,16 +176,16 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &Vec<[u8; 3]>) {
         image.put_pixel(0, j, Rgb(palette[idx]));
         for i in 0..(image.width() - 1) {
             let ui = i as usize;
-            err[rerr1 + ui] = max(0, min(255, err[rerr1 + ui]));
-            err[gerr1 + ui] = max(0, min(255, err[gerr1 + ui]));
-            err[berr1 + ui] = max(0, min(255, err[berr1 + ui]));
+            err[rerr1 + ui] = err[rerr1 + ui].clamp(0, 255);
+            err[gerr1 + ui] = err[gerr1 + ui].clamp(0, 255);
+            err[berr1 + ui] = err[berr1 + ui].clamp(0, 255);
             idx = nearestrgb3(
-                &palette,
+                palette,
                 err[rerr1 + ui] as u8,
                 err[gerr1 + ui] as u8,
                 err[berr1 + ui] as u8,
             );
-            image.put_pixel(i as u32, j, Rgb(palette[idx]));
+            image.put_pixel(i, j, Rgb(palette[idx]));
             let rerr = err[rerr1 + ui] - (palette[idx][0] as i32);
             let gerr = err[gerr1 + ui] - (palette[idx][1] as i32);
             let berr = err[berr1 + ui] - (palette[idx][2] as i32);
@@ -207,11 +205,11 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &Vec<[u8; 3]>) {
             err[berr2 + ui] += (berr * 5) >> 4;
             err[berr2 + ui + 1] += (berr) >> 4;
         }
-        err[rerr1] = max(0, min(255, err[rerr1]));
-        err[gerr1] = max(0, min(255, err[gerr1]));
-        err[berr1] = max(0, min(255, err[berr1]));
+        err[rerr1] = err[rerr1].clamp(0, 255);
+        err[gerr1] = err[gerr1].clamp(0, 255);
+        err[berr1] = err[berr1].clamp(0, 255);
         idx = nearestrgb3(
-            &palette,
+            palette,
             err[rerr1] as u8,
             err[gerr1] as u8,
             err[berr1] as u8,
@@ -225,16 +223,13 @@ fn borderedbox(
     border: Option<[u8; 3]>,
     color1: [u8; 3],
     color2: [u8; 3],
-    x0: i32,
-    y0: i32,
-    x1: i32,
-    y1: i32,
+    rect: [i32; 4],
     wraparound: bool,
 ) {
-    let mut x0 = x0;
-    let mut x1 = x1;
-    let mut y0 = y0;
-    let mut y1 = y1;
+    let mut x0 = rect[0];
+    let mut x1 = rect[1];
+    let mut y0 = rect[2];
+    let mut y1 = rect[3];
     if x1 < x0 || y1 < y0 {
         panic!();
     }
@@ -286,7 +281,7 @@ fn writeppm(image: &RgbImage, filename: String) -> Result<(), io::Error> {
     for y in 0..image.height() {
         for x in 0..image.width() {
             let cr = image.get_pixel(x, y);
-            file.write(&cr.0)?;
+            file.write_all(&cr.0)?;
         }
     }
     Ok(())
@@ -313,14 +308,11 @@ fn randomboxes(image: &mut RgbImage) -> &mut RgbImage {
             Some([0, 0, 0]),
             c0,
             c0,
-            x0 as i32,
-            y0 as i32,
-            x1 as i32,
-            y1 as i32,
+            [x0 as i32, y0 as i32, x1 as i32, y1 as i32],
             true,
         );
     }
-    return image;
+    image
 }
 
 fn main() {
