@@ -4,6 +4,8 @@ This repository is intended to hold open-source wallpaper images and source code
 
 Given that desktop backgrounds today tend to cover the full computer screen, to employ thousands of colors, and to have a high-definition resolution (1920 &times; 1080 or larger), rendering tileable backgrounds with limited colors and pixel size ever harder to find, I make the following challenge.
 
+## The Challenge
+
 Create a tileable desktop wallpaper image [^1] meeting the following requirements.
 
 - The image is one of the following:
@@ -113,10 +115,15 @@ The texture generator at [`schalkt/tgen`](https://github.com/schalkt/tgen), unde
 
 ## Sample Wallpaper Generation Code
 
-The following code in Python is presented as an example of computer code to generate tileable wallpaper patterns. It helped generate `circlec.png` and `circlews.png`.
+This repository has the following code files in Python for generating tiled wallpapers and reading and writing icon and bitmap files: `desktopwallpaper.py`, `imageformat.py`, `randomwp.py`.
+
+This repository also has a directory (`rust/`) with Rust source code for generating a tiled wallpaper.
+
+In addition, the following code in Python is presented as an example of computer code to generate tileable wallpaper patterns. It uses the `desktopwallpaper` and `imageformat` modules and helped generate `circlec.png` and `circlews.png`.
 
 ```python
 import desktopwallpaper as dw
+import imageformat as ifmt
 import random
 
 def contouring(x,y,z):
@@ -143,12 +150,13 @@ image = dw.checkerboard(
   width, height)
 # Dither the image
 image2 = [x for x in image]  # copy image for dithering
-dw.patternDither(image, width, height, dw.classiccolors())
-dw.websafeDither(image2, width, height)
 # Dither in VGA colors
-dw.writepng("/tmp/circlec.png", image, width, height)
+dw.patternDither(image, width, height, dw.classiccolors())
 # Dither in "safety palette"
-dw.writepng("/tmp/circlews.png", image2, width, height)
+dw.websafeDither(image2, width, height)
+# Write dithered images
+ifmt.writepng("/tmp/circlec.png", image, width, height)
+ifmt.writepng("/tmp/circlews.png", image2, width, height)
 ```
 
 Replacing the `contouring` method above with the one below leads to a diagonal gradient fill that's tileable:

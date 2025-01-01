@@ -3,11 +3,13 @@ use rand::distributions::Distribution;
 use rand::distributions::Uniform;
 use std::cmp::max;
 use std::cmp::min;
+use std::io;
+use std::io::Write;
 
 // Minimum of a 32-bit signed integer
 // and a 32-bit unsigned integer,
 // expressed as a 32-bit signed integer
-fn min32(a: i32, b: u32) -> i32 {
+fn _min32(a: i32, b: u32) -> i32 {
     if a < 0 {
         // If negative, return 'a', since no
         // u32 value can be negative
@@ -20,7 +22,7 @@ fn min32(a: i32, b: u32) -> i32 {
 
 // Modulus of a 32-bit signed integer
 // and a 32-bit unsigned integer
-fn mod32(a: i32, b: u32) -> u32 {
+fn _mod32(a: i32, b: u32) -> u32 {
     if a < 0 {
         let au32: u32 = a.wrapping_abs() as u32;
         let mut ret: u32 = au32 % b;
@@ -118,16 +120,17 @@ fn websafedither(image: &mut RgbImage, include_vga: bool) -> &mut RgbImage {
     return image;
 }
 
-fn nearestrgb3(palette: &Vec<[u8; 3]>, r: i32, g: i32, b: i32) -> usize {
+fn nearestrgb3(palette: &Vec<[u8; 3]>, r: u8, g: u8, b: u8) -> usize {
     let mut best: usize = 0;
     let mut ret: usize = 0;
     for i in 0..palette.len() {
         let cr = palette[i][0] as i32;
         let cg = palette[i][1] as i32;
         let cb = palette[i][2] as i32;
-        let dist = ((r - cr) * (r - cr) + (g - cg) * (g - cg) + (b - cb) * (b - cb))
-            .try_into()
-            .unwrap();
+        let dr: i32 = (r as i32) - cr;
+        let dg: i32 = (g as i32) - cg;
+        let db: i32 = (b as i32) - cb;
+        let dist: usize = (dr * dr + dg * dg + db * db).try_into().unwrap();
         if i == 0 || dist < best {
             best = dist;
             ret = i;
@@ -166,14 +169,24 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &Vec<[u8; 3]>) {
         err[rerr1] = max(0, min(255, err[rerr1]));
         err[gerr1] = max(0, min(255, err[gerr1]));
         err[berr1] = max(0, min(255, err[berr1]));
-        let mut idx = nearestrgb3(&palette, err[rerr1], err[gerr1], err[berr1]);
+        let mut idx = nearestrgb3(
+            &palette,
+            err[rerr1] as u8,
+            err[gerr1] as u8,
+            err[berr1] as u8,
+        );
         image.put_pixel(0, j, Rgb(palette[idx]));
         for i in 0..(image.width() - 1) {
             let ui = i as usize;
             err[rerr1 + ui] = max(0, min(255, err[rerr1 + ui]));
             err[gerr1 + ui] = max(0, min(255, err[gerr1 + ui]));
             err[berr1 + ui] = max(0, min(255, err[berr1 + ui]));
-            idx = nearestrgb3(&palette, err[rerr1 + ui], err[gerr1 + ui], err[berr1 + ui]);
+            idx = nearestrgb3(
+                &palette,
+                err[rerr1 + ui] as u8,
+                err[gerr1 + ui] as u8,
+                err[berr1 + ui] as u8,
+            );
             image.put_pixel(i as u32, j, Rgb(palette[idx]));
             let rerr = err[rerr1 + ui] - (palette[idx][0] as i32);
             let gerr = err[gerr1 + ui] - (palette[idx][1] as i32);
@@ -197,7 +210,12 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &Vec<[u8; 3]>) {
         err[rerr1] = max(0, min(255, err[rerr1]));
         err[gerr1] = max(0, min(255, err[gerr1]));
         err[berr1] = max(0, min(255, err[berr1]));
-        idx = nearestrgb3(&palette, err[rerr1], err[gerr1], err[berr1]);
+        idx = nearestrgb3(
+            &palette,
+            err[rerr1] as u8,
+            err[gerr1] as u8,
+            err[berr1] as u8,
+        );
         image.put_pixel(0, j, Rgb(palette[idx]));
     }
 }
@@ -229,8 +247,8 @@ fn borderedbox(
     if !wraparound {
         x0 = max(x0, 0);
         y0 = max(y0, 0);
-        x1 = min32(x1, image.width());
-        y1 = min32(y1, image.height());
+        x1 = _min32(x1, image.width());
+        y1 = _min32(y1, image.height());
         if x0 >= x1 || y0 >= y1 {
             return;
         }
@@ -238,9 +256,9 @@ fn borderedbox(
     let rc1 = Rgb(color1);
     let rc2 = Rgb(color2);
     for y in y0..y1 {
-        let ypp: u32 = mod32(y, image.height());
+        let ypp: u32 = _mod32(y, image.height());
         for x in x0..x1 {
-            let xp: u32 = mod32(x, image.width());
+            let xp: u32 = _mod32(x, image.width());
             let is_border = match border {
                 Some(_) => y == y0 || y == y1 - 1 || x == x0 || x == x1 - 1,
                 None => false,
@@ -257,6 +275,21 @@ fn borderedbox(
             }
         }
     }
+}
+
+/**
+ * Writes an RGB image to the portable pixelmap (PPM) format.
+ */
+fn writeppm(image: &RgbImage, filename: String) -> Result<(), io::Error> {
+    let mut file = std::fs::File::create(filename)?;
+    write!(&mut file, "P6\n{} {}\n255\n", image.width(), image.height())?;
+    for y in 0..image.height() {
+        for x in 0..image.width() {
+            let cr = image.get_pixel(x, y);
+            file.write(&cr.0)?;
+        }
+    }
+    Ok(())
 }
 
 fn randomboxes(image: &mut RgbImage) -> &mut RgbImage {
@@ -291,13 +324,17 @@ fn randomboxes(image: &mut RgbImage) -> &mut RgbImage {
 }
 
 fn main() {
-    let w: u32 = 128;
-    let h: u32 = 128;
+    let zero_or_one = Uniform::new_inclusive(0, 1);
+    let mut rng = rand::thread_rng();
+    let w: u32 = Uniform::new_inclusive(128, 256).sample(&mut rng) & !7;
+    let h: u32 = Uniform::new_inclusive(128, 256).sample(&mut rng) & !7;
     let mut image = blankimage(w, h, [0, 0, 0]);
     randomboxes(&mut image);
-    let cc = classiccolors();
-    floyd_steinberg_dither(&mut image, &cc);
-    image
-        .save_with_format("/tmp/image.png", image::ImageFormat::Png)
-        .expect("failure");
+    if zero_or_one.sample(&mut rng) == 0 {
+        websafedither(&mut image, true);
+    } else {
+        let cc = classiccolors();
+        floyd_steinberg_dither(&mut image, &cc);
+    }
+    writeppm(&image, "/tmp/image.ppm".to_string()).expect("Failure");
 }
