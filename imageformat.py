@@ -1673,7 +1673,6 @@ def _readwinpal(f):
         fcc = f.read(4)
         sz = struct.unpack("<L", f.read(4))[0]
         if fcc == b"data":
-            haveAnih = True
             if sz < 4:
                 raise ValueError
             info = struct.unpack("<HH", f.read(4))
@@ -2083,7 +2082,11 @@ def _readwinicon(f):
         return []
     entries = []
     for i in range(newheader[2]):
-        dirent = struct.unpack("<BBBBHHLL", f.read(16))
+        tag = f.read(16)
+        if len(tag) < 16:
+            entries.append(None)
+            continue
+        dirent = struct.unpack("<BBBBHHLL", tag)
         width = 256 if dirent[0] == 0 else dirent[0]
         height = 256 if dirent[1] == 0 else dirent[1]
         colorcount = dirent[2]
@@ -2624,6 +2627,21 @@ def _readicon(f, packedWinBitmap=False):
         height = trueheight
         ret = bl
     return [ret, width, height, hotspotX, hotspotY]
+
+# Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
+def gradientAnimation(image, width, height, grad, destAnimation, fps=15):
+    images = []
+    i = 0
+    while i < 256:
+        gm = dw.graymap(
+            [x for x in image],
+            width,
+            height,
+            [grad[(i + j) % 256] for j in range(len(grad))],
+        )
+        images.append(gm)
+        i += 2
+    writeavi(destAnimation, images, width, height, fps=fps)
 
 # Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
