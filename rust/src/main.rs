@@ -1,4 +1,5 @@
 use image::{Rgb, RgbImage};
+use orx_parallel::{Par, IntoPar};
 use rand::distributions::Distribution;
 use rand::distributions::Uniform;
 use std::cmp::max;
@@ -35,6 +36,24 @@ fn _mod32(a: i32, b: u32) -> u32 {
         let au32: u32 = a.try_into().unwrap();
         au32 % b
     }
+}
+
+// Run 'count' many of the given task in parallel
+fn parfor(count: usize, func: fn(usize) -> ()) {
+    match count {
+        0 => (),
+        1 => func(0),
+        _ => assert_eq!(
+            count,
+            (0..count)
+                .into_par()
+                .map(|i| {
+                    func(i);
+                    1
+                })
+                .sum()
+        ),
+    };
 }
 
 #[cfg(test)]
@@ -478,9 +497,10 @@ fn p3m1(x: f64, y: f64) -> (f64, f64) {
     }
 }
 
-/** Wallpaper group P6m (same source rectangle as p3m1(), but 
-exposing only the left half of the triangle mentioned there). 
-'x' and 'y' are each 0 or greater and 1 or less. */
+/** 
+ * Wallpaper group P6m (same source rectangle as p3m1(), but
+ * exposing only the left half of the triangle mentioned there).
+ * 'x' and 'y' are each 0 or greater and 1 or less. */
 fn p6m(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(x, y);
     if rx > 0.5 {
@@ -490,9 +510,10 @@ fn p6m(x: f64, y: f64) -> (f64, f64) {
     }
 }
 
-/** Wallpaper group P6m, alternative definition (same source rectangle 
-as p3m1(), but exposing only the right half of the triangle mentioned 
-there). 'x' and 'y' are each 0 or greater and 1 or less. */
+/**
+ *  Wallpaper group P6m, alternative definition (same source rectangle
+ * as p3m1(), but exposing only the right half of the triangle mentioned
+ * there). 'x' and 'y' are each 0 or greater and 1 or less. */
 fn p6malt(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(x, y);
     if rx < 0.5 {
@@ -502,33 +523,36 @@ fn p6malt(x: f64, y: f64) -> (f64, f64) {
     }
 }
 
-/** Wallpaper group P3m1, alternative definition.
- Source triangle is isosceles and is formed from a rectangle
- by using the left edge as the triangle's
- and the right-hand point as the rectangle's
- right-hand midpoint, assuming x-axis points
- to the right and the y-axis down. */
+/**
+ *  Wallpaper group P3m1, alternative definition.
+ * Source triangle is isosceles and is formed from a rectangle
+ * by using the left edge as the triangle's
+ * and the right-hand point as the rectangle's
+ * right-hand midpoint, assuming x-axis points
+ * to the right and the y-axis down. */
 fn p3m1alt1(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(y, 1.0 - x);
     (1.0 - ry, rx)
 }
 
-/** Wallpaper group P3m1, alternative definition.
- Source triangle is isosceles and is formed from a rectangle
- by using the right edge as the triangle's
- and the left-hand point as the rectangle's
- left-hand midpoint, assuming x-axis points
- to the right and the y-axis down. */
+/**
+ *  Wallpaper group P3m1, alternative definition.
+ * Source triangle is isosceles and is formed from a rectangle
+ * by using the right edge as the triangle's
+ * and the left-hand point as the rectangle's
+ * left-hand midpoint, assuming x-axis points
+ * to the right and the y-axis down. */
 fn p3m1alt2(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(y, x);
     (ry, rx)
 }
 
-/** Wallpaper group P6m, alternative definition
- (same source rectangle as p3m1alt1(), but exposing
- only the upper half of the triangle described there).
- 'x' and 'y' are each 0 or greater
- and 1 or less.*/
+/**
+ *  Wallpaper group P6m, alternative definition
+ * (same source rectangle as p3m1alt1(), but exposing
+ * only the upper half of the triangle described there).
+ * 'x' and 'y' are each 0 or greater
+ * and 1 or less.*/
 fn p6malt1a(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt1(x, y);
     if ry > 0.5 {
@@ -537,11 +561,12 @@ fn p6malt1a(x: f64, y: f64) -> (f64, f64) {
         (rx, ry)
     }
 }
-/**Wallpaper group P6m, alternative definition
- (same source rectangle as p3m1alt1(), but exposing
- only the lower half of the triangle described there).
- 'x' and 'y' are each 0 or greater
- and 1 or less.*/
+/**
+ * Wallpaper group P6m, alternative definition
+ * (same source rectangle as p3m1alt1(), but exposing
+ * only the lower half of the triangle described there).
+ * 'x' and 'y' are each 0 or greater
+ * and 1 or less.*/
 fn p6malt1b(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt1(x, y);
     if ry < 0.5 {
@@ -551,11 +576,12 @@ fn p6malt1b(x: f64, y: f64) -> (f64, f64) {
     }
 }
 
-/** Wallpaper group P6m, alternative definition
- (same source rectangle as p3m1alt2(), but exposing
- only the upper half of the triangle described there).
- 'x' and 'y' are each 0 or greater
- and 1 or less.*/
+/**
+ * Wallpaper group P6m, alternative definition
+ * (same source rectangle as p3m1alt2(), but exposing
+ * only the upper half of the triangle described there).
+ * 'x' and 'y' are each 0 or greater
+ * and 1 or less.*/
 fn p6malt2a(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt2(x, y);
     if ry > 0.5 {
@@ -564,11 +590,12 @@ fn p6malt2a(x: f64, y: f64) -> (f64, f64) {
         (rx, ry)
     }
 }
-/** Wallpaper group P6m, alternative definition
- (same source rectangle as p3m1alt2(), but exposing
- only the lower half of the triangle described there).
- 'x' and 'y' are each 0 or greater
- and 1 or less.*/
+/**
+ * Wallpaper group P6m, alternative definition
+ * (same source rectangle as p3m1alt2(), but exposing
+ * only the lower half of the triangle described there).
+ * 'x' and 'y' are each 0 or greater
+ * and 1 or less.*/
 fn p6malt2b(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt2(x, y);
     if ry < 0.5 {
@@ -758,8 +785,8 @@ fn randomwallpaper() -> RgbImage {
 }
 
 fn main() {
-    for i in 0..100 {
+    parfor(200, |i| {
         let wp = randomwallpaper();
-        writeppm(&wp, format!("/tmp/image{}.ppm", i)).expect("Failure");
-    }
+        wp.save(format!("{}/image{}.png", std::env::temp_dir().display(), i)).expect("Failure");
+    });
 }
