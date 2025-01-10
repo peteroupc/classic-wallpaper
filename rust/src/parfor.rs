@@ -1,6 +1,8 @@
 use orx_parallel::{IntoPar, Par};
 
-// Run 'count' many of the given task in parallel
+/**
+ * Run `count` many of the given task (`func`) in parallel.
+ */
 pub fn parfor(count: usize, func: fn(usize) -> ()) {
     match count {
         0 => (),

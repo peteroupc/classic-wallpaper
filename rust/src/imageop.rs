@@ -11,8 +11,7 @@ fn _min32(a: i32, b: u32) -> i32 {
         // u32 value can be negative
         a
     } else {
-        let au32: u32 = a.wrapping_abs() as u32;
-        min(au32, b) as i32
+        min(a.wrapping_abs() as u32, b) as i32
     }
 }
 
@@ -148,7 +147,7 @@ pub fn websafedither<T: BasicRgbImage>(image: &mut T, include_vga: bool) -> &mut
     image
 }
 
-pub fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
+fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
     let mut best: usize = 0;
     let mut ret: usize = 0;
     for (i, color) in palette.iter().enumerate() {

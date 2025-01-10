@@ -1,3 +1,5 @@
+use image::{Rgb, RgbImage};
+
 pub trait BasicRgbImage {
     fn width(&self) -> u32;
     fn height(&self) -> u32;
@@ -10,6 +12,24 @@ pub struct BasicRgbImageData {
     width: u32,
     height: u32,
     data: Vec<u8>,
+}
+
+impl BasicRgbImage for RgbImage {
+    fn width(&self) -> u32 {
+        self.width()
+    }
+    fn height(&self) -> u32 {
+        self.height()
+    }
+    fn get_pixel(&self, x: u32, y: u32) -> [u8; 3] {
+        self.get_pixel(x, y).0
+    }
+    fn put_pixel(&mut self, x: u32, y: u32, pixel: [u8; 3]) {
+        self.put_pixel(x, y, Rgb(pixel))
+    }
+    fn new(width: u32, height: u32) -> RgbImage {
+        RgbImage::new(width, height)
+    }
 }
 
 impl BasicRgbImage for BasicRgbImageData {

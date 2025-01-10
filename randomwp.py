@@ -175,6 +175,12 @@ def randomwallpaper(palette=None):
         case _:
             return randomwallpaper3(palette=palette)
 
+def _randomRotated(image, w, h):
+    image2, w2, h2 = dw.randomRotated(image, w, h)
+    if (w2 != w or h2 != h) and w2 * h2 >= (1920 * 1080 // 10):
+        return (image, w, h)
+    return (image2, w, h)
+
 def randomwallpaper3(palette=None):
     w = random.randint(32, 192)
     w -= w % 8
@@ -190,7 +196,7 @@ def randomwallpaper3(palette=None):
             image, w, h = dw.tileableImage(image, w, h)
         case _:
             pass
-    image, w, h = dw.randomRotated(image, w, h)
+    image, w, h = _randomRotated(image, w, h)
     image = dw.randommaybemonochrome(image, w, h)
     return [image, w, h]
 
@@ -221,7 +227,7 @@ def randomwallpaper2(palette=None):
         shiftImageBg=True,
     )
     image3 = dw.checkerboardtile(ia, ib, w, h, columns, rows)
-    image3, width, height = dw.randomRotated(image3, w * columns, h * rows)
+    image3, width, height = _randomRotated(image3, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
     return [image3, width, height]
 
@@ -262,6 +268,6 @@ def randomwallpaper1(palette=None):
     )
     # tiling
     image3 = dw.randomtiles(columns, rows, [image3, image3a, image3b], w, h)
-    image3, width, height = dw.randomRotated(image3, w * columns, h * rows)
+    image3, width, height = _randomRotated(image3, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
     return [image3, width, height]
