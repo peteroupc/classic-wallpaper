@@ -2628,8 +2628,10 @@ def _readicon(f, packedWinBitmap=False):
         ret = bl
     return [ret, width, height, hotspotX, hotspotY]
 
+# Saves a video file by converting the image to grayscale, animating the pixel intensities, and
+# replacing the intensities with the color values from the given color table.
 # Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
-def gradientAnimation(image, width, height, grad, destAnimation, fps=15):
+def colorTableAnimation(image, width, height, colorTable, destAnimation, fps=15):
     images = []
     i = 0
     while i < 256:
@@ -2637,7 +2639,7 @@ def gradientAnimation(image, width, height, grad, destAnimation, fps=15):
             [x for x in image],
             width,
             height,
-            [grad[(i + j) % 256] for j in range(len(grad))],
+            [colorTable[(i + j) % 256] for j in range(len(colorTable))],
         )
         images.append(gm)
         i += 2
@@ -3680,8 +3682,6 @@ def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
             raise ValueError
         if not (y <= rc[3]):
             raise ValueError
-        # Console.WriteLine("" + direction + " | " + xLast + " " + yLast + " [" +
-        # xBegin + " " + yBegin + "]");
         if direction == _DIR_RIGHT:
             xLast = x + 1
             if not (x < rc[2]):

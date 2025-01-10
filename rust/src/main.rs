@@ -1,5 +1,4 @@
-use image::{Rgb, RgbImage};
-use orx_parallel::{Par, IntoPar};
+use orx_parallel::{IntoPar, Par};
 use rand::distributions::Distribution;
 use rand::distributions::Uniform;
 use std::cmp::max;
@@ -113,24 +112,64 @@ static DITHER_MATRIX: [u8; 64] = [
     47, 7, 39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
 ];
 
-fn blankimage(width: u32, height: u32, color: [u8; 3]) -> RgbImage {
-    let mut image = RgbImage::new(width, height);
-    let rc = Rgb(color);
+pub trait BasicRgbImage {
+    fn width(&self) -> u32;
+    fn height(&self) -> u32;
+    fn new(width: u32, height: u32) -> Self;
+    fn get_pixel(&self, x: u32, y: u32) -> [u8; 3];
+    fn put_pixel(&mut self, x: u32, y: u32, pixel: [u8; 3]);
+}
+
+pub struct BasicRgbImageData {
+    pub width: u32,
+    pub height: u32,
+    pub data: Vec<u8>,
+}
+
+impl BasicRgbImage for BasicRgbImageData {
+    fn width(&self) -> u32 {
+        self.width
+    }
+    fn height(&self) -> u32 {
+        self.height
+    }
+    fn get_pixel(&self, x: u32, y: u32) -> [u8; 3] {
+        let us: usize = ((y * self.width + x) * 3).try_into().unwrap();
+        [self.data[us], self.data[us + 1], self.data[us + 2]]
+    }
+    fn put_pixel(&mut self, x: u32, y: u32, pixel: [u8; 3]) {
+        let us: usize = ((y * self.width + x) * 3).try_into().unwrap();
+        self.data[us] = pixel[0];
+        self.data[us + 1] = pixel[1];
+        self.data[us + 2] = pixel[2];
+    }
+    fn new(width: u32, height: u32) -> BasicRgbImageData {
+        BasicRgbImageData {
+            width,
+            height,
+            data: vec![0; (width * height * 3).try_into().unwrap()],
+        }
+    }
+}
+/*
+fn blankimage<T: BasicRgbImage>(width: u32, height: u32, color: [u8; 3]) -> T {
+    let mut image = T::new(width, height);
     for y in 0..height {
         for x in 0..width {
-            image.put_pixel(x, y, rc);
+            image.put_pixel(x, y, color);
         }
     }
     image
 }
+*/
 
-fn websafedither(image: &mut RgbImage, include_vga: bool) -> &mut RgbImage {
+fn websafedither<T: BasicRgbImage>(image: &mut T, include_vga: bool) -> &mut T {
     for y in 0..image.height() {
         for x in 0..image.width() {
             let rc = image.get_pixel(x, y);
-            let mut rr: u32 = rc.0[0].into();
-            let mut rg: u32 = rc.0[1].into();
-            let mut rb: u32 = rc.0[2].into();
+            let mut rr: u32 = rc[0].into();
+            let mut rg: u32 = rc[1].into();
+            let mut rb: u32 = rc[2].into();
             if include_vga {
                 // Leave unchanged any colors in the VGA palette
                 // but not in the "safety palette".
@@ -165,7 +204,7 @@ fn websafedither(image: &mut RgbImage, include_vga: bool) -> &mut RgbImage {
             } else {
                 rb -= cm;
             }
-            image.put_pixel(x, y, Rgb([rr as u8, rg as u8, rb as u8]));
+            image.put_pixel(x, y, [rr as u8, rg as u8, rb as u8]);
         }
     }
     image
@@ -190,7 +229,7 @@ fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
     ret
 }
 
-fn floyd_steinberg_dither(image: &mut RgbImage, palette: &[[u8; 3]]) {
+fn floyd_steinberg_dither<T: BasicRgbImage>(image: &mut T, palette: &[[u8; 3]]) {
     if image.width() == 0 || image.height() == 0 {
         return;
     }
@@ -206,9 +245,9 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &[[u8; 3]]) {
         for i in 0..image.width() {
             let cr = image.get_pixel(i, j);
             let ui = i as usize;
-            err[rerr1 + ui] = err[rerr2 + ui] + (cr.0[0] as i32);
-            err[gerr1 + ui] = err[gerr2 + ui] + (cr.0[1] as i32);
-            err[berr1 + ui] = err[berr2 + ui] + (cr.0[2] as i32);
+            err[rerr1 + ui] = err[rerr2 + ui] + (cr[0] as i32);
+            err[gerr1 + ui] = err[gerr2 + ui] + (cr[1] as i32);
+            err[berr1 + ui] = err[berr2 + ui] + (cr[2] as i32);
             err[rerr2 + ui] = 0;
             err[gerr2 + ui] = 0;
             err[berr2 + ui] = 0;
@@ -222,7 +261,7 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &[[u8; 3]]) {
             err[gerr1] as u8,
             err[berr1] as u8,
         );
-        image.put_pixel(0, j, Rgb(palette[idx]));
+        image.put_pixel(0, j, palette[idx]);
         for i in 0..(image.width() - 1) {
             let ui = i as usize;
             err[rerr1 + ui] = err[rerr1 + ui].clamp(0, 255);
@@ -234,7 +273,7 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &[[u8; 3]]) {
                 err[gerr1 + ui] as u8,
                 err[berr1 + ui] as u8,
             );
-            image.put_pixel(i, j, Rgb(palette[idx]));
+            image.put_pixel(i, j, palette[idx]);
             let rerr = err[rerr1 + ui] - (palette[idx][0] as i32);
             let gerr = err[gerr1 + ui] - (palette[idx][1] as i32);
             let berr = err[berr1 + ui] - (palette[idx][2] as i32);
@@ -263,7 +302,7 @@ fn floyd_steinberg_dither(image: &mut RgbImage, palette: &[[u8; 3]]) {
             err[gerr1] as u8,
             err[berr1] as u8,
         );
-        image.put_pixel(0, j, Rgb(palette[idx]));
+        image.put_pixel(0, j, palette[idx]);
     }
 }
 
@@ -289,7 +328,7 @@ fn _bilerp(y0x0: f64, y0x1: f64, y1x0: f64, y1x1: f64, tx: f64, ty: f64) -> f64 
  * components are 8 bits or fewer in length (as with RgbImage).
  * This function does not do any such conversion.
  */
-fn imagept(image: &RgbImage, x: f64, y: f64) -> [u8; 3] {
+fn imagept<T: BasicRgbImage>(image: &T, x: f64, y: f64) -> [u8; 3] {
     if image.width() == 0 || image.height() == 0 {
         return [0, 0, 0];
     }
@@ -309,30 +348,30 @@ fn imagept(image: &RgbImage, x: f64, y: f64) -> [u8; 3] {
     let y1x1 = image.get_pixel(xi1, yi1);
     let mut rgb: [u8; 3] = [0, 0, 0];
     rgb[0] = _bilerp(
-        y0x0.0[0].into(),
-        y0x1.0[0].into(),
-        y1x0.0[0].into(),
-        y1x1.0[0].into(),
+        y0x0[0].into(),
+        y0x1[0].into(),
+        y1x0[0].into(),
+        y1x1[0].into(),
         x - xifloat,
         y - yifloat,
     )
     .floor()
     .clamp(0.0, 255.0) as u8;
     rgb[1] = _bilerp(
-        y0x0.0[1].into(),
-        y0x1.0[1].into(),
-        y1x0.0[1].into(),
-        y1x1.0[1].into(),
+        y0x0[1].into(),
+        y0x1[1].into(),
+        y1x0[1].into(),
+        y1x1[1].into(),
         x - xifloat,
         y - yifloat,
     )
     .floor()
     .clamp(0.0, 255.0) as u8;
     rgb[2] = _bilerp(
-        y0x0.0[2].into(),
-        y0x1.0[2].into(),
-        y1x0.0[2].into(),
-        y1x1.0[2].into(),
+        y0x0[2].into(),
+        y0x1[2].into(),
+        y1x0[2].into(),
+        y1x1[2].into(),
         x - xifloat,
         y - yifloat,
     )
@@ -497,7 +536,7 @@ fn p3m1(x: f64, y: f64) -> (f64, f64) {
     }
 }
 
-/** 
+/**
  * Wallpaper group P6m (same source rectangle as p3m1(), but
  * exposing only the left half of the triangle mentioned there).
  * 'x' and 'y' are each 0 or greater and 1 or less. */
@@ -627,14 +666,14 @@ fn p6malt2b(x: f64, y: f64) -> (f64, f64) {
 * p6malt1a(), p6malt1b(), p6malt2a(), p6malt2b().  The functions implement
 * variations of wallpaper groups Pmm, P4m, P3m1, and P6m, which are the only
 * four that produce seamless images from areas with arbitrary contents.*/
-fn wallpaper_image(
+fn wallpaper_image<T: BasicRgbImage>(
     dest_width: u32,
     dest_height: u32,
-    src_image: &RgbImage,
+    src_image: &T,
     source_rect: [f64; 4],
     group_func: fn(f64, f64) -> (f64, f64),
-) -> RgbImage {
-    let mut img = RgbImage::new(dest_width, dest_height);
+) -> T {
+    let mut img = T::new(dest_width, dest_height);
     for y in 0..img.height() {
         for x in 0..img.width() {
             let (px, py) = group_func(
@@ -644,14 +683,14 @@ fn wallpaper_image(
             let sx: f64 = source_rect[0] + (source_rect[2] - source_rect[0]) * px;
             let sy: f64 = source_rect[1] + (source_rect[3] - source_rect[1]) * py;
             let pixel = imagept(src_image, sx, sy);
-            img.put_pixel(x, y, Rgb(pixel));
+            img.put_pixel(x, y, pixel);
         }
     }
     img
 }
 
-fn borderedbox(
-    image: &mut RgbImage,
+fn borderedbox<T: BasicRgbImage>(
+    image: &mut T,
     border: Option<[u8; 3]>,
     color1: [u8; 3],
     color2: [u8; 3],
@@ -680,8 +719,6 @@ fn borderedbox(
             return;
         }
     }
-    let rc1 = Rgb(color1);
-    let rc2 = Rgb(color2);
     for y in y0..y1 {
         let ypp: u32 = _mod32(y, image.height());
         for x in x0..x1 {
@@ -692,13 +729,13 @@ fn borderedbox(
             };
             if is_border {
                 // Draw border color
-                image.put_pixel(xp, ypp, Rgb(border.unwrap()));
+                image.put_pixel(xp, ypp, border.unwrap());
             } else if ypp % 2 == xp % 2 {
                 // Draw first color
-                image.put_pixel(xp, ypp, rc1);
+                image.put_pixel(xp, ypp, color1);
             } else {
                 // Draw second color
-                image.put_pixel(xp, ypp, rc2);
+                image.put_pixel(xp, ypp, color2);
             }
         }
     }
@@ -707,19 +744,38 @@ fn borderedbox(
 /**
  * Writes an RGB image to the portable pixelmap (PPM) format.
  */
-fn writeppm(image: &RgbImage, filename: String) -> Result<(), io::Error> {
+fn writeppm<T: BasicRgbImage>(image: &T, filename: String) -> Result<(), io::Error> {
     let mut file = std::fs::File::create(filename)?;
     write!(&mut file, "P6\n{} {}\n255\n", image.width(), image.height())?;
     for y in 0..image.height() {
         for x in 0..image.width() {
             let cr = image.get_pixel(x, y);
-            file.write_all(&cr.0)?;
+            file.write_all(&cr)?;
         }
     }
     Ok(())
 }
 
-fn randomboxes(image: &mut RgbImage) -> &mut RgbImage {
+/*
+fn writepcx(image: &RgbImage, filename: String) -> Result<(), io::Error> {
+    let mut writer=pcx::WriterRgb::create_file(filename,(image.width().try_into().unwrap(),
+         image.height().try_into().unwrap()), (96, 96))?;
+    let mut row=vec![0;(image.width()*3).try_into().unwrap()];
+    for y in 0..image.height() {
+        for x in 0..image.width() {
+            let cr = image.get_pixel(x, y);
+            let usx:usize = x.try_into().unwrap();
+            row[usx*3]=cr[0];
+            row[usx*3+1]=cr[1];
+            row[usx*3+2]=cr[2];
+        }
+        writer.write_row(&row)?;
+    }
+    writer.finish()?;
+    Ok(())
+}*/
+
+fn randomboxes<T: BasicRgbImage>(image: &mut T) -> &mut T {
     let ux0 = Uniform::new_inclusive(0, image.width() - 1);
     let uy0 = Uniform::new_inclusive(3, max(3, image.width() * 3 / 4));
     let ux1 = Uniform::new_inclusive(0, image.height() - 1);
@@ -747,12 +803,12 @@ fn randomboxes(image: &mut RgbImage) -> &mut RgbImage {
     image
 }
 
-fn randomwallpaper() -> RgbImage {
+fn randomwallpaper<T: BasicRgbImage>() -> T {
     let zero_or_one = Uniform::new_inclusive(0, 1);
     let mut rng = rand::thread_rng();
     let w: u32 = Uniform::new_inclusive(128, 256).sample(&mut rng) & !7;
     let h: u32 = Uniform::new_inclusive(128, 256).sample(&mut rng) & !7;
-    let mut image = blankimage(w, h, [0, 0, 0]);
+    let mut image = T::new(w, h);
     randomboxes(&mut image);
     if zero_or_one.sample(&mut rng) == 0 {
         let w2: u32 = Uniform::new_inclusive(128, 256).sample(&mut rng) & !7;
@@ -786,7 +842,9 @@ fn randomwallpaper() -> RgbImage {
 
 fn main() {
     parfor(200, |i| {
-        let wp = randomwallpaper();
-        wp.save(format!("{}/image{}.png", std::env::temp_dir().display(), i)).expect("Failure");
+        let wp: BasicRgbImageData = randomwallpaper();
+        let filename = format!("{}/image{}.ppm", std::env::temp_dir().display(), i);
+        writeppm(&wp, filename).expect("Failure");
+        // wp.save().expect("Failure");
     });
 }
