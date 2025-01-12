@@ -2783,6 +2783,7 @@ def readicns(infile):
             if size < 8:
                 raise ValueError
             if tag in tags:
+                # NOTE: Usually, icon tags are unique within an ICNS.
                 # Can an ICNS have two or more icons of the same kind?
                 # The same tag has occurred more than once in at least
                 # one ICNS (in this case, 'il32' and 'l8mk').
@@ -2862,6 +2863,10 @@ def readicns(infile):
                 or tag == b"SICN"
                 or tag == b"ICON"
             ):
+                # NOTE: Usually, icon types that support masks must have an icon
+                # of the corresponding mask type in the ICNS.  But at
+                # least one ICNS was observed with an icon of a kind
+                # covered here ('ich4') but not its corresponding mask ('ich#')
                 # if _masktag(tag) not in tags and _masktag(tag) != b"":
                 #    print([tags[tag],"%04X"%(tags[tag][0])])
                 #    _errprint("mask tag not found: %s" % (tag))
@@ -2869,8 +2874,12 @@ def readicns(infile):
                 info = tags[tag]
                 width = _iconsize(tag)
                 height = width if tag[3] != 0x23 else width * 2
-                if tag == b"icm#" or tag == b"icm4" or tag == b"icm8":
-                    height = 12 if tag[3] != 0x23 else 24
+                # NOTE: Observed at least one ICNS that incorrectly assumes
+                # the mini size is 16 &times; 12, rather than 12 &times; 12 (see Technical
+                # Note QD18: Drawing Icons the System 7 Way).
+                # if tag == b"icm#" or tag == b"icm4" or tag == b"icm8":
+                #    width = 16
+                #    height = 12 if tag[3] != 0x23 else 24
                 lp.seek(info[0])
                 index = info[2]
                 iconsize = (
@@ -3048,14 +3057,14 @@ def readicns(infile):
 def _iconsize(icontag):
     if icontag == b"is32":
         return 16
-    if icontag == b"SICN":
+    if icontag == b"SICN":  # s = small
         return 16
-    if icontag == b"icm#":
-        return 16
+    if icontag == b"icm#":  # m = mini
+        return 12
     if icontag == b"icm4":
-        return 16
+        return 12
     if icontag == b"icm8":
-        return 16
+        return 12
     if icontag == b"ics#":
         return 16
     if icontag == b"ics4":
@@ -3066,13 +3075,13 @@ def _iconsize(icontag):
         return 32
     if icontag == b"ICN#":
         return 32
-    if icontag == b"icl4":
+    if icontag == b"icl4":  # l = large
         return 32
     if icontag == b"icl8":
         return 32
     if icontag == b"il32":
         return 32
-    if icontag == b"ich#":
+    if icontag == b"ich#":  # h = huge
         return 48
     if icontag == b"ich4":
         return 48
