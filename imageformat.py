@@ -1676,7 +1676,6 @@ def _readwinpal(f):
             if sz < 4:
                 raise ValueError
             info = struct.unpack("<HH", f.read(4))
-            print([info[0], info[1] * 4 + 8, sz])
             if info[0] != 0x300:
                 raise ValueError
             if info[1] * 4 + 4 != sz:
@@ -2456,7 +2455,7 @@ def _readicon(f, packedWinBitmap=False):
     # _errprint(["offsetToImage",offsetToImage])
     f.seek(offsetToImage)
     sz = andsizeImage if andsizeImage > 0 and andcompression > 0 else andmaskbits
-    # _errprint(["andSizeImage",andsizeImage,"andmaskbits",andmaskbits])
+    _errprint(["andSizeImage", andsizeImage, "andmaskbits", andmaskbits])
     try:
         andmask = f.read(sz)
     except:
@@ -2784,9 +2783,12 @@ def readicns(infile):
             if size < 8:
                 raise ValueError
             if tag in tags:
+                # Can an ICNS have two or more icons of the same kind?
+                # The same tag has occurred more than once in at least
+                # one ICNS (in this case, 'il32' and 'l8mk').
                 _errprint("tag already exists: %s" % (tag))
-                return None
-            tags[tag] = [lp.tell(), size - 8, index]
+            else:
+                tags[tag] = [lp.tell(), size - 8, index]
             lp.seek(lp.tell() + size - 8)
             ret.append(None)
             index += 1
@@ -2802,6 +2804,9 @@ def readicns(infile):
                 or tag == b"ic14"
                 or tag == b"ic04"
                 or tag == b"ic05"
+                or tag == b"icp4"
+                or tag == b"icp5"
+                or tag == b"icp6"
             ):
                 info = tags[tag]
                 lp.seek(info[0])
@@ -2857,12 +2862,15 @@ def readicns(infile):
                 or tag == b"SICN"
                 or tag == b"ICON"
             ):
-                if _masktag(tag) not in tags and _masktag(tag) != b"":
-                    _errprint("mask tag not found")
-                    break
+                # if _masktag(tag) not in tags and _masktag(tag) != b"":
+                #    print([tags[tag],"%04X"%(tags[tag][0])])
+                #    _errprint("mask tag not found: %s" % (tag))
+                #    break
                 info = tags[tag]
                 width = _iconsize(tag)
                 height = width if tag[3] != 0x23 else width * 2
+                if tag == b"icm#" or tag == b"icm4" or tag == b"icm8":
+                    height = 12 if tag[3] != 0x23 else 24
                 lp.seek(info[0])
                 index = info[2]
                 iconsize = (
@@ -2981,7 +2989,7 @@ def readicns(infile):
                             image[i * 4 + 2] = icon[i * 3 + 2]
                 # mask
                 masktag = _masktag(tag)
-                if masktag != b"":
+                if masktag != b"" and masktag in tags:
                     info = tags[masktag]
                     lp.seek(info[0])
                     masksize = (
@@ -3014,6 +3022,15 @@ def readicns(infile):
                     ret[info[2]] = True
                 else:
                     _errprint("unrecognized: %s" % (tag))
+            elif tag == b"name":
+                info = tags[tag]
+                if info[1] == 4:
+                    lp.seek(info[0])
+                    str(lp.read(info[1]), "utf-8")
+                    # value appears to be a name string
+                    ret[info[2]] = True
+                else:
+                    _errprint("unrecognized: %s" % (tag))
             elif tag == b"info":
                 info = tags[tag]
                 ret[info[2]] = True
@@ -3034,11 +3051,11 @@ def _iconsize(icontag):
     if icontag == b"SICN":
         return 16
     if icontag == b"icm#":
-        return 12
+        return 16
     if icontag == b"icm4":
-        return 12
+        return 16
     if icontag == b"icm8":
-        return 12
+        return 16
     if icontag == b"ics#":
         return 16
     if icontag == b"ics4":

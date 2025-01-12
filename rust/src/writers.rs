@@ -43,8 +43,7 @@ macro_rules! lepack {
     {
     let mut v=vec![];
     $({
-      let mut v2=lepackdata!($x);
-      v.append(&mut v2);
+      v.append(&mut lepackdata!($x));
     })*
     v
     }
@@ -61,16 +60,14 @@ fn pcx_encode_byte(file: &mut std::fs::File, b: u8, c: u8) -> Result<(), io::Err
     Ok(())
 }
 
-fn pcx_encode_line(file: &mut std::fs::File, vec: &Vec<u8>) -> Result<(), io::Error> {
-    if vec.len() == 0 {
+fn pcx_encode_line(file: &mut std::fs::File, vec: &[u8]) -> Result<(), io::Error> {
+    if vec.is_empty() {
         return Ok(());
     }
-    let mut this_value: u8;
     let mut runcount: u8 = 1;
     let mut last: u8 = vec[0];
-    for src_index in 1..vec.len() {
-        this_value = vec[src_index];
-        if this_value == last {
+    for this_value in vec.iter().skip(1) {
+        if *this_value == last {
             runcount += 1;
             if runcount == 63 {
                 pcx_encode_byte(file, last, runcount)?;
@@ -80,7 +77,7 @@ fn pcx_encode_line(file: &mut std::fs::File, vec: &Vec<u8>) -> Result<(), io::Er
             if runcount > 0 {
                 pcx_encode_byte(file, last, runcount)?;
             }
-            last = this_value;
+            last = *this_value;
             runcount = 1;
         }
     }
@@ -124,9 +121,9 @@ pub fn writepcx<T: BasicRgbImage>(image: &T, filename: String) -> Result<(), io:
         ("H", 0)               // VscreenSize
     ))?;
     file.write_all(&[0; 54])?; // filler
-    let mut r = vec![0; bytes_per_line.try_into().unwrap()];
-    let mut g = vec![0; bytes_per_line.try_into().unwrap()];
-    let mut b = vec![0; bytes_per_line.try_into().unwrap()];
+    let mut r = vec![0; bytes_per_line.into()];
+    let mut g = vec![0; bytes_per_line.into()];
+    let mut b = vec![0; bytes_per_line.into()];
     for y in 0..image.height() {
         for x in 0..image.width() {
             let cr = image.get_pixel(x, y);
