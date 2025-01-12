@@ -4,6 +4,20 @@
 #
 # This script is released to the public domain; in case that is not possible, the
 # file is also licensed under the Unlicense: https://unlicense.org/
+#
+# To improve the handling of certain file types, answers to the following
+# questions would be welcome:
+#
+# 1. When OS/2 draws a color icon, does OS/2 ignore the color table of the icon's
+# AND/XOR mask (a two-level bitmap with the AND mask at the top and the XOR mask at
+# the bottom)?
+# 2. Can an Apple icon resource (.icns) have two or more icons of the same type
+# (such as 'il32' or 'l8mk')? If so, is the first icon of a given kind used? The
+# last icon? All icons of that kind?
+# 3. For icon types with a separate mask (such as 'ich4'), can an Apple icon resource
+# (.icns) have an icon of that type but not its corresponding mask ('ich#' in
+# this example)?
+#
 
 import os
 import math
