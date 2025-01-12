@@ -88,17 +88,6 @@ static DITHER_MATRIX: [u8; 64] = [
     28, 52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15,
     47, 7, 39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
 ];
-/*
-fn blankimage<T: BasicRgbImage>(width: u32, height: u32, color: [u8; 3]) -> T {
-    let mut image = T::new(width, height);
-    for y in 0..height {
-        for x in 0..width {
-            image.put_pixel(x, y, color);
-        }
-    }
-    image
-}
-*/
 
 pub fn websafedither<T: BasicRgbImage>(image: &mut T, include_vga: bool) -> &mut T {
     for y in 0..image.height() {
@@ -259,8 +248,8 @@ fn _bilerp(y0x0: f64, y0x1: f64, y1x0: f64, y1x1: f64, tx: f64, ty: f64) -> f64 
  *
  * Blending Note: Operations that involve the blending of two RGB (red-green-
  * blue) colors work best if the RGB color space is linear.  This is not the case
- * for the sRGB color space, which is the color space assumed for images created
- * using the blankimage() method.  Moreover, converting an image from a nonlinear
+ * for the sRGB color space, which is the color space assumed for BasicRgbImage images.
+ * Moreover, converting an image from a nonlinear
  * to a linear color space and back can lead to data loss especially if the image's color
  * components are 8 bits or fewer in length (as with RgbImage).
  * This function does not do any such conversion.

@@ -179,7 +179,7 @@ def _randomRotated(image, w, h):
     image2, w2, h2 = dw.randomRotated(image, w, h)
     if (w2 != w or h2 != h) and w2 * h2 >= (1920 * 1080 // 10):
         return (image, w, h)
-    return (image2, w, h)
+    return (image2, w2, h2)
 
 def randomwallpaper3(palette=None):
     w = random.randint(32, 192)
