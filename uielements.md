@@ -94,7 +94,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given earlier as well
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple 8-bit-per pixel video files without sound, this control appears to be rarely used.  More usually, traditional desktop applications don't store an  animation as a video file; rather, its frames are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames).  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
+Although Windows 95 and later versions have an _animation control_ for displaying simple video files without sound that are limited to 256 colors, this control appears to be rarely used.  More usually, traditional desktop applications don't store an  animation as a video file; rather, its frames are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames).  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
 
 ## Drawing Style
 

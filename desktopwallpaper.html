@@ -24,11 +24,11 @@
 #&nbsp;shifting,&nbsp;with&nbsp;each&nbsp;frame,&nbsp;the&nbsp;starting&nbsp;position&nbsp;for&nbsp;drawing&nbsp;the&nbsp;upper&nbsp;left<br>
 #&nbsp;corner&nbsp;of&nbsp;the&nbsp;wallpaper&nbsp;tiling&nbsp;(for&nbsp;example,&nbsp;from&nbsp;the&nbsp;upper-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;image<br>
 #&nbsp;to&nbsp;some&nbsp;other&nbsp;position&nbsp;in&nbsp;the&nbsp;image).<br>
-#&nbsp;2.&nbsp;In&nbsp;Windows,&nbsp;if&nbsp;both&nbsp;an&nbsp;8&nbsp;&amp;times;&nbsp;8&nbsp;monochrome&nbsp;pattern&nbsp;and&nbsp;a&nbsp;centered&nbsp;wallpaper<br>
-#&nbsp;are&nbsp;set&nbsp;as&nbsp;the&nbsp;desktop&nbsp;background,&nbsp;both&nbsp;the&nbsp;pattern&nbsp;and&nbsp;the&nbsp;wallpaper<br>
-#&nbsp;will&nbsp;be&nbsp;drawn&nbsp;on&nbsp;the&nbsp;desktop,&nbsp;the&nbsp;latter&nbsp;appearing&nbsp;above&nbsp;the&nbsp;former.<br>
-#&nbsp;The&nbsp;nonblack&nbsp;areas&nbsp;of&nbsp;the&nbsp;monochrome&nbsp;pattern&nbsp;are&nbsp;filled&nbsp;with&nbsp;the&nbsp;desktop<br>
-#&nbsp;color.<br>
+#&nbsp;2.&nbsp;In&nbsp;Windows,&nbsp;if&nbsp;both&nbsp;an&nbsp;8&nbsp;&amp;times;&nbsp;8&nbsp;two-level&nbsp;pattern&nbsp;and&nbsp;a&nbsp;centered&nbsp;wallpaper<br>
+#&nbsp;are&nbsp;set&nbsp;as&nbsp;the&nbsp;desktop&nbsp;background,&nbsp;a&nbsp;tiling&nbsp;of&nbsp;the&nbsp;pattern&nbsp;and&nbsp;the&nbsp;wallpaper<br>
+#&nbsp;will&nbsp;be&nbsp;drawn&nbsp;on&nbsp;the&nbsp;desktop,&nbsp;the&nbsp;latter&nbsp;appearing&nbsp;above&nbsp;the&nbsp;former.&nbsp;&nbsp;Areas&nbsp;of&nbsp;the<br>
+#&nbsp;two-level&nbsp;pattern&nbsp;where&nbsp;the&nbsp;pixel&nbsp;is&nbsp;1&nbsp;are&nbsp;drawn&nbsp;as&nbsp;"black",&nbsp;and&nbsp;other&nbsp;areas&nbsp;are<br>
+#&nbsp;drawn&nbsp;as&nbsp;the&nbsp;desktop&nbsp;color.<br>
 #&nbsp;3.&nbsp;I&nbsp;would&nbsp;welcome&nbsp;it&nbsp;if&nbsp;readers&nbsp;could&nbsp;contribute&nbsp;computer&nbsp;code&nbsp;(released<br>
 #&nbsp;to&nbsp;the&nbsp;public&nbsp;domain&nbsp;or&nbsp;under&nbsp;the&nbsp;Unlicense)&nbsp;to&nbsp;generate&nbsp;tileable—<br>
 #&nbsp;-&nbsp;noise,<br>
@@ -187,7 +187,10 @@ Data descriptors defined here:<br>
 #&nbsp;either&nbsp;None&nbsp;or&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;the&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;for&nbsp;example,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255;&nbsp;default&nbsp;is&nbsp;None,&nbsp;or&nbsp;no&nbsp;background&nbsp;color.</span></dd></dl>
- <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
+ <dl><dt><a name="-basrelief"><strong>basrelief</strong></a>(bg=None, highlight=None, shadow=None)</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.<br>
+#&nbsp;bg&nbsp;is&nbsp;treated&nbsp;as&nbsp;[192,&nbsp;192,&nbsp;192]&nbsp;if&nbsp;None.<br>
+#&nbsp;highlight&nbsp;is&nbsp;treated&nbsp;as&nbsp;[255,&nbsp;255,&nbsp;255]&nbsp;if&nbsp;None.<br>
+#&nbsp;shadow&nbsp;is&nbsp;treated&nbsp;as&nbsp;[0,&nbsp;0,&nbsp;0]&nbsp;if&nbsp;None.</span></dd></dl>
  <dl><dt><a name="-blankimage"><strong>blankimage</strong></a>(width, height, color=None, alpha=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;blank&nbsp;image&nbsp;with&nbsp;3&nbsp;or&nbsp;4&nbsp;bytes&nbsp;per&nbsp;pixel&nbsp;and&nbsp;the&nbsp;given&nbsp;width,&nbsp;height,<br>
 #&nbsp;and&nbsp;fill&nbsp;color.<br>
 #<br>
@@ -512,7 +515,8 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-floydSteinbergDither"><strong>floydSteinbergDither</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;<a href="#-patternDither">patternDither</a>(),&nbsp;but&nbsp;uses&nbsp;the&nbsp;Floyd-Steinberg&nbsp;algorithm.<br>
 #&nbsp;There&nbsp;is&nbsp;no&nbsp;'fast'&nbsp;parameter.</span></dd></dl>
  <dl><dt><a name="-getgrays"><strong>getgrays</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Finds&nbsp;the&nbsp;gray&nbsp;tones&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette&nbsp;and&nbsp;returns<br>
-#&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;them.</span></dd></dl>
+#&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;them&nbsp;(as&nbsp;a&nbsp;list&nbsp;of&nbsp;integers,&nbsp;not&nbsp;three-element<br>
+#&nbsp;lists).</span></dd></dl>
  <dl><dt><a name="-getpixel"><strong>getpixel</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>

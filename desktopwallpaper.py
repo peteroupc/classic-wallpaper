@@ -13,11 +13,11 @@
 # shifting, with each frame, the starting position for drawing the upper left
 # corner of the wallpaper tiling (for example, from the upper-left corner of the image
 # to some other position in the image).
-# 2. In Windows, if both an 8 &times; 8 monochrome pattern and a centered wallpaper
-# are set as the desktop background, both the pattern and the wallpaper
-# will be drawn on the desktop, the latter appearing above the former.
-# The nonblack areas of the monochrome pattern are filled with the desktop
-# color.
+# 2. In Windows, if both an 8 &times; 8 two-level pattern and a centered wallpaper
+# are set as the desktop background, a tiling of the pattern and the wallpaper
+# will be drawn on the desktop, the latter appearing above the former.  Areas of the
+# two-level pattern where the pixel is 1 are drawn as "black", and other areas are
+# drawn as the desktop color.
 # 3. I would welcome it if readers could contribute computer code (released
 # to the public domain or under the Unlicense) to generate tileable—
 # - noise,
@@ -564,12 +564,21 @@ def darkmodePattern():
     return versatilePattern([128, 128, 128], [0, 0, 0])
 
 # ImageMagick command.
-def basrelief(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0]):
-    if bg == None or len(bg) < 3:
+# bg is treated as [192, 192, 192] if None.
+# highlight is treated as [255, 255, 255] if None.
+# shadow is treated as [0, 0, 0] if None.
+def basrelief(bg=None, highlight=None, shadow=None):
+    if bg == None:
+        bg = [192, 192, 192]
+    if len(bg) < 3:
         raise ValueError
-    if highlight == None or len(highlight) < 3:
+    if highlight == None:
+        highlight = [255, 255, 255]
+    if len(highlight) < 3:
         raise ValueError
-    if shadow == None or len(shadow) < 3:
+    if shadow == None:
+        shadow = [0, 0, 0]
+    if len(shadow) < 3:
         raise ValueError
     bc = "#%02x%02x%02x" % (int(bg[0]), int(bg[1]), int(bg[2]))
     hc = "#%02x%02x%02x" % (int(highlight[0]), int(highlight[1]), int(highlight[2]))
@@ -3199,7 +3208,8 @@ def drawdiagstripe(image, width, height, stripesize, reverse, fgcolor=None):
             )
 
 # Finds the gray tones in the given color palette and returns
-# a sorted list of them.
+# a sorted list of them (as a list of integers, not three-element
+# lists).
 def getgrays(palette):
     grays = 0
     for p in palette:
@@ -5971,9 +5981,7 @@ def _setup_rgba_to_colorname_hash():
         i += 2
     return __color_to_rgba_namedColors
 
-_rgba_to_colorname_hash = _setup_rgba_to_colorname_hash()
-
-def _colorname(c):
+def _colorname(colorhash, c):
     cname = "#%02x%02x%02x" % (c[0], c[1], c[2])
     if cname in _rgba_to_colorname_hash:
         return _rgba_to_colorname_hash[cname] + " " + cname
@@ -5984,6 +5992,7 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
         raise ValueError
     if (not palette) or len(palette) > 512:
         raise ValueError
+    colorhash = _setup_rgba_to_colorname_hash()
     # GIMP palette
     ff = open(f + ".gpl", "xb" if raiseIfExists else "wb")
     ff.write(bytes("GIMP Palette\n", "utf-8"))
@@ -5994,7 +6003,10 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
     for c in palette:
         col = [c[0] & 0xFF, c[1] & 0xFF, c[2] & 0xFF]
         ff.write(
-            bytes("%d %d %d %s\n" % (col[0], col[1], col[2], _colorname(col)), "utf-8")
+            bytes(
+                "%d %d %d %s\n" % (col[0], col[1], col[2], _colorname(colorhash, col)),
+                "utf-8",
+            )
         )
     ff.close()
     # Microsoft palette
@@ -6031,7 +6043,7 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
         _writeu16(ff, c[2] * 0xFFFF // 255)
         _writeu16(ff, 0)
         _writeu16(ff, 0)
-        _writeutf16(ff, _colorname(c))
+        _writeutf16(ff, _colorname(colorhash, c))
     ff.close()
     # Adobe swatch exchange format
     ff = open(f + ".ase", "xb" if raiseIfExists else "wb")
@@ -6042,7 +6054,7 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
     for i in range(len(palette)):
         c = palette[i]
         _writeu16(ff, 1)
-        colorname = _colorname(c)
+        colorname = _colorname(colorhash, c)
         _writeu32(ff, _utf16len(colorname) + 18)
         _writeutf16(ff, colorname)
         ff.write(bytes("RGB ", "utf-8"))

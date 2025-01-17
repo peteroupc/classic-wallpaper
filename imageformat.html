@@ -9,7 +9,7 @@
 <tr class="heading-text decor">
 <td class="title">&nbsp;<br><strong class="title">imageformat</strong></td>
 <td class="extra"><a href=".">index</a></td></tr></table>
-    <p><span class="code">#&nbsp;This&nbsp;Python&nbsp;script&nbsp;implements&nbsp;the&nbsp;reading&nbsp;of&nbsp;writing<br>
+    <p><span class="code">#&nbsp;This&nbsp;Python&nbsp;script&nbsp;implements&nbsp;the&nbsp;reading&nbsp;and&nbsp;writing<br>
 #&nbsp;of&nbsp;certain&nbsp;classic&nbsp;bitmap,&nbsp;icon,&nbsp;and&nbsp;cursor&nbsp;formats,<br>
 #&nbsp;and&nbsp;the&nbsp;writing&nbsp;of&nbsp;certain&nbsp;animation&nbsp;formats.<br>
 #<br>
@@ -94,12 +94,13 @@ Data descriptors defined here:<br>
     image,
     width,
     height,
-    destImage,
+    destAVI,
     firstFrame=0,
     fps=15,
     crossSize=None
 )</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;AVI&nbsp;video&nbsp;file&nbsp;consisting&nbsp;of&nbsp;images&nbsp;arranged<br>
-#&nbsp;in&nbsp;a&nbsp;row&nbsp;or&nbsp;column.&nbsp;&nbsp;Each&nbsp;frame's&nbsp;width&nbsp;and&nbsp;height&nbsp;are&nbsp;determined<br>
+#&nbsp;in&nbsp;a&nbsp;row&nbsp;or&nbsp;column&nbsp;and&nbsp;writes&nbsp;the&nbsp;file&nbsp;to&nbsp;the&nbsp;path&nbsp;given&nbsp;by<br>
+#&nbsp;'destAVI'.&nbsp;&nbsp;Each&nbsp;frame's&nbsp;width&nbsp;and&nbsp;height&nbsp;are&nbsp;determined<br>
 #&nbsp;as&nbsp;follows.<br>
 #&nbsp;-&nbsp;If&nbsp;the&nbsp;source&nbsp;image's&nbsp;width&nbsp;is&nbsp;greater&nbsp;than&nbsp;its&nbsp;height,<br>
 #&nbsp;&nbsp;&nbsp;then&nbsp;each&nbsp;frame&nbsp;is&nbsp;'crossSize'&nbsp;&amp;times;&nbsp;(source&nbsp;height).<br>
@@ -129,7 +130,7 @@ Data descriptors defined here:<br>
     image,
     width,
     height,
-    destParallax,
+    destAVI,
     widthReverse=False,
     heightReverse=False,
     interlacing=False,
@@ -147,7 +148,9 @@ Data descriptors defined here:<br>
 #&nbsp;blankimage()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-readanimicon"><strong>readanimicon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;from&nbsp;a&nbsp;Windows&nbsp;animated&nbsp;icon/cursor&nbsp;file.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
 #&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'readitr'&nbsp;method.</span></dd></dl>
- <dl><dt><a name="-readicns"><strong>readicns</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;icon&nbsp;images&nbsp;from&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;macOS&nbsp;icon&nbsp;format.&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
+ <dl><dt><a name="-readicns"><strong>readicns</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;icon&nbsp;images&nbsp;from&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;Apple&nbsp;icon&nbsp;resource&nbsp;format&nbsp;(also&nbsp;known<br>
+#&nbsp;as&nbsp;icon&nbsp;family&nbsp;or&nbsp;icon&nbsp;suite),&nbsp;in&nbsp;the&nbsp;'.icns'&nbsp;format.&nbsp;&nbsp;This&nbsp;format&nbsp;was<br>
+#&nbsp;introduced&nbsp;in&nbsp;Mac&nbsp;OS&nbsp;8.5&nbsp;(see&nbsp;Apple&nbsp;TN1142:&nbsp;"Mac&nbsp;OS&nbsp;8.5").&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
 #&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;'reados2icon'&nbsp;method.</span></dd></dl>
  <dl><dt><a name="-readitr"><strong>readitr</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;bitmaps,&nbsp;icons,&nbsp;and&nbsp;pointers&nbsp;in&nbsp;an&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file.<br>
 #&nbsp;An&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file&nbsp;is&nbsp;a&nbsp;collection&nbsp;of&nbsp;OS/2&nbsp;resources<br>

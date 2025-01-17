@@ -89,6 +89,21 @@ static DITHER_MATRIX: [u8; 64] = [
     47, 7, 39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
 ];
 
+
+/**
+ * Does an ordered dither of the given image to use only colors in the "safety palette", also known as the
+ * "Web safe" palette.  The "safety palette" consists of 216 colors that are
+ * uniformly spaced in the red&ndash;green&ndash;blue color cube.  Robert Hess's
+ * article "[The Safety Palette](https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10))",
+ * 1996, described the advantage that images that use only colors in this palette
+ * won't dither when displayed by Web browsers on displays that can show up to 256
+ * colors at once. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors).
+ * Dithering is the scattering of colors in a limited set to simulate colors
+ * outside that set.)
+ * 'include_vga' preserves colors in the VGA palette that are not already in the safety palette,
+ * that is, the colors (0xc0, 0xc0, 0xc0), (0x80, 0, 0), (0, 0x80, 0), (0x80, 0x80, 0), 
+ * (0, 0, 0x80), (0x80, 0, 0x80), (0, 0x80, 0x80), (0x80, 0x80, 0x80).
+ */
 pub fn websafedither<T: BasicRgbImage>(image: &mut T, include_vga: bool) -> &mut T {
     for y in 0..image.height() {
         for x in 0..image.width() {

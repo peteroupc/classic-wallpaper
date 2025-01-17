@@ -1,4 +1,4 @@
-# This Python script implements the reading of writing
+# This Python script implements the reading and writing
 # of certain classic bitmap, icon, and cursor formats,
 # and the writing of certain animation formats.
 #
@@ -1768,9 +1768,28 @@ def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
     # Returns 255 if bpp is not 32.
     if bpp == 32:
         row = scanSize * (height - 1 - y)
-        return byteData[row + x * 4 + 3 : row + x * 4 + 4]
+        return row + x * 4 + 3
     else:
         return 255
+
+def _readBitmapAsAlphaBitfields(byteData, scanSize, height, bpp, x, y, alphamask):
+    # Reads the alpha at the given pixel position of a bitmap image
+    # that uses a bitfield format and is
+    # represented by an array of bottom-up Windows bitmap data.
+    # Returns bytes([255]) if bpp is not 16 or 32.
+    match bpp:
+        case 16:
+            row = scanSize * (height - 1 - y)
+            ret = byteData[row + x * 2 : row + x * 2 + 2]
+            v = ret[0] | (ret[1] << 8)
+            return bytes([((v & alphamask[0]) >> alphamask[2]) << alphamask[1]])
+        case 32:
+            row = scanSize * (height - 1 - y)
+            ret = byteData[row + x * 4 : row + x * 4 + 4]
+            v = ret[0] | (ret[1] << 8) | (ret[2] << 16) | (ret[3] << 24)
+            return bytes([((v & alphamask[0]) >> alphamask[2]) << alphamask[1]])
+        case _:
+            return bytes([255])
 
 def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields):
     # Reads the pixel color value at the given position of a bitmap image
@@ -2205,7 +2224,11 @@ def _readicon(f, packedWinBitmap=False):
     andpalette = 0
     andcompression = 0
     andsizeImage = 0
+    andcolormasks = None
+    andalphamask = None
     andTopdown = False
+    bitfields = None
+    andmaskextra = None
     if andmaskhdr[0] == 0x0C:
         andmaskhdr += struct.unpack("<HHHH", f.read(8))
         if andmaskhdr[4] <= 8:
@@ -2216,10 +2239,15 @@ def _readicon(f, packedWinBitmap=False):
     elif andmaskhdr[0] >= 40:
         andmaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
         slack = f.read(andmaskhdr[0] - 40)
+        andmaskextra = slack
         andsizeImage = andmaskhdr[6]
         if andmaskhdr[4] <= 8:
             andpalette = 1 << andmaskhdr[4]
-        if andmaskhdr[4] <= 8 and andmaskhdr[9] != 0:  # biClrUsed
+        if (
+            andmaskhdr[4] <= 8 or andmaskhdr[4] == 16 or andmaskhdr[4] == 32
+        ) and andmaskhdr[
+            9
+        ] != 0:  # biClrUsed
             andpalette = min(andpalette, andmaskhdr[9])
         andcompression = andmaskhdr[5]
         if andcompression > 4:
@@ -2247,9 +2275,31 @@ def _readicon(f, packedWinBitmap=False):
             # )
             pass
         allzeros = True
-        for i in range(len(slack)):
-            if slack[i] != 0:
-                allzeros = False
+        if andmaskhdr[0] >= 0x6C:
+            extrainfo = struct.unpack("<LLLLLLLLLLLLLLLLL", andmaskextra[0:68])
+            for i in range(5, 5 + 12):
+                if slack[i] != 0:
+                    allzeros = False
+            andalphamask = [
+                extrainfo[3],
+                _maskToLeftShift(extrainfo[3]),
+                _maskToRightShift(extrainfo[3]),
+            ]
+            if andalphamask[1] < 0 or (andalphamask[0] >> andalphamask[2]) > 255:
+                _errprint(["unsupported alpha mask", andalphamask])
+                return None
+        if andmaskhdr[0] >= 0x7C:
+            extrainfo = struct.unpack("<LLLLLLLLLLLLLLLLLLLLL", andmaskextra)
+            for i in range(5, 5 + 12):
+                if slack[i] != 0:
+                    allzeros = False
+            for i in range(13, 16):
+                if slack[i] != 0:
+                    allzeros = False
+        else:
+            for i in range(len(slack)):
+                if slack[i] != 0:
+                    allzeros = False
         if not allzeros:
             # andmaskhdr[0] == 0x6c indicates BITMAPV4HEADER
             # andmaskhdr[0] == 0x7c indicates BITMAPV5HEADER
@@ -2354,7 +2404,7 @@ def _readicon(f, packedWinBitmap=False):
                 or (colorcompression == 4 and colormaskhdr[4] != 24)
                 or (colorcompression == 3 and colormaskhdr[4] != 1)
             ):
-                _errprint("unsupported compression: %d" % (andcompression))
+                _errprint("unsupported compression: %d" % (colorcompression))
                 return None
             if colormaskhdr[7] != 0 or colormaskhdr[8] != 0:
                 # _errprint(
@@ -2383,7 +2433,7 @@ def _readicon(f, packedWinBitmap=False):
             return None
         colorbpp = colormaskhdr[4]
         if colormaskhdr[2] < 0:
-            _errprint("top-down color masks not supported for OS/2 icons and cursors")
+            _errprint("top-down color mask is not supported for OS/2 icons and cursors")
             return None
         if colorbpp == 3:
             # NOTE: A 3 BPP color icon was attested, but it is unclear whether
@@ -2431,14 +2481,19 @@ def _readicon(f, packedWinBitmap=False):
     # It may be, but I am not sure, that OS/2
     # ignores the color table of icons' and pointers' AND/XOR mask.
     andmaskcolors = []
-    bitfields = None
     if not (isIcon or isPointer):
         # Gather bitmap's color table if not an icon or pointer
         tablesize = 2
         if andcompression == 3 and (andmaskhdr[4] == 16 or andmaskhdr[4] == 32):
             # BI_BITFIELDS
-            f.seek(andcolortable)
-            masks = f.read(12)
+            if andmaskhdr[0] < 0x6C:  # smaller than BITMAPV4HEADER
+                f.seek(andcolortable)
+                masks = f.read(12)
+            else:
+                masks = andmaskextra[0:12]
+                # if andalphamask!=None and andalphamask[0]!=0:
+                #    _errprint(["alpha mask not yet supported", masks,andalphamask])
+                #    return None
             if len(masks) < 12:
                 return None
             masks = struct.unpack("<LLL", masks)
@@ -2576,7 +2631,13 @@ def _readicon(f, packedWinBitmap=False):
                     col = _readBitmapAsColorBGR(
                         andmask, andmaskscan, ch, bpp, x, yy, andmaskcolors
                     )
-                alpha = alpha1
+                alpha = (
+                    _readBitmapAsAlphaBitfields(
+                        andmask, andmaskscan, ch, bpp, x, yy, andalphamask
+                    )
+                    if andalphamask and andalphamask != 0
+                    else alpha1
+                )
                 dw.setpixelbgralpha(ci, cw, ch, x, y, col + alpha)
         ret = ci
         width = cw
@@ -2665,7 +2726,7 @@ def parallaxAvi(
     image,
     width,
     height,
-    destParallax,
+    destAVI,
     widthReverse=False,
     heightReverse=False,
     interlacing=False,
@@ -2699,10 +2760,11 @@ def parallaxAvi(
             images[i] = a if i % 2 == 0 else b
         if len(images[i]) != width * outputHeight * 3:
             raise ValueError
-    writeavi(destParallax, images, width, outputHeight, fps=fps)
+    writeavi(destAVI, images, width, outputHeight, fps=fps)
 
 # Generates an AVI video file consisting of images arranged
-# in a row or column.  Each frame's width and height are determined
+# in a row or column and writes the file to the path given by
+# 'destAVI'.  Each frame's width and height are determined
 # as follows.
 # - If the source image's width is greater than its height,
 #   then each frame is 'crossSize' &times; (source height).
@@ -2717,7 +2779,7 @@ def parallaxAvi(
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
 # for this method to be successful.
 def animationBitmap(
-    image, width, height, destImage, firstFrame=0, fps=15, crossSize=None
+    image, width, height, destAVI, firstFrame=0, fps=15, crossSize=None
 ):
     frameSize = min(width, height)
     if frameSize <= 0:
@@ -2746,7 +2808,7 @@ def animationBitmap(
             i * frameSize if height > width else 0,
         )
         images.append(dst)
-    writeavi(destImage, images, animWidth, animHeight, fps=fps)
+    writeavi(destAVI, images, animWidth, animHeight, fps=fps)
 
 def _icnspalette256():
     ret = []
@@ -2765,7 +2827,9 @@ def _icnspalette256():
     ret.append([0, 0, 0])
     return ret
 
-# Reads icon images from a file in the macOS icon format.  The return value
+# Reads icon images from a file in the Apple icon resource format (also known
+# as icon family or icon suite), in the '.icns' format.  This format was
+# introduced in Mac OS 8.5 (see Apple TN1142: "Mac OS 8.5").  The return value
 # has the same format returned by the 'reados2icon' method.
 def readicns(infile):
     f = open(infile, "rb")
@@ -2801,6 +2865,9 @@ def readicns(infile):
                 # Can an ICNS have two or more icons of the same kind?
                 # The same tag has occurred more than once in at least
                 # one ICNS (in this case, 'il32' and 'l8mk').
+                # Because of what's said in Apple TB30, "Multiple Resources
+                # with the Same Type and ID", having multiple icons of the
+                # same type in an ICNS is probably not supported.
                 _errprint("tag already exists: %s" % (tag))
             else:
                 tags[tag] = [lp.tell(), size - 8, index]
