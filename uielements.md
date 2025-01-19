@@ -104,12 +104,12 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
 - The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).
-- Real-world objects depicted in user-interface graphics tend to have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
+- Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
 - For graphics limited to the 16-color VGA palette[^1]:
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
-- Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) tend to appear the same as the original icon but with finer but nonessential detail.
+- Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.
 
 After about 2003, user-interface graphics tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
 

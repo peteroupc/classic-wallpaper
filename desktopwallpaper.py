@@ -2379,6 +2379,24 @@ def p6malt2b(x, y):
         ry = 1 - ry
     return (rx, ry)
 
+# Wallpaper group function that wraps another
+# group function ('groupFunc'), in which the image
+# after applying 'groupFunc'
+# is rotated and scaled to fit into
+# a diamond that touches the canvas's edges.
+# This diamond will repeat to cover the rest of
+# the canvas.  This function is a variation of the
+# wallpaper group implemented by 'groupFunc'; for example, if
+# 'groupFunc' is a variation of wallpaper group P3m1,
+# so is this group function.
+def diamondgroup(x, y, groupFunc=p4m):
+    # Translate the coordinates to achieve the desired
+    # result to the final image.
+    x, y = ((x + y - 0.5) % 1.0, (y + 0.5 - x) % 1.0)
+    # Pass the translated coordinates to the wallpaper
+    # group function.
+    return groupFunc(x, y)
+
 # Creates an image based on a portion of a source
 # image, with the help of a wallpaper group function.
 # 'srcImage' and the return value have the same format returned by the
@@ -2403,6 +2421,7 @@ def p6malt2b(x, y):
 # p6malt1a(), p6malt1b(), p6malt2a(), p6malt2b().  The functions implement
 # variations of wallpaper groups Pmm, P4m, P3m1, and P6m, which are the only
 # four that produce seamless images from areas with arbitrary contents.
+# (There are seventeen wallpaper groups in all.)
 def wallpaperImage(
     width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=None, alpha=False
 ):

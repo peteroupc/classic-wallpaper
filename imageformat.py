@@ -2497,6 +2497,11 @@ def _readicon(f, packedWinBitmap=False):
             if len(masks) < 12:
                 return None
             masks = struct.unpack("<LLL", masks)
+            # NOTE: Windows 95, 98, and Me support a bitmap with compression mode
+            # BI_BITFIELDS only if the color masks are as follows:
+            # 16 bpp: [0x7c00,0x3e0,0x1f] (5/5/5); [0xf800,0x7e0,0x1f] (5/6/5).
+            # 32 bpp: [0xff0000,0xff00,0xff] (8/8/8).
+            # This is according to "Windows 95/98/Me Graphics Device Interface".
             bitfields = [[m, _maskToLeftShift(m), _maskToRightShift(m)] for m in masks]
             for bf in bitfields:
                 if bf[1] < 0 or (bf[0] >> bf[2]) > 255:
