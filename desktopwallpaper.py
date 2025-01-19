@@ -2206,7 +2206,7 @@ def p4malt(x, y):
 # Wallpaper group P3m1.  Source triangle
 # is isosceles and is formed from a rectangle
 # by using the bottom edge as the triangle's
-# and the top point as the rectangle's
+# and setting the triangle's top point as the rectangle's
 # upper midpoint, assuming x-axis points
 # to the right and the y-axis down
 def p3m1(x, y):
@@ -2318,7 +2318,7 @@ def p6malt(x, y):
 # Wallpaper group P3m1, alternative definition.
 # Source triangle is isosceles and is formed from a rectangle
 # by using the left edge as the triangle's
-# and the right-hand point as the rectangle's
+# and setting the triangle's right-hand point as the rectangle's
 # right-hand midpoint, assuming x-axis points
 # to the right and the y-axis down
 def p3m1alt1(x, y):
@@ -2328,7 +2328,7 @@ def p3m1alt1(x, y):
 # Wallpaper group P3m1, alternative definition.
 # Source triangle is isosceles and is formed from a rectangle
 # by using the right edge as the triangle's
-# and the left-hand point as the rectangle's
+# and setting the triangle's left-hand point as the rectangle's
 # left-hand midpoint, assuming x-axis points
 # to the right and the y-axis down
 def p3m1alt2(x, y):
