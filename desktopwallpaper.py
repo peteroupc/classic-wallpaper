@@ -2356,8 +2356,8 @@ def p3(x, y):
 # between B and C. To generate seamless images with this group function, the
 # source shape should satisfy the following: Edge AB is a mirrored edge BC.
 def p31m(x, y):
-    rx, ry = dw.p6m(x, y)
-    if dw._isForward(x, y):
+    rx, ry = p6m(x, y)
+    if _isForward(x, y):
         return (max(0, min(1, rx * 4 / 3 + (1 / 3))), ry)
     else:
         nx = -2 * rx / 3 - ry + 4 / 3
