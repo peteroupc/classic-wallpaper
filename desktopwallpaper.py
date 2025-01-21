@@ -2217,24 +2217,32 @@ def p4mlr(x, y):
         return (rx, ry)
     return (1.0 - ry, 1.0 - rx)
 
-# Wallpaper group P4m. Same as p4mll.
+# Wallpaper group P4m. Same as p4mll().
 def p4m(x, y):
     return p4mll(x, y)
 
-# Wallpaper group P4m. Same as p4mur.
+# Wallpaper group P4m. Same as p4mur().
 def p4malt(x, y):
     return p4mur(x, y)
 
-# Wallpaper group P3m1.  Source triangle
-# is isosceles and is formed from a rectangle
-# by using the lower edge as the triangle's
-# and setting the triangle's top point as the rectangle's
-# upper midpoint. Source triangle is part of a scaled regular hexagon that is oriented
-# such that the hexagon's lower edge is horizontal; the triangle's upper
-# point is at the hexagon's center, and the triangle's lower edge is the
-# same as the hexagon's lower edge.
+# Wallpaper group P3m1.  Source shape is as described in p6().
 # No requirements on the source to generate seamless images with this group function.
 def p3m1(x, y):
+    return _p3m1_and_p6(x, y, False)
+
+# Wallpaper group P6.
+# Source triangle is formed from the upper midpoint (point A), lower-left corner (point B),
+# and lower-right corner (point C) of a rectangle.  Edge AB is the edge between
+# A and B; edge AC, between A and C.
+# Source triangle is part of a scaled regular hexagon that is oriented
+# such that the hexagon's lower edge is horizontal; the triangle's upper
+# point is at the hexagon's center, and the triangle's lower edge is the
+# same as the hexagon's lower edge.  To generate seamless images with this group function,
+# the source shape should satisfy the following: Edge AB is a mirrored edge AC; lower edge is mirrored.
+def p6(x, y):
+    return _p3m1_and_p6(x, y, True)
+
+def _p3m1_and_p6(x, y, is_p6):
     xx = x * 6
     xarea = min(5, int(xx))
     xpos = xx - xarea
@@ -2244,30 +2252,13 @@ def p3m1(x, y):
     leftHalf = (xpos + ypos) < 1.0 if isdiag1 else (xpos + (1 - ypos)) < 1.0
     match (xarea, yarea, leftHalf):
         case (1, 1, False) | (4, 0, False):
+            # Left half of source triangle (lower middle of hexagon)
             return (xpos / 2, ypos)
         case (2, 1, True) | (5, 0, True):
+            # Right half of source triangle (lower middle)
             return (xpos / 2 + 0.5, ypos)
-        case (1, 0, False) | (4, 1, False):
-            return ((xpos / 2), 1 - ypos)
-        case (2, 0, True) | (5, 1, True):
-            return ((xpos / 2 + 0.5), 1 - ypos)
-        case (0, 1, False) | (3, 0, False):
-            xp = xpos / 2
-            yp = ypos
-            newx = -xp / 2 - 3 * yp / 4 + 1
-            newy = -xp + yp / 2 + 1
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            return (newx, newy)
-        case (1, 1, True) | (4, 0, True):
-            xp = (xpos / 2) + 0.5
-            yp = ypos
-            newx = -xp / 2 - 3 * yp / 4 + 1
-            newy = -xp + yp / 2 + 1
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            return (newx, newy)
         case (0, 0, False) | (3, 1, False):
+            # upper left, left half
             xp = xpos / 2
             yp = 1 - ypos
             newx = -xp / 2 - 3 * yp / 4 + 1
@@ -2276,6 +2267,7 @@ def p3m1(x, y):
             newy = max(0, min(1, newy))
             return (newx, newy)
         case (1, 0, True) | (4, 1, True):
+            # upper left, right half
             xp = (xpos / 2) + 0.5
             yp = 1 - ypos
             newx = -xp / 2 - 3 * yp / 4 + 1
@@ -2283,23 +2275,8 @@ def p3m1(x, y):
             newx = max(0, min(1, newx))
             newy = max(0, min(1, newy))
             return (newx, newy)
-        case (2, 1, False) | (5, 0, False):
-            xp = xpos / 2
-            yp = ypos
-            newx = -xp / 2 + 3 * yp / 4 + 0.5
-            newy = xp + yp / 2
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            return (newx, newy)
-        case (3, 1, True) | (0, 0, True):
-            xp = (xpos / 2) + 0.5
-            yp = ypos
-            newx = -xp / 2 + 3 * yp / 4 + 0.5
-            newy = xp + yp / 2
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            return (newx, newy)
         case (2, 0, False) | (5, 1, False):
+            # upper right, left half
             xp = xpos / 2
             yp = 1 - ypos
             newx = -xp / 2 + 3 * yp / 4 + 0.5
@@ -2308,6 +2285,7 @@ def p3m1(x, y):
             newy = max(0, min(1, newy))
             return (newx, newy)
         case (3, 0, True) | (0, 1, True):
+            # upper right, right half
             xp = (xpos / 2) + 0.5
             yp = 1 - ypos
             newx = -xp / 2 + 3 * yp / 4 + 0.5
@@ -2315,7 +2293,64 @@ def p3m1(x, y):
             newx = max(0, min(1, newx))
             newy = max(0, min(1, newy))
             return (newx, newy)
+        case (1, 0, False) | (4, 1, False):
+            # upper middle, left half
+            newx = xpos / 2
+            if is_p6:
+                newx = 1 - newx
+            return (newx, 1 - ypos)
+        case (2, 0, True) | (5, 1, True):
+            # upper middle, right half
+            newx = xpos / 2 + 0.5
+            if is_p6:
+                newx = 1 - newx
+            return (newx, 1 - ypos)
+        case (0, 1, False) | (3, 0, False):
+            # lower left, left half
+            xp = xpos / 2
+            yp = ypos
+            newx = -xp / 2 - 3 * yp / 4 + 1
+            newy = -xp + yp / 2 + 1
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            if is_p6:
+                newx = 1 - newx
+            return (newx, newy)
+        case (1, 1, True) | (4, 0, True):
+            # lower left, right half
+            xp = (xpos / 2) + 0.5
+            yp = ypos
+            newx = -xp / 2 - 3 * yp / 4 + 1
+            newy = -xp + yp / 2 + 1
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            if is_p6:
+                newx = 1 - newx
+            return (newx, newy)
+        case (2, 1, False) | (5, 0, False):
+            # lower right, left half
+            xp = xpos / 2
+            yp = ypos
+            newx = -xp / 2 + 3 * yp / 4 + 0.5
+            newy = xp + yp / 2
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            if is_p6:
+                newx = 1 - newx
+            return (newx, newy)
+        case (3, 1, True) | (0, 0, True):
+            # lower right, right half
+            xp = (xpos / 2) + 0.5
+            yp = ypos
+            newx = -xp / 2 + 3 * yp / 4 + 0.5
+            newy = xp + yp / 2
+            newx = max(0, min(1, newx))
+            newy = max(0, min(1, newy))
+            if is_p6:
+                newx = 1 - newx
+            return (newx, newy)
         case _:
+            # unknown
             return (0, 0)
 
 # Wallpaper group P6m (same source rectangle
@@ -2506,7 +2541,7 @@ def p4(x, y):
         return pmmalt(y, x)
     return pmmalt(x, y)
 
-# Same as p4mul, except the source rectangle
+# Same as p4mul(), except the source rectangle
 # takes the lower-left quarter of the destination image.
 def p4mul2(x, y):
     rx, ry = pmmalt(x, y)
@@ -2514,7 +2549,7 @@ def p4mul2(x, y):
         return (rx, ry)
     return (1.0 - ry, 1.0 - rx)
 
-# Same as p4mur, except the source rectangle
+# Same as p4mur(), except the source rectangle
 # takes the lower-left quarter of the destination image.
 def p4mur2(x, y):
     rx, ry = pmmalt(x, y)
@@ -2522,7 +2557,7 @@ def p4mur2(x, y):
         return (rx, ry)
     return (ry, rx)
 
-# Same as p4mll, except the source rectangle
+# Same as p4mll(), except the source rectangle
 # takes the lower-left quarter of the destination image.
 def p4mll2(x, y):
     rx, ry = pmmalt(x, y)
@@ -2530,7 +2565,7 @@ def p4mll2(x, y):
         return (rx, ry)
     return (ry, rx)
 
-# Same as p4mlr, except the source rectangle
+# Same as p4mlr(), except the source rectangle
 # takes the lower-left quarter of the destination image.
 def p4mlr2(x, y):
     rx, ry = pmmalt(x, y)
