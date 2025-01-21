@@ -2159,12 +2159,9 @@ def imagept(image, width, height, x, y, alpha=False):
     return ret
 
 # Wallpaper group Pmm.  Source rectangle
-# takes the upper left quarter of the image
+# takes the upper-left quarter of the image
 # and is reflected and repeated to cover the
-# remaining image, assuming x-axis points
-# to the right and the y-axis down.
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
+# remaining image. No requirements on the source to generate seamless images with this group function.
 def pmm(x, y):
     if x > 0.5:
         if y < 0.5:
@@ -2177,38 +2174,66 @@ def pmm(x, y):
         else:
             return (x * 2, (0.5 - (y - 0.5)) * 2)
 
-# Wallpaper group P4m (triangle formed
-# from a rectangle and by
-# taking the lower-left corner of the rectangle
-# as its right angle, assuming x-axis points
-# to the right and the y-axis down)
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
-def p4m(x, y):
+# Wallpaper group P4m. Source triangle is formed
+# by the upper-left, upper-right, and lower-left corners of
+# a rectangle that takes the upper-left quarter of the destination image
+# (triangle's right angle is at the rectangle's upper-left corner).
+def p4mul(x, y):
     rx, ry = pmm(x, y)
-    if rx + (1 - ry) > 1.0:
-        return (ry, rx)
-    return (rx, ry)
+    if rx + ry < 1.0:
+        return (rx, ry)
+    return (1.0 - ry, 1.0 - rx)
 
-# Wallpaper group P4m, alternative definition
-# (triangle formed from a rectangle and by
-# taking the upper-right corner of the rectangle
-# as its right angle, assuming x-axis points
-# to the right and the y-axis down)
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
-def p4malt(x, y):
+# Wallpaper group P4m. Source triangle is formed
+# by the upper-left, upper-right, and lower-right corners of
+# a rectangle that takes the upper-left quarter of the destination image
+# (triangle's right angle is at the rectangle's upper-right corner).
+# No requirements on the source to generate seamless images with this group function.
+def p4mur(x, y):
+    rx, ry = pmm(x, y)
+    if (1 - rx) + ry < 1.0:
+        return (rx, ry)
+    return (ry, rx)
+
+# Wallpaper group P4m. Source triangle is formed
+# by the upper-left, lower-left, and lower-right corners of
+# a rectangle that takes the upper-left quarter of the destination image
+# (triangle's right angle is at the rectangle's lower-left corner).
+# No requirements on the source to generate seamless images with this group function.
+def p4mll(x, y):
     rx, ry = pmm(x, y)
     if rx + (1 - ry) < 1.0:
-        return (ry, rx)
-    return (rx, ry)
+        return (rx, ry)
+    return (ry, rx)
+
+# Wallpaper group P4m. Source triangle is formed
+# by the upper-right, lower-left, and lower-right corners of
+# a rectangle that takes the upper-left quarter of the destination image
+# (triangle's right angle is at the rectangle's lower-right corner).
+# No requirements on the source to generate seamless images with this group function.
+def p4mlr(x, y):
+    rx, ry = pmm(x, y)
+    if (1 - rx) + (1 - ry) < 1.0:
+        return (rx, ry)
+    return (1.0 - ry, 1.0 - rx)
+
+# Wallpaper group P4m. Same as p4mll.
+def p4m(x, y):
+    return p4mll(x, y)
+
+# Wallpaper group P4m. Same as p4mur.
+def p4malt(x, y):
+    return p4mur(x, y)
 
 # Wallpaper group P3m1.  Source triangle
 # is isosceles and is formed from a rectangle
-# by using the bottom edge as the triangle's
+# by using the lower edge as the triangle's
 # and setting the triangle's top point as the rectangle's
-# upper midpoint, assuming x-axis points
-# to the right and the y-axis down
+# upper midpoint. Source triangle is part of a scaled regular hexagon that is oriented
+# such that the hexagon's lower edge is horizontal; the triangle's upper
+# point is at the hexagon's center, and the triangle's lower edge is the
+# same as the hexagon's lower edge.
+# No requirements on the source to generate seamless images with this group function.
 def p3m1(x, y):
     xx = x * 6
     xarea = min(5, int(xx))
@@ -2296,8 +2321,7 @@ def p3m1(x, y):
 # Wallpaper group P6m (same source rectangle
 # as p3m1(), but exposing only the left half of
 # the triangle mentioned there).
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
+# No requirements on the source to generate seamless images with this group function.
 def p6m(x, y):
     rx, ry = p3m1(x, y)
     if rx > 0.5:
@@ -2307,8 +2331,7 @@ def p6m(x, y):
 # Wallpaper group P6m, alternative definition
 # (same source rectangle as p3m1(), but exposing
 # only the right half of the triangle described there).
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
+# No requirements on the source to generate seamless images with this group function.
 def p6malt(x, y):
     rx, ry = p3m1(x, y)
     if rx < 0.5:
@@ -2319,8 +2342,12 @@ def p6malt(x, y):
 # Source triangle is isosceles and is formed from a rectangle
 # by using the left edge as the triangle's
 # and setting the triangle's right-hand point as the rectangle's
-# right-hand midpoint, assuming x-axis points
-# to the right and the y-axis down
+# right-hand midpoint.
+# Source triangle is part of a scaled regular hexagon that is oriented
+# such that the hexagon's left edge is vertical; the triangle's right-hand
+# point is at the hexagon's center, and the triangle's left edge is the
+# same as the hexagon's left edge.
+# No requirements on the source to generate seamless images with this group function.
 def p3m1alt1(x, y):
     rx, ry = p3m1(y, 1 - x)
     return (1 - ry, rx)
@@ -2329,8 +2356,12 @@ def p3m1alt1(x, y):
 # Source triangle is isosceles and is formed from a rectangle
 # by using the right edge as the triangle's
 # and setting the triangle's left-hand point as the rectangle's
-# left-hand midpoint, assuming x-axis points
-# to the right and the y-axis down
+# left-hand midpoint.
+# Source triangle is part of a scaled regular hexagon that is oriented
+# such that the hexagon's right-hand edge is vertical; the triangle's left
+# point is at the hexagon's center, and the triangle's right-hand edge is the
+# same as the hexagon's right-hand edge.
+# No requirements on the source to generate seamless images with this group function.
 def p3m1alt2(x, y):
     rx, ry = p3m1(y, x)
     return (ry, rx)
@@ -2340,6 +2371,7 @@ def p3m1alt2(x, y):
 # only the upper half of the triangle described there).
 # 'x' and 'y' are each 0 or greater
 # and 1 or less.
+# No requirements on the source to generate seamless images with this group function.
 def p6malt1a(x, y):
     rx, ry = p3m1alt1(x, y)
     if ry > 0.5:
@@ -2349,8 +2381,7 @@ def p6malt1a(x, y):
 # Wallpaper group P6m, alternative definition
 # (same source rectangle as p3m1alt1(), but exposing
 # only the lower half of the triangle described there).
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
+# No requirements on the source to generate seamless images with this group function.
 def p6malt1b(x, y):
     rx, ry = p3m1alt1(x, y)
     if ry < 0.5:
@@ -2360,8 +2391,7 @@ def p6malt1b(x, y):
 # Wallpaper group P6m, alternative definition
 # (same source rectangle as p3m1alt2(), but exposing
 # only the upper half of the triangle described there).
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
+# No requirements on the source to generate seamless images with this group function.
 def p6malt2a(x, y):
     rx, ry = p3m1alt2(x, y)
     if ry > 0.5:
@@ -2371,8 +2401,7 @@ def p6malt2a(x, y):
 # Wallpaper group P6m, alternative definition
 # (same source rectangle as p3m1alt2(), but exposing
 # only the lower half of the triangle described there).
-# 'x' and 'y' are each 0 or greater
-# and 1 or less.
+# No requirements on the source to generate seamless images with this group function.
 def p6malt2b(x, y):
     rx, ry = p3m1alt2(x, y)
     if ry < 0.5:
@@ -2389,6 +2418,8 @@ def p6malt2b(x, y):
 # wallpaper group implemented by 'groupFunc'; for example, if
 # 'groupFunc' is a variation of wallpaper group P3m1,
 # so is this group function.
+# Same requirements as 'groupFunc' on the source to generate
+# seamless images with this group function.
 def diamondgroup(x, y, groupFunc=p4m):
     # Translate the coordinates to achieve the desired
     # result to the final image.
@@ -2396,6 +2427,133 @@ def diamondgroup(x, y, groupFunc=p4m):
     # Pass the translated coordinates to the wallpaper
     # group function.
     return groupFunc(x, y)
+
+# Wallpaper group P1. Source rectangle takes the whole destination image.  To
+# generate seamless images with this group function, the source shape should satisfy
+# the following: Upper edge is same as lower edge, left edge is same as right edge.
+def p1(x, y):
+    return (x, y)
+
+# Wallpaper group P2. Source triangle is formed from the upper-left, lower-left,
+# and lower-right corners of a rectangle that covers the whole destination image.
+# To generate seamless images with this group function, the source shape should
+# satisfy the following: Lower edge is mirrored, left edge is mirrored.
+def p2(x, y):
+    if x + (1.0 - y) < 1.0:
+        return (x, y)
+    return (1.0 - x, 1.0 - y)
+
+# Wallpaper group Cm. Source triangle is formed from the upper-left, lower-left,
+# and lower-right corners of a rectangle that covers the whole destination image.
+# To generate seamless images with this group function, the source shape should
+# satisfy the following: Left edge is same as lower edge.
+def cm(x, y):
+    if x + (1.0 - y) < 1.0:
+        return (x, y)
+    return (y, x)
+
+# Wallpaper group Cmm. Source triangle is formed from the upper midpoint,
+# lower-left corner, and lower-right corner of a rectangle that takes the lower
+# half of the destination image. To generate seamless images with this group
+# function, the source shape should satisfy the following: Lower edge is mirrored.
+def cmm(x, y):
+    if x + y < 1.0:
+        x, y = cm(1 - x, 1 - y)
+        # Adjust result to tightly fit
+        # source rectangle
+        return (x, (y - 0.5) * 2.0)
+    else:
+        x, y = cm(x, y)
+        # Ditto
+        return (x, (y - 0.5) * 2.0)
+
+# Wallpaper group Pm. Source rectangle takes the lower half of the destination image.
+# To generate seamless images with this group function, the source shape should satisfy
+# the following: Left edge is same as right edge.
+def pm(x, y):
+    if y > 0.5:
+        return (x, (y - 0.5) * 2.0)
+    return (x, 1 - y * 2.0)
+
+# Wallpaper group Pg. Source rectangle takes the lower half of the destination image.
+#  To generate seamless images with this group function, the source shape should satisfy
+# the following: Upper edge is a mirrored lower edge, left edge is same as right edge.
+def pg(x, y):
+    if y > 0.5:
+        return (x, (y - 0.5) * 2.0)
+    return (1 - x, y * 2.0)
+
+# Same as pmm, except the source rectangle
+# takes the lower-left quarter of the destination image.
+def pmmalt(x, y):
+    return dw.pmm(x, (y + 0.5) % 1.0)
+
+# Wallpaper group Pmg. Source rectangle takes the lower-left quarter of the
+# destination image. To generate seamless images with this group function, the
+# source shape should satisfy the following: Left edge is mirrored, right edge
+# is mirrored.
+def pmg(x, y):
+    if x > 0.5:
+        return pmmalt(x, (y + 0.5) % 1.0)
+    return pmmalt(x, y)
+
+# Wallpaper group P4. Source rectangle takes the lower-left quarter of the destination
+#  image. To generate seamless images with this group function, the source shape
+# should satisfy the following: Upper edge is a mirrored lower edge, left edge is
+# a mirrored right edge.
+def p4(x, y):
+    if (x < 0.5 and y < 0.5) or (x > 0.5 and y > 0.5):
+        return pmmalt(y, x)
+    return pmmalt(x, y)
+
+# Same as p4mul, except the source rectangle
+# takes the lower-left quarter of the destination image.
+def p4mul2(x, y):
+    rx, ry = pmmalt(x, y)
+    if rx + ry < 1.0:
+        return (rx, ry)
+    return (1.0 - ry, 1.0 - rx)
+
+# Same as p4mur, except the source rectangle
+# takes the lower-left quarter of the destination image.
+def p4mur2(x, y):
+    rx, ry = pmmalt(x, y)
+    if (1 - rx) + ry < 1.0:
+        return (rx, ry)
+    return (ry, rx)
+
+# Same as p4mll, except the source rectangle
+# takes the lower-left quarter of the destination image.
+def p4mll2(x, y):
+    rx, ry = pmmalt(x, y)
+    if rx + (1 - ry) < 1.0:
+        return (rx, ry)
+    return (ry, rx)
+
+# Same as p4mlr, except the source rectangle
+# takes the lower-left quarter of the destination image.
+def p4mlr2(x, y):
+    rx, ry = pmmalt(x, y)
+    if (1 - rx) + (1 - ry) < 1.0:
+        return (rx, ry)
+    return (1.0 - ry, 1.0 - rx)
+
+# Wallpaper group P4g. Source triangle is formed from the upper-left, lower-left,
+# and lower-right corners of a rectangle that takes the lower-left quarter of the
+# destination image. To generate seamless images with this group function, the
+# source shape should satisfy the following: Lower edge is a mirrored left edge.
+def p4g(x, y):
+    return cm(*p4(x, y))
+
+# Wallpaper group Pgg. Source rectangle takes the lower-left quarter of the
+# destination image. To generate seamless images with this group function, the
+# source shape should satisfy the following: Upper edge is a mirrored lower edge,
+# left edge is a mirrored right edge.
+def pgg(x, y):
+    rx, ry = p4(x, y)
+    if (x < 0.5 and y < 0.5) or (x > 0.5 and y > 0.5):
+        return (ry, rx)
+    return (rx, ry)
 
 # Creates an image based on a portion of a source
 # image, with the help of a wallpaper group function.
@@ -2409,19 +2567,22 @@ def diamondgroup(x, y, groupFunc=p4m):
 # coordinates to input image (source image) coordinates; default is pmm().
 # 'groupFunc' takes two parameters: 'x' and 'y' are each 0 or greater
 # and 1 or less, and are in relation to the destination image; 0 is leftmost
-# or uppermost, and 1 is rightmost or bottommost, assuming the x-axis points
-# to the right and the y-axis down.  'groupFunc' returns a tuple indicating
+# or uppermost, and 1 is rightmost or bottommost, assuming that the positive x-axis points
+# to the right and the positive y-axis points downward.  'groupFunc' returns a tuple indicating
 # a point in relation to the source rectangle. The tuple has two elements,
 # each 0 or greater and 1 or less: the first is the x-coordinate and the
 # second, the y-coordinate; 0 is leftmost or uppermost, and 1 is
 # rightmost or bottommost, with the assumption given earlier.
-# The wallpaper group functions in this module are intended to
+# The following wallpaper group functions in this module are intended to
 # result in seamless tileable images from areas with arbitrary contents:
 # pmm(), p4m(), p4malt(), p3m1(), p6m(), p6malt(), p3m1alt1(), p3m1alt2(),
 # p6malt1a(), p6malt1b(), p6malt2a(), p6malt2b().  The functions implement
 # variations of wallpaper groups Pmm, P4m, P3m1, and P6m, which are the only
 # four that produce seamless images from areas with arbitrary contents.
-# (There are seventeen wallpaper groups in all.)
+# (There are seventeen wallpaper groups in all.)  The documentation for
+# those and other wallpaper group functions in this module assumes that
+# the positive x-axis points to
+# the right and the positive y-axis points downward.
 def wallpaperImage(
     width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=None, alpha=False
 ):
@@ -4865,7 +5026,7 @@ def _drawupperedgecore(helper, x0, y0, x1, y1, color, edgesize=1):
     else:
         # left edge (includes lower left and upper left "pixels")
         helper.rect(x0, y0, x0 + edgesize, y1, color)
-        # top edge (includes upper right "pixel")
+        # upper edge (includes upper right "pixel")
         helper.rect(x0 + edgesize, y0, x1, y0 + edgesize, color)
 
 # helper for lower edge drawing
@@ -4882,7 +5043,7 @@ def _drawloweredgecore(helper, x0, y0, x1, y1, color, edgesize=1):
     else:
         # left edge (includes upper right and lower right "pixels")
         helper.rect(x1 - edgesize, y0, x1, y1, color)  # right edge
-        # bottom edge (includes lower left "pixel")
+        # lower edge (includes lower left "pixel")
         helper.rect(x0, y1 - edgesize, x1 - edgesize, y1, color)
 
 # hilt = upper part of edge, dksh = lower part of edge
@@ -4895,7 +5056,9 @@ def _drawroundedgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=1):
         helper.rect(x0 + edgesize, y0, x1 - edgesize, y1, upper)
     else:
         helper.rect(x0, y0 + edgesize, x0 + edgesize, y1 - edgesize, upper)  # left edge
-        helper.rect(x0 + edgesize, y0, x1 - edgesize, y0 + edgesize, upper)  # top edge
+        helper.rect(
+            x0 + edgesize, y0, x1 - edgesize, y0 + edgesize, upper
+        )  # upper edge
         helper.rect(
             x1 - edgesize,
             y0 + edgesize,
@@ -4909,7 +5072,7 @@ def _drawroundedgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=1):
             x1 - edgesize,
             y1,
             lower,
-        )  # bottom edge
+        )  # lower edge
 
 def drawpositiverect(helper, x0, y0, x1, y1, face):
     if x1 >= x0 or y1 >= y0:  # empty or negative

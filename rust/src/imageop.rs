@@ -344,13 +344,12 @@ pub fn pmm(x: f64, y: f64) -> (f64, f64) {
 }
 
 /**
-* Wallpaper group P4m (triangle formed
-* from a rectangle and by
-* taking the lower-left corner of the rectangle
-* as its right angle, assuming x-axis points
-* to the right and the y-axis down)
-* 'x' and 'y' are each 0 or greater
-* and 1 or less. */
+* Wallpaper group P4m. Source triangle is formed
+* by the upper-left, lower-left, and lower-right corners of
+* a rectangle that takes the upper-left quarter of the destination image
+* (triangle's right angle is at the rectangle's lower-left corner).
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p4m(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = pmm(x, y);
     if rx + (1.0 - ry) > 1.0 {
@@ -361,16 +360,15 @@ pub fn p4m(x: f64, y: f64) -> (f64, f64) {
 }
 
 /**
-* Wallpaper group P4m, alternative definition
-* (triangle formed from a rectangle and by
-* taking the upper-right corner of the rectangle
-* as its right angle, assuming x-axis points
-* to the right and the y-axis down)
-* 'x' and 'y' are each 0 or greater
-* and 1 or less. */
+* Wallpaper group P4m. Source triangle is formed
+* by the upper-left, upper-right, lower-right corners of
+* a rectangle that takes the upper-left quarter of the destination image
+* (triangle's right angle is at the rectangle's upper-right corner).
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p4malt(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = pmm(x, y);
-    if rx + (1.0 - ry) < 1.0 {
+    if ry + (1.0 - rx) < 1.0 {
         (ry, rx)
     } else {
         (rx, ry)
@@ -383,7 +381,13 @@ pub fn p4malt(x: f64, y: f64) -> (f64, f64) {
 * by using the bottom edge as the triangle's
 * and the top point as the rectangle's
 * upper midpoint, assuming x-axis points
-* to the right and the y-axis down. */
+* to the right and the y-axis down. Source triangle is part 
+* of a scaled regular hexagon that is oriented
+* such that the hexagon's lower edge is horizontal; the triangle's upper
+* point is at the hexagon's center, and the triangle's lower edge is the
+* same as the hexagon's lower edge.
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p3m1(x: f64, y: f64) -> (f64, f64) {
     let xx = x * 6.0;
     let xarea: i32 = min(5, xx.floor() as i32);
@@ -480,7 +484,8 @@ pub fn p3m1(x: f64, y: f64) -> (f64, f64) {
 /**
  * Wallpaper group P6m (same source rectangle as p3m1(), but
  * exposing only the left half of the triangle mentioned there).
- * 'x' and 'y' are each 0 or greater and 1 or less. */
+* No requirements on the source to generate seamless images with this group function.
+ *  */
 pub fn p6m(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(x, y);
     if rx > 0.5 {
@@ -493,7 +498,9 @@ pub fn p6m(x: f64, y: f64) -> (f64, f64) {
 /**
  *  Wallpaper group P6m, alternative definition (same source rectangle
  * as p3m1(), but exposing only the right half of the triangle mentioned
- * there). 'x' and 'y' are each 0 or greater and 1 or less. */
+ * there). 
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p6malt(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(x, y);
     if rx < 0.5 {
@@ -509,7 +516,13 @@ pub fn p6malt(x: f64, y: f64) -> (f64, f64) {
  * by using the left edge as the triangle's
  * and the right-hand point as the rectangle's
  * right-hand midpoint, assuming x-axis points
- * to the right and the y-axis down. */
+ * to the right and the y-axis down. 
+ * Source triangle is part of a scaled regular hexagon that is oriented
+ * such that the hexagon's left edge is vertical; the triangle's right-hand
+ * point is at the hexagon's center, and the triangle's left edge is the
+ * same as the hexagon's left edge.
+* No requirements on the source to generate seamless images with this group function.
+*/
 pub fn p3m1alt1(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(y, 1.0 - x);
     (1.0 - ry, rx)
@@ -521,7 +534,13 @@ pub fn p3m1alt1(x: f64, y: f64) -> (f64, f64) {
  * by using the right edge as the triangle's
  * and the left-hand point as the rectangle's
  * left-hand midpoint, assuming x-axis points
- * to the right and the y-axis down. */
+ * to the right and the y-axis down. 
+ * Source triangle is part of a scaled regular hexagon that is oriented
+ * such that the hexagon's right-hand edge is vertical; the triangle's left
+ * point is at the hexagon's center, and the triangle's right-hand edge is the
+ * same as the hexagon's right-hand edge.
+* No requirements on the source to generate seamless images with this group function.
+*/
 pub fn p3m1alt2(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1(y, x);
     (ry, rx)
@@ -531,8 +550,8 @@ pub fn p3m1alt2(x: f64, y: f64) -> (f64, f64) {
  *  Wallpaper group P6m, alternative definition
  * (same source rectangle as p3m1alt1(), but exposing
  * only the upper half of the triangle described there).
- * 'x' and 'y' are each 0 or greater
- * and 1 or less.*/
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p6malt1a(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt1(x, y);
     if ry > 0.5 {
@@ -545,8 +564,8 @@ pub fn p6malt1a(x: f64, y: f64) -> (f64, f64) {
  * Wallpaper group P6m, alternative definition
  * (same source rectangle as p3m1alt1(), but exposing
  * only the lower half of the triangle described there).
- * 'x' and 'y' are each 0 or greater
- * and 1 or less.*/
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p6malt1b(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt1(x, y);
     if ry < 0.5 {
@@ -560,8 +579,8 @@ pub fn p6malt1b(x: f64, y: f64) -> (f64, f64) {
  * Wallpaper group P6m, alternative definition
  * (same source rectangle as p3m1alt2(), but exposing
  * only the upper half of the triangle described there).
- * 'x' and 'y' are each 0 or greater
- * and 1 or less.*/
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p6malt2a(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt2(x, y);
     if ry > 0.5 {
@@ -574,8 +593,8 @@ pub fn p6malt2a(x: f64, y: f64) -> (f64, f64) {
  * Wallpaper group P6m, alternative definition
  * (same source rectangle as p3m1alt2(), but exposing
  * only the lower half of the triangle described there).
- * 'x' and 'y' are each 0 or greater
- * and 1 or less.*/
+* No requirements on the source to generate seamless images with this group function.
+ */
 pub fn p6malt2b(x: f64, y: f64) -> (f64, f64) {
     let (rx, ry) = p3m1alt2(x, y);
     if ry < 0.5 {
@@ -595,18 +614,22 @@ pub fn p6malt2b(x: f64, y: f64) -> (f64, f64) {
 * coordinates to input image (source image) coordinates; default is pmm().
 * 'groupFunc' takes two parameters: 'x' and 'y' are each 0 or greater
 * and 1 or less, and are in relation to the destination image; 0 is leftmost
-* or uppermost, and 1 is rightmost or bottommost, assuming the x-axis points
-* to the right and the y-axis down.  'groupFunc' returns a tuple indicating
+* or uppermost, and 1 is rightmost or bottommost, assuming that the positive x-axis points
+* to the right and the positive y-axis points downward.  'groupFunc' returns a tuple indicating
 * a point in relation to the source rectangle. The tuple has two elements,
 * each 0 or greater and 1 or less: the first is the x-coordinate and the
 * second, the y-coordinate; 0 is leftmost or uppermost, and 1 is
 * rightmost or bottommost, with the assumption given earlier.
-* The wallpaper group functions in this module are intended to
+* The following wallpaper group functions in this module are intended to
 * result in seamless tileable images from areas with arbitrary contents:
 * pmm(), p4m(), p4malt(), p3m1(), p6m(), p6malt(), p3m1alt1(), p3m1alt2(),
 * p6malt1a(), p6malt1b(), p6malt2a(), p6malt2b().  The functions implement
 * variations of wallpaper groups Pmm, P4m, P3m1, and P6m, which are the only
-* four that produce seamless images from areas with arbitrary contents.*/
+* four that produce seamless images from areas with arbitrary contents.
+* The documentation for those and other wallpaper
+* group functions in this module assumes that the positive x-axis points to
+* the right and the positive y-axis points downward.
+*/
 pub fn wallpaper_image<T: BasicRgbImage>(
     dest_width: u32,
     dest_height: u32,

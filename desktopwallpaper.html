@@ -325,6 +325,14 @@ Data descriptors defined here:<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
+ <dl><dt><a name="-cm"><strong>cm</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Cm.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed&nbsp;from&nbsp;the&nbsp;upper-left,&nbsp;lower-left,<br>
+#&nbsp;and&nbsp;lower-right&nbsp;corners&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;covers&nbsp;the&nbsp;whole&nbsp;destination&nbsp;image.<br>
+#&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should<br>
+#&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Left&nbsp;edge&nbsp;is&nbsp;same&nbsp;as&nbsp;lower&nbsp;edge.</span></dd></dl>
+ <dl><dt><a name="-cmm"><strong>cmm</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Cmm.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed&nbsp;from&nbsp;the&nbsp;upper&nbsp;midpoint,<br>
+#&nbsp;lower-left&nbsp;corner,&nbsp;and&nbsp;lower-right&nbsp;corner&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;takes&nbsp;the&nbsp;lower<br>
+#&nbsp;half&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group<br>
+#&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Lower&nbsp;edge&nbsp;is&nbsp;mirrored.</span></dd></dl>
  <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;'blackColor'&nbsp;and&nbsp;ending&nbsp;at&nbsp;'whiteColor'.<br>
 #&nbsp;'blackColor'&nbsp;and&nbsp;'whiteColor'&nbsp;are&nbsp;each&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.</span></dd></dl>
  <dl><dt><a name="-convolveRow"><strong>convolveRow</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
@@ -337,7 +345,7 @@ Data descriptors defined here:<br>
 #&nbsp;pattern&nbsp;if&nbsp;the&nbsp;image&nbsp;the&nbsp;command&nbsp;is&nbsp;applied&nbsp;to&nbsp;has&nbsp;only&nbsp;its&nbsp;top&nbsp;half<br>
 #&nbsp;or&nbsp;its&nbsp;bottom&nbsp;half&nbsp;drawn).&nbsp;&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied<br>
 #&nbsp;to&nbsp;images&nbsp;with&nbsp;an&nbsp;even&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
- <dl><dt><a name="-diamondgroup"><strong>diamondgroup</strong></a>(x, y, groupFunc=&lt;function p4m at 0x7f8b19810360&gt;)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;function&nbsp;that&nbsp;wraps&nbsp;another<br>
+ <dl><dt><a name="-diamondgroup"><strong>diamondgroup</strong></a>(x, y, groupFunc=&lt;function p4m at 0x7f024a72c680&gt;)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;function&nbsp;that&nbsp;wraps&nbsp;another<br>
 #&nbsp;group&nbsp;function&nbsp;('groupFunc'),&nbsp;in&nbsp;which&nbsp;the&nbsp;image<br>
 #&nbsp;after&nbsp;applying&nbsp;'groupFunc'<br>
 #&nbsp;is&nbsp;rotated&nbsp;and&nbsp;scaled&nbsp;to&nbsp;fit&nbsp;into<br>
@@ -346,7 +354,9 @@ Data descriptors defined here:<br>
 #&nbsp;the&nbsp;canvas.&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;a&nbsp;variation&nbsp;of&nbsp;the<br>
 #&nbsp;wallpaper&nbsp;group&nbsp;implemented&nbsp;by&nbsp;'groupFunc';&nbsp;for&nbsp;example,&nbsp;if<br>
 #&nbsp;'groupFunc'&nbsp;is&nbsp;a&nbsp;variation&nbsp;of&nbsp;wallpaper&nbsp;group&nbsp;P3m1,<br>
-#&nbsp;so&nbsp;is&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
+#&nbsp;so&nbsp;is&nbsp;this&nbsp;group&nbsp;function.<br>
+#&nbsp;Same&nbsp;requirements&nbsp;as&nbsp;'groupFunc'&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate<br>
+#&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-dithertograyimage"><strong>dithertograyimage</strong></a>(
     image,
     width,
@@ -980,68 +990,105 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'lt'&nbsp;is&nbsp;the&nbsp;light&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[128,128,128].<br>
 #&nbsp;'sh'&nbsp;is&nbsp;the&nbsp;shadow&nbsp;color.&nbsp;&nbsp;If&nbsp;not&nbsp;given,&nbsp;is&nbsp;[0,0,0].</span></dd></dl>
+ <dl><dt><a name="-p1"><strong>p1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P1.&nbsp;Source&nbsp;rectangle&nbsp;takes&nbsp;the&nbsp;whole&nbsp;destination&nbsp;image.&nbsp;&nbsp;To<br>
+#&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy<br>
+#&nbsp;the&nbsp;following:&nbsp;Upper&nbsp;edge&nbsp;is&nbsp;same&nbsp;as&nbsp;lower&nbsp;edge,&nbsp;left&nbsp;edge&nbsp;is&nbsp;same&nbsp;as&nbsp;right&nbsp;edge.</span></dd></dl>
+ <dl><dt><a name="-p2"><strong>p2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P2.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed&nbsp;from&nbsp;the&nbsp;upper-left,&nbsp;lower-left,<br>
+#&nbsp;and&nbsp;lower-right&nbsp;corners&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;covers&nbsp;the&nbsp;whole&nbsp;destination&nbsp;image.<br>
+#&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should<br>
+#&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Lower&nbsp;edge&nbsp;is&nbsp;mirrored,&nbsp;left&nbsp;edge&nbsp;is&nbsp;mirrored.</span></dd></dl>
  <dl><dt><a name="-p3m1"><strong>p3m1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1.&nbsp;&nbsp;Source&nbsp;triangle<br>
 #&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
-#&nbsp;by&nbsp;using&nbsp;the&nbsp;bottom&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
+#&nbsp;by&nbsp;using&nbsp;the&nbsp;lower&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
 #&nbsp;and&nbsp;setting&nbsp;the&nbsp;triangle's&nbsp;top&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
-#&nbsp;upper&nbsp;midpoint,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down</span></dd></dl>
+#&nbsp;upper&nbsp;midpoint.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;part&nbsp;of&nbsp;a&nbsp;scaled&nbsp;regular&nbsp;hexagon&nbsp;that&nbsp;is&nbsp;oriented<br>
+#&nbsp;such&nbsp;that&nbsp;the&nbsp;hexagon's&nbsp;lower&nbsp;edge&nbsp;is&nbsp;horizontal;&nbsp;the&nbsp;triangle's&nbsp;upper<br>
+#&nbsp;point&nbsp;is&nbsp;at&nbsp;the&nbsp;hexagon's&nbsp;center,&nbsp;and&nbsp;the&nbsp;triangle's&nbsp;lower&nbsp;edge&nbsp;is&nbsp;the<br>
+#&nbsp;same&nbsp;as&nbsp;the&nbsp;hexagon's&nbsp;lower&nbsp;edge.<br>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p3m1alt1"><strong>p3m1alt1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1,&nbsp;alternative&nbsp;definition.<br>
 #&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
 #&nbsp;by&nbsp;using&nbsp;the&nbsp;left&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
 #&nbsp;and&nbsp;setting&nbsp;the&nbsp;triangle's&nbsp;right-hand&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
-#&nbsp;right-hand&nbsp;midpoint,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down</span></dd></dl>
+#&nbsp;right-hand&nbsp;midpoint.<br>
+#&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;part&nbsp;of&nbsp;a&nbsp;scaled&nbsp;regular&nbsp;hexagon&nbsp;that&nbsp;is&nbsp;oriented<br>
+#&nbsp;such&nbsp;that&nbsp;the&nbsp;hexagon's&nbsp;left&nbsp;edge&nbsp;is&nbsp;vertical;&nbsp;the&nbsp;triangle's&nbsp;right-hand<br>
+#&nbsp;point&nbsp;is&nbsp;at&nbsp;the&nbsp;hexagon's&nbsp;center,&nbsp;and&nbsp;the&nbsp;triangle's&nbsp;left&nbsp;edge&nbsp;is&nbsp;the<br>
+#&nbsp;same&nbsp;as&nbsp;the&nbsp;hexagon's&nbsp;left&nbsp;edge.<br>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p3m1alt2"><strong>p3m1alt2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1,&nbsp;alternative&nbsp;definition.<br>
 #&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;isosceles&nbsp;and&nbsp;is&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle<br>
 #&nbsp;by&nbsp;using&nbsp;the&nbsp;right&nbsp;edge&nbsp;as&nbsp;the&nbsp;triangle's<br>
 #&nbsp;and&nbsp;setting&nbsp;the&nbsp;triangle's&nbsp;left-hand&nbsp;point&nbsp;as&nbsp;the&nbsp;rectangle's<br>
-#&nbsp;left-hand&nbsp;midpoint,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down</span></dd></dl>
- <dl><dt><a name="-p4m"><strong>p4m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m&nbsp;(triangle&nbsp;formed<br>
-#&nbsp;from&nbsp;a&nbsp;rectangle&nbsp;and&nbsp;by<br>
-#&nbsp;taking&nbsp;the&nbsp;lower-left&nbsp;corner&nbsp;of&nbsp;the&nbsp;rectangle<br>
-#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down)<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
- <dl><dt><a name="-p4malt"><strong>p4malt</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m,&nbsp;alternative&nbsp;definition<br>
-#&nbsp;(triangle&nbsp;formed&nbsp;from&nbsp;a&nbsp;rectangle&nbsp;and&nbsp;by<br>
-#&nbsp;taking&nbsp;the&nbsp;upper-right&nbsp;corner&nbsp;of&nbsp;the&nbsp;rectangle<br>
-#&nbsp;as&nbsp;its&nbsp;right&nbsp;angle,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down)<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;left-hand&nbsp;midpoint.<br>
+#&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;part&nbsp;of&nbsp;a&nbsp;scaled&nbsp;regular&nbsp;hexagon&nbsp;that&nbsp;is&nbsp;oriented<br>
+#&nbsp;such&nbsp;that&nbsp;the&nbsp;hexagon's&nbsp;right-hand&nbsp;edge&nbsp;is&nbsp;vertical;&nbsp;the&nbsp;triangle's&nbsp;left<br>
+#&nbsp;point&nbsp;is&nbsp;at&nbsp;the&nbsp;hexagon's&nbsp;center,&nbsp;and&nbsp;the&nbsp;triangle's&nbsp;right-hand&nbsp;edge&nbsp;is&nbsp;the<br>
+#&nbsp;same&nbsp;as&nbsp;the&nbsp;hexagon's&nbsp;right-hand&nbsp;edge.<br>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
+ <dl><dt><a name="-p4"><strong>p4</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4.&nbsp;Source&nbsp;rectangle&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination<br>
+#&nbsp;&nbsp;image.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape<br>
+#&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Upper&nbsp;edge&nbsp;is&nbsp;a&nbsp;mirrored&nbsp;lower&nbsp;edge,&nbsp;left&nbsp;edge&nbsp;is<br>
+#&nbsp;a&nbsp;mirrored&nbsp;right&nbsp;edge.</span></dd></dl>
+ <dl><dt><a name="-p4g"><strong>p4g</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4g.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed&nbsp;from&nbsp;the&nbsp;upper-left,&nbsp;lower-left,<br>
+#&nbsp;and&nbsp;lower-right&nbsp;corners&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the<br>
+#&nbsp;destination&nbsp;image.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the<br>
+#&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Lower&nbsp;edge&nbsp;is&nbsp;a&nbsp;mirrored&nbsp;left&nbsp;edge.</span></dd></dl>
+ <dl><dt><a name="-p4m"><strong>p4m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m.&nbsp;Same&nbsp;as&nbsp;p4mll.</span></dd></dl>
+ <dl><dt><a name="-p4malt"><strong>p4malt</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m.&nbsp;Same&nbsp;as&nbsp;p4mur.</span></dd></dl>
+ <dl><dt><a name="-p4mll"><strong>p4mll</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed<br>
+#&nbsp;by&nbsp;the&nbsp;upper-left,&nbsp;lower-left,&nbsp;and&nbsp;lower-right&nbsp;corners&nbsp;of<br>
+#&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;takes&nbsp;the&nbsp;upper-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image<br>
+#&nbsp;(triangle's&nbsp;right&nbsp;angle&nbsp;is&nbsp;at&nbsp;the&nbsp;rectangle's&nbsp;lower-left&nbsp;corner).<br>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
+ <dl><dt><a name="-p4mll2"><strong>p4mll2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;p4mll,&nbsp;except&nbsp;the&nbsp;source&nbsp;rectangle<br>
+#&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.</span></dd></dl>
+ <dl><dt><a name="-p4mlr"><strong>p4mlr</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed<br>
+#&nbsp;by&nbsp;the&nbsp;upper-right,&nbsp;lower-left,&nbsp;and&nbsp;lower-right&nbsp;corners&nbsp;of<br>
+#&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;takes&nbsp;the&nbsp;upper-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image<br>
+#&nbsp;(triangle's&nbsp;right&nbsp;angle&nbsp;is&nbsp;at&nbsp;the&nbsp;rectangle's&nbsp;lower-right&nbsp;corner).<br>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
+ <dl><dt><a name="-p4mlr2"><strong>p4mlr2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;p4mlr,&nbsp;except&nbsp;the&nbsp;source&nbsp;rectangle<br>
+#&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.</span></dd></dl>
+ <dl><dt><a name="-p4mul"><strong>p4mul</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed<br>
+#&nbsp;by&nbsp;the&nbsp;upper-left,&nbsp;upper-right,&nbsp;and&nbsp;lower-left&nbsp;corners&nbsp;of<br>
+#&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;takes&nbsp;the&nbsp;upper-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image<br>
+#&nbsp;(triangle's&nbsp;right&nbsp;angle&nbsp;is&nbsp;at&nbsp;the&nbsp;rectangle's&nbsp;upper-left&nbsp;corner).</span></dd></dl>
+ <dl><dt><a name="-p4mul2"><strong>p4mul2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;p4mul,&nbsp;except&nbsp;the&nbsp;source&nbsp;rectangle<br>
+#&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.</span></dd></dl>
+ <dl><dt><a name="-p4mur"><strong>p4mur</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P4m.&nbsp;Source&nbsp;triangle&nbsp;is&nbsp;formed<br>
+#&nbsp;by&nbsp;the&nbsp;upper-left,&nbsp;upper-right,&nbsp;and&nbsp;lower-right&nbsp;corners&nbsp;of<br>
+#&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;takes&nbsp;the&nbsp;upper-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image<br>
+#&nbsp;(triangle's&nbsp;right&nbsp;angle&nbsp;is&nbsp;at&nbsp;the&nbsp;rectangle's&nbsp;upper-right&nbsp;corner).<br>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
+ <dl><dt><a name="-p4mur2"><strong>p4mur2</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;p4mur,&nbsp;except&nbsp;the&nbsp;source&nbsp;rectangle<br>
+#&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.</span></dd></dl>
  <dl><dt><a name="-p6m"><strong>p6m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m&nbsp;(same&nbsp;source&nbsp;rectangle<br>
 #&nbsp;as&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;but&nbsp;exposing&nbsp;only&nbsp;the&nbsp;left&nbsp;half&nbsp;of<br>
 #&nbsp;the&nbsp;triangle&nbsp;mentioned&nbsp;there).<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p6malt"><strong>p6malt</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
 #&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;but&nbsp;exposing<br>
 #&nbsp;only&nbsp;the&nbsp;right&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p6malt1a"><strong>p6malt1a</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
 #&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt1">p3m1alt1</a>(),&nbsp;but&nbsp;exposing<br>
 #&nbsp;only&nbsp;the&nbsp;upper&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
 #&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.<br>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p6malt1b"><strong>p6malt1b</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
 #&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt1">p3m1alt1</a>(),&nbsp;but&nbsp;exposing<br>
 #&nbsp;only&nbsp;the&nbsp;lower&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p6malt2a"><strong>p6malt2a</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
 #&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt2">p3m1alt2</a>(),&nbsp;but&nbsp;exposing<br>
 #&nbsp;only&nbsp;the&nbsp;upper&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p6malt2b"><strong>p6malt2b</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P6m,&nbsp;alternative&nbsp;definition<br>
 #&nbsp;(same&nbsp;source&nbsp;rectangle&nbsp;as&nbsp;<a href="#-p3m1alt2">p3m1alt2</a>(),&nbsp;but&nbsp;exposing<br>
 #&nbsp;only&nbsp;the&nbsp;lower&nbsp;half&nbsp;of&nbsp;the&nbsp;triangle&nbsp;described&nbsp;there).<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-paletteandhalfhalf"><strong>paletteandhalfhalf</strong></a>(palette)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;array&nbsp;containing&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;given&nbsp;palette&nbsp;plus&nbsp;their<br>
 #&nbsp;"half-and&nbsp;half"&nbsp;versions.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;array&nbsp;of&nbsp;its&nbsp;red,<br>
@@ -1063,13 +1110,26 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image=<a href="#-blankimage">blankimage</a>(8,8,color)<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#-patternDither">patternDither</a>(image,8,8,palette&nbsp;if&nbsp;palette&nbsp;else&nbsp;<a href="#-classiccolors">classiccolors</a>())<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;image</span></dd></dl>
+ <dl><dt><a name="-pg"><strong>pg</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Pg.&nbsp;Source&nbsp;rectangle&nbsp;takes&nbsp;the&nbsp;lower&nbsp;half&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.<br>
+#&nbsp;&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy<br>
+#&nbsp;the&nbsp;following:&nbsp;Upper&nbsp;edge&nbsp;is&nbsp;a&nbsp;mirrored&nbsp;lower&nbsp;edge,&nbsp;left&nbsp;edge&nbsp;is&nbsp;same&nbsp;as&nbsp;right&nbsp;edge.</span></dd></dl>
+ <dl><dt><a name="-pgg"><strong>pgg</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Pgg.&nbsp;Source&nbsp;rectangle&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the<br>
+#&nbsp;destination&nbsp;image.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the<br>
+#&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Upper&nbsp;edge&nbsp;is&nbsp;a&nbsp;mirrored&nbsp;lower&nbsp;edge,<br>
+#&nbsp;left&nbsp;edge&nbsp;is&nbsp;a&nbsp;mirrored&nbsp;right&nbsp;edge.</span></dd></dl>
+ <dl><dt><a name="-pm"><strong>pm</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Pm.&nbsp;Source&nbsp;rectangle&nbsp;takes&nbsp;the&nbsp;lower&nbsp;half&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.<br>
+#&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy<br>
+#&nbsp;the&nbsp;following:&nbsp;Left&nbsp;edge&nbsp;is&nbsp;same&nbsp;as&nbsp;right&nbsp;edge.</span></dd></dl>
+ <dl><dt><a name="-pmg"><strong>pmg</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Pmg.&nbsp;Source&nbsp;rectangle&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the<br>
+#&nbsp;destination&nbsp;image.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the<br>
+#&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Left&nbsp;edge&nbsp;is&nbsp;mirrored,&nbsp;right&nbsp;edge<br>
+#&nbsp;is&nbsp;mirrored.</span></dd></dl>
  <dl><dt><a name="-pmm"><strong>pmm</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;Pmm.&nbsp;&nbsp;Source&nbsp;rectangle<br>
-#&nbsp;takes&nbsp;the&nbsp;upper&nbsp;left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;image<br>
+#&nbsp;takes&nbsp;the&nbsp;upper-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;image<br>
 #&nbsp;and&nbsp;is&nbsp;reflected&nbsp;and&nbsp;repeated&nbsp;to&nbsp;cover&nbsp;the<br>
-#&nbsp;remaining&nbsp;image,&nbsp;assuming&nbsp;x-axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down.<br>
-#&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
-#&nbsp;and&nbsp;1&nbsp;or&nbsp;less.</span></dd></dl>
+#&nbsp;remaining&nbsp;image.&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
+ <dl><dt><a name="-pmmalt"><strong>pmmalt</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;pmm,&nbsp;except&nbsp;the&nbsp;source&nbsp;rectangle<br>
+#&nbsp;takes&nbsp;the&nbsp;lower-left&nbsp;quarter&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.</span></dd></dl>
  <dl><dt><a name="-posterize"><strong>posterize</strong></a>(image, width, height, palette, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;each&nbsp;color&nbsp;in&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;nearest&nbsp;color&nbsp;(in&nbsp;ordinary&nbsp;red&amp;ndash;green&amp;ndash;blue<br>
 #&nbsp;space)&nbsp;in&nbsp;the&nbsp;given&nbsp;color&nbsp;palette.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
@@ -1273,19 +1333,22 @@ Data descriptors defined here:<br>
 #&nbsp;coordinates&nbsp;to&nbsp;input&nbsp;image&nbsp;(source&nbsp;image)&nbsp;coordinates;&nbsp;default&nbsp;is&nbsp;<a href="#-pmm">pmm</a>().<br>
 #&nbsp;'groupFunc'&nbsp;takes&nbsp;two&nbsp;parameters:&nbsp;'x'&nbsp;and&nbsp;'y'&nbsp;are&nbsp;each&nbsp;0&nbsp;or&nbsp;greater<br>
 #&nbsp;and&nbsp;1&nbsp;or&nbsp;less,&nbsp;and&nbsp;are&nbsp;in&nbsp;relation&nbsp;to&nbsp;the&nbsp;destination&nbsp;image;&nbsp;0&nbsp;is&nbsp;leftmost<br>
-#&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;assuming&nbsp;the&nbsp;x-axis&nbsp;points<br>
-#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;y-axis&nbsp;down.&nbsp;&nbsp;'groupFunc'&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;indicating<br>
+#&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;assuming&nbsp;that&nbsp;the&nbsp;positive&nbsp;x-axis&nbsp;points<br>
+#&nbsp;to&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;positive&nbsp;y-axis&nbsp;points&nbsp;downward.&nbsp;&nbsp;'groupFunc'&nbsp;returns&nbsp;a&nbsp;tuple&nbsp;indicating<br>
 #&nbsp;a&nbsp;point&nbsp;in&nbsp;relation&nbsp;to&nbsp;the&nbsp;source&nbsp;rectangle.&nbsp;The&nbsp;tuple&nbsp;has&nbsp;two&nbsp;elements,<br>
 #&nbsp;each&nbsp;0&nbsp;or&nbsp;greater&nbsp;and&nbsp;1&nbsp;or&nbsp;less:&nbsp;the&nbsp;first&nbsp;is&nbsp;the&nbsp;x-coordinate&nbsp;and&nbsp;the<br>
 #&nbsp;second,&nbsp;the&nbsp;y-coordinate;&nbsp;0&nbsp;is&nbsp;leftmost&nbsp;or&nbsp;uppermost,&nbsp;and&nbsp;1&nbsp;is<br>
 #&nbsp;rightmost&nbsp;or&nbsp;bottommost,&nbsp;with&nbsp;the&nbsp;assumption&nbsp;given&nbsp;earlier.<br>
-#&nbsp;The&nbsp;wallpaper&nbsp;group&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;are&nbsp;intended&nbsp;to<br>
+#&nbsp;The&nbsp;following&nbsp;wallpaper&nbsp;group&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;are&nbsp;intended&nbsp;to<br>
 #&nbsp;result&nbsp;in&nbsp;seamless&nbsp;tileable&nbsp;images&nbsp;from&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents:<br>
 #&nbsp;<a href="#-pmm">pmm</a>(),&nbsp;<a href="#-p4m">p4m</a>(),&nbsp;<a href="#-p4malt">p4malt</a>(),&nbsp;<a href="#-p3m1">p3m1</a>(),&nbsp;<a href="#-p6m">p6m</a>(),&nbsp;<a href="#-p6malt">p6malt</a>(),&nbsp;<a href="#-p3m1alt1">p3m1alt1</a>(),&nbsp;<a href="#-p3m1alt2">p3m1alt2</a>(),<br>
 #&nbsp;<a href="#-p6malt1a">p6malt1a</a>(),&nbsp;<a href="#-p6malt1b">p6malt1b</a>(),&nbsp;<a href="#-p6malt2a">p6malt2a</a>(),&nbsp;<a href="#-p6malt2b">p6malt2b</a>().&nbsp;&nbsp;The&nbsp;functions&nbsp;implement<br>
 #&nbsp;variations&nbsp;of&nbsp;wallpaper&nbsp;groups&nbsp;Pmm,&nbsp;P4m,&nbsp;P3m1,&nbsp;and&nbsp;P6m,&nbsp;which&nbsp;are&nbsp;the&nbsp;only<br>
 #&nbsp;four&nbsp;that&nbsp;produce&nbsp;seamless&nbsp;images&nbsp;from&nbsp;areas&nbsp;with&nbsp;arbitrary&nbsp;contents.<br>
-#&nbsp;(There&nbsp;are&nbsp;seventeen&nbsp;wallpaper&nbsp;groups&nbsp;in&nbsp;all.)</span></dd></dl>
+#&nbsp;(There&nbsp;are&nbsp;seventeen&nbsp;wallpaper&nbsp;groups&nbsp;in&nbsp;all.)&nbsp;&nbsp;The&nbsp;documentation&nbsp;for<br>
+#&nbsp;those&nbsp;and&nbsp;other&nbsp;wallpaper&nbsp;group&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;assumes&nbsp;that<br>
+#&nbsp;the&nbsp;positive&nbsp;x-axis&nbsp;points&nbsp;to<br>
+#&nbsp;the&nbsp;right&nbsp;and&nbsp;the&nbsp;positive&nbsp;y-axis&nbsp;points&nbsp;downward.</span></dd></dl>
  <dl><dt><a name="-websafeDither"><strong>websafeDither</strong></a>(image, width, height, alpha=False, includeVga=False)</dt><dd><span class="code">#&nbsp;Dithers&nbsp;in&nbsp;place&nbsp;the&nbsp;given&nbsp;image&nbsp;to&nbsp;the&nbsp;colors&nbsp;in&nbsp;color&nbsp;palette&nbsp;returned&nbsp;by&nbsp;<a href="#-websafecolors">websafecolors</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;given&nbsp;value<br>
 #&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
