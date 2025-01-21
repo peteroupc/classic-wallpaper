@@ -2228,23 +2228,14 @@ def p4malt(x, y):
 # Wallpaper group P3m1.  Source shape is as described in p6().
 # No requirements on the source to generate seamless images with this group function.
 def p3m1(x, y):
-    return _p3m1_and_p6(x, y, False)
+    rx, ry = _p3m1(x, y)
+    rx = max(0, min(1, rx))
+    ry = max(0, min(1, ry))
+    return (rx, ry)
 
-# Wallpaper group P6.
-# Source triangle is formed from the upper midpoint (point A), lower-left corner (point B),
-# and lower-right corner (point C) of a rectangle.  Edge AB is the edge between
-# A and B; edge AC, between A and C.
-# Source triangle is part of a scaled regular hexagon that is oriented
-# such that the hexagon's lower edge is horizontal; the triangle's upper
-# point is at the hexagon's center, and the triangle's lower edge is the
-# same as the hexagon's lower edge.  To generate seamless images with this group function,
-# the source shape should satisfy the following: Edge AB is a mirrored edge AC; lower edge is mirrored.
-def p6(x, y):
-    return _p3m1_and_p6(x, y, True)
-
-def _p3m1_and_p6(x, y, is_p6):
+def _p3m1(x, y):
     xx = x * 6
-    xarea = min(5, int(xx))
+    xarea = min(5, max(0, int(xx)))
     xpos = xx - xarea
     yarea = 0 if y < 0.5 else 1
     ypos = y * 2 if y < 0.5 else (y - 0.5) * 2
@@ -2263,8 +2254,6 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = 1 - ypos
             newx = -xp / 2 - 3 * yp / 4 + 1
             newy = -xp + yp / 2 + 1
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
             return (newx, newy)
         case (1, 0, True) | (4, 1, True):
             # upper left, right half
@@ -2272,8 +2261,6 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = 1 - ypos
             newx = -xp / 2 - 3 * yp / 4 + 1
             newy = -xp + yp / 2 + 1
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
             return (newx, newy)
         case (2, 0, False) | (5, 1, False):
             # upper right, left half
@@ -2281,8 +2268,6 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = 1 - ypos
             newx = -xp / 2 + 3 * yp / 4 + 0.5
             newy = xp + yp / 2
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
             return (newx, newy)
         case (3, 0, True) | (0, 1, True):
             # upper right, right half
@@ -2290,20 +2275,14 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = 1 - ypos
             newx = -xp / 2 + 3 * yp / 4 + 0.5
             newy = xp + yp / 2
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
             return (newx, newy)
         case (1, 0, False) | (4, 1, False):
             # upper middle, left half
             newx = xpos / 2
-            if is_p6:
-                newx = 1 - newx
             return (newx, 1 - ypos)
         case (2, 0, True) | (5, 1, True):
             # upper middle, right half
             newx = xpos / 2 + 0.5
-            if is_p6:
-                newx = 1 - newx
             return (newx, 1 - ypos)
         case (0, 1, False) | (3, 0, False):
             # lower left, left half
@@ -2311,10 +2290,6 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = ypos
             newx = -xp / 2 - 3 * yp / 4 + 1
             newy = -xp + yp / 2 + 1
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            if is_p6:
-                newx = 1 - newx
             return (newx, newy)
         case (1, 1, True) | (4, 0, True):
             # lower left, right half
@@ -2322,10 +2297,6 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = ypos
             newx = -xp / 2 - 3 * yp / 4 + 1
             newy = -xp + yp / 2 + 1
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            if is_p6:
-                newx = 1 - newx
             return (newx, newy)
         case (2, 1, False) | (5, 0, False):
             # lower right, left half
@@ -2333,10 +2304,6 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = ypos
             newx = -xp / 2 + 3 * yp / 4 + 0.5
             newy = xp + yp / 2
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            if is_p6:
-                newx = 1 - newx
             return (newx, newy)
         case (3, 1, True) | (0, 0, True):
             # lower right, right half
@@ -2344,14 +2311,87 @@ def _p3m1_and_p6(x, y, is_p6):
             yp = ypos
             newx = -xp / 2 + 3 * yp / 4 + 0.5
             newy = xp + yp / 2
-            newx = max(0, min(1, newx))
-            newy = max(0, min(1, newy))
-            if is_p6:
-                newx = 1 - newx
             return (newx, newy)
         case _:
             # unknown
             return (0, 0)
+
+# Wallpaper group P6.
+# Source triangle is formed from the upper midpoint (point A), lower-left corner (point B),
+# and lower-right corner (point C) of a rectangle.  Edge AB is the edge between
+# A and B; edge AC, between A and C.
+# Source triangle is part of a scaled regular hexagon that is oriented
+# such that the hexagon's lower edge is horizontal; the triangle's upper
+# point is at the hexagon's center, and the triangle's lower edge is the
+# same as the hexagon's lower edge.  To generate seamless images with this group function,
+# the source shape should satisfy the following: Edge AB is a mirrored edge AC; lower edge is mirrored.
+def p6(x, y):
+    rx, ry = p3m1(x, y)
+    if _isForward(x, y):
+        return (rx, ry)
+    return (1 - rx, ry)
+
+# Wallpaper group P3.  Source shape is a parallelogram with the following
+# vertices: A is (0, 0); B is (W*2/3, 0); C is (W, H); D is (W/3, H),
+# where W and H are the width and height, respectively, of a rectangle that
+# tightly covers the source shape.  Edge AD is the edge between A and D; edge BC,
+# between B and C. To generate seamless images with this group function,
+# the source shape should satisfy the following: Upper edge is a mirrored
+# edge BC; lower edge is a mirrored edge AD.
+def p3(x, y):
+    rx, ry = p3m1(x, y)
+    if _isForward(x, y):
+        return (max(0, min(1, rx * 2 / 3 + (1 / 3))), ry)
+    else:
+        nx = -rx / 3 - ry / 2 + 5 / 6
+        ny = -rx + ry / 2 + 1 / 2
+        nx = max(0, min(1, nx))
+        ny = max(0, min(1, ny))
+        return (nx, ny)
+
+# Wallpaper group P31m.  Source shape is a quadrilateral with the following
+# vertices: A is (0, H/2); B is (W/3, H); C is (W, H); D is (W, 0), where
+# W and H are the width and height, respectively, of a rectangle that tightly
+# covers the source shape. Edge AB is the edge between A and B; edge BC,
+# between B and C. To generate seamless images with this group function, the
+# source shape should satisfy the following: Edge AB is a mirrored edge BC.
+def p31m(x, y):
+    rx, ry = dw.p6m(x, y)
+    if dw._isForward(x, y):
+        return (max(0, min(1, rx * 4 / 3 + (1 / 3))), ry)
+    else:
+        nx = -2 * rx / 3 - ry + 4 / 3
+        ny = -rx + ry / 2 + 1 / 2
+        nx = max(0, min(1, nx))
+        ny = max(0, min(1, ny))
+        return (nx, ny)
+
+def _isForward(x, y):
+    xx = x * 6
+    xarea = min(5, max(0, int(xx)))
+    xpos = xx - xarea
+    yarea = 0 if y < 0.5 else 1
+    ypos = y * 2 if y < 0.5 else (y - 0.5) * 2
+    isdiag1 = (xarea + yarea) % 2 == 0
+    leftHalf = (xpos + ypos) < 1.0 if isdiag1 else (xpos + (1 - ypos)) < 1.0
+    match (xarea, yarea, leftHalf):
+        case (
+            (1, 1, False)
+            | (4, 0, False)
+            | (2, 1, True)
+            | (5, 0, True)
+            | (0, 0, False)
+            | (3, 1, False)
+            | (1, 0, True)
+            | (4, 1, True)
+            | (2, 0, False)
+            | (5, 1, False)
+            | (3, 0, True)
+            | (0, 1, True)
+        ):
+            return True
+        case _:
+            return False
 
 # Wallpaper group P6m (same source rectangle
 # as p3m1(), but exposing only the left half of

@@ -345,7 +345,7 @@ Data descriptors defined here:<br>
 #&nbsp;pattern&nbsp;if&nbsp;the&nbsp;image&nbsp;the&nbsp;command&nbsp;is&nbsp;applied&nbsp;to&nbsp;has&nbsp;only&nbsp;its&nbsp;top&nbsp;half<br>
 #&nbsp;or&nbsp;its&nbsp;bottom&nbsp;half&nbsp;drawn).&nbsp;&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied<br>
 #&nbsp;to&nbsp;images&nbsp;with&nbsp;an&nbsp;even&nbsp;width&nbsp;and&nbsp;height.</span></dd></dl>
- <dl><dt><a name="-diamondgroup"><strong>diamondgroup</strong></a>(x, y, groupFunc=&lt;function p4m at 0x7fa34fd307c0&gt;)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;function&nbsp;that&nbsp;wraps&nbsp;another<br>
+ <dl><dt><a name="-diamondgroup"><strong>diamondgroup</strong></a>(x, y, groupFunc=&lt;function p4m at 0x7f3b67078720&gt;)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;function&nbsp;that&nbsp;wraps&nbsp;another<br>
 #&nbsp;group&nbsp;function&nbsp;('groupFunc'),&nbsp;in&nbsp;which&nbsp;the&nbsp;image<br>
 #&nbsp;after&nbsp;applying&nbsp;'groupFunc'<br>
 #&nbsp;is&nbsp;rotated&nbsp;and&nbsp;scaled&nbsp;to&nbsp;fit&nbsp;into<br>
@@ -997,6 +997,19 @@ Data descriptors defined here:<br>
 #&nbsp;and&nbsp;lower-right&nbsp;corners&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;covers&nbsp;the&nbsp;whole&nbsp;destination&nbsp;image.<br>
 #&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should<br>
 #&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Lower&nbsp;edge&nbsp;is&nbsp;mirrored,&nbsp;left&nbsp;edge&nbsp;is&nbsp;mirrored.</span></dd></dl>
+ <dl><dt><a name="-p3"><strong>p3</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3.&nbsp;&nbsp;Source&nbsp;shape&nbsp;is&nbsp;a&nbsp;parallelogram&nbsp;with&nbsp;the&nbsp;following<br>
+#&nbsp;vertices:&nbsp;A&nbsp;is&nbsp;(0,&nbsp;0);&nbsp;B&nbsp;is&nbsp;(W*2/3,&nbsp;0);&nbsp;C&nbsp;is&nbsp;(W,&nbsp;H);&nbsp;D&nbsp;is&nbsp;(W/3,&nbsp;H),<br>
+#&nbsp;where&nbsp;W&nbsp;and&nbsp;H&nbsp;are&nbsp;the&nbsp;width&nbsp;and&nbsp;height,&nbsp;respectively,&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that<br>
+#&nbsp;tightly&nbsp;covers&nbsp;the&nbsp;source&nbsp;shape.&nbsp;&nbsp;Edge&nbsp;AD&nbsp;is&nbsp;the&nbsp;edge&nbsp;between&nbsp;A&nbsp;and&nbsp;D;&nbsp;edge&nbsp;BC,<br>
+#&nbsp;between&nbsp;B&nbsp;and&nbsp;C.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,<br>
+#&nbsp;the&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Upper&nbsp;edge&nbsp;is&nbsp;a&nbsp;mirrored<br>
+#&nbsp;edge&nbsp;BC;&nbsp;lower&nbsp;edge&nbsp;is&nbsp;a&nbsp;mirrored&nbsp;edge&nbsp;AD.</span></dd></dl>
+ <dl><dt><a name="-p31m"><strong>p31m</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P31m.&nbsp;&nbsp;Source&nbsp;shape&nbsp;is&nbsp;a&nbsp;quadrilateral&nbsp;with&nbsp;the&nbsp;following<br>
+#&nbsp;vertices:&nbsp;A&nbsp;is&nbsp;(0,&nbsp;H/2);&nbsp;B&nbsp;is&nbsp;(W/3,&nbsp;H);&nbsp;C&nbsp;is&nbsp;(W,&nbsp;H);&nbsp;D&nbsp;is&nbsp;(W,&nbsp;0),&nbsp;where<br>
+#&nbsp;W&nbsp;and&nbsp;H&nbsp;are&nbsp;the&nbsp;width&nbsp;and&nbsp;height,&nbsp;respectively,&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;tightly<br>
+#&nbsp;covers&nbsp;the&nbsp;source&nbsp;shape.&nbsp;Edge&nbsp;AB&nbsp;is&nbsp;the&nbsp;edge&nbsp;between&nbsp;A&nbsp;and&nbsp;B;&nbsp;edge&nbsp;BC,<br>
+#&nbsp;between&nbsp;B&nbsp;and&nbsp;C.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function,&nbsp;the<br>
+#&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Edge&nbsp;AB&nbsp;is&nbsp;a&nbsp;mirrored&nbsp;edge&nbsp;BC.</span></dd></dl>
  <dl><dt><a name="-p3m1"><strong>p3m1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1.&nbsp;&nbsp;Source&nbsp;shape&nbsp;is&nbsp;as&nbsp;described&nbsp;in&nbsp;<a href="#-p6">p6</a>().<br>
 #&nbsp;No&nbsp;requirements&nbsp;on&nbsp;the&nbsp;source&nbsp;to&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-p3m1alt1"><strong>p3m1alt1</strong></a>(x, y)</dt><dd><span class="code">#&nbsp;Wallpaper&nbsp;group&nbsp;P3m1,&nbsp;alternative&nbsp;definition.<br>
