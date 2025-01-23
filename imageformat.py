@@ -93,7 +93,7 @@ def writeppm(f, image, width, height, raiseIfExists=False):
     fd.close()
 
 # Image has the same format returned by the _desktopwallpaper_ module's
-# blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
+# blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
 def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     if not image:
         raise ValueError
@@ -108,7 +108,7 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
         fd.close()
 
 # Image has the same format returned by the _desktopwallpaper_ module's
-# blankimage() method with the given value of 'alpha' (default value for 'alpha' is False).
+# blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
 def pngbytes(image, width, height, alpha=False):
     fd = _MemIO()
     _writepng(fd, image, width, height, alpha=alpha)
@@ -1522,7 +1522,7 @@ def _rle4decompress(bitdata, dst, width, height):
 # bits per pixel, 8 of which is an _alpha component_ (an opacity value from 0,
 # transparent, through 255, opaque); the latter kind of icon is drawn as
 # follows: Where the AND mask is 0, the XOR mask's pixels are blended onto
-# the output pixels with the given alpha component as opacity, and where
+# the output pixels with the specified alpha component as opacity, and where
 # the AND mask is 1, the output pixels are left unchanged.
 # OS/2 color icons employ three masks: a two-level AND mask, a two-level XOR
 # mask, and a color mask: where the AND mask is 0, the color mask is copied to
@@ -1763,7 +1763,7 @@ def _read4bppBitmap(byteData, scanSize, height, x, y):
     ) & 0x0F
 
 def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
-    # Reads the alpha value at the given pixel position of a bitmap image,
+    # Reads the alpha value at the specified pixel position of a bitmap image,
     # represented by an array of bottom-up Windows or OS/2 bitmap data.
     # Returns 255 if bpp is not 32.
     if bpp == 32:
@@ -1773,7 +1773,7 @@ def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
         return 255
 
 def _readBitmapAsAlphaBitfields(byteData, scanSize, height, bpp, x, y, alphamask):
-    # Reads the alpha at the given pixel position of a bitmap image
+    # Reads the alpha at the specified pixel position of a bitmap image
     # that uses a bitfield format and is
     # represented by an array of bottom-up Windows bitmap data.
     # Returns bytes([255]) if bpp is not 16 or 32.
@@ -1792,7 +1792,7 @@ def _readBitmapAsAlphaBitfields(byteData, scanSize, height, bpp, x, y, alphamask
             return bytes([255])
 
 def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields):
-    # Reads the pixel color value at the given position of a bitmap image
+    # Reads the pixel color value at the specified position of a bitmap image
     # that uses a bitfield format and is
     # represented by an array of bottom-up Windows bitmap data.
     # The color value is returned as an array containing the blue, green,
@@ -1824,7 +1824,7 @@ def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields
             raise ValueError("Bits per pixel not supported")
 
 def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
-    # Reads the pixel color value at the given position of a bitmap image,
+    # Reads the pixel color value at the specified position of a bitmap image,
     # represented by an array of bottom-up Windows or OS/2 bitmap data.
     # The color value is returned as an array containing the blue, green,
     # and red components, in that order.
@@ -2708,7 +2708,7 @@ def _readicon(f, packedWinBitmap=False):
     return [ret, width, height, hotspotX, hotspotY]
 
 # Saves a video file by converting the image to grayscale, animating the pixel intensities, and
-# replacing the intensities with the color values from the given color table.
+# replacing the intensities with the color values from the specified color table.
 # Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 def colorTableAnimation(image, width, height, colorTable, destAnimation, fps=15):
     images = []
@@ -2835,7 +2835,7 @@ def _icnspalette256():
 # Reads icon images from a file in the Apple icon resource format (also known
 # as icon family or icon suite), in the '.icns' format.  This format was
 # introduced in Mac OS 8.5 (see Apple TN1142: "Mac OS 8.5").  The return value
-# has the same format returned by the 'reados2icon' method.
+# has the same format returned by the reados2icon() method.
 def readicns(infile):
     f = open(infile, "rb")
     try:
@@ -3545,7 +3545,7 @@ def _floodFillInner(rows, width, height, rc, x, y, target, bits, fillbits):
                 )
 
 # Returns an SVG path string of the outline traced by the
-# black pixels in the given image.  A black pixel has a red
+# black pixels in the specified image.  A black pixel has a red
 # component, green component, and blue component of 0.
 # Image has the same format returned by the _desktopwallpaper_ module's
 # blankimage() method with alpha=False.
