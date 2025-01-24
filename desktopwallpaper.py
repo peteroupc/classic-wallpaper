@@ -2120,8 +2120,10 @@ def _bilerp(y0x0, y0x1, y1x0, y1x1, tx, ty):
 # 'width' and 'height' is the image's width and height.
 # 'x' is the point's x-coordinate, which need not be an integer.
 # 'y' is the point's y-coordinate, which need not be an integer.
-# An out-of-bounds point ('x','y') will undergo a wraparound adjustment, as though
-# the specified image were part of an "infinite" tiling.
+# If 'wraparound' is True (the default), an out-of-bounds point ('x','y') will
+# undergo a wraparound adjustment, as though the specified image were part
+# of an "infinite" tiling.  If False, an out-of-bounds point is adjusted to
+# lie in the image (0<=x<='width'-1; 0<=y<='height'-1).
 #
 # Blending Note: Operations that involve the blending of two RGB (red-green-
 # blue) colors work best if the RGB color space is linear.  This is not the case
@@ -2130,7 +2132,7 @@ def _bilerp(y0x0, y0x1, y1x0, y1x1, tx, ty):
 # to a linear color space and back can lead to data loss especially if the image's color
 # components are 8 bits or fewer in length (as with images returned by blankimage()).
 # This function does not do any such conversion.
-def imagept(image, width, height, x, y, alpha=False):
+def imagept(image, width, height, x, y, alpha=False, wraparound=True):
     if width <= 0 or height <= 0:
         raise ValueError
     if not image:
@@ -2138,12 +2140,20 @@ def imagept(image, width, height, x, y, alpha=False):
     pixelBytes = 4 if alpha else 3
     if width * height * pixelBytes > len(image):
         raise ValueError
-    x = x % width
-    y = y % height
-    xi = int(x)
-    xi1 = (xi + 1) % width
-    yi = int(y)
-    yi1 = (yi + 1) % height
+    if wraparound:
+        x = x % width
+        y = y % height
+        xi = int(x)
+        xi1 = (xi + 1) % width
+        yi = int(y)
+        yi1 = (yi + 1) % height
+    else:
+        x = max(0, min(width - 1, x))
+        y = max(0, min(height - 1, y))
+        xi = int(x)
+        xi1 = min(width - 1, (xi + 1))
+        yi = int(y)
+        yi1 = min(height - 1, (yi + 1))
     index = (yi * width + xi) * pixelBytes
     y0x0 = image[index : index + pixelBytes]
     index = (yi * width + xi1) * pixelBytes
@@ -2641,9 +2651,13 @@ def pgg(x, y):
 # 'srcImage' and the return value have the same format returned by the
 # blankimage() method with the specified value of 'alpha'.
 # 'sx0', 'sy0', 'sx1', and 'sy1' mark the source rectangle, which is
-# allowed to wrap around the source image.
+# allowed to go outside the bounds of the source image.
 # 'sw' and 'sh' are the source image's width and height in pixels.
 # 'width' and 'height' are the width and height of the image to create.
+# If 'wraparound' is True (the default), an out-of-bounds source point will
+# undergo a wraparound adjustment, as though the source image were part
+# of an "infinite" tiling.  If False, an out-of-bounds point is adjusted to
+# lie in the image (0<=x<='sw'-1; 0<=y<='sh'-1).
 # 'groupFunc' is a wallpaper group function that translates output image
 # coordinates to input image (source image) coordinates; default is pmm().
 # 'groupFunc' takes two parameters: 'x' and 'y' are each 0 or greater
@@ -2665,7 +2679,18 @@ def pgg(x, y):
 # the positive x-axis points to
 # the right and the positive y-axis points downward.
 def wallpaperImage(
-    width, height, srcImage, sw, sh, sx0, sy0, sx1, sy1, groupFunc=None, alpha=False
+    width,
+    height,
+    srcImage,
+    sw,
+    sh,
+    sx0,
+    sy0,
+    sx1,
+    sy1,
+    groupFunc=None,
+    alpha=False,
+    wraparound=True,
 ):
     if not groupFunc:
         groupFunc = pmm
@@ -2675,7 +2700,9 @@ def wallpaperImage(
             px, py = groupFunc(x / width, y / height)
             sx = sx0 + (sx1 - sx0) * px
             sy = sy0 + (sy1 - sy0) * py
-            pixel = imagept(srcImage, sw, sh, sx, sy, alpha=alpha)
+            pixel = imagept(
+                srcImage, sw, sh, sx, sy, alpha=alpha, wraparound=wraparound
+            )
             if alpha:
                 setpixelalpha(img, width, height, x, y, pixel)
             else:

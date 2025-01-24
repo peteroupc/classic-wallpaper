@@ -39,7 +39,7 @@ macro_rules! lepackdata {
  */
 #[macro_export]
 macro_rules! lepack {
-  ($($x:expr),*) => {
+  ($($x:expr_2021),*) => {
     {
     let mut v=vec![];
     $({
