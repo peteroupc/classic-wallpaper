@@ -2529,7 +2529,7 @@ def _readicon(f, packedWinBitmap=False):
     # _errprint(["offsetToImage",offsetToImage])
     f.seek(offsetToImage)
     sz = andsizeImage if andsizeImage > 0 and andcompression > 0 else andmaskbits
-    _errprint(["andSizeImage", andsizeImage, "andmaskbits", andmaskbits])
+    # _errprint(["andSizeImage", andsizeImage, "andmaskbits", andmaskbits])
     try:
         andmask = f.read(sz)
     except:

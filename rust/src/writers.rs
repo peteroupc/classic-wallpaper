@@ -36,10 +36,13 @@ macro_rules! lepackdata {
  *  Generates a u8 vector consisting of structured data
  *  in little-endian byte order.
  *  Example: `lepack!(("H",0x3344), ("L",0x33445566));`.
+ *  "B" means unsigned 8-bit integer.
+ *  "H" or "h" means unsigned or signed 16-bit integer.
+ *  "L" or "l" means unsigned or signed 32-bit integer.
  */
 #[macro_export]
 macro_rules! lepack {
-  ($($x:expr_2021),*) => {
+  ($($x:expr),*) => {
     {
     let mut v=vec![];
     $({

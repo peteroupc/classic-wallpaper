@@ -3620,7 +3620,9 @@ def toalpha(image, width, height):
 # The output image has the same format returned by the blankimage() method with alpha=False.
 def noalpha(image, width, height):
     if width * height * 4 != len(image):
-        raise ValueError
+        raise ValueError(
+            "w=%d h=%d size=%d len=%d" % (width, height, width * height * 4, len(image))
+        )
     ret = [0 for x in range(width * height * 3)]
     pos = 0
     apos = 0
