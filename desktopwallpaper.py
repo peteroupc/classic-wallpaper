@@ -2919,7 +2919,18 @@ def styledbrush2(color1, color2, color3):
 # 'gradient' is a list of 256 colors for mapping the 256 possible shades
 # of the gradient fill.
 def borderedgradientbox(
-    image, width, height, border, gradient, contour, x0, y0, x1, y1, wraparound=True
+    image,
+    width,
+    height,
+    border,
+    gradient,
+    contour,
+    x0,
+    y0,
+    x1,
+    y1,
+    wraparound=True,
+    jitter=False,
 ):
     if x1 < x0 or y1 < y0:
         raise ValueError
@@ -2949,7 +2960,13 @@ def borderedgradientbox(
                 image[yp + xp * 3 + 2] = border[2]
             else:
                 xv = (x - x0) / (x1 - x0)
-                c = _togray255(contour(xv, yv))
+                z = contour(xv, yv)
+                if jitter:
+                    rnge = (0.5 - min(0.5, abs(0.5 - z))) / 3
+                    z = z + random.random() * rnge - rnge / 2.0
+                c = _togray255(z)
+                if jitter:
+                    c
                 color = gradient[c]
                 image[yp + xp * 3] = color[0]
                 image[yp + xp * 3 + 1] = color[1]
@@ -5729,7 +5746,19 @@ def _insetbox(x, y, contour):
 def _randomgradientfillex(width, height, palette, contour):
     image = blankimage(width, height)
     grad = randomColorization()
-    borderedgradientbox(image, width, height, None, grad, contour, 0, 0, width, height)
+    borderedgradientbox(
+        image,
+        width,
+        height,
+        None,
+        grad,
+        contour,
+        0,
+        0,
+        width,
+        height,
+        jitter=random.randint(0, 1) == 0,
+    )
     if palette:
         patternDither(image, width, height, palette)
     return image
