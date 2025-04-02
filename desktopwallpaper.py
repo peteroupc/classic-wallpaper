@@ -136,7 +136,7 @@ _DitherMatrix = [  # Bayer 8 &times; 8 ordered dither matrix
 # colors at once. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors).
 # Dithering is the scattering of colors in a limited set to simulate colors
 # outside that set.)
-# Each element in the return value is a color in the form of a 3-element array of its red,
+# Each element in the return value is a color in the form of a 3-element list of its red,
 # green, and blue components in that order, where each
 # component is an integer from 0 through 255.
 def websafecolors():
@@ -148,7 +148,7 @@ def websafecolors():
     return colors
 
 # Returns an array of the 64 colors displayable by EGA (extended graphics adapter) displays
-# Each element in the return value is a color in the form of a 3-element array of its red,
+# Each element in the return value is a color in the form of a 3-element list of its red,
 # green, and blue components in that order, where each
 # component is an integer from 0 through 255.
 def egacolors():
@@ -161,7 +161,7 @@ def egacolors():
 
 # Canonical 16-color CGA palette
 # see also: https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/
-# Each element in the return value is a color in the form of a 3-element array of its red,
+# Each element in the return value is a color in the form of a 3-element list of its red,
 # green, and blue components in that order, where each
 # component is an integer from 0 through 255.
 def cgacolors():
@@ -187,6 +187,9 @@ def cgacolors():
     ]
 
 # 16-color VGA palette
+# Each element in the return value is a color in the form of a 3-element list of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def classiccolors():
     return [
         [0, 0, 0],
@@ -208,7 +211,7 @@ def classiccolors():
     ]
 
 # 8-color palette where each color opponent is 0 or 255
-# Each element in the return value is a color in the form of a 3-element array of its red,
+# Each element in the return value is a color in the form of a 3-element list of its red,
 # green, and blue components in that order, where each
 # component is an integer from 0 through 255.
 def ega8colors():
@@ -224,7 +227,7 @@ def ega8colors():
     ]
 
 # Colors in classiccolors() and their "half-and-half" versions.
-# Each element in the return value is a color in the form of a 3-element array of its red,
+# Each element in the return value is a color in the form of a 3-element list of its red,
 # green, and blue components in that order, where each
 # component is an integer from 0 through 255.
 def classiccolors2():
@@ -257,7 +260,7 @@ def classiccolors2():
 
 # Returns an array containing the colors in the specified palette plus their
 # "half-and half" versions.
-# Each element in the return value is a color in the form of a 3-element array of its red,
+# Each element in the return value is a color in the form of a 3-element list of its red,
 # green, and blue components in that order, where each
 # component is an integer from 0 through 255.
 def paletteandhalfhalf(palette):
@@ -310,8 +313,10 @@ def halfhalfditherimage(image, width, height, palette):
             image[xp * 3 + 2] = (col >> 16) & 0xFF
 
 # Returns a list of the unique colors in an image (disregarding
-# the alpha channel, if any).  The return value has the same
-# format returned in the _reados2palette_ function.
+# the alpha channel, if any).
+# Each element in the return value is a color in the form of a 3-element list of its red,
+# green, and blue components in that order, where each
+# component is an integer from 0 through 255.
 def uniquecolors(image, width, height, alpha=False):
     colors = {}
     bytesperpixel = 4 if alpha else 3
@@ -332,7 +337,7 @@ def _isqrtceil(i):
 
 # Returns an ImageMagick filter string to generate a desktop background from an image, in three steps.
 # 1. If rgb1 and rgb2 are not nil, converts the input image to grayscale, then translates the grayscale
-# palette to a gradient starting at rgb1 for grayscale level 0 (a 3-element array of the red,
+# palette to a gradient starting at rgb1 for grayscale level 0 (a 3-element list of the red,
 # green, and blue components in that order; for example, [2,10,255] where each
 # component is from 0 through 255) and ending at rgb2 for grayscale level 255 (same format as rgb1).
 # Raises an error if rgb1 or rgb2 has a length less than 3.
@@ -543,7 +548,7 @@ def versatileForeground(foregroundImage):
 # gray tones, where the closer the gray level is to 0, the less transparent.
 # 'bgcolor' can be None so that an alpha
 # background is used.  Each color is a
-# 3-element array of the red, green, and blue components in that order; for example,
+# 3-element list of the red, green, and blue components in that order; for example,
 # [2,10,255] where each component is from 0 through 255.
 # Inspired by the technique for generating backgrounds in heropatterns.com.
 def versatilePattern(fgcolor, bgcolor=None):
@@ -783,7 +788,7 @@ def groupCmm():
 
 # ImageMagick command to put a background color behind the input image.
 # 'bgcolor' is the background color,
-# either None or a 3-element array of the red,
+# either None or a 3-element list of the red,
 # green, and blue components in that order; for example, [2,10,255] where each
 # component is from 0 through 255; default is None, or no background color.
 def backgroundColorUnder(bgcolor=None):
@@ -2346,8 +2351,8 @@ def p6(x, y):
 # where W and H are the width and height, respectively, of a rectangle that
 # tightly covers the source shape.  Edge AD is the edge between A and D; edge BC,
 # between B and C. To generate seamless images with this group function,
-# the source shape should satisfy the following: Upper edge is a mirrored
-# edge BC; lower edge is a mirrored edge AD.
+# the source shape should satisfy the following: Upper edge is a reversed
+# edge BC; lower edge is a reversed edge AD.
 def p3(x, y):
     rx, ry = p3m1(x, y)
     if _isForward(x, y):
@@ -2559,8 +2564,8 @@ def cmm(x, y):
         return (x, (y - 0.5) * 2.0)
 
 # Wallpaper group Pm. Source rectangle takes the lower half of the destination image.
-# To generate seamless images with this group function, the source shape should satisfy
-# the following: Left edge is same as right edge.
+# To generate seamless images with this group function, the source shape should
+# satisfy the following: Left edge is same as right edge.
 def pm(x, y):
     if y > 0.5:
         return (x, (y - 0.5) * 2.0)
@@ -2568,7 +2573,7 @@ def pm(x, y):
 
 # Wallpaper group Pg. Source rectangle takes the lower half of the destination image.
 #  To generate seamless images with this group function, the source shape should satisfy
-# the following: Upper edge is a mirrored lower edge, left edge is same as right edge.
+# the following: Upper edge is a reversed lower edge, left edge is same as right edge.
 def pg(x, y):
     if y > 0.5:
         return (x, (y - 0.5) * 2.0)
@@ -2590,8 +2595,8 @@ def pmg(x, y):
 
 # Wallpaper group P4. Source rectangle takes the lower-left quarter of the destination
 #  image. To generate seamless images with this group function, the source shape
-# should satisfy the following: Upper edge is a mirrored lower edge, left edge is
-# a mirrored right edge.
+# should satisfy the following: Upper edge is a reversed lower edge, left edge is
+# a reversed right edge.
 def p4(x, y):
     if (x < 0.5 and y < 0.5) or (x > 0.5 and y > 0.5):
         return pmmalt(y, x)
@@ -2632,14 +2637,15 @@ def p4mlr2(x, y):
 # Wallpaper group P4g. Source triangle is formed from the upper-left, lower-left,
 # and lower-right corners of a rectangle that takes the lower-left quarter of the
 # destination image. To generate seamless images with this group function, the
-# source shape should satisfy the following: Lower edge is a mirrored left edge.
+# source shape should satisfy the following: Lower edge is a reversed left edge
+# (assuming the positive x-axis points to the right and the positive y-axis downward).
 def p4g(x, y):
     return cm(*p4(x, y))
 
 # Wallpaper group Pgg. Source rectangle takes the lower-left quarter of the
 # destination image. To generate seamless images with this group function, the
-# source shape should satisfy the following: Upper edge is a mirrored lower edge,
-# left edge is a mirrored right edge.
+# source shape should satisfy the following: Upper edge is a reversed lower edge,
+# left edge is a reversed right edge.
 def pgg(x, y):
     rx, ry = p4(x, y)
     if (x < 0.5 and y < 0.5) or (x > 0.5 and y > 0.5):
@@ -2918,6 +2924,13 @@ def styledbrush2(color1, color2, color3):
 # that no border is drawn)
 # 'gradient' is a list of 256 colors for mapping the 256 possible shades
 # of the gradient fill.
+# 'contour' is a function that takes two parameters and returns a number in [-1, 1].
+# Each parameter is in [0, 1] and gives x- and y-coordinate of a point in
+# the box: (0,0) is the upper-left corner; (1,1) is the lower-right, assuming the positive
+# x-axis points to the right and the positive y-axis downward.  The return value
+# of 'contour', as its absolute value, is a point along the gradient in which to color
+# the specified point: 0 means first color in the gradient; 1 and -1 mean the last
+# color in the gradient; points in between are intermediate colors along the gradient.
 def borderedgradientbox(
     image,
     width,
@@ -2962,8 +2975,10 @@ def borderedgradientbox(
                 xv = (x - x0) / (x1 - x0)
                 z = contour(xv, yv)
                 if jitter:
+                    z = (z + 1) / 2.0
                     rnge = (0.5 - min(0.5, abs(0.5 - z))) / 3
                     z = z + random.random() * rnge - rnge / 2.0
+                    z = z * 2 - 1.0
                 c = _togray255(z)
                 if jitter:
                     c
@@ -5768,6 +5783,9 @@ def _randomcontour(tileable=True, includeWhole=False):
     r = random.choice([0.5, 2.0 / 3, 1, 1.5, 2])
     if tileable:
         # Tileable gradient contours
+        # NOTE: These contours return a value in [-1, 1],
+        # except for _square and _argyle, which returns
+        # a value in [0, 1].
         contours = [
             _horizcontourwrap,
             _vertcontourwrap,
@@ -5779,6 +5797,9 @@ def _randomcontour(tileable=True, includeWhole=False):
         ]
     else:
         # Not necessarily tileable gradient contours
+        # NOTE: These contours return a value in [-1, 1],
+        # except for _square and _argyle, which returns
+        # a value in [0, 1].
         contours = [
             _horizcontourwrap,
             _vertcontourwrap,
@@ -5793,6 +5814,7 @@ def _randomcontour(tileable=True, includeWhole=False):
             lambda x, y: _argyle(x, y, r),
         ]
     if includeWhole:
+        # _whole returns 1
         contours.append(_whole)
     ret = random.choice(contours)
     if random.randint(0, 9) == 0:
