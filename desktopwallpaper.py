@@ -997,6 +997,8 @@ def hatchedbox(
     cr = color[0] & 0xFF
     cg = color[1] & 0xFF
     cb = color[2] & 0xFF
+    ox = x0
+    oy = y0
     if not wraparound:
         x0 = max(x0, 0)
         y0 = max(y0, 0)
@@ -1164,6 +1166,58 @@ def _applyrop(dst, src, rop):
         case _:
             # Undefined raster operation.
             return 0
+
+# Draw a wraparound hatched box on an image.
+# Image has the same format returned by the blankimage() method with alpha=False.
+def hatchedbox_alignorigins(
+    image,
+    width,
+    height,
+    color,
+    pattern,
+    x0,
+    y0,
+    x1,
+    y1,
+    msbfirst=True,
+    wraparound=True,
+):
+    hand = blankimage(8, 8, [255, 255, 255])
+    hatchedbox(hand, 8, 8, [0, 0, 0], pattern, 0, 0, 8, 8, msbfirst=msbfirst)
+    hxor = blankimage(8, 8, [0, 0, 0])
+    hatchedbox(hxor, 8, 8, color, pattern, 0, 0, 8, 8, msbfirst=msbfirst)
+    imageblitex(
+        image,
+        width,
+        height,
+        x0,
+        y0,
+        x1,
+        y1,
+        hand,
+        8,
+        8,
+        0,
+        0,
+        ropForeground=0x88,
+        wraparound=wraparound,
+    )
+    imageblitex(
+        image,
+        width,
+        height,
+        x0,
+        y0,
+        x1,
+        y1,
+        hxor,
+        8,
+        8,
+        0,
+        0,
+        ropForeground=0x66,
+        wraparound=wraparound,
+    )
 
 # Draw a wraparound copy of an image on another image.
 # 'dstimage' and 'srcimage' are the destination and source images.
@@ -2918,6 +2972,75 @@ def styledbrush1(color1, color2, color3, spacing=3, hatchsize=1):
 def styledbrush2(color1, color2, color3):
     return styledbrush1(color1, color2, color3, spacing=4, hatchsize=2)
 
+# 'inputimages' is an array of images, each of which has the same format
+# returned by the blankimage() method with alpha=False.
+# 'outputimage' likewise has that format.
+# 'gradient' and 'contour' are as in borderedgradientbox()
+def imagegradientbox(
+    outputimage,
+    inputimages,
+    width,
+    height,
+    gradient,
+    contour,
+    x0,
+    y0,
+    x1,
+    y1,
+    wraparound=True,
+    jitter=False,
+):
+    if not inputimages:
+        raise ValueError
+    if len(inputimages) < 2:
+        raise ValueError("not supported")
+    if x1 < x0 or y1 < y0:
+        raise ValueError
+    if width <= 0 or height <= 0:
+        raise ValueError
+    if (not gradient) or (not outputimage) or (not contour):
+        raise ValueError
+    if x0 == x1 or y0 == y1:
+        return
+    if not wraparound:
+        x0 = max(x0, 0)
+        y0 = max(y0, 0)
+        x1 = min(x1, width)
+        y1 = min(y1, height)
+        if x0 >= x1 or y0 >= y1:
+            return
+    for y in range(y0, y1):
+        ypp = y % height
+        yv = (y - y0) / (y1 - y0)
+        yp = ypp * width * 3
+        for x in range(x0, x1):
+            xp = x % width
+            xv = (x - x0) / (x1 - x0)
+            z = contour(xv, yv)
+            if jitter:
+                z = (z + 1) / 2.0
+                rnge = (0.5 - min(0.5, abs(0.5 - z))) / 3
+                z = z + random.random() * rnge - rnge / 2.0
+                z = z * 2 - 1.0
+            c = abs(z)
+            cn = c * (len(inputimages) - 1)
+            ci = int(cn)
+            pos = yp + xp * 3
+            if ci >= len(inputimages) - 1:
+                color = [inputimages[ci][pos + i] for i in range(3)]
+            else:
+                color = [
+                    inputimages[ci][pos + i]
+                    + int(
+                        (cn - ci)
+                        * (inputimages[ci + 1][pos + i] - inputimages[ci][pos + i])
+                    )
+                    for i in range(3)
+                ]
+            outputimage[pos] = color[0]
+            outputimage[pos + 1] = color[1]
+            outputimage[pos + 2] = color[2]
+
 # Image has the same format returned by the blankimage() method with alpha=False.
 # Draw a wraparound box in a gradient fill on an image.
 # 'border' is the color of the 1-pixel-thick border. Can be None (so
@@ -2980,8 +3103,6 @@ def borderedgradientbox(
                     z = z + random.random() * rnge - rnge / 2.0
                     z = z * 2 - 1.0
                 c = _togray255(z)
-                if jitter:
-                    c
                 color = gradient[c]
                 image[yp + xp * 3] = color[0]
                 image[yp + xp * 3 + 1] = color[1]
@@ -4455,6 +4576,28 @@ def brushednoise(width, height, tileable=True):
     return image
 
 # Returns an image with the same format returned by the blankimage() method with alpha=False.
+def marknoise(width, height, tileable=True):
+    image = blankimage(width, height, [192, 192, 192])
+    for i in range(max(width, height) * 5):
+        c = random.choice([128, 128, 128, 128, 0, 255])
+        pattern = [0x18, 0x3C, 0x7E, 0xFF, 0xFF, 0x7E, 0x3C, 0x18]
+        x = random.randint(0, width)
+        y = random.randint(0, height)
+        hatchedbox_alignorigins(
+            image,
+            width,
+            height,
+            [c, c, c],
+            pattern,
+            x,
+            y,
+            x + 8,
+            y + 8,
+            wraparound=tileable,
+        )
+    return image
+
+# Returns an image with the same format returned by the blankimage() method with alpha=False.
 def brushednoise2(width, height, tileable=True):
     image = blankimage(width, height, [192, 192, 192])
     for i in range(max(width, height) * 5):
@@ -5883,7 +6026,7 @@ def _randomdither(image, width, height, palette):
 def _randombackground(w, h, palette, tileable=True):
     r = random.randint(0, 100)
     if r < 25:
-        return _randombrushednoiseimage(w, h, palette, tileable=tileable)
+        return _randomnoiseimage(w, h, palette, tileable=tileable)
     elif r < 80:
         return _randomgradientfill(w, h, palette, tileable=tileable)
     else:
@@ -6086,11 +6229,11 @@ def _randomshadedboxesimage(w, h, palette=None, tileable=True):
         patternDither(image, w, h, palette)
     return image
 
-def _randombrushednoiseimage(w, h, palette=None, tileable=True):
+def _randomnoiseimage(w, h, palette=None, tileable=True):
     transpose = random.randint(0, 1) == 0
     ww = h if transpose else w
     hh = w if transpose else h
-    r = random.randint(0, 4)
+    r = random.randint(0, 5)
     if r == 0:
         image = brushednoise(ww, hh, tileable=tileable)
     elif r == 1:
@@ -6098,6 +6241,8 @@ def _randombrushednoiseimage(w, h, palette=None, tileable=True):
     elif r == 2:
         image = noiseimage(ww, hh)
         convolveRow(image, ww, hh)
+    elif r == 2:
+        image = marknoise(ww, hh, tileable=tileable)
     else:
         image = brushednoise3(ww, hh, tileable=tileable)
     if transpose:
@@ -6180,25 +6325,74 @@ def _randomsimpleargyle(w, h, palette, tileable=True):
         halfhalfditherimage(image3, w, h, palette)
     return image3
 
+def randommixedimage(width, height, palette, tileable=True):
+    numimages = random.randint(1, 6)
+    images = [
+        randombackgroundimage(width, height, None, tileable) for i in range(numimages)
+    ]
+    if numimages == 1:
+        return images[0]
+    contour = _randomcontour(tileable)
+    image = blankimage(width, height)
+    grad = randomColorization()
+    imagegradientbox(
+        image,
+        images,
+        width,
+        height,
+        grad,
+        contour,
+        0,
+        0,
+        width,
+        height,
+        jitter=random.randint(0, 1) == 0,
+    )
+    if palette:
+        patternDither(image, width, height, palette)
+    return image
+
 # Image returned by this method has the same format returned by the blankimage() method with alpha=False.
 def randombackgroundimage(w, h, palette=None, tileable=True):
     r = random.randint(0, 6)
+    ret = None
     if r == 0:
-        return randomhatchimage(w, h, palette, tileable=tileable)
+        ret = randomhatchimage(w, h, palette, tileable=tileable)
     elif r == 1:
-        return randomcheckimage(w, h, palette, tileable=tileable)
+        ret = randomcheckimage(w, h, palette, tileable=tileable)
     elif r == 2:
-        return _randomboxesimage(
+        ret = _randomboxesimage(
             w, h, palette, tileable=tileable, fancy=(random.randint(0, 3) != 0)
         )
     elif r == 3:
-        return _randomgradientfill(w, h, palette, tileable=tileable)
+        ret = _randomgradientfill(w, h, palette, tileable=tileable)
     elif r == 4:
-        return _randomsimpleargyle(w, h, palette, tileable=tileable)
+        ret = _randomsimpleargyle(w, h, palette, tileable=tileable)
     elif r == 5:
-        return _randomshadedboxesimage(w, h, palette, tileable=tileable)
+        ret = _randomshadedboxesimage(w, h, palette, tileable=tileable)
     else:
-        return _randombrushednoiseimage(w, h, palette, tileable=tileable)
+        ret = _randomnoiseimage(w, h, palette, tileable=tileable)
+    if random.randint(0, 7) == 0 and (not tileable or (w % 4 == 0 and h % 4 == 0)):
+        # Draw a random hatch pattern, only if width and height are
+        # divisible by 4 or image is not tileable
+        p1 = [0x88, 0x44, 0x22, 0x11, 0x88, 0x44, 0x22, 0x11]
+        p2 = [0x11, 0x22, 0x44, 0x88, 0x11, 0x22, 0x44, 0x88]
+        r = random.randint(0, 1)
+        color = (
+            random.choice(palette)
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
+        wstart = random.randint(0, w // 3)
+        hstart = random.randint(0, h // 3)
+        x0 = wstart if r == 0 else 0
+        y0 = 0 if r == 0 else hstart
+        x1 = w - wstart if r == 0 else w
+        y1 = h if r == 0 else h - hstart
+        hatchedbox(
+            ret, w, h, color, p1 if random.randint(0, 1) == 0 else p2, x0, y0, x1, y1
+        )
+    return ret
 
 # Input image uses only three colors: (0,0,0) or black,(128,128,128),(255,255,255) or white
 # Turns the image into a black-and-white image, with middle gray dithered.
