@@ -986,8 +986,9 @@ def hatchedbox(
     drawborder=False,
     wraparound=True,
 ):
-    if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
-        raise ValueError
+    if not wraparound:
+        if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
+            raise ValueError
     if width <= 0 or height <= 0:
         raise ValueError
     if (not color) or len(color) != 3:
@@ -3567,6 +3568,9 @@ def drawhatchcolumns(image, width, height, hatchdist=8, hatchthick=1, fgcolor=No
         pos += hatchdist
 
 # Image has the same format returned by the blankimage() method with alpha=False.
+# hatchdist - distance from beginning of one horizontal hash line to the
+# beginning of the next, in pixels.
+# hatchthick - thickness in pixels of each horizontal hash line.
 def drawhatchrows(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None):
     if hatchdist <= 0 or hatchthick < 0 or hatchthick > hatchdist:
         raise ValueError
@@ -5079,7 +5083,7 @@ class SvgDraw:
             return self._ensurepattern(c[0], c[1])
         return c
 
-    def _ditherbg(self, idstr, face, hilt, hiltIsScrollbarColor=False):
+    def _ditherbg(self, idstr, face, hilt, hiltIsScrollbarColor=False, stripe=False):
         # 'face' is the button face color
         # 'hilt' is the button highlight color
         if hiltIsScrollbarColor:
@@ -5094,7 +5098,15 @@ class SvgDraw:
             helper.rect(0, 0, 2, 2, hilt)
         # elif 256 or more colors and hilt is not white:
         #    helper.rect(0, 0, 2, 2, [(a+b)//2 for a,b in zip(face, hilt)])
+        elif stripe:
+            # stripe pattern (highlight and face colors are in alternating
+            # rows)
+            helper.rect(0, 0, 1, 1, hilt)
+            helper.rect(1, 1, 2, 2, face)
+            helper.rect(0, 1, 1, 2, face)
+            helper.rect(1, 0, 2, 1, hilt)
         else:
+            # checkerboard pattern
             helper.rect(0, 0, 1, 1, hilt)
             helper.rect(1, 1, 2, 2, hilt)
             helper.rect(0, 1, 1, 2, face)
@@ -5172,7 +5184,14 @@ def _deleteObject(index):
 def _polygonMetafile(points):
     if len(points) > 32767:
         raise ValueError
+    if len(points) < 1:
+        raise ValueError
     size = 4 + len(points) * 2
+    lastpt = points[len(points) - 1]
+    firstpt = points[0]
+    closed = firstpt[0] == lastpt[0] and firstpt[0][1] == lastpt[1]
+    if not closed:
+        size += 4
     ret = struct.pack("<LHH", size, 0x324, len(points))
     for pt in points:
         if pt[0] < -32768 or pt[0] > 32767:
@@ -5180,6 +5199,8 @@ def _polygonMetafile(points):
         if pt[1] < -32768 or pt[1] > 32767:
             raise ValueError
         ret += struct.pack("<hh", pt[0], pt[1])
+    if not closed:
+        ret += struct.pack("<hh", firstpt[0], firstpt[1])
     return ret
 
 def _rectangleMetafile(x0, y0, x1, y1):
@@ -5360,7 +5381,7 @@ def _drawroundedgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=1):
         )  # lower edge
 
 def drawpositiverect(helper, x0, y0, x1, y1, face):
-    if x1 >= x0 or y1 >= y0:  # empty or negative
+    if x1 <= x0 or y1 <= y0:  # empty or negative
         return
     helper.rect(x0, y0, x1, y1, face)
 
@@ -5410,8 +5431,18 @@ def drawedgebotdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=
         y1 -= edgesize
 
 # helper for edge drawing (neither edge "dominates")
-def drawedgenodom(
-    helper, x0, y0, x1, y1, upper, lower, corner, edgesize=1, bordersize=1
+def drawedgenodomex(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    upper,
+    lower,
+    upperRight,
+    lowerLeft,
+    edgesize=1,
+    bordersize=1,
 ):
     for i in range(bordersize):
         drawupperedge(
@@ -5420,12 +5451,32 @@ def drawedgenodom(
         drawloweredge(
             helper, x0 + edgesize, y0 + edgesize, x1, y1, lower, edgesize=edgesize
         )
-        drawpositiverect(helper, x1 - edgesize, y0, x1, y0 + edgesize, corner)
-        drawpositiverect(helper, x1, y1 - edgesize, x1 + edgesize, y1, corner)
+        # uupper-right corner
+        drawpositiverect(helper, x1 - edgesize, y0, x1, y0 + edgesize, upperRight)
+        # lower-left corner
+        drawpositiverect(helper, x0, y1 - edgesize, x0 + edgesize, y1, lowerLeft)
         x0 += edgesize
         y0 += edgesize
         x1 -= edgesize
         y1 -= edgesize
+
+# helper for edge drawing (neither edge "dominates")
+def drawedgenodom(
+    helper, x0, y0, x1, y1, upper, lower, corner, edgesize=1, bordersize=1
+):
+    drawedgenodomex(
+        helper,
+        x0,
+        y0,
+        x1,
+        y1,
+        upper,
+        lower,
+        corner,
+        corner,
+        edgesize=edgesize,
+        bordersize=bordersize,
+    )
 
 def drawindentborder(
     helper, x0, y0, x1, y1, hilt, sh, frame, outerbordersize=1, innerbordersize=1
@@ -6229,6 +6280,39 @@ def _randomshadedboxesimage(w, h, palette=None, tileable=True):
         patternDither(image, w, h, palette)
     return image
 
+def _tileborder(image, width, height, orgx=0, orgy=0):
+    thick = random.randint(2, 10)
+    x0 = orgx - thick // 2
+    y0 = orgy - thick // 2
+    match random.randint(0, 2):
+        case 0:
+            pattern = [0, 0xFF, 0, 0xFF, 0, 0xFF, 0, 0xFF]
+        case 1:
+            pattern = [0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55]
+        case 2:
+            pattern = [0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA]
+        case _:
+            raise ValueError
+    simplebox(image, width, height, [128, 128, 128], x0, 0, x0 + thick, height)
+    hatchedbox(image, width, height, [0, 0, 0], pattern, x0, 0, x0 + thick, height)
+    simplebox(image, width, height, [128, 128, 128], 0, y0, width, y0 + thick)
+    hatchedbox(image, width, height, [0, 0, 0], pattern, 0, y0, width, y0 + thick)
+    helper = ImageWraparoundDraw(image, width, height)
+    xt = x0 + thick
+    yt = y0 + thick
+    drawedgetopdom(
+        helper, xt, yt, xt + width - thick, yt + height - thick, [0, 0, 0], [0, 0, 0]
+    )
+    drawedgetopdom(
+        helper,
+        xt + 1,
+        yt,
+        xt + width - thick,
+        yt + height - thick - 1,
+        [255, 255, 255],
+        [0, 0, 0],
+    )
+
 def _randomnoiseimage(w, h, palette=None, tileable=True):
     transpose = random.randint(0, 1) == 0
     ww = h if transpose else w
@@ -6355,23 +6439,33 @@ def randommixedimage(width, height, palette, tileable=True):
 # Image returned by this method has the same format returned by the blankimage() method with alpha=False.
 def randombackgroundimage(w, h, palette=None, tileable=True):
     r = random.randint(0, 6)
+    bordertile = random.randint(0, 5) == 0
     ret = None
+    dotile = tileable and not bordertile
     if r == 0:
-        ret = randomhatchimage(w, h, palette, tileable=tileable)
+        ret = randomhatchimage(w, h, palette, tileable=dotile)
     elif r == 1:
-        ret = randomcheckimage(w, h, palette, tileable=tileable)
+        ret = randomcheckimage(w, h, palette, tileable=dotile)
     elif r == 2:
         ret = _randomboxesimage(
-            w, h, palette, tileable=tileable, fancy=(random.randint(0, 3) != 0)
+            w, h, palette, tileable=dotile, fancy=(random.randint(0, 3) != 0)
         )
     elif r == 3:
-        ret = _randomgradientfill(w, h, palette, tileable=tileable)
+        ret = _randomgradientfill(w, h, palette, tileable=dotile)
     elif r == 4:
-        ret = _randomsimpleargyle(w, h, palette, tileable=tileable)
+        ret = _randomsimpleargyle(w, h, palette, tileable=dotile)
     elif r == 5:
-        ret = _randomshadedboxesimage(w, h, palette, tileable=tileable)
+        ret = _randomshadedboxesimage(w, h, palette, tileable=dotile)
     else:
-        ret = _randomnoiseimage(w, h, palette, tileable=tileable)
+        ret = _randomnoiseimage(w, h, palette, tileable=dotile)
+    if bordertile:
+        _tileborder(ret, w, h)
+        graymap(
+            ret,
+            w,
+            h,
+            colorgradient([0, 0, 0], [random.randint(0, 255) for i in range(3)]),
+        )
     if random.randint(0, 7) == 0 and (not tileable or (w % 4 == 0 and h % 4 == 0)):
         # Draw a random hatch pattern, only if width and height are
         # divisible by 4 or image is not tileable
@@ -6588,6 +6682,7 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
     _writeu16(ff, 1)
     _writeu16(ff, 0)
     _writeu32(ff, len(palette) + 1)
+    inv255 = 1.0 / 255.0
     for i in range(len(palette)):
         c = palette[i]
         _writeu16(ff, 1)
@@ -6595,9 +6690,9 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
         _writeu32(ff, _utf16len(colorname) + 18)
         _writeutf16(ff, colorname)
         ff.write(bytes("RGB ", "utf-8"))
-        _writef32(ff, c[0] / 255.0)
-        _writef32(ff, c[1] / 255.0)
-        _writef32(ff, c[2] / 255.0)
+        _writef32(ff, c[0] * inv255)
+        _writef32(ff, c[1] * inv255)
+        _writef32(ff, c[2] * inv255)
         _writeu16(ff, 0)
 
 if __name__ == "__main__":
