@@ -3486,10 +3486,10 @@ def checkerboard(
 
 # Returns an image with the same format returned by the blankimage() method with
 # the specified value of 'alpha' (the default value for 'alpha' is False).
-def simpleargyle(fgcolor, bgcolor, linecolor, w, h, alpha=False):
+def simpleargyle(fgcolor, bgcolor, linecolor, w, h, alpha=False, expo=1):
     fg = blankimage(w, h, fgcolor, alpha=alpha)
     bg = blankimage(w, h, bgcolor, alpha=alpha)
-    bg = argyle(fg, bg, w, h, alpha=alpha)
+    bg = argyle(fg, bg, w, h, alpha=alpha, expo=expo)
     linedraw(bg, w, h, linecolor, 0, 0, w, h)
     linedraw(bg, w, h, linecolor, 0, h, w, 0)
     return bg
@@ -5974,7 +5974,7 @@ def _randomgradientfillex(width, height, palette, contour):
 
 def _randomcontour(tileable=True, includeWhole=False):
     contours = []
-    r = random.choice([0.5, 2.0 / 3, 1, 1.5, 2])
+    r = random.choice([0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 3.5, 4])
     if tileable:
         # Tileable gradient contours
         # NOTE: These contours return a value in [-1, 1],
@@ -6280,19 +6280,26 @@ def _randomshadedboxesimage(w, h, palette=None, tileable=True):
         patternDither(image, w, h, palette)
     return image
 
+def _randomhatch():
+    match random.randint(0, 4):
+        case 0:
+            return [0, 0xFF, 0, 0xFF, 0, 0xFF, 0, 0xFF]
+        case 1:
+            return [0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55]
+        case 2:
+            return [0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA]
+        case 3:
+            return [0x88, 0x44, 0x22, 0x11, 0x88, 0x44, 0x22, 0x11]
+        case 4:
+            return [0x11, 0x22, 0x44, 0x88, 0x11, 0x22, 0x44, 0x88]
+        case _:
+            raise ValueError
+
 def _tileborder(image, width, height, orgx=0, orgy=0):
     thick = random.randint(2, 10)
     x0 = orgx - thick // 2
     y0 = orgy - thick // 2
-    match random.randint(0, 2):
-        case 0:
-            pattern = [0, 0xFF, 0, 0xFF, 0, 0xFF, 0, 0xFF]
-        case 1:
-            pattern = [0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55]
-        case 2:
-            pattern = [0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA]
-        case _:
-            raise ValueError
+    pattern = _randomhatch()
     simplebox(image, width, height, [128, 128, 128], x0, 0, x0 + thick, height)
     hatchedbox(image, width, height, [0, 0, 0], pattern, x0, 0, x0 + thick, height)
     simplebox(image, width, height, [128, 128, 128], 0, y0, width, y0 + thick)
@@ -6404,7 +6411,7 @@ def _randomsimpleargyle(w, h, palette, tileable=True):
         if palette
         else [random.randint(0, 255) for i in range(3)]
     )
-    image3 = simpleargyle(fg, bg, linecolor, w, h)
+    image3 = simpleargyle(fg, bg, linecolor, w, h, expo=random.uniform(0.5, 2.5))
     if palette:
         halfhalfditherimage(image3, w, h, palette)
     return image3
@@ -6469,8 +6476,6 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
     if random.randint(0, 7) == 0 and (not tileable or (w % 4 == 0 and h % 4 == 0)):
         # Draw a random hatch pattern, only if width and height are
         # divisible by 4 or image is not tileable
-        p1 = [0x88, 0x44, 0x22, 0x11, 0x88, 0x44, 0x22, 0x11]
-        p2 = [0x11, 0x22, 0x44, 0x88, 0x11, 0x22, 0x44, 0x88]
         r = random.randint(0, 1)
         color = (
             random.choice(palette)
@@ -6483,9 +6488,7 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
         y0 = 0 if r == 0 else hstart
         x1 = w - wstart if r == 0 else w
         y1 = h if r == 0 else h - hstart
-        hatchedbox(
-            ret, w, h, color, p1 if random.randint(0, 1) == 0 else p2, x0, y0, x1, y1
-        )
+        hatchedbox(ret, w, h, color, _randomhatch(), x0, y0, x1, y1)
     return ret
 
 # Input image uses only three colors: (0,0,0) or black,(128,128,128),(255,255,255) or white

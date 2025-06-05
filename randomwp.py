@@ -215,7 +215,7 @@ def randomwallpaper2(palette=None):
         imagebg,
         w,
         h,
-        expo=random.choice([1, 2]),
+        expo=random.uniform(0.5, 2.5),
         shiftImageBg=True,
     )
     ib = dw.argyle(
@@ -223,7 +223,7 @@ def randomwallpaper2(palette=None):
         imagebg,
         w,
         h,
-        expo=random.choice([1, 2]),
+        expo=random.uniform(0.5, 2.5),
         shiftImageBg=True,
     )
     image3 = dw.checkerboardtile(ia, ib, w, h, columns, rows)
@@ -248,14 +248,14 @@ def randomwallpaper1(palette=None):
     image1b = dw.randombackgroundimage(w, h, palette, tileable=False)
     # combinations
     image3 = dw.argyle(
-        image1, imagebg, w, h, expo=random.choice([1, 2]), shiftImageBg=True
+        image1, imagebg, w, h, expo=random.uniform(0.5, 2.5), shiftImageBg=True
     )
     image3a = dw.argyle(
         image1a,
         imagebg,
         w,
         h,
-        expo=random.choice([1, 2]),
+        expo=random.uniform(0.5, 2.5),
         shiftImageBg=True,
     )
     image3b = dw.argyle(
@@ -263,7 +263,7 @@ def randomwallpaper1(palette=None):
         imagebg,
         w,
         h,
-        expo=random.choice([1, 2]),
+        expo=random.uniform(0.5, 2.5),
         shiftImageBg=True,
     )
     # tiling
