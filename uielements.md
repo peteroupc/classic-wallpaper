@@ -79,7 +79,7 @@ Traditionally, the three dimensional effects of buttons, icons, and other user-i
 An icon (a small graphic representing a computer program) should come in a set of variations in color and dimensions:
 
 - The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
-- The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [logical display resolution](#logical-display-resolutions). [^5]
+- The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [logical display resolution](#logical-resolutions). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.
 
@@ -87,7 +87,7 @@ Traditionally, 32 &times; 32 icons with the VGA palette are the most common vari
 
 Cursors (mouse pointer graphics) can follow the guidelines given earlier as well, but most cursors are traditionally drawn:
 
-- In a single width and height, generally 32 &times; 32 pixels, except to account for [logical display resolution](#logical-display-resolutions).
+- In a single width and height, generally 32 &times; 32 pixels, except to account for [logical display resolution](#logical-resolutions).
 - In black and white or in grayscale (with colors limited to white, black, and other gray tones), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** Icon formats for OS/2 and Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [`imageformat` module documentation](./imageformat.html).
