@@ -950,15 +950,31 @@ def brushedmetal():
         "+repage",
     ]
 
-def simplebox(image, width, height, color, x0, y0, x1, y1, wraparound=True):
+# Draw a wraparound simple box on an image.
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
+def simplebox(
+    image, width, height, color, x0, y0, x1, y1, wraparound=True, alpha=False
+):
     borderedbox(
-        image, width, height, None, color, color, x0, y0, x1, y1, wraparound=wraparound
+        image,
+        width,
+        height,
+        None,
+        color,
+        color,
+        x0,
+        y0,
+        x1,
+        y1,
+        wraparound=wraparound,
+        alpha=alpha,
     )
 
 # Draw a wraparound hatched box on an image.
-# Image has the same format returned by the blankimage() method with alpha=False.
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
 # 'color' is the color of the hatch, drawn on every "black" pixel (defined below)
 # in the pattern's tiling.
+# This method currently does no "alpha blending".
 # 'pattern' is an 8-element array with integers in the interval [0,255].
 # The first integer represents the first row from the top;
 # the second, the second row, etc.
@@ -985,6 +1001,7 @@ def hatchedbox(
     msbfirst=True,
     drawborder=False,
     wraparound=True,
+    alpha=False,
 ):
     if not wraparound:
         if x0 < 0 or y0 < 0 or x1 < x0 or y1 < y0:
@@ -998,8 +1015,10 @@ def hatchedbox(
     cr = color[0] & 0xFF
     cg = color[1] & 0xFF
     cb = color[2] & 0xFF
+    ca = (color[3] & 0xFF) if (alpha and len(color) > 3) else 0xFF
     ox = x0
     oy = y0
+    pixelCount = 4 if alpha else 3
     if not wraparound:
         x0 = max(x0, 0)
         y0 = max(y0, 0)
@@ -1009,7 +1028,7 @@ def hatchedbox(
             return
     for y in range(y0, y1):
         ypp = y % height
-        yp = ypp * width * 3
+        yp = ypp * width * pixelCount
         for x in range(x0, x1):
             xp = x % width
             c = (
@@ -1021,9 +1040,12 @@ def hatchedbox(
                 drawborder and (y == y0 or y == y1 - 1 or x == x0 or x == x1 - 1)
             ) or c == 1:
                 # Draw hatch color
-                image[yp + xp * 3] = cr
-                image[yp + xp * 3 + 1] = cg
-                image[yp + xp * 3 + 2] = cb
+                pos = yp + xp * pixelCount
+                image[pos] = cr
+                image[pos + 1] = cg
+                image[pos + 2] = cb
+                if alpha:
+                    image[pos + 3] = ca
 
 # Apply a binary raster operation to two 8-bit source and destination
 # color channels.
@@ -1169,7 +1191,8 @@ def _applyrop(dst, src, rop):
             return 0
 
 # Draw a wraparound hatched box on an image.
-# Image has the same format returned by the blankimage() method with alpha=False.
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False
 def hatchedbox_alignorigins(
     image,
     width,
@@ -1182,11 +1205,14 @@ def hatchedbox_alignorigins(
     y1,
     msbfirst=True,
     wraparound=True,
+    alpha=False,
 ):
-    hand = blankimage(8, 8, [255, 255, 255])
-    hatchedbox(hand, 8, 8, [0, 0, 0], pattern, 0, 0, 8, 8, msbfirst=msbfirst)
-    hxor = blankimage(8, 8, [0, 0, 0])
-    hatchedbox(hxor, 8, 8, color, pattern, 0, 0, 8, 8, msbfirst=msbfirst)
+    hand = blankimage(8, 8, [255, 255, 255], alpha=alpha)
+    hatchedbox(
+        hand, 8, 8, [0, 0, 0], pattern, 0, 0, 8, 8, msbfirst=msbfirst, alpha=alpha
+    )
+    hxor = blankimage(8, 8, [0, 0, 0], alpha=alpha)
+    hatchedbox(hxor, 8, 8, color, pattern, 0, 0, 8, 8, msbfirst=msbfirst, alpha=alpha)
     imageblitex(
         image,
         width,
@@ -1202,6 +1228,7 @@ def hatchedbox_alignorigins(
         0,
         ropForeground=0x88,
         wraparound=wraparound,
+        alpha=alpha,
     )
     imageblitex(
         image,
@@ -1218,6 +1245,7 @@ def hatchedbox_alignorigins(
         0,
         ropForeground=0x66,
         wraparound=wraparound,
+        alpha=alpha,
     )
 
 # Draw a wraparound copy of an image on another image.
@@ -2920,25 +2948,41 @@ def randomtiles(columns, rows, sourceImages, srcwidth, srcheight, alpha=False):
     return image
 
 # Draws a box filled with a transparent vertical hatch pattern.
-# Image has the same format returned by the blankimage() method with alpha=False.
-def verthatchedbox(image, width, height, color, x0, y0, x1, y1):
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False
+def verthatchedbox(image, width, height, color, x0, y0, x1, y1, alpha=False):
     pattern = [0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA]
-    hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1)
+    hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1, alpha=alpha)
 
 # Draws a box filled with a transparent horizontal hatch pattern.
-# Image has the same format returned by the blankimage() method with alpha=False.
-def horizhatchedbox(image, width, height, color, x0, y0, x1, y1):
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False
+def horizhatchedbox(image, width, height, color, x0, y0, x1, y1, alpha=False):
     pattern = [0xFF, 0, 0xFF, 0, 0xFF, 0, 0xFF, 0]
-    hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1)
+    hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1, alpha=alpha)
 
-# Image has the same format returned by the blankimage() method with alpha=False.
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False
 def shadowedborderedbox(
-    image, width, height, border, shadow, color1, color2, x0, y0, x1, y1
+    image, width, height, border, shadow, color1, color2, x0, y0, x1, y1, alpha=False
 ):
     # Draw box's shadow
     pattern = [0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55]
-    hatchedbox(image, width, height, shadow, pattern, x0 + 4, y0 + 4, x1 + 4, y1 + 4)
-    borderedbox(image, width, height, border, color1, color2, x0, y0, x1, y1)
+    hatchedbox(
+        image,
+        width,
+        height,
+        shadow,
+        pattern,
+        x0 + 4,
+        y0 + 4,
+        x1 + 4,
+        y1 + 4,
+        alpha=alpha,
+    )
+    borderedbox(
+        image, width, height, border, color1, color2, x0, y0, x1, y1, alpha=alpha
+    )
 
 # Creates a brush pattern (also known as a stipple) with width 2 and height equal to 'spacing'*2.
 # The image returned by this method has the same format returned by the blankimage() method with alpha=False.
@@ -3249,13 +3293,26 @@ def outlineimage(image, width, height, lt=None, sh=None):
                 image[xp + 2] = sh[2] if sh else 0x00
 
 # Draw a wraparound dither-colored box on an image.
-# Image has the same format returned by the blankimage() method with alpha=False.
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False
 # 'border' is the color of the 1-pixel-thick border. Can be None (so
 # that no border is drawn)
 # 'color1' and 'color2' are the dithered
 # versions of the inner color. 'color1' and 'color2' can't be None.
+# This method currently does no "alpha blending".
 def borderedbox(
-    image, width, height, border, color1, color2, x0, y0, x1, y1, wraparound=True
+    image,
+    width,
+    height,
+    border,
+    color1,
+    color2,
+    x0,
+    y0,
+    x1,
+    y1,
+    wraparound=True,
+    alpha=False,
 ):
     if x1 < x0 or y1 < y0:
         raise ValueError
@@ -3266,6 +3323,9 @@ def borderedbox(
         return
     if (not color1) or (not image) or (not color2):
         raise ValueError
+    c1a = color1[3] if (alpha and len(color1) > 3) else 255
+    c2a = color2[3] if (alpha and len(color2) > 3) else 255
+    ba = border[3] if (alpha and len(border) > 3) else 255
     if x0 == x1 or y0 == y1:
         return
     if not wraparound:
@@ -3275,26 +3335,34 @@ def borderedbox(
         y1 = min(y1, height)
         if x0 >= x1 or y0 >= y1:
             return
+    pixelCount = 4 if alpha else 3
     for y in range(y0, y1):
         ypp = y % height
-        yp = ypp * width * 3
+        yp = ypp * width * pixelCount
         for x in range(x0, x1):
             xp = x % width
+            pos = yp + xp * pixelCount
             if border and (y == y0 or y == y1 - 1 or x == x0 or x == x1 - 1):
                 # Draw border color
-                image[yp + xp * 3] = border[0]
-                image[yp + xp * 3 + 1] = border[1]
-                image[yp + xp * 3 + 2] = border[2]
+                image[pos] = border[0]
+                image[pos + 1] = border[1]
+                image[pos + 2] = border[2]
+                if alpha:
+                    image[pos + 3] = ba
             elif ypp % 2 == xp % 2:
                 # Draw first color
-                image[yp + xp * 3] = color1[0]
-                image[yp + xp * 3 + 1] = color1[1]
-                image[yp + xp * 3 + 2] = color1[2]
+                image[pos] = color1[0]
+                image[pos + 1] = color1[1]
+                image[pos + 2] = color1[2]
+                if alpha:
+                    image[pos + 3] = c1a
             else:
                 # Draw second color
-                image[yp + xp * 3] = color2[0]
-                image[yp + xp * 3 + 1] = color2[1]
-                image[yp + xp * 3 + 2] = color2[2]
+                image[pos] = color2[0]
+                image[pos + 1] = color2[1]
+                image[pos + 2] = color2[2]
+                if alpha:
+                    image[pos + 3] = c2a
 
 # Split an image into two interlaced versions with half the height.
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
@@ -3671,7 +3739,7 @@ def getgrays(palette):
 # Converts the image to grayscale and dithers the resulting image
 # to the gray tones given.
 # Image has the same format returned by the blankimage() method with the
-# given value of 'alpha' (default value for 'alpha' is False).
+# specified value of 'alpha' (default value for 'alpha' is False).
 # 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
 # from 0 through 255.  The list must have a length of 2 or greater.
 # 'grays' can be None, in which case this method behaves like 'graymap'.
@@ -4390,9 +4458,14 @@ def noiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
 
 # Draws a circle that optionally wraps around.
 # Image has the same format returned by the blankimage() method with alpha=False.
-def circledraw(image, width, height, c, cx, cy, r, wraparound=True):
-    stride = width * 3
-    fullstride = stride * height
+def circledraw(image, width, height, c, cx, cy, r, wraparound=True, alpha=False):
+    helper = ImageWraparoundDraw(
+        image, width, height, wraparound=wraparound, alpha=alpha
+    )
+    helpercircledraw(helper, c, cx, cy, r)
+
+# Draws a circle using a drawing helper.
+def helpercircledraw(helper, c, cx, cy, r):
     # midpoint circle algorithm
     z = -r
     x = r
@@ -4402,14 +4475,7 @@ def circledraw(image, width, height, c, cx, cy, r, wraparound=True):
         for xx, yy in octs:
             px = cx + xx
             py = cy + yy
-            if wraparound:
-                px = px % width
-                py = py % height
-            if wraparound or (px >= 0 and py >= 0 and px < width and py < height):
-                pos = stride * py + px * 3
-                image[pos] = c[0]
-                image[pos + 1] = c[1]
-                image[pos + 2] = c[2]
+            drawpositiverect(helper, px, py, px + 1, py + 1, c)
         z += 1 + y + y
         y += 1
         if z >= 0:
@@ -4436,47 +4502,28 @@ def linedraw(
         raise ValueError
     if len(c) >= 4:
         raise NotImplementedError("color values with alpha are currently not supported")
-    pixelBytes = 4 if alpha else 3
-    stride = width * pixelBytes
-    fullstride = stride * height
+    helper = ImageWraparoundDraw(
+        image, width, height, wraparound=wraparound, alpha=alpha
+    )
+    helperlinedraw(helper, c, x0, y0, x1, y1, drawEndPoint=drawEndPoint)
+
+# Draws a line using a drawing helper.
+def helperlinedraw(
+    helper,
+    c,
+    x0,
+    y0,
+    x1,
+    y1,
+    drawEndPoint=False,
+):
     # Bresenham's algorithm
     dx = x1 - x0
     dy = y1 - y0
-    wrap = wraparound and (
-        x0 < 0
-        or x1 < 0
-        or y0 < 0
-        or y1 < 0
-        or x0 >= width
-        or x1 >= width
-        or y0 >= height
-        or y1 >= height
-    )
-    # Starting point
-    if wraparound or (y0 >= 0 and x0 >= 0 and x0 < width and y0 < height):
-        imgpos = (
-            (y0 % height) * stride + (x0 % width) * pixelBytes
-            if wrap
-            else y0 * stride + x0 * pixelBytes
-        )
-        image[imgpos] = c[0]
-        image[imgpos + 1] = c[1]
-        image[imgpos + 2] = c[2]
-        if alpha:
-            image[imgpos + 3] = 0xFF
+    drawpositiverect(helper, x0, y0, x0 + 1, y0 + 1, c)
     # Ending point
     if drawEndPoint:
-        if wraparound or (y1 >= 0 and x1 >= 0 and x1 < width and y1 < height):
-            imgpos = (
-                (y1 % height) * stride + (x1 % width) * pixelBytes
-                if wrap
-                else y1 * stride + x1 * pixelBytes
-            )
-            image[imgpos] = c[0]
-            image[imgpos + 1] = c[1]
-            image[imgpos + 2] = c[2]
-            if alpha:
-                image[imgpos + 3] = 0xFF
+        drawpositiverect(helper, x1, y1, x1 + 1, y1 + 1, c)
     if abs(dy) > abs(dx):
         if y1 < y0:
             dy = abs(dy)
@@ -4492,36 +4539,15 @@ def linedraw(
         b = z - dy
         y = y0
         x = x0
-        if wrap:
-            y %= height
-            x %= width
-        pos = y * stride + x * pixelBytes
-        stridechange = -pixelBytes if dx < 0 else pixelBytes
         coordchange = -1 if dx < 0 else 1
         for i in range(1, y1 - y0):
-            pos += stride
             y += 1
-            if wrap and y == height:
-                y = 0
-                pos -= fullstride
             if z < 0:
                 z += a
             else:
                 z += b
-                pos = pos + stridechange
                 x += coordchange
-                if wrap and x < 0:
-                    pos += stride
-                    x += width
-                elif wrap and x >= width:
-                    pos -= stride
-                    x -= width
-            if wraparound or (y >= 0 and x >= 0 and x < width and y < height):
-                image[pos] = c[0]
-                image[pos + 1] = c[1]
-                image[pos + 2] = c[2]
-                if alpha:
-                    image[pos + 3] = 0xFF
+            drawpositiverect(helper, x, y, x + 1, y + 1, c)
     else:
         if x1 < x0:
             dx = abs(dx)
@@ -4537,51 +4563,43 @@ def linedraw(
         b = z - dx
         y = y0
         x = x0
-        if wrap:
-            y %= height
-            x %= width
-        pos = y * stride + x * pixelBytes
-        stridechange = -stride if dy < 0 else stride
         coordchange = -1 if dy < 0 else 1
         for i in range(1, x1 - x0):
-            pos += pixelBytes
             x += 1
-            if wrap and x == width:
-                x = 0
-                pos -= stride
             if z < 0:
                 z += a
             else:
                 z += b
-                pos = pos + stridechange
                 y += coordchange
-                if wrap and y < 0:
-                    pos += fullstride
-                    y += height
-                elif wrap and y >= height:
-                    pos -= fullstride
-                    y -= height
-            if wraparound or (y >= 0 and x >= 0 and x < width and y < height):
-                image[pos] = c[0]
-                image[pos + 1] = c[1]
-                image[pos + 2] = c[2]
-                if alpha:
-                    image[pos + 3] = 0xFF
+            drawpositiverect(helper, x, y, x + 1, y + 1, c)
 
-# Returns an image with the same format returned by the blankimage() method with alpha=False.
-def brushednoise(width, height, tileable=True):
-    image = blankimage(width, height, [192, 192, 192])
+# Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False.
+def brushednoise(width, height, tileable=True, alpha=False):
+    image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 5):
         c = random.choice([128, 128, 128, 128, 0, 255])
         x = random.randint(0, width - 1)
         y = random.randint(0, height - 1)
         x1 = x + random.randint(0, width // 2)
-        simplebox(image, width, height, [c, c, c], x, y, x1, y + 1, wraparound=tileable)
+        simplebox(
+            image,
+            width,
+            height,
+            [c, c, c],
+            x,
+            y,
+            x1,
+            y + 1,
+            wraparound=tileable,
+            alpha=alpha,
+        )
     return image
 
-# Returns an image with the same format returned by the blankimage() method with alpha=False.
-def marknoise(width, height, tileable=True):
-    image = blankimage(width, height, [192, 192, 192])
+# Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False.
+def marknoise(width, height, tileable=True, alpha=False):
+    image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 5):
         c = random.choice([128, 128, 128, 128, 0, 255])
         pattern = [0x18, 0x3C, 0x7E, 0xFF, 0xFF, 0x7E, 0x3C, 0x18]
@@ -4598,12 +4616,14 @@ def marknoise(width, height, tileable=True):
             x + 8,
             y + 8,
             wraparound=tileable,
+            alpha=alpha,
         )
     return image
 
-# Returns an image with the same format returned by the blankimage() method with alpha=False.
-def brushednoise2(width, height, tileable=True):
-    image = blankimage(width, height, [192, 192, 192])
+# Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False.
+def brushednoise2(width, height, tileable=True, alpha=False):
+    image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 5):
         c = random.choice([128, 128, 128, 128, 0, 255])
         x = random.randint(0, width)
@@ -4614,12 +4634,24 @@ def brushednoise2(width, height, tileable=True):
         y1 = y + (-1 if random.randint(0, 1) == 0 else 1) * random.randint(
             0, height // 2
         )
-        linedraw(image, width, height, [c, c, c], x, y, x1, y1, wraparound=tileable)
+        linedraw(
+            image,
+            width,
+            height,
+            [c, c, c],
+            x,
+            y,
+            x1,
+            y1,
+            wraparound=tileable,
+            alpha=alpha,
+        )
     return image
 
-# Returns an image with the same format returned by the blankimage() method with alpha=False.
-def brushednoise3(width, height, tileable=True):
-    image = blankimage(width, height, [192, 192, 192])
+# Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False.
+def brushednoise3(width, height, tileable=True, alpha=False):
+    image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 3):
         c = random.choice([128, 128, 128, 128, 0, 255])
         if random.randint(0, 2) == 0:
@@ -4627,7 +4659,17 @@ def brushednoise3(width, height, tileable=True):
             x = random.randint(0, width)
             y = random.randint(0, height)
             x1 = random.randint(0, width // 2)
-            circledraw(image, width, height, [c, c, c], x, y, x1, wraparound=tileable)
+            circledraw(
+                image,
+                width,
+                height,
+                [c, c, c],
+                x,
+                y,
+                x1,
+                wraparound=tileable,
+                alpha=alpha,
+            )
         else:
             x = random.randint(0, width)
             y = random.randint(0, height)
@@ -4637,7 +4679,18 @@ def brushednoise3(width, height, tileable=True):
             y1 = y + (-1 if random.randint(0, 1) == 0 else 1) * random.randint(
                 0, height // 2
             )
-            linedraw(image, width, height, [c, c, c], x, y, x1, y1, wraparound=tileable)
+            linedraw(
+                image,
+                width,
+                height,
+                [c, c, c],
+                x,
+                y,
+                x1,
+                y1,
+                wraparound=tileable,
+                alpha=alpha,
+            )
     return image
 
 # Rotates in place a column of the image by the specified downward offset in pixels,
@@ -4839,7 +4892,7 @@ def affine(
 # Generates an image with a horizontal doubling of pixels.
 # The returned image has width 2*'w' and height 2*'h'.
 # Images have the same format returned by the blankimage() method with the
-# given value of 'alpha' (default value for 'alpha' is False).
+# specified value of 'alpha' (default value for 'alpha' is False).
 def twobyonestretch(image, w, h, alpha=False):
     return affine(
         blankimage(w * 2, h),
@@ -4857,7 +4910,7 @@ def twobyonestretch(image, w, h, alpha=False):
     )
 
 # Image has the same format returned by the blankimage() method with the
-# given value of 'alpha' (default value for 'alpha' is False).
+# specified value of 'alpha' (default value for 'alpha' is False).
 def horizskew(image, width, height, skew, alpha=False):
     if skew < -1 or skew > 1:
         raise ValueError
@@ -4867,7 +4920,7 @@ def horizskew(image, width, height, skew, alpha=False):
     return image
 
 # Image has the same format returned by the blankimage() method with the
-# given value of 'alpha' (default value for 'alpha' is False).
+# specified value of 'alpha' (default value for 'alpha' is False).
 def vertskew(image, width, height, skew, alpha=False):
     if skew < -1 or skew > 1:
         raise ValueError
@@ -4884,7 +4937,7 @@ def vertskew(image, width, height, skew, alpha=False):
 # If upward=False, the shear is rightward and only the upper and lowe edges
 # of the input image must be tileable.
 # Input and output images have the same format returned by the blankimage() method with the
-# given value of 'alpha' (default value for 'alpha' is False).
+# specified value of 'alpha' (default value for 'alpha' is False).
 def imageshear(
     img,
     width,
@@ -4923,7 +4976,7 @@ def imageshear(
     return img2
 
 # Image has the same format returned by the blankimage() method with the
-# given value of 'alpha' (default value for 'alpha' is False).
+# specified value of 'alpha' (default value for 'alpha' is False).
 def randomRotated(image, width, height, alpha=False):
     # Do the rotation rarely
     if random.randint(0, 6) > 0:
@@ -5059,17 +5112,44 @@ def svgimagepattern(idstr, image, width, height, transcolor=None, originX=0, ori
     return str(helper) + "</pattern>"
 
 class ImageWraparoundDraw:
-    # Image has the same format returned by the blankimage() method with alpha=False.
-    def __init__(self, image, width, height):
+    # Image has the same format returned by the blankimage() method with
+    # the specified value of 'alpha'.  The default value of 'alpha' is False.
+    def __init__(self, image, width, height, wraparound=True, alpha=False):
         self.image = image
         self.width = width
         self.height = height
+        self.alpha = alpha
+        self.wraparound = wraparound
 
     def rect(self, x0, y0, x1, y1, c):
         if len(c) == 2:
-            borderedbox(image, width, height, None, c[0], c[1], x0, y0, x1, y1)
+            borderedbox(
+                image,
+                width,
+                height,
+                None,
+                c[0],
+                c[1],
+                x0,
+                y0,
+                x1,
+                y1,
+                wraparound=self.wraparound,
+                alpha=self.alpha,
+            )
         else:
-            simplebox(self.image, self.width, self.height, c, x0, y0, x1, y1)
+            simplebox(
+                self.image,
+                self.width,
+                self.height,
+                c,
+                x0,
+                y0,
+                x1,
+                y1,
+                wraparound=self.wraparound,
+                alpha=self.alpha,
+            )
 
 class SvgDraw:
     def __init__(self):
@@ -5353,7 +5433,7 @@ def _drawloweredgecore(helper, x0, y0, x1, y1, color, edgesize=1):
         helper.rect(x0, y1 - edgesize, x1 - edgesize, y1, color)
 
 # hilt = upper part of edge, dksh = lower part of edge
-def _drawroundedgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=1):
+def _drawroundededgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=1):
     if x1 - x0 < edgesize * 2 and y1 - y0 < edgesize * 2:  # too narrow and short
         return
     elif x1 - x0 < edgesize * 2:  # too narrow
@@ -5417,6 +5497,44 @@ def drawedgetopdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=
         y0 += edgesize
         x1 -= edgesize
         y1 -= edgesize
+
+def drawsunkengroup(helper, x0, y0, x1, y1, hilt, lt, shadow, dkshadow):
+    z = 0
+    drawedgebotdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, dkshadow, dkshadow)
+    z += 1
+    drawedgebotdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, shadow, hilt)
+    return [x0 + z, y0 + z, max(x0 + z, x1 - z), max(y0 + z, y1 - z)]
+
+def drawreliefborder(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt,
+    lt,
+    shadow,
+    dkshadow,
+    outerbevel=1,
+    midframe=1,
+    innerbevel=1,
+):
+    z = 0
+    drawedgetopdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, dkshadow, dkshadow)
+    z += 1
+    drawedgetopdom(
+        helper, x0 + z, y0 + z, x1 - z, y1 - z, hilt, shadow, bordersize=outerbevel
+    )
+    z += outerbevel
+    for i in range(midframe):
+        drawedgebotdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, lt, lt)
+        z += 1
+    drawedgetopdom(
+        helper, x0 + z, y0 + z, x1 - z, y1 - z, shadow, hilt, bordersize=innerbevel
+    )
+    z += innerbevel
+    drawedgebotdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, dkshadow, dkshadow)
+    return [x0 + z, y0 + z, max(x0 + z, x1 - z), max(y0 + z, y1 - z)]
 
 # helper for edge drawing (lower right edge "dominates")
 def drawedgebotdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
@@ -5759,7 +5877,7 @@ def drawRoundOrSquareEdge(helper, x0, y0, x1, y1, lt, sh, squareFrame=False):
     if squareFrame:
         drawedgebotdom(helper, x0, y0, x1, y1, lt, sh)
     else:
-        drawroundedge(helper, x0, y0, x1, y1, lt, sh)
+        drawroundededge(helper, x0, y0, x1, y1, lt, sh)
 
 def drawbuttonpush(
     helper,
@@ -5874,18 +5992,28 @@ def draw16button(
     frame=None,  # optional frame color
     squareFrame=False,
     isDefault=False,
+    lowLight=False,
 ):
     # Leave 1-pixel room for the frame even if 'frame' is None
     edge = 2 if isDefault else 1
     drawedgebotdom(helper, x0 + edge, y0 + edge, x1 - edge, y1 - edge, hilt, sh)
     drawedgebotdom(
-        helper, x0 + edge + 1, y0 + edge + 1, x1 - edge - 1, y1 - edge - 1, hilt, sh
+        helper,
+        x0 + edge + 1,
+        y0 + edge + 1,
+        x1 - edge - 1,
+        y1 - edge - 1,
+        None if lowLight else hilt,
+        sh,
     )
     if frame:
         drawRoundOrSquareEdge(helper, x0, y0, x1, y1, frame, frame, squareFrame)
         if isDefault:
             drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, frame, frame)
-    return [x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn]
+    if lowLight:
+        return [x0 + edge + 1, y0 + edge + 1, x1 - edge - 2, y1 - edge - 2, btn]
+    else:
+        return [x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn]
 
 # random wallpaper generation
 
@@ -6296,6 +6424,49 @@ def _randomhatch():
             raise ValueError
 
 def _tileborder(image, width, height, orgx=0, orgy=0):
+    match random.randint(0, 1):
+        case 0:
+            _tileborder1(image, width, height, orgx, orgy)
+        case 1:
+            _tileborder2(image, width, height, orgx, orgy)
+        case _:
+            raise ValueError
+
+def _tileborder2(image, width, height, orgx=0, orgy=0):
+    thick = random.randint(1, 10)
+    padding = random.randint(1, 10)
+    mindim = (thick + padding + 2 + 1) * 2
+    if width < mindim or height < mindim:
+        _tileborder1(image, width, height, orgx, orgy)
+        return
+    helper = ImageWraparoundDraw(image, width, height)
+    z = 0
+    x0 = orgx
+    y0 = orgy
+    x1 = orgx + width
+    y1 = orgy + height
+    drawedgetopdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, [0, 0, 0], [0, 0, 0])
+    z += 1
+    drawedgetopdom(
+        helper,
+        x0 + z,
+        y0 + z,
+        x1 - z,
+        y1 - z,
+        [255, 255, 255],
+        [128, 128, 128],
+        bordersize=thick,
+    )
+    z += thick + padding
+    drawedgetopdom(
+        helper, x0 + z, y0 + z, x1 - z, y1 - z, [128, 128, 128], [255, 255, 255]
+    )
+    z += 1
+    drawedgetopdom(
+        helper, x0 + z, y0 + z, x1 - z, y1 - z, [255, 255, 255], [128, 128, 128]
+    )
+
+def _tileborder1(image, width, height, orgx=0, orgy=0):
     thick = random.randint(2, 10)
     x0 = orgx - thick // 2
     y0 = orgy - thick // 2

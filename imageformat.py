@@ -1632,6 +1632,22 @@ def reados2iconcore(f):
             f.seek(offsets[i])
             ret.append(_readicon(f))
         return ret
+    elif tag == bytes([2, 0]):
+        # Old Windows bitmap
+        f.seek(ft)
+        return _readoldbitmap(f)
+    elif tag == bytes([2, 0x81]):
+        # Old Windows bitmap
+        f.seek(ft)
+        return _readoldbitmap(f)
+    elif (
+        tag == bytes([1, 0])
+        or tag == bytes([3, 0])
+        or tag == bytes([1, 2])
+        or tag == bytes([3, 2])
+    ):
+        # Old Windows icon or cursor
+        return _readoldicon(f, tag[0], tag[1])
     elif tag == bytes([0, 0]):
         # Windows icon
         f.seek(ft)
@@ -1700,6 +1716,133 @@ def _readwinpal(f):
             return ret
         else:
             f.seek(f.tell() + sz)
+
+def _readoldicon(f, kind, num):
+    if num == 0:
+        return _readoldiconcore(f, kind)
+    ret = [None for i in range(num)]
+    for i in range(num):
+        ic = _readoldiconcore(f, kind, keepopen=True)
+        if len(ic) == 0:
+            break
+        ret[i] = ic[0]
+    f.close()
+    return ret
+
+def _readoldiconcore(f, kind, keepopen=False):
+    # Read Windows 2.x icon or cursor
+    fr = f.read(12)
+    if len(fr) < 12:
+        if not keepopen:
+            f.close()
+        return []
+    header = (kind, 0) + struct.unpack("<HHHHHH", fr)
+    if header[0] != 0x01 and header[0] != 0x03:
+        # Not an icon or cursor
+        print("A")
+        if not keepopen:
+            f.close()
+        return []
+    hotspotx = header[1]
+    hotspoty = header[2]
+    width = header[4]
+    height = header[5]
+    widthbytes = header[6]
+    needed = (width + 7) >> 3
+    if widthbytes < needed:
+        # Widthbytes insufficient
+        print("C")
+        if not keepopen:
+            f.close()
+        return []
+    if header[7] != 0:
+        # Not supported
+        print(["D", header[7]])
+        if not keepopen:
+            f.close()
+        return []
+    if width == 0 or height == 0 or widthbytes == 0:
+        print("E")
+        if not keepopen:
+            f.close()
+        return []
+    img = dw.blankimage(width, height, [0, 0, 0, 255], alpha=True)
+    pos = 0
+    # AND mask
+    for y in range(height):
+        fr = f.read(widthbytes)
+        if len(fr) != widthbytes:
+            if not keepopen:
+                f.close()
+            return []
+        for x in range(width):
+            bit = fr[x >> 3] & (1 << (7 - (x & 7)))
+            if bit != 0:
+                img[pos + 3] = 0
+            pos += 4
+    # XOR mask
+    pos = 0
+    for y in range(height):
+        fr = f.read(widthbytes)
+        if len(fr) != widthbytes:
+            if not keepopen:
+                f.close()
+            return []
+        for x in range(width):
+            bit = fr[x >> 3] & (1 << (7 - (x & 7)))
+            if bit != 0:
+                img[pos] = img[pos + 1] = img[pos + 2] = 255
+            else:
+                img[pos] = img[pos + 1] = img[pos + 2] = 0
+            pos += 4
+    if not keepopen:
+        f.close()
+    return [[img, width, height, hotspotx, hotspoty]]
+
+def _readoldbitmap(f):
+    # Read Windows 2.x bitmap
+    fr = f.read(16)
+    if len(fr) < 16:
+        f.close()
+        return []
+    header = struct.unpack("<BBBBHHHBBL", fr)
+    if header[0] != 0x02:
+        # Not a bitmap
+        f.close()
+        return []
+    if header[7] != 0x01:
+        # Unsupported plane count
+        f.close()
+        return []
+    if header[8] != 0x01:
+        # Unsupported bits per pixel
+        f.close()
+        return []
+    width = header[4]
+    height = header[5]
+    widthbytes = header[6]
+    needed = (width + 7) >> 3
+    if widthbytes < needed:
+        # Widthbytes insufficient
+        f.close()
+        return []
+    if header[9] != 0 or header[4] == 0 or header[5] == 0 or header[6] == 0:
+        f.close()
+        return []
+    img = dw.blankimage(header[4], header[5], [0, 0, 0, 255], alpha=True)
+    pos = 0
+    for y in range(header[5]):
+        fr = f.read(header[6])
+        if len(fr) != header[6]:
+            f.close()
+            return []
+        for x in range(header[4]):
+            bit = fr[x >> 3] & (1 << (7 - (x & 7)))
+            if bit != 0:
+                img[pos] = img[pos + 1] = img[pos + 2] = 255
+            pos += 4
+    f.close()
+    return [[img, header[4], header[5], 0, 0]]
 
 # Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
 # An OS/2 theme resource file is a collection of OS/2 resources
@@ -1904,7 +2047,8 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
                 hotspot[1] if hotspot else 1,
             ]
         else:
-            _errprint("unsupported header size: %d [%08X]" % (tag[0], ft))
+            if tag[0] < 512:
+                _errprint("unsupported header size: %d [%08X]" % (tag[0], ft))
             return None
     bmih = tag + struct.unpack("<llHHLLllLL", f.read(0x24))
     bitcount = bmih[4]
@@ -2150,6 +2294,7 @@ def _readwinicon(f):
         if not entries[i]:
             continue
         f.seek(entries[i][5])
+        # print("%04X" %(entries[i][5]))
         entries[i] = _readwiniconcore(
             f,
             entries[i],
@@ -2289,6 +2434,8 @@ def _readicon(f, packedWinBitmap=False):
                 _errprint(["unsupported alpha mask", andalphamask])
                 return None
         if andmaskhdr[0] >= 0x7C:
+            if len(andmaskextra) < andmaskhdr[0]:
+                return None
             extrainfo = struct.unpack("<LLLLLLLLLLLLLLLLLLLLL", andmaskextra)
             for i in range(5, 5 + 12):
                 if slack[i] != 0:
@@ -2354,6 +2501,7 @@ def _readicon(f, packedWinBitmap=False):
             _errprint("unusual palette size: %d" % (andpalette))
             unusual = None
     if andmaskhdr[1] < 0:
+        _errprint("negative width")
         return None
     andcolortable = f.tell()
     f.seek(andcolortable + andpalette * (3 if andmaskhdr[0] <= 0x0C else 4))
@@ -2495,6 +2643,7 @@ def _readicon(f, packedWinBitmap=False):
                 #    _errprint(["alpha mask not yet supported", masks,andalphamask])
                 #    return None
             if len(masks) < 12:
+                _errprint(["unsupported color masks: len=%d", len(masks)])
                 return None
             masks = struct.unpack("<LLL", masks)
             # NOTE: Windows 95, 98, and Me support a bitmap with compression mode
@@ -2533,6 +2682,7 @@ def _readicon(f, packedWinBitmap=False):
     try:
         andmask = f.read(sz)
     except:
+        _errprint("can't read whole image")
         return None
     if len(andmask) != sz:
         _errprint("Failure: %d %d [%d]" % (len(andmask), sz, andcompression))

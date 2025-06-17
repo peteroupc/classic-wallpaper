@@ -135,7 +135,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^3]:  See, for example, _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
 
-[^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
+[^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000. <br>Before 1995 the icon outline tended to be black on all edges. And, before 1992, Windows version 3.0 icons tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two pixels.
 
 [^5]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 and 20 &times; 20.  The standard icon sizes in the OS/2 system are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.
 
