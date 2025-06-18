@@ -4517,6 +4517,12 @@ def helperlinedraw(
     y1,
     drawEndPoint=False,
 ):
+    if x0 == x1 and drawEndPoint and y0 < y1:
+        drawpositiverect(helper, x0, y0, x0 + 1, y1 + 1, c)
+        return
+    elif y0 == y1 and drawEndPoint and x0 < x1:
+        drawpositiverect(helper, x0, y0, x1 + 1, y0 + 1, c)
+        return
     # Bresenham's algorithm
     dx = x1 - x0
     dy = y1 - y0
