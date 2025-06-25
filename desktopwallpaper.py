@@ -1323,8 +1323,12 @@ def hatchedbox_alignorigins(
 # 0xF0: Pattern copy.
 # 0xFB: "Pattern paint".
 #
-# 'maskimage' is ideally a two-level image in which every pixel's bits are either all zeros
-# (black) or all ones (white), but it doesn't have to be.
+# 0xB8 is a useful ternary raster operation: if the source is a two-level image in which
+# each pixel's bits are either all zeros ("black") or all ones ("white"), this operation fills,
+# with the pattern, the areas where the source is 0 ("black").
+#
+# 'maskimage' is ideally a two-level image in which each pixel's bits are either all zeros
+# ("black") or all ones ("white"), but it doesn't have to be.
 # 'dstimage' may be the same as 'srcimage', 'patternimage', or 'maskimage',
 # and the source and destination rectangles may overlap.
 def imageblitex(
@@ -1369,6 +1373,7 @@ def imageblitex(
         or patternwidth == 0
         or patternheight == 0
     ):
+        # No pattern needed
         patternimage = None
     if maskimage != None and (maskwidth < 0 or maskheight < 0):
         raise ValueError
@@ -1409,6 +1414,32 @@ def imageblitex(
     if ropForeground == 0xAA and ropBackground == 0xAA:
         # Destination left unchanged
         return
+    needDestination = True
+    if (
+        (ropForeground & 0x03) != 1
+        and ((ropForeground >> 2) & 0x03) != 1
+        and ((ropForeground >> 4) & 0x03) != 1
+        and ((ropForeground >> 6) & 0x03) != 1
+        and (ropForeground & 0x03) != 2
+        and ((ropForeground >> 2) & 0x03) != 2
+        and ((ropForeground >> 4) & 0x03) != 2
+        and ((ropForeground >> 6) & 0x03) != 2
+        and (
+            ropBackground == ropForeground
+            or (
+                (ropBackground & 0x03) != 1
+                and ((ropBackground >> 2) & 0x03) != 1
+                and ((ropBackground >> 4) & 0x03) != 1
+                and ((ropBackground >> 6) & 0x03) != 1
+                and (ropBackground & 0x03) != 2
+                and ((ropBackground >> 2) & 0x03) != 2
+                and ((ropBackground >> 4) & 0x03) != 2
+                and ((ropBackground >> 6) & 0x03) != 2
+            )
+        )
+    ):
+        # No need to read from destination
+        needDestination = False
     if srcimage is dstimage or patternimage is dstimage or maskimage is dstimage:
         # Avoid overlapping source/pattern/mask with destination
         return imageblitex(
@@ -1482,7 +1513,7 @@ def imageblitex(
             maskpos = masky + (x0mask + x) * pixelsize if maskimage else 0
             for i in range(pixelsize):
                 s1 = srcimage[srcpos + i] if srcimage else 0
-                d1 = dstimage[dstpos + i] if dstimage else 0
+                d1 = dstimage[dstpos + i] if dstimage and needDestination else 0
                 p1 = patternimage[patpos + i] if patternimage else 0
                 m1 = maskimage[maskpos + i] if maskimage else 0
                 sdl = _applyrop(d1, s1, ropForeground & 0xF)
@@ -1595,6 +1626,32 @@ def imagetransblit(
     if ropForeground == 0xAA and ropBackground == 0xAA:
         # Destination left unchanged
         return
+    needDestination = True
+    if (
+        (ropForeground & 0x03) != 1
+        and ((ropForeground >> 2) & 0x03) != 1
+        and ((ropForeground >> 4) & 0x03) != 1
+        and ((ropForeground >> 6) & 0x03) != 1
+        and (ropForeground & 0x03) != 2
+        and ((ropForeground >> 2) & 0x03) != 2
+        and ((ropForeground >> 4) & 0x03) != 2
+        and ((ropForeground >> 6) & 0x03) != 2
+        and (
+            ropBackground == ropForeground
+            or (
+                (ropBackground & 0x03) != 1
+                and ((ropBackground >> 2) & 0x03) != 1
+                and ((ropBackground >> 4) & 0x03) != 1
+                and ((ropBackground >> 6) & 0x03) != 1
+                and (ropBackground & 0x03) != 2
+                and ((ropBackground >> 2) & 0x03) != 2
+                and ((ropBackground >> 4) & 0x03) != 2
+                and ((ropBackground >> 6) & 0x03) != 2
+            )
+        )
+    ):
+        # No need to read from destination
+        needDestination = False
     if srcimage is dstimage or patternimage is dstimage:
         # Avoid overlapping source/pattern with destination
         return imagetransblit(
@@ -1667,7 +1724,7 @@ def imagetransblit(
             )
             for i in range(pixelsize):
                 s1 = srcimage[srcpos + i] if srcimage else 0
-                d1 = dstimage[dstpos + i] if dstimage else 0
+                d1 = dstimage[dstpos + i] if dstimage and needDestination else 0
                 p1 = patternimage[patpos + i] if patternimage else 0
                 sdl = _applyrop(d1, s1, ropForeground & 0xF)
                 sdh = _applyrop(d1, s1, (ropForeground >> 4) & 0xF)
@@ -3364,8 +3421,9 @@ def borderedbox(
                 if alpha:
                     image[pos + 3] = c2a
 
-# Split an image into two interlaced versions with half the height.
-# Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
+# Split an image into two interlaced versions (known as "fields") with half the height.
+# Image has the same format returned by the blankimage() method with the
+# specified value of 'alpha' (default value for 'alpha' is False).
 # The first image should be displayed at even-numbered frames; the second,
 # odd-numbered.
 def interlace(image, width, height, alpha=False):
@@ -4523,6 +4581,9 @@ def helperlinedraw(
     elif y0 == y1 and drawEndPoint and x0 < x1:
         drawpositiverect(helper, x0, y0, x1 + 1, y0 + 1, c)
         return
+    elif x0 == x1 and y0 == y1 and drawEndPoint:
+        drawpositiverect(helper, x0, y0, x1 + 1, y0 + 1, c)
+        return
     # Bresenham's algorithm
     dx = x1 - x0
     dy = y1 - y0
@@ -4578,6 +4639,146 @@ def helperlinedraw(
                 z += b
                 y += coordchange
             drawpositiverect(helper, x, y, x + 1, y + 1, c)
+
+# 'dst' and 'src' are nonalpha images.
+def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2):
+    iters = srch
+    rowsize = 1
+    if color1 == color2:
+        iters = 1
+        rowsize = srch
+    for i in range(0, iters):
+        c = [a + (b - a) * i // iters for a, b in zip(color1, color2)]
+        imageblitex(
+            dst,
+            dstw,
+            dsth,
+            dstx,
+            dsty + i,
+            dstx + srcw,
+            dsty + i + rowsize,
+            src,
+            srcw,
+            srch,
+            0,
+            i,
+            patternimage=c,
+            patternwidth=1,
+            patternheight=1,
+            # where the source is 1, leave unchanged;
+            # where the pattern is 0 and source is 0, set black;
+            # where the pattern is 1 and source is 0, set white
+            ropForeground=0xB8,
+            wraparound=False,
+        )
+
+# 'dst' and 'src' are nonalpha images.
+def drawmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
+    drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color, color)
+
+# 'image1' and 'image2' are nonalpha images.
+def transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
+    return _transition(
+        image1,
+        image2,
+        w,
+        h,
+        transition,
+        tw,
+        th,
+        (-fuzziness) + (1 + fuzziness * 2) * t,
+        fuzziness=fuzziness,
+    )
+
+def _transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
+    if fuzziness < 0:
+        raise ValueError
+    if tw == None or tw <= 0 or th <= 0:
+        raise ValueError
+    fuzziness = min(fuzziness, 1.0)
+    if t <= 0 - fuzziness:
+        return [x for x in image1]
+    if t >= 1 + fuzziness:
+        return [x for x in image2]
+    img = blankimage(w, h)
+    for y in range(h):
+        ty = th * y / max(1, h - 1)
+        for x in range(w):
+            c = imagept(transition, tw, th, tw * x / max(1, w - 1), ty)
+            tt = c[0] / 255.0
+            if t < tt - fuzziness:
+                setpixel(img, w, h, x, y, getpixel(image1, w, h, x, y))
+            elif t >= tt + fuzziness:
+                setpixel(img, w, h, x, y, getpixel(image2, w, h, x, y))
+            else:
+                p1 = getpixel(image1, w, h, x, y)
+                p2 = getpixel(image2, w, h, x, y)
+                alpha = (t - (tt - fuzziness)) / (fuzziness * 2)
+                pb = [int(a + (b - a) * alpha) for a, b in zip(p1, p2)]
+                setpixel(img, w, h, x, y, pb)
+    return img
+
+# Generates a 3-D effect on a shape defined by an image
+# each of whose pixels is all zeros or all ones.
+# The area of the shape is defined by the all-zero pixels.
+# 'mask' is a nonalpha image.
+
+def _is_off_mask(mask, w, h, x, y, pos):
+    return x < 0 or x >= w or y < 0 or y >= h or mask[pos] != 0
+
+def threedee(mask, w, h, layercolors):
+    if len(layercolors) <= 0:
+        raise ValueError
+    layers = len(layercolors)
+    stride = w * 3
+    ret = blankimage(w, h, [192, 192, 192])
+    for i in range(layers):
+        newmask = None if layers == 1 else [x for x in mask]
+        pos = 0
+        lc1 = layercolors[i][0]
+        lc2 = layercolors[i][1]
+        for y in range(h):
+            for x in range(w):
+                if mask[pos] != 0:
+                    pos += 3
+                    continue
+                topshade = (x == 0 or mask[pos - 3] != 0) or (
+                    y == 0 or mask[pos - stride] != 0
+                )
+                botshade = (x == w - 1 or mask[pos + 3] != 0) or (
+                    y == h - 1 or mask[pos + stride] != 0
+                )
+                if topshade and botshade:
+                    # avoid unsightly changes in relief color
+                    if _is_off_mask(
+                        mask, w, h, x, y + 1, pos + stride
+                    ) and not _is_off_mask(mask, w, h, x + 1, y + 1, pos + stride + 3):
+                        botshade = False
+                    elif _is_off_mask(
+                        mask, w, h, x + 1, y, pos + 3
+                    ) and not _is_off_mask(mask, w, h, x + 1, y + 1, pos + stride + 3):
+                        botshade = False
+                if botshade:
+                    ret[pos] = lc2[0]
+                    ret[pos + 1] = lc2[1]
+                    ret[pos + 2] = lc2[2]
+                    if newmask:
+                        newmask[pos] = 0xFF
+                elif topshade:
+                    ret[pos] = lc1[0]
+                    ret[pos + 1] = lc1[1]
+                    ret[pos + 2] = lc1[2]
+                    if newmask:
+                        newmask[pos] = 0xFF
+                pos += 3
+        mask = newmask
+    return ret
+
+# 'image1' and 'image2' are nonalpha images.
+def grayblackshadow(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
+    drawmask(dst, dstw, dsth, dstx - 2, dsty - 2, src, srcw, srch, [192, 192, 192])
+    drawmask(dst, dstw, dsth, dstx + 2, dsty + 2, src, srcw, srch, [128, 128, 128])
+    drawmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)
 
 # Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False.
@@ -6451,8 +6652,11 @@ def _tileborder2(image, width, height, orgx=0, orgy=0):
     y0 = orgy
     x1 = orgx + width
     y1 = orgy + height
-    drawedgetopdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, [0, 0, 0], [0, 0, 0])
-    z += 1
+    if random.randint(0, 1) == 0:
+        # Draw "black" border
+        drawedgetopdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, [0, 0, 0], [0, 0, 0])
+        z += 1
+    # Draw raised bevel
     drawedgetopdom(
         helper,
         x0 + z,
@@ -6463,6 +6667,7 @@ def _tileborder2(image, width, height, orgx=0, orgy=0):
         [128, 128, 128],
         bordersize=thick,
     )
+    # Draw engraved and padded inner border
     z += thick + padding
     drawedgetopdom(
         helper, x0 + z, y0 + z, x1 - z, y1 - z, [128, 128, 128], [255, 255, 255]

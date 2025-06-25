@@ -1743,6 +1743,7 @@ def _readoldiconcore(f, kind, keepopen=False):
         if not keepopen:
             f.close()
         return []
+    # Hot spots are valid for icons and pointers (cursors).
     hotspotx = header[1]
     hotspoty = header[2]
     width = header[4]

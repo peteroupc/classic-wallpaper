@@ -94,7 +94,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given earlier as well
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple video files without sound that are limited to 256 colors, this control appears to be rarely used.  More usually, traditional desktop applications don't store an  animation as a video file; rather, its frames are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames).  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
+Although Windows 95 and later versions have an _animation control_ for displaying simple video files without sound that are limited to 256 colors, this control appears to be rarely used.  More usually, traditional desktop applications don't store an  animation as a video file; rather, its frames are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames). [^8]  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
 
 ## Drawing Style
 
@@ -142,3 +142,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^6]: Dithering is the scattering of colors in a limited set to simulate colors outside that set.
 
 [^7]: _Window borders_ are the outer edges of desktop windows.  Text box borders are also known as "field borders".  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.
+
+[^8]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.

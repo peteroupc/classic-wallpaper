@@ -501,6 +501,7 @@ Data descriptors defined here:<br>
     bordersize=1
 )</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(neither&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawgradientmask"><strong>drawgradientmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
  <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
@@ -522,6 +523,7 @@ Data descriptors defined here:<br>
     innerbordersize=1
 )</dt></dl>
  <dl><dt><a name="-drawloweredge"><strong>drawloweredge</strong></a>(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1)</dt></dl>
+ <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
  <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
@@ -602,6 +604,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-getpixelbgralpha"><strong>getpixelbgralpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and&nbsp;alpha<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-grayblackshadow"><strong>grayblackshadow</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
  <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, ignoreNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
 #&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;specified&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
@@ -814,8 +817,12 @@ Data descriptors defined here:<br>
 #&nbsp;0xF0:&nbsp;Pattern&nbsp;copy.<br>
 #&nbsp;0xFB:&nbsp;"Pattern&nbsp;paint".<br>
 #<br>
-#&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;two-level&nbsp;image&nbsp;in&nbsp;which&nbsp;every&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;either&nbsp;all&nbsp;zeros<br>
-#&nbsp;(black)&nbsp;or&nbsp;all&nbsp;ones&nbsp;(white),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.<br>
+#&nbsp;0xB8&nbsp;is&nbsp;a&nbsp;useful&nbsp;ternary&nbsp;raster&nbsp;operation:&nbsp;if&nbsp;the&nbsp;source&nbsp;is&nbsp;a&nbsp;two-level&nbsp;image&nbsp;in&nbsp;which<br>
+#&nbsp;each&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;either&nbsp;all&nbsp;zeros&nbsp;("black")&nbsp;or&nbsp;all&nbsp;ones&nbsp;("white"),&nbsp;this&nbsp;operation&nbsp;fills,<br>
+#&nbsp;with&nbsp;the&nbsp;pattern,&nbsp;the&nbsp;areas&nbsp;where&nbsp;the&nbsp;source&nbsp;is&nbsp;0&nbsp;("black").<br>
+#<br>
+#&nbsp;'maskimage'&nbsp;is&nbsp;ideally&nbsp;a&nbsp;two-level&nbsp;image&nbsp;in&nbsp;which&nbsp;each&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;either&nbsp;all&nbsp;zeros<br>
+#&nbsp;("black")&nbsp;or&nbsp;all&nbsp;ones&nbsp;("white"),&nbsp;but&nbsp;it&nbsp;doesn't&nbsp;have&nbsp;to&nbsp;be.<br>
 #&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage',&nbsp;'patternimage',&nbsp;or&nbsp;'maskimage',<br>
 #&nbsp;and&nbsp;the&nbsp;source&nbsp;and&nbsp;destination&nbsp;rectangles&nbsp;may&nbsp;overlap.</span></dd></dl>
  <dl><dt><a name="-imagecomposite"><strong>imagecomposite</strong></a>(
@@ -1012,8 +1019,9 @@ Data descriptors defined here:<br>
 #&nbsp;'dstimage'&nbsp;may&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;'srcimage'&nbsp;or&nbsp;'patternimage',<br>
 #&nbsp;and&nbsp;the&nbsp;source&nbsp;and&nbsp;destination&nbsp;rectangles&nbsp;may&nbsp;overlap.</span></dd></dl>
  <dl><dt><a name="-imagetranspose"><strong>imagetranspose</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-interlace"><strong>interlace</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Split&nbsp;an&nbsp;image&nbsp;into&nbsp;two&nbsp;interlaced&nbsp;versions&nbsp;with&nbsp;half&nbsp;the&nbsp;height.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+ <dl><dt><a name="-interlace"><strong>interlace</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Split&nbsp;an&nbsp;image&nbsp;into&nbsp;two&nbsp;interlaced&nbsp;versions&nbsp;(known&nbsp;as&nbsp;"fields")&nbsp;with&nbsp;half&nbsp;the&nbsp;height.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;first&nbsp;image&nbsp;should&nbsp;be&nbsp;displayed&nbsp;at&nbsp;even-numbered&nbsp;frames;&nbsp;the&nbsp;second,<br>
 #&nbsp;odd-numbered.</span></dd></dl>
  <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;light&nbsp;gray&nbsp;(192,192,192)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;white&nbsp;(255,255,255)&nbsp;background.</span></dd></dl>
@@ -1336,6 +1344,7 @@ Data descriptors defined here:<br>
     originX=0,
     originY=0
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-threedee"><strong>threedee</strong></a>(mask, w, h, layercolors)</dt></dl>
  <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
 #&nbsp;seamlessly&nbsp;tileable.<br>
@@ -1358,6 +1367,7 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
  <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-transition"><strong>transition</strong></a>(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
  <dl><dt><a name="-twobyonestretch"><strong>twobyonestretch</strong></a>(image, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;horizontal&nbsp;doubling&nbsp;of&nbsp;pixels.<br>
 #&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;width&nbsp;2*'w'&nbsp;and&nbsp;height&nbsp;2*'h'.<br>
 #&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
