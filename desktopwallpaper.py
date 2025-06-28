@@ -4640,7 +4640,143 @@ def helperlinedraw(
                 y += coordchange
             drawpositiverect(helper, x, y, x + 1, y + 1, c)
 
-# 'dst' and 'src' are nonalpha images.
+def _edgetoscans(
+    scans,
+    scanY,
+    x0,
+    y0,
+    x1,
+    y1,
+):
+    if y0 > y1:
+        t = y0
+        y0 = y1
+        y1 = t
+        t = x0
+        x0 = x1
+        x1 = t
+    if y0 < scanY:
+        raise ValueError
+    if x0 == x1:
+        # vertical
+        for i in range(y0, y1):
+            p = i - scanY
+            scans[p * 2] = min(scans[p * 2], x0) if scans[p * 2] != None else x0
+            scans[p * 2 + 1] = (
+                max(scans[p * 2 + 1], x0) if scans[p * 2 + 1] != None else x0
+            )
+        return
+    if y0 == y1:
+        # horizontal; so no scan lines
+        return
+    # Bresenham's algorithm
+    dx = x1 - x0
+    dy = y1 - y0
+    p = y0 - scanY
+    scans[p * 2] = min(scans[p * 2], x0) if scans[p * 2] != None else x0
+    scans[p * 2 + 1] = max(scans[p * 2 + 1], x0) if scans[p * 2 + 1] != None else x0
+    if abs(dy) > abs(dx):
+        if y1 < y0:
+            dy = abs(dy)
+            dx = -dx
+            t = y0
+            y0 = y1
+            y1 = t
+            t = x0
+            x0 = x1
+            x1 = t
+        a = abs(dx + dx)
+        z = a - dy
+        b = z - dy
+        y = y0
+        x = x0
+        coordchange = -1 if dx < 0 else 1
+        for i in range(1, y1 - y0):
+            y += 1
+            if z < 0:
+                z += a
+            else:
+                z += b
+                x += coordchange
+            p = y - scanY
+            scans[p * 2] = min(scans[p * 2], x) if scans[p * 2] != None else x
+            scans[p * 2 + 1] = (
+                max(scans[p * 2 + 1], x) if scans[p * 2 + 1] != None else x
+            )
+    else:
+        if x1 < x0:
+            dx = abs(dx)
+            dy = -dy
+            t = y0
+            y0 = y1
+            y1 = t
+            t = x0
+            x0 = x1
+            x1 = t
+        a = abs(dy + dy)
+        z = a - dx
+        b = z - dx
+        y = y0
+        x = x0
+        coordchange = -1 if dy < 0 else 1
+        for i in range(1, x1 - x0):
+            x += 1
+            if z < 0:
+                z += a
+            else:
+                z += b
+                y += coordchange
+            p = y - scanY
+            scans[p * 2] = min(scans[p * 2], x) if scans[p * 2] != None else x
+            scans[p * 2 + 1] = (
+                max(scans[p * 2 + 1], x) if scans[p * 2 + 1] != None else x
+            )
+
+def simplepolygonfill(helper, color, points):
+    # Fill a so-called "monotone-vertical" polygon, one that changes direction along
+    # the y-axis exactly twice, whether or not the polygon is self-intersecting.
+    # Every convex polygon is monotone-vertical.
+    # Each point is a two-item list containing the x and y integer coordinates.
+    # See Michael Abrash's Graphics Programming Black Book Special Edition,
+    # chapter 41.
+    if len(points) < 3:
+        return
+    direc = 0
+    direcChanged = False
+    splitPoint = True
+    lasty = 0
+    minY = points[0][0]
+    maxY = points[0][1]
+    minP = 0
+    maxP = 0
+    for i in range(1, len(points)):
+        y = points[i][1]
+        if y < minY:
+            minP = i
+            minY = y
+        elif y > maxY:
+            maxP = i
+            maxY = y
+    length = maxY - minY
+    if length <= 0:
+        return
+    edges = [None for i in range(length * 2)]
+    for i in range(1, len(points)):
+        _edgetoscans(
+            edges, minY, points[i - 1][0], points[i - 1][1], points[i][0], points[i][1]
+        )
+    z = len(points) - 1
+    _edgetoscans(edges, minY, points[z][0], points[z][1], points[0][0], points[0][1])
+    i = 0
+    # Draw the scan lines making up the polygon
+    y = minY
+    while i < length * 2:
+        if edges[i] != None:
+            drawpositiverect(helper, edges[i], y, edges[i + 1], y + 1, color)
+        i += 2
+        y += 1
+
+# 'dst' and 'src' have the same format returned by the blankimage() method with alpha=False.
 def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2):
     iters = srch
     rowsize = 1
@@ -4672,11 +4808,11 @@ def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color
             wraparound=False,
         )
 
-# 'dst' and 'src' are nonalpha images.
+# 'dst' and 'src' have the same format returned by the blankimage() method with alpha=False.
 def drawmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
     drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color, color)
 
-# 'image1' and 'image2' are nonalpha images.
+# 'image1' and 'image2' have the same format returned by the blankimage() method with alpha=False.
 def transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
     return _transition(
         image1,
@@ -4718,63 +4854,106 @@ def _transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
                 setpixel(img, w, h, x, y, pb)
     return img
 
-# Generates a 3-D effect on a shape defined by an image
-# each of whose pixels is all zeros or all ones.
-# The area of the shape is defined by the all-zero pixels.
-# 'mask' is a nonalpha image.
-
 def _is_off_mask(mask, w, h, x, y, pos):
     return x < 0 or x >= w or y < 0 or y >= h or mask[pos] != 0
 
-def threedee(mask, w, h, layercolors):
+# Draws a 3-D border on a shape defined by a mask image,
+# each of whose pixels is all zeros or all ones.
+# The area of the shape is defined by the all-zero pixels.
+# 'mask' has the same format returned by the blankimage() method with alpha=False.
+# 'fillcolor' is the fill color, if any.
+def threedee(helper, x0, y0, mask, w, h, layercolors, traceInnerCorners=False):
     if len(layercolors) <= 0:
         raise ValueError
     layers = len(layercolors)
+    maskbuffer1 = None
+    maskbuffer2 = None
+    frontmask = mask
+    backmask = None
     stride = w * 3
-    ret = blankimage(w, h, [192, 192, 192])
+    if layers > 1:
+        maskbuffer1 = [x for x in mask]
+        maskbuffer2 = [x for x in mask]
+        frontmask = mask
+        backmask = maskbuffer2
     for i in range(layers):
-        newmask = None if layers == 1 else [x for x in mask]
         pos = 0
         lc1 = layercolors[i][0]
         lc2 = layercolors[i][1]
         for y in range(h):
             for x in range(w):
-                if mask[pos] != 0:
+                if frontmask[pos] != 0:
                     pos += 3
                     continue
-                topshade = (x == 0 or mask[pos - 3] != 0) or (
-                    y == 0 or mask[pos - stride] != 0
+                topshade = (x == 0 or frontmask[pos - 3] != 0) or (
+                    y == 0 or frontmask[pos - stride] != 0
                 )
-                botshade = (x == w - 1 or mask[pos + 3] != 0) or (
-                    y == h - 1 or mask[pos + stride] != 0
+                topshade = topshade or (
+                    traceInnerCorners
+                    and (
+                        (
+                            # nonmask pixel at upper left, and mask pixel above
+                            x == 0
+                            or y == 0
+                            or frontmask[pos - stride - 3] != 0
+                            and (y != 0 and frontmask[pos - stride] == 0)
+                        )
+                        or (
+                            # nonmask pixel at lower left, and mask pixel below
+                            (x == 0 or y == h - 1 or frontmask[pos + stride - 3] != 0)
+                            and (y != h - 1 and frontmask[pos + stride] == 0)
+                        )
+                    )
+                )
+                botshade = (x == w - 1 or frontmask[pos + 3] != 0) or (
+                    y == h - 1 or frontmask[pos + stride] != 0
+                )
+                botshade = botshade or (
+                    traceInnerCorners
+                    and (
+                        (
+                            # nonmask pixel at lower right, and mask pixel below
+                            (
+                                y == h - 1
+                                or x == w - 1
+                                or frontmask[pos + stride + 3] != 0
+                            )
+                            and (y != h - 1 and frontmask[pos + stride] == 0)
+                        )
+                        or (
+                            # nonmask pixel at upper right, and mask pixel above
+                            (x == w - 1 or y == 0 or frontmask[pos - stride + 3] != 0)
+                            and (y != 0 and frontmask[pos - stride] == 0)
+                        )
+                    )
                 )
                 if topshade and botshade:
                     # avoid unsightly changes in relief color
                     if _is_off_mask(
-                        mask, w, h, x, y + 1, pos + stride
-                    ) and not _is_off_mask(mask, w, h, x + 1, y + 1, pos + stride + 3):
+                        frontmask, w, h, x, y + 1, pos + stride
+                    ) and not _is_off_mask(
+                        frontmask, w, h, x + 1, y + 1, pos + stride + 3
+                    ):
                         botshade = False
                     elif _is_off_mask(
-                        mask, w, h, x + 1, y, pos + 3
-                    ) and not _is_off_mask(mask, w, h, x + 1, y + 1, pos + stride + 3):
+                        frontmask, w, h, x + 1, y, pos + 3
+                    ) and not _is_off_mask(
+                        frontmask, w, h, x + 1, y + 1, pos + stride + 3
+                    ):
                         botshade = False
                 if botshade:
-                    ret[pos] = lc2[0]
-                    ret[pos + 1] = lc2[1]
-                    ret[pos + 2] = lc2[2]
-                    if newmask:
-                        newmask[pos] = 0xFF
+                    helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc2)
+                    if backmask:
+                        backmask[pos] = 0xFF
                 elif topshade:
-                    ret[pos] = lc1[0]
-                    ret[pos + 1] = lc1[1]
-                    ret[pos + 2] = lc1[2]
-                    if newmask:
-                        newmask[pos] = 0xFF
+                    helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc1)
+                    if backmask:
+                        backmask[pos] = 0xFF
                 pos += 3
-        mask = newmask
-    return ret
+        frontmask = backmask
+        backmask = maskbuffer1 if i % 2 == 0 else maskbuffer2
 
-# 'image1' and 'image2' are nonalpha images.
+# 'image1' and 'image2' have the same format returned by the blankimage() method with alpha=False.
 def grayblackshadow(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
     drawmask(dst, dstw, dsth, dstx - 2, dsty - 2, src, srcw, srch, [192, 192, 192])
     drawmask(dst, dstw, dsth, dstx + 2, dsty + 2, src, srcw, srch, [128, 128, 128])

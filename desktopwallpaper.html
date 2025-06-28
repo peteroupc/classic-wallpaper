@@ -501,7 +501,7 @@ Data descriptors defined here:<br>
     bordersize=1
 )</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(neither&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
- <dl><dt><a name="-drawgradientmask"><strong>drawgradientmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
+ <dl><dt><a name="-drawgradientmask"><strong>drawgradientmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
@@ -523,7 +523,7 @@ Data descriptors defined here:<br>
     innerbordersize=1
 )</dt></dl>
  <dl><dt><a name="-drawloweredge"><strong>drawloweredge</strong></a>(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1)</dt></dl>
- <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
+ <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
  <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
@@ -604,7 +604,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-getpixelbgralpha"><strong>getpixelbgralpha</strong></a>(image, width, height, x, y)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and&nbsp;alpha<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
- <dl><dt><a name="-grayblackshadow"><strong>grayblackshadow</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
+ <dl><dt><a name="-grayblackshadow"><strong>grayblackshadow</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, ignoreNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
 #&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;specified&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
@@ -1314,6 +1314,7 @@ Data descriptors defined here:<br>
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;simple&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-simplepolygonfill"><strong>simplepolygonfill</strong></a>(helper, color, points)</dt></dl>
  <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
 #&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.<br>
@@ -1344,7 +1345,11 @@ Data descriptors defined here:<br>
     originX=0,
     originY=0
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-threedee"><strong>threedee</strong></a>(mask, w, h, layercolors)</dt></dl>
+ <dl><dt><a name="-threedee"><strong>threedee</strong></a>(helper, x0, y0, mask, w, h, layercolors, traceInnerCorners=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3-D&nbsp;border&nbsp;on&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
+#&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;ones.<br>
+#&nbsp;The&nbsp;area&nbsp;of&nbsp;the&nbsp;shape&nbsp;is&nbsp;defined&nbsp;by&nbsp;the&nbsp;all-zero&nbsp;pixels.<br>
+#&nbsp;'mask'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'fillcolor'&nbsp;is&nbsp;the&nbsp;fill&nbsp;color,&nbsp;if&nbsp;any.</span></dd></dl>
  <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
 #&nbsp;seamlessly&nbsp;tileable.<br>
@@ -1367,7 +1372,7 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
  <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-transition"><strong>transition</strong></a>(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;are&nbsp;nonalpha&nbsp;images.</span></dd></dl>
+ <dl><dt><a name="-transition"><strong>transition</strong></a>(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-twobyonestretch"><strong>twobyonestretch</strong></a>(image, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;horizontal&nbsp;doubling&nbsp;of&nbsp;pixels.<br>
 #&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;width&nbsp;2*'w'&nbsp;and&nbsp;height&nbsp;2*'h'.<br>
 #&nbsp;Images&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>

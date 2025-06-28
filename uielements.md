@@ -51,7 +51,7 @@ The _desktopwallpaper.py_ file has some example code for border and button drawi
 The following appearances are traditionally seen in ordinary buttons:
 
 - _Monochrome appearance_: The button's text and icons are drawn using the button shadow color instead of its normal colors, but with transparency and opacity in the label preserved.
-- _Embossed appearance_: The button's text and icons are  drawn&mdash;
+- _Embossed appearance_: The button's text and icons are drawn&mdash;
 
     - using the button highlight color instead of its normal colors, then
     - using the button shadow color instead of its normal colors and offset 1 pixel upward and 1 pixel to the left,
