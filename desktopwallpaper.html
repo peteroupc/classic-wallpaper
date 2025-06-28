@@ -1345,11 +1345,25 @@ Data descriptors defined here:<br>
     originX=0,
     originY=0
 )</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-threedee"><strong>threedee</strong></a>(helper, x0, y0, mask, w, h, layercolors, traceInnerCorners=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3-D&nbsp;border&nbsp;on&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
+ <dl><dt><a name="-threedee"><strong>threedee</strong></a>(
+    helper,
+    x0,
+    y0,
+    mask,
+    w,
+    h,
+    layercolors,
+    fillColor=None,
+    traceInnerCorners=False
+)</dt><dd><span class="code">#&nbsp;Draws&nbsp;one&nbsp;or&nbsp;more&nbsp;3-D&nbsp;borders&nbsp;on&nbsp;the&nbsp;inner&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
 #&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;ones.<br>
 #&nbsp;The&nbsp;area&nbsp;of&nbsp;the&nbsp;shape&nbsp;is&nbsp;defined&nbsp;by&nbsp;the&nbsp;all-zero&nbsp;pixels.<br>
 #&nbsp;'mask'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
-#&nbsp;'fillcolor'&nbsp;is&nbsp;the&nbsp;fill&nbsp;color,&nbsp;if&nbsp;any.</span></dd></dl>
+#&nbsp;'fillColor'&nbsp;is&nbsp;the&nbsp;fill&nbsp;color,&nbsp;if&nbsp;any;&nbsp;can&nbsp;be&nbsp;None,&nbsp;and&nbsp;default&nbsp;is&nbsp;None,&nbsp;indicating<br>
+#&nbsp;no&nbsp;fill&nbsp;color.<br>
+#&nbsp;'layercolors'&nbsp;is&nbsp;an&nbsp;list&nbsp;of&nbsp;two-element&nbsp;lists&nbsp;for&nbsp;the&nbsp;borders&nbsp;to&nbsp;draw&nbsp;from&nbsp;outermost<br>
+#&nbsp;to&nbsp;innermost.&nbsp;&nbsp;Each&nbsp;two-element&nbsp;list&nbsp;contains&nbsp;the&nbsp;upper&nbsp;color&nbsp;and&nbsp;the&nbsp;lower&nbsp;color<br>
+#&nbsp;for&nbsp;a&nbsp;specific&nbsp;border.</span></dd></dl>
  <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
 #&nbsp;seamlessly&nbsp;tileable.<br>

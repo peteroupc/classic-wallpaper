@@ -4857,12 +4857,18 @@ def _transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
 def _is_off_mask(mask, w, h, x, y, pos):
     return x < 0 or x >= w or y < 0 or y >= h or mask[pos] != 0
 
-# Draws a 3-D border on a shape defined by a mask image,
+# Draws one or more 3-D borders on the inner edge of a shape defined by a mask image,
 # each of whose pixels is all zeros or all ones.
 # The area of the shape is defined by the all-zero pixels.
 # 'mask' has the same format returned by the blankimage() method with alpha=False.
-# 'fillcolor' is the fill color, if any.
-def threedee(helper, x0, y0, mask, w, h, layercolors, traceInnerCorners=False):
+# 'fillColor' is the fill color, if any; can be None, and default is None, indicating
+# no fill color.
+# 'layercolors' is an list of two-element lists for the borders to draw from outermost
+# to innermost.  Each two-element list contains the upper color and the lower color
+# for a specific border.
+def threedee(
+    helper, x0, y0, mask, w, h, layercolors, fillColor=None, traceInnerCorners=False
+):
     if len(layercolors) <= 0:
         raise ValueError
     layers = len(layercolors)
@@ -4881,8 +4887,10 @@ def threedee(helper, x0, y0, mask, w, h, layercolors, traceInnerCorners=False):
         lc1 = layercolors[i][0]
         lc2 = layercolors[i][1]
         for y in range(h):
+            xfill = -1
             for x in range(w):
                 if frontmask[pos] != 0:
+                    # Pixel not in mask
                     pos += 3
                     continue
                 topshade = (x == 0 or frontmask[pos - 3] != 0) or (
@@ -4941,6 +4949,7 @@ def threedee(helper, x0, y0, mask, w, h, layercolors, traceInnerCorners=False):
                         frontmask, w, h, x + 1, y + 1, pos + stride + 3
                     ):
                         botshade = False
+                isFill = False
                 if botshade:
                     helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc2)
                     if backmask:
@@ -4949,7 +4958,19 @@ def threedee(helper, x0, y0, mask, w, h, layercolors, traceInnerCorners=False):
                     helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc1)
                     if backmask:
                         backmask[pos] = 0xFF
+                elif i == layers - 1 and fillColor:
+                    # Inner fill not taken up by edge borders
+                    if xfill < 0:
+                        xfill = x
+                    isFill = True
+                if (not isFill) and xfill >= 0:
+                    helper.rect(xfill + x0, y + y0, x + x0, y + y0 + 1, fillColor)
+                    xfill = -1
                 pos += 3
+            if xfill >= 0:
+                print([x + xfill, x + w])
+                helper.rect(x + xfill, y + y0, w + x0, y + y0 + 1, fillColor)
+                xfill = -1
         frontmask = backmask
         backmask = maskbuffer1 if i % 2 == 0 else maskbuffer2
 
@@ -5609,14 +5630,15 @@ class SvgDraw:
         )
 
     def toSvg(self, width, height):
-        return "<svg width='%dpx' height='%dpx' viewBox='0 0 %d %d'" % (
+        ret = "<svg width='%dpx' height='%dpx' viewBox='0 0 %d %d'" % (
             width,
             height,
             width,
             height,
         )
-        +" xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
-        +str(self) + "</svg>"
+        ret += " xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
+        ret += str(self) + "</svg>"
+        return ret
 
     def __str__(self):
         return ("".join(x[3] for x in self.patterns)) + self.svg
