@@ -6,7 +6,7 @@ This page discusses aspects of the traditional design of user-interface graphics
 
 A _display mode_ is a way to set up a computer display to show graphics.  Some display modes follow:
 
-- VGA's (video graphics array) 640 &times; 480 display mode: A _logical resolution_ of 96 horizontal and vertical pixels per inch (pixels are "squares").
+- VGA's (IBM Video Graphics Array) 640 &times; 480 display mode: A _logical resolution_ of 96 horizontal and vertical pixels per inch (pixels are "squares").
 - IBM Extended Graphics Adapter's (EGA) 640 &times; 350 color display mode: 96 horizontal and 72 vertical pixels per inch (pixels are not squares).
 - IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-tone display mode: 96 horizontal and 48 vertical pixels per inch (pixels are not squares).
 
@@ -21,16 +21,13 @@ More generally, units similar to pixels may be employed as units of measure for 
 Here is a challenge.  Write computer code (released to the public domain or licensed under the Unlicense) to draw the following ways to style borders and buttons:
 
 - Window border, text box border, status field border, and grouping border.[^7]
-- Buttons, buttons selected by default:
-    - Unpressed, pressed, mixed value ("indeterminate" or "third state"), unavailable ("disabled").
-- Toolbar buttons:
-    - Unpressed, hover ("hot-tracked"), pressed, mixed value, unavailable.
-- Buttons, buttons selected by default, and toolbar buttons in the option-set style:
-    - Unpressed, unavailable.
-- Checkboxes when set, checkboxes when unset:
-    - Unpressed, pressed, mixed value (same for both), unavailable.
-- Option buttons ("radio buttons") when set, option buttons when unset, sliders:
-    - Unpressed, pressed, unavailable.
+- The following elements in the unpressed, pressed, and unavailable ("disabled" or "inactive") appearances:
+    - Buttons in normal, "option-set", and mixed-value ("indeterminate" or "third state") states.
+    - Buttons selected by default in normal, "option-set", and mixed-value states.
+    - Toolbar buttons in normal, "option-set", and mixed-value states.
+    - Checkboxes when unset, when set, and in mixed-value state.
+    - Option buttons ("radio buttons") when unset, option buttons when set, sliders.
+- Toolbar buttons in normal, mixed-value, and "option-set" states:  Hover style.
 - Optionally, other user-interface elements (such as scroll bars).
 
 Using only the following colors and with some pixels allowed to be transparent:
@@ -118,7 +115,7 @@ After about 2003, user-interface graphics tend to be 8-bpc images and are less i
 For a high degree of flexibility, new graphical user interface systems should allow for the following:
 
 - Designing icons, cursors, and other user-interface elements in the form of vector graphics.
-- Having certain outlines of shapes in vector graphics be filled with user-specified system colors, or _system colors_ for short (such as a button face color or button highlight color).
+- Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
 - Designing user-interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
     - in multiple sizes, each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html), for example, in order to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm), and
