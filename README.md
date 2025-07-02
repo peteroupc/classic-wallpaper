@@ -68,6 +68,8 @@ Additional color palettes allowed are as follows.
 - Up to four colors from a palette mentioned earlier in this section.
 - Up to eight colors from a palette mentioned earlier in this section.
 - Up to 16 colors from a palette mentioned earlier in this section.
+- A 255-color palette in which each color component is a multiple of 3 and each color is as follows: All components are the same; or both the green and blue components are 0; or the red component is 255 and the green and blue components are the same.
+    - This palette is proposed to allow for easy "recoloring" of an image: the cases just given deal with a mixture of "black" and "white"; a mixture of "black" (0,0,0) and the desired color; and a mixture of "white" (255,255,255) and the desired color.  An example occurs with "red" and "blue" variants of a playing card back.
 
 The following color palettes are allowed, but not preferred:
 
@@ -76,6 +78,7 @@ The following color palettes are allowed, but not preferred:
 - 65- to 236-color grayscale palette (all color components the same).
 - 237- to 256-color grayscale palette (all color components the same).
 - A color palette of up to 256 colors listed in the [_Lospec_ palette list](https://lospec.com/palette-list).
+- A 765-color palette in which each color is as follows: All components are the same; or both the green and blue components are 0; or the red component is 255 and the green and blue components are the same.
 
 > **Notes:**
 >

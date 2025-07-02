@@ -523,7 +523,13 @@ Data descriptors defined here:<br>
     innerbordersize=1
 )</dt></dl>
  <dl><dt><a name="-drawloweredge"><strong>drawloweredge</strong></a>(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1)</dt></dl>
- <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#<br>
+#&nbsp;Example:&nbsp;White-over-black-over&nbsp;gray&nbsp;text&nbsp;effect,&nbsp;seen&nbsp;in&nbsp;some&nbsp;early-90s&nbsp;Windows&nbsp;applications.<br>
+#&nbsp;----<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x-1,&nbsp;y-1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[255,255,255])<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x+1,&nbsp;y+1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[128,128,128])<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x,y,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;0,&nbsp;0])</span></dd></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
  <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
@@ -1315,6 +1321,7 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;simple&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-simplepolygonfill"><strong>simplepolygonfill</strong></a>(helper, color, points)</dt></dl>
+ <dl><dt><a name="-slider3d"><strong>slider3d</strong></a>(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;3-D&nbsp;slider&nbsp;thumb</span></dd></dl>
  <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
 #&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.<br>

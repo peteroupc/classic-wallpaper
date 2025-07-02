@@ -100,7 +100,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 - Curves and straight line segments are drawn unsmoothed and one pixel thick.
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
 - The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
-    - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).
+    - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^9]
 - Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
 - For graphics limited to the 16-color VGA palette[^1]:
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
@@ -141,3 +141,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^7]: _Window borders_ are the outer edges of desktop windows.  Text box borders are also known as "field borders".  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.
 
 [^8]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.
+
+[^9]: This is evident in the graphics of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.

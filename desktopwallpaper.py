@@ -4809,6 +4809,12 @@ def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color
         )
 
 # 'dst' and 'src' have the same format returned by the blankimage() method with alpha=False.
+#
+# Example: White-over-black-over gray text effect, seen in some early-90s Windows applications.
+# ----
+# dw.drawmask(img, w, h, x-1, y-1, mask,maskWidth,maskHeight, [255,255,255])
+# dw.drawmask(img, w, h, x+1, y+1, mask,maskWidth,maskHeight, [128,128,128])
+# dw.drawmask(img, w, h, x,y, mask,maskWidth,maskHeight, [0, 0, 0])
 def drawmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
     drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color, color)
 
@@ -6011,9 +6017,11 @@ def drawindentborder(
         raise ValueError
     if outerbordersize < 0:
         raise ValueError
+    # Outer border
     drawsunkenborderbotdom(
         helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize
     )
+    # Middle border
     drawedgebotdom(
         helper,
         x0 + outerbordersize,
@@ -6023,6 +6031,7 @@ def drawindentborder(
         frame,
         frame,
     )
+    # Inner border
     drawraisedborderbotdom(
         helper,
         x0 + outerbordersize + 1,
@@ -6422,6 +6431,32 @@ def draw16button(
         return [x0 + edge + 1, y0 + edge + 1, x1 - edge - 2, y1 - edge - 2, btn]
     else:
         return [x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn]
+
+# Draw a 3-D slider thumb
+def slider3d(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24):
+    # Draw slider thumb mask
+    mask = blankimage(sw, sh)
+    helper = ImageWraparoundDraw(mask, sw, sh)
+    simplepolygonfill(
+        helper,
+        [0, 0, 0],
+        [[0, 0], [sw, 0], [sw, sh - sw // 2], [sw // 2, sh], [0, sh - sw // 2]],
+    )
+    # Draw 3-D effect using mask
+    helper = ImageWraparoundDraw(dst, dstwidth, dstheight)
+    threedee(
+        helper,
+        x0,
+        y0,
+        mask,
+        sw,
+        sh,
+        [
+            [[255, 255, 255], [0, 0, 0]],
+            [[192, 192, 192], [128, 128, 128]],
+        ],
+        fillColor=[150, 150, 150],
+    )
 
 # random wallpaper generation
 
@@ -7200,8 +7235,8 @@ def _setup_rgba_to_colorname_hash():
 
 def _colorname(colorhash, c):
     cname = "#%02x%02x%02x" % (c[0], c[1], c[2])
-    if cname in _rgba_to_colorname_hash:
-        return _rgba_to_colorname_hash[cname] + " " + cname
+    if cname in colorhash:
+        return colorhash[cname] + " " + cname
     return cname
 
 def writepalette(f, palette, name=None, raiseIfExists=False):
@@ -7307,6 +7342,13 @@ if __name__ == "__main__":
         "palettes/64gray",
         [[x * 255 // 63, x * 255 // 63, x * 255 // 63] for x in range(64)],
         "64 Grays",
+    )
+    writepalette(
+        "palettes/recolor",
+        [[x * 255 // 85, x * 255 // 85, x * 255 // 85] for x in range(86)]
+        + [[x * 255 // 85, 0, 0] for x in range(1, 85)]
+        + [[255, x * 255 // 85, x * 255 // 85] for x in range(85)],
+        "Recolorable Palette",
     )
     writepalette("palettes/256gray", [[x, x, x] for x in range(256)], "256 Grays")
     writepalette(
