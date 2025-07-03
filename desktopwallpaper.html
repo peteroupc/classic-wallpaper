@@ -1278,7 +1278,7 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-randommixedimage"><strong>randommixedimage</strong></a>(width, height, palette, tileable=True)</dt></dl>
  <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight, alpha=False)</dt><dd><span class="code">#&nbsp;Images&nbsp;in&nbsp;'sourceImages'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-recolor"><strong>recolor</strong></a>(image, width, height, color, alpha=False)</dt><dd><span class="code">#&nbsp;Recolors&nbsp;the&nbsp;image&nbsp;using&nbsp;the&nbsp;given&nbsp;color&nbsp;as&nbsp;a&nbsp;substitute&nbsp;for&nbsp;(255,0,0)<br>
+ <dl><dt><a name="-recolor"><strong>recolor</strong></a>(image, width, height, color, alpha=False)</dt><dd><span class="code">#&nbsp;Recolors&nbsp;the&nbsp;image&nbsp;using&nbsp;the&nbsp;specified&nbsp;color&nbsp;as&nbsp;a&nbsp;substitute&nbsp;for&nbsp;(255,0,0)<br>
 #&nbsp;or&nbsp;"red".&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed&nbsp;in&nbsp;the&nbsp;input&nbsp;image&nbsp;are&nbsp;gray&nbsp;tones<br>
 #&nbsp;(x,x,x);&nbsp;shades&nbsp;of&nbsp;red&nbsp;(x,0,0);&nbsp;and&nbsp;tints&nbsp;of&nbsp;red&nbsp;(255,x,x),<br>
 #&nbsp;disregarding&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;if&nbsp;any.<br>
@@ -1286,14 +1286,14 @@ Data descriptors defined here:<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
  <dl><dt><a name="-recolordither"><strong>recolordither</strong></a>(image, width, height, color, grays, darkcolor=None, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;as&nbsp;in&nbsp;<a href="#-recolor">recolor</a>()&nbsp;and&nbsp;dithers&nbsp;the&nbsp;image&nbsp;to&nbsp;the<br>
-#&nbsp;gray&nbsp;tones&nbsp;given&nbsp;and&nbsp;the&nbsp;given&nbsp;color.&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed<br>
+#&nbsp;gray&nbsp;tones&nbsp;given&nbsp;and&nbsp;the&nbsp;specified&nbsp;color.&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed<br>
 #&nbsp;in&nbsp;the&nbsp;input&nbsp;image&nbsp;are&nbsp;gray&nbsp;tones&nbsp;(x,x,x);&nbsp;shades&nbsp;of&nbsp;red&nbsp;(x,0,0);&nbsp;and&nbsp;tints&nbsp;of&nbsp;red&nbsp;(255,x,x),<br>
 #&nbsp;disregarding&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;if&nbsp;any.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;'grays'&nbsp;is&nbsp;as&nbsp;in&nbsp;<a href="#-dithertograyimage">dithertograyimage</a>().<br>
 #&nbsp;'darkcolor'&nbsp;is&nbsp;a&nbsp;darker&nbsp;version&nbsp;of&nbsp;the&nbsp;color,&nbsp;at&nbsp;position&nbsp;128/255&nbsp;between&nbsp;black&nbsp;and<br>
-#&nbsp;the&nbsp;given&nbsp;color.<br>
+#&nbsp;the&nbsp;specified&nbsp;color.<br>
 #&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
  <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
@@ -1380,13 +1380,16 @@ Data descriptors defined here:<br>
     h,
     layercolors,
     fillColor=None,
-    traceInnerCorners=False
+    traceInnerCorners=False,
+    lowerDominates=True
 )</dt><dd><span class="code">#&nbsp;Draws&nbsp;one&nbsp;or&nbsp;more&nbsp;3-D&nbsp;borders&nbsp;on&nbsp;the&nbsp;inner&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
 #&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;ones.<br>
 #&nbsp;The&nbsp;area&nbsp;of&nbsp;the&nbsp;shape&nbsp;is&nbsp;defined&nbsp;by&nbsp;the&nbsp;all-zero&nbsp;pixels.<br>
 #&nbsp;'mask'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'fillColor'&nbsp;is&nbsp;the&nbsp;fill&nbsp;color,&nbsp;if&nbsp;any;&nbsp;can&nbsp;be&nbsp;None,&nbsp;and&nbsp;default&nbsp;is&nbsp;None,&nbsp;indicating<br>
 #&nbsp;no&nbsp;fill&nbsp;color.<br>
+#&nbsp;'lowerDominates'&nbsp;means&nbsp;the&nbsp;lower&nbsp;and&nbsp;right&nbsp;edges&nbsp;"dominate"&nbsp;over&nbsp;the&nbsp;upper&nbsp;and&nbsp;left<br>
+#&nbsp;edges.<br>
 #&nbsp;'layercolors'&nbsp;is&nbsp;an&nbsp;list&nbsp;of&nbsp;two-element&nbsp;lists&nbsp;for&nbsp;the&nbsp;borders&nbsp;to&nbsp;draw&nbsp;from&nbsp;outermost<br>
 #&nbsp;to&nbsp;innermost.&nbsp;&nbsp;Each&nbsp;two-element&nbsp;list&nbsp;contains&nbsp;the&nbsp;upper&nbsp;color&nbsp;and&nbsp;the&nbsp;lower&nbsp;color<br>
 #&nbsp;for&nbsp;a&nbsp;specific&nbsp;border.</span></dd></dl>

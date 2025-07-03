@@ -4969,11 +4969,22 @@ def _is_off_mask(mask, w, h, x, y, pos):
 # 'mask' has the same format returned by the blankimage() method with alpha=False.
 # 'fillColor' is the fill color, if any; can be None, and default is None, indicating
 # no fill color.
+# 'lowerDominates' means the lower and right edges "dominate" over the upper and left
+# edges.
 # 'layercolors' is an list of two-element lists for the borders to draw from outermost
 # to innermost.  Each two-element list contains the upper color and the lower color
 # for a specific border.
 def threedee(
-    helper, x0, y0, mask, w, h, layercolors, fillColor=None, traceInnerCorners=False
+    helper,
+    x0,
+    y0,
+    mask,
+    w,
+    h,
+    layercolors,
+    fillColor=None,
+    traceInnerCorners=False,
+    lowerDominates=True,
 ):
     if len(layercolors) <= 0:
         raise ValueError
@@ -4999,74 +5010,107 @@ def threedee(
                     # Pixel not in mask
                     pos += 3
                     continue
-                # nonmask pixel at left, or nonmask pixel above
-                topshade = (x == 0 or frontmask[pos - 3] != 0) or (
-                    y == 0 or frontmask[pos - stride] != 0
+                # Nonmask pixel flags.
+                # Areas outside the image are considered outside the mask.
+                left = x == 0 or frontmask[pos - 3] != 0
+                upper = y == 0 or frontmask[pos - stride] != 0
+                right = x == w - 1 or frontmask[pos + 3] != 0
+                lower = y == h - 1 or frontmask[pos + stride] != 0
+                upperleft = x == 0 or y == 0 or frontmask[pos - stride - 3] != 0
+                upperright = x == w - 1 or y == 0 or frontmask[pos - stride + 3] != 0
+                lowerright = (
+                    x == w - 1 or y == h - 1 or frontmask[pos + stride + 3] != 0
                 )
-                topshade = topshade or (
-                    traceInnerCorners
-                    and (
-                        (
-                            # nonmask pixel at upper left, and mask pixel above
-                            x == 0
-                            or y == 0
-                            or frontmask[pos - stride - 3] != 0
-                            and (y != 0 and frontmask[pos - stride] == 0)
+                lowerleft = y == h - 1 or x == 0 or frontmask[pos + stride - 3] != 0
+                # nonmask pixel at left, or nonmask pixel above
+                topshade = (
+                    left
+                    or upper
+                    or (
+                        traceInnerCorners
+                        and (
+                            (
+                                # nonmask pixel at upper left, and mask pixel above
+                                upperleft
+                                and (y != 0 and frontmask[pos - stride] == 0)
+                            )
+                            # nonmask pixel at lower left, and mask pixel below:
+                            # or (
+                            #    lowerleft
+                            #    and (y != h - 1 and frontmask[pos + stride] == 0)
+                            # )
                         )
-                        # or (
-                        # nonmask pixel at lower left, and mask pixel below
-                        #    (x == 0 or y == h - 1 or frontmask[pos + stride - 3] != 0)
-                        #    and (y != h - 1 and frontmask[pos + stride] == 0)
-                        # )
                     )
                 )
                 # nonmask pixel at right, or nonmask pixel below
-                botshade = (x == w - 1 or frontmask[pos + 3] != 0) or (
-                    y == h - 1 or frontmask[pos + stride] != 0
-                )
-                botshade = botshade or (
-                    traceInnerCorners
-                    and (
-                        (
-                            # nonmask pixel at lower right, and mask pixel below
+                botshade = (
+                    right
+                    or lower
+                    or (
+                        traceInnerCorners
+                        and (
                             (
-                                y == h - 1
-                                or x == w - 1
-                                or frontmask[pos + stride + 3] != 0
+                                # nonmask pixel at lower right, and mask pixel below
+                                lowerright
+                                and (y != h - 1 and frontmask[pos + stride] == 0)
                             )
-                            and (y != h - 1 and frontmask[pos + stride] == 0)
+                            # nonmask pixel at upper right, and mask pixel above:
+                            # or (
+                            #    upperright
+                            #    and (y != 0 and frontmask[pos - stride] == 0)
+                            # )
                         )
-                        # or (
-                        # nonmask pixel at upper right, and mask pixel above
-                        #    (x == w - 1 or y == 0 or frontmask[pos - stride + 3] != 0)
-                        #    and (y != 0 and frontmask[pos - stride] == 0)
-                        # )
                     )
                 )
-                if topshade and botshade:
-                    # avoid unsightly changes in relief color
-                    if _is_off_mask(
-                        frontmask, w, h, x, y + 1, pos + stride
-                    ) and not _is_off_mask(
-                        frontmask, w, h, x + 1, y + 1, pos + stride + 3
-                    ):
-                        botshade = False
-                    elif _is_off_mask(
-                        frontmask, w, h, x + 1, y, pos + 3
-                    ) and not _is_off_mask(
-                        frontmask, w, h, x + 1, y + 1, pos + stride + 3
-                    ):
-                        botshade = False
                 isFill = False
-                if botshade:
-                    helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc2)
-                    if backmask:
-                        backmask[pos] = 0xFF
-                elif topshade:
-                    helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc1)
-                    if backmask:
-                        backmask[pos] = 0xFF
-                elif i == layers - 1 and fillColor:
+                if not lowerDominates:
+                    if topshade and botshade:
+                        # avoid unsightly changes in relief color
+                        if _is_off_mask(
+                            frontmask, w, h, x, y - 1, pos - stride
+                        ) and not _is_off_mask(
+                            frontmask, w, h, x - 1, y - 1, pos - stride - 3
+                        ):
+                            botshade = False
+                        elif _is_off_mask(
+                            frontmask, w, h, x - 1, y, pos - 3
+                        ) and not _is_off_mask(
+                            frontmask, w, h, x - 1, y - 1, pos - stride + 3
+                        ):
+                            botshade = False
+                    if topshade:
+                        helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc1)
+                        if backmask:
+                            backmask[pos] = 0xFF
+                    elif botshade:
+                        helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc2)
+                        if backmask:
+                            backmask[pos] = 0xFF
+                else:
+                    if topshade and botshade:
+                        # avoid unsightly changes in relief color
+                        if _is_off_mask(
+                            frontmask, w, h, x, y + 1, pos + stride
+                        ) and not _is_off_mask(
+                            frontmask, w, h, x + 1, y + 1, pos + stride + 3
+                        ):
+                            botshade = False
+                        elif _is_off_mask(
+                            frontmask, w, h, x + 1, y, pos + 3
+                        ) and not _is_off_mask(
+                            frontmask, w, h, x + 1, y + 1, pos + stride + 3
+                        ):
+                            botshade = False
+                    if botshade:
+                        helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc2)
+                        if backmask:
+                            backmask[pos] = 0xFF
+                    elif topshade:
+                        helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc1)
+                        if backmask:
+                            backmask[pos] = 0xFF
+
+                if fillColor and (not botshade and not topshade) and i == layers - 1:
                     # Inner fill not taken up by edge borders
                     if xfill < 0:
                         xfill = x
@@ -5099,10 +5143,12 @@ def bottomedge(helper, x0, y0, mask, w, h, color=None):
                     # Pixel in mask
                     pos += 3
                     continue
+                # Mask pixel flags.
+                # Areas outside the image are considered outside the mask.
                 left = x > 0 and frontmask[pos - 3] == 0
                 upper = y > 0 and frontmask[pos - stride] == 0
                 right = x < w - 1 and frontmask[pos + 3] == 0
-                lower = y < h - 1 and frontmask[pos - stride] == 0
+                lower = y < h - 1 and frontmask[pos + stride] == 0
                 upperleft = x > 0 and y > 0 and frontmask[pos - stride - 3] == 0
                 upperright = x < w - 1 and y > 0 and frontmask[pos - stride + 3] == 0
                 lowerright = (
@@ -7540,3 +7586,58 @@ if __name__ == "__main__":
         paletteandhalfhalf(classiccolors()),
         "VGA Palette with Half-and-Half Mixtures",
     )
+
+    ##### Tests
+
+    # Test threedee
+    img2 = blankimage(3, 3, [192, 192, 192])
+    mask = blankimage(3, 3, [0, 0, 0])  # black mask
+    helper = ImageWraparoundDraw(img2, 3, 3)
+    threedee(helper, 0, 0, mask, 3, 3, [[[255, 255, 255], [128, 128, 128]]])
+    expected = [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        128,
+        128,
+        128,
+        255,
+        255,
+        255,
+        192,
+        192,
+        192,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+    ]
+    if img2 != expected:
+        print("unexpected output of threedee")
+        print(img2)
+    img2 = blankimage(3, 3, [192, 192, 192])
+    helper = ImageWraparoundDraw(img2, 3, 3)
+    threedee(
+        helper,
+        0,
+        0,
+        mask,
+        3,
+        3,
+        [[[255, 255, 255], [128, 128, 128]]],
+        traceInnerCorners=True,
+    )
+    if img2 != expected:
+        print("unexpected output of threedee")
+        print(img2)
