@@ -286,6 +286,7 @@ Data descriptors defined here:<br>
 #&nbsp;of&nbsp;'contour',&nbsp;as&nbsp;its&nbsp;absolute&nbsp;value,&nbsp;is&nbsp;a&nbsp;point&nbsp;along&nbsp;the&nbsp;gradient&nbsp;in&nbsp;which&nbsp;to&nbsp;color<br>
 #&nbsp;the&nbsp;specified&nbsp;point:&nbsp;0&nbsp;means&nbsp;first&nbsp;color&nbsp;in&nbsp;the&nbsp;gradient;&nbsp;1&nbsp;and&nbsp;-1&nbsp;mean&nbsp;the&nbsp;last<br>
 #&nbsp;color&nbsp;in&nbsp;the&nbsp;gradient;&nbsp;points&nbsp;in&nbsp;between&nbsp;are&nbsp;intermediate&nbsp;colors&nbsp;along&nbsp;the&nbsp;gradient.</span></dd></dl>
+ <dl><dt><a name="-bottomedge"><strong>bottomedge</strong></a>(helper, x0, y0, mask, w, h, color=None)</dt></dl>
  <dl><dt><a name="-brushedmetal"><strong>brushedmetal</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;brushed&nbsp;metal&nbsp;texture&nbsp;from&nbsp;a&nbsp;noise&nbsp;image.<br>
 #&nbsp;A&nbsp;brushed&nbsp;metal&nbsp;texture&nbsp;was&nbsp;featured&nbsp;in&nbsp;Mac&nbsp;OS&nbsp;X&nbsp;Panther&nbsp;and<br>
 #&nbsp;Tiger&nbsp;(10.3,&nbsp;10.4)&nbsp;and&nbsp;other&nbsp;Apple&nbsp;products<br>
@@ -386,14 +387,15 @@ Data descriptors defined here:<br>
     alpha=False,
     ignoreNonGrays=False
 )</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;dithers&nbsp;the&nbsp;resulting&nbsp;image<br>
-#&nbsp;to&nbsp;the&nbsp;gray&nbsp;tones&nbsp;given.<br>
+#&nbsp;to&nbsp;the&nbsp;gray&nbsp;tones&nbsp;given.&nbsp;&nbsp;The&nbsp;conversion&nbsp;is&nbsp;in-place.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;'grays'&nbsp;is&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Each&nbsp;gray&nbsp;tone&nbsp;must&nbsp;be&nbsp;an&nbsp;integer<br>
 #&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;The&nbsp;list&nbsp;must&nbsp;have&nbsp;a&nbsp;length&nbsp;of&nbsp;2&nbsp;or&nbsp;greater.<br>
 #&nbsp;'grays'&nbsp;can&nbsp;be&nbsp;None,&nbsp;in&nbsp;which&nbsp;case&nbsp;this&nbsp;method&nbsp;behaves&nbsp;like&nbsp;'graymap'.<br>
 #&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;just&nbsp;dither&nbsp;the&nbsp;gray&nbsp;tones&nbsp;and&nbsp;leave&nbsp;the&nbsp;other<br>
-#&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
+#&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.<br>
+#&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
  <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(
     fgcolor1,
     fgcolor2,
@@ -1276,6 +1278,23 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-randommixedimage"><strong>randommixedimage</strong></a>(width, height, palette, tileable=True)</dt></dl>
  <dl><dt><a name="-randomtiles"><strong>randomtiles</strong></a>(columns, rows, sourceImages, srcwidth, srcheight, alpha=False)</dt><dd><span class="code">#&nbsp;Images&nbsp;in&nbsp;'sourceImages'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-recolor"><strong>recolor</strong></a>(image, width, height, color, alpha=False)</dt><dd><span class="code">#&nbsp;Recolors&nbsp;the&nbsp;image&nbsp;using&nbsp;the&nbsp;given&nbsp;color&nbsp;as&nbsp;a&nbsp;substitute&nbsp;for&nbsp;(255,0,0)<br>
+#&nbsp;or&nbsp;"red".&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed&nbsp;in&nbsp;the&nbsp;input&nbsp;image&nbsp;are&nbsp;gray&nbsp;tones<br>
+#&nbsp;(x,x,x);&nbsp;shades&nbsp;of&nbsp;red&nbsp;(x,0,0);&nbsp;and&nbsp;tints&nbsp;of&nbsp;red&nbsp;(255,x,x),<br>
+#&nbsp;disregarding&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;if&nbsp;any.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
+ <dl><dt><a name="-recolordither"><strong>recolordither</strong></a>(image, width, height, color, grays, darkcolor=None, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;as&nbsp;in&nbsp;<a href="#-recolor">recolor</a>()&nbsp;and&nbsp;dithers&nbsp;the&nbsp;image&nbsp;to&nbsp;the<br>
+#&nbsp;gray&nbsp;tones&nbsp;given&nbsp;and&nbsp;the&nbsp;given&nbsp;color.&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed<br>
+#&nbsp;in&nbsp;the&nbsp;input&nbsp;image&nbsp;are&nbsp;gray&nbsp;tones&nbsp;(x,x,x);&nbsp;shades&nbsp;of&nbsp;red&nbsp;(x,0,0);&nbsp;and&nbsp;tints&nbsp;of&nbsp;red&nbsp;(255,x,x),<br>
+#&nbsp;disregarding&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;if&nbsp;any.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;'grays'&nbsp;is&nbsp;as&nbsp;in&nbsp;<a href="#-dithertograyimage">dithertograyimage</a>().<br>
+#&nbsp;'darkcolor'&nbsp;is&nbsp;a&nbsp;darker&nbsp;version&nbsp;of&nbsp;the&nbsp;color,&nbsp;at&nbsp;position&nbsp;128/255&nbsp;between&nbsp;black&nbsp;and<br>
+#&nbsp;the&nbsp;given&nbsp;color.<br>
+#&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
  <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>

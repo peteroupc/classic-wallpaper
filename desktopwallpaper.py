@@ -3794,8 +3794,109 @@ def getgrays(palette):
             ret.append(i)
     return ret  # return a sorted list of gray tones in the specified palette
 
+# Recolors the image using the specified color as a substitute for (255,0,0)
+# or "red".  The only colors allowed in the input image are gray tones
+# (x,x,x); shades of red (x,0,0); and tints of red (255,x,x),
+# disregarding the alpha channel if any.
+# Image has the same format returned by the blankimage() method with the
+# specified value of 'alpha' (default value for 'alpha' is False).
+# This method disregards the input image's alpha channel.
+def recolor(image, width, height, color, alpha=False):
+    if color == None or len(color) < 3:
+        raise ValueError
+    pixelSize = 4 if alpha else 3
+    for y in range(height):
+        yp = y * width * pixelSize
+        for x in range(width):
+            xp = yp + x * pixelSize
+            r = image[xp]
+            g = image[xp + 1]
+            b = image[xp + 2]
+            if r == g and g == b:
+                # gray tone
+                pass
+            elif r == 255 and g == b:
+                # Mixture of color and white
+                image[xp] = (255 - g) * color[0] // 255
+                image[xp + 1] = (255 - g) * color[1] // 255
+                image[xp + 2] = (255 - g) * color[2] // 255
+            elif g == 0 and b == 0:
+                # Mixture of color and black
+                image[xp] = r * color[0] // 255
+                image[xp + 1] = r * color[1] // 255
+                image[xp + 2] = r * color[2] // 255
+            else:
+                raise ValueError("Invalid color")
+    return image
+
+# Converts the image as in recolor() and dithers the image to the
+# gray tones given and the specified color.  The only colors allowed
+# in the input image are gray tones (x,x,x); shades of red (x,0,0); and tints of red (255,x,x),
+# disregarding the alpha channel if any.
+# Image has the same format returned by the blankimage() method with the
+# specified value of 'alpha' (default value for 'alpha' is False).
+# 'grays' is as in dithertograyimage().
+# 'darkcolor' is a darker version of the color, at position 128/255 between black and
+# the specified color.
+# This method disregards the input image's alpha channel.
+def recolordither(image, width, height, color, grays, darkcolor=None, alpha=False):
+    if color == None or len(color) < 3:
+        raise ValueError
+    if darkcolor != None and len(darkcolor) < 3:
+        raise ValueError
+    dithertograyimage(image, width, height, grays, alpha=alpha, ignoreNonGrays=True)
+    pixelSize = 4 if alpha else 3
+    for y in range(height):
+        yp = y * width * pixelSize
+        for x in range(width):
+            xp = yp + x * pixelSize
+            r = image[xp]
+            g = image[xp + 1]
+            b = image[xp + 2]
+            if r == g and g == b:
+                # gray tone; already dithered
+                pass
+            elif r == 255 and g == b:
+                # Mixture of color and white
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
+                if bdither < g * 64 // 255:
+                    image[xp] = 255
+                    image[xp + 1] = 255
+                    image[xp + 2] = 255
+                else:
+                    image[xp] = color[0]
+                    image[xp + 1] = color[1]
+                    image[xp + 2] = color[2]
+            elif g == 0 and b == 0:
+                # Mixture of color and black
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
+                if darkcolor != None:
+                    if r >= 128 and bdither < (r - 128) * 64 // 127:
+                        image[xp] = color[0]
+                        image[xp + 1] = color[1]
+                        image[xp + 2] = color[2]
+                    elif r >= 128 or bdither < r * 64 // 128:
+                        image[xp] = darkcolor[0]
+                        image[xp + 1] = darkcolor[1]
+                        image[xp + 2] = darkcolor[2]
+                    else:
+                        image[xp] = 0
+                        image[xp + 1] = 0
+                        image[xp + 2] = 0
+                elif bdither < r * 64 // 255:
+                    image[xp] = color[0]
+                    image[xp + 1] = color[1]
+                    image[xp + 2] = color[2]
+                else:
+                    image[xp] = 0
+                    image[xp + 1] = 0
+                    image[xp + 2] = 0
+            else:
+                raise ValueError("Invalid color")
+    return image
+
 # Converts the image to grayscale and dithers the resulting image
-# to the gray tones given.
+# to the gray tones given.  The conversion is in-place.
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
 # 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
@@ -3803,6 +3904,7 @@ def getgrays(palette):
 # 'grays' can be None, in which case this method behaves like 'graymap'.
 # If 'ignoreNonGrays' is True, just dither the gray tones and leave the other
 # colors in the image unchanged.  Default is False.
+# This method disregards the input image's alpha channel.
 def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=False):
     if not grays:
         if ignoreNonGrays:
@@ -3826,12 +3928,10 @@ def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=F
             xp = yp + x * pixelSize
             c = image[xp]
             if ignoreNonGrays:
-                if image[xp] != image[xp + 1] or image[xp + 1] != image[xp + 2]:
+                if c != image[xp + 1] or image[xp + 1] != image[xp + 2]:
                     continue
             else:
-                c = (
-                    image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722
-                ) // 10000
+                c = (c * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722) // 10000
             r = 0
             bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
             for i in range(1, len(grays)):
@@ -4899,6 +4999,7 @@ def threedee(
                     # Pixel not in mask
                     pos += 3
                     continue
+                # nonmask pixel at left, or nonmask pixel above
                 topshade = (x == 0 or frontmask[pos - 3] != 0) or (
                     y == 0 or frontmask[pos - stride] != 0
                 )
@@ -4912,13 +5013,14 @@ def threedee(
                             or frontmask[pos - stride - 3] != 0
                             and (y != 0 and frontmask[pos - stride] == 0)
                         )
-                        or (
-                            # nonmask pixel at lower left, and mask pixel below
-                            (x == 0 or y == h - 1 or frontmask[pos + stride - 3] != 0)
-                            and (y != h - 1 and frontmask[pos + stride] == 0)
-                        )
+                        # or (
+                        # nonmask pixel at lower left, and mask pixel below
+                        #    (x == 0 or y == h - 1 or frontmask[pos + stride - 3] != 0)
+                        #    and (y != h - 1 and frontmask[pos + stride] == 0)
+                        # )
                     )
                 )
+                # nonmask pixel at right, or nonmask pixel below
                 botshade = (x == w - 1 or frontmask[pos + 3] != 0) or (
                     y == h - 1 or frontmask[pos + stride] != 0
                 )
@@ -4934,11 +5036,11 @@ def threedee(
                             )
                             and (y != h - 1 and frontmask[pos + stride] == 0)
                         )
-                        or (
-                            # nonmask pixel at upper right, and mask pixel above
-                            (x == w - 1 or y == 0 or frontmask[pos - stride + 3] != 0)
-                            and (y != 0 and frontmask[pos - stride] == 0)
-                        )
+                        # or (
+                        # nonmask pixel at upper right, and mask pixel above
+                        #    (x == w - 1 or y == 0 or frontmask[pos - stride + 3] != 0)
+                        #    and (y != 0 and frontmask[pos - stride] == 0)
+                        # )
                     )
                 )
                 if topshade and botshade:
@@ -4977,6 +5079,45 @@ def threedee(
                 print([x + xfill, x + w])
                 helper.rect(x + xfill, y + y0, w + x0, y + y0 + 1, fillColor)
                 xfill = -1
+        frontmask = backmask
+        backmask = maskbuffer1 if i % 2 == 0 else maskbuffer2
+
+def bottomedge(helper, x0, y0, mask, w, h, color=None):
+    maskbuffer1 = None
+    maskbuffer2 = None
+    frontmask = mask
+    backmask = None
+    stride = w * 3
+    for i in range(1):
+        pos = 0
+        lc1 = color  # layercolors[i][0]
+        lc2 = color  # layercolors[i][1]
+        for y in range(h):
+            xfill = -1
+            for x in range(w):
+                if frontmask[pos] == 0:
+                    # Pixel in mask
+                    pos += 3
+                    continue
+                left = x > 0 and frontmask[pos - 3] == 0
+                upper = y > 0 and frontmask[pos - stride] == 0
+                right = x < w - 1 and frontmask[pos + 3] == 0
+                lower = y < h - 1 and frontmask[pos - stride] == 0
+                upperleft = x > 0 and y > 0 and frontmask[pos - stride - 3] == 0
+                upperright = x < w - 1 and y > 0 and frontmask[pos - stride + 3] == 0
+                lowerright = (
+                    x < w - 1 and y < h - 1 and frontmask[pos + stride + 3] == 0
+                )
+                lowerleft = y < h - 1 and x < 0 and frontmask[pos + stride - 3] == 0
+                botshade = (left and (upperleft or lowerleft)) or (
+                    upper and (upperleft or upperright)
+                )
+                isFill = False
+                if botshade:
+                    helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc2)
+                    if backmask:
+                        backmask[pos] = 0xFF
+                pos += 3
         frontmask = backmask
         backmask = maskbuffer1 if i % 2 == 0 else maskbuffer2
 
@@ -7343,11 +7484,21 @@ if __name__ == "__main__":
         [[x * 255 // 63, x * 255 // 63, x * 255 // 63] for x in range(64)],
         "64 Grays",
     )
-    writepalette(
-        "palettes/recolor",
+    reco = (
         [[x * 255 // 85, x * 255 // 85, x * 255 // 85] for x in range(86)]
         + [[x * 255 // 85, 0, 0] for x in range(1, 85)]
-        + [[255, x * 255 // 85, x * 255 // 85] for x in range(85)],
+        + [[255, x * 255 // 85, x * 255 // 85] for x in range(85)]
+    )
+    for c in reco:
+        if c[0] == 129:
+            c[0] = 128
+        if c[1] == 129:
+            c[1] = 128
+        if c[2] == 129:
+            c[2] = 128
+    writepalette(
+        "palettes/recolor",
+        reco,
         "Recolorable Palette",
     )
     writepalette("palettes/256gray", [[x, x, x] for x in range(256)], "256 Grays")
