@@ -503,7 +503,18 @@ Data descriptors defined here:<br>
     bordersize=1
 )</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(neither&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
- <dl><dt><a name="-drawgradientmask"><strong>drawgradientmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-drawgradientmask"><strong>drawgradientmask</strong></a>(
+    dst,
+    dstw,
+    dsth,
+    dstx,
+    dsty,
+    mask,
+    maskw,
+    maskh,
+    color1,
+    color2
+)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
@@ -525,13 +536,7 @@ Data descriptors defined here:<br>
     innerbordersize=1
 )</dt></dl>
  <dl><dt><a name="-drawloweredge"><strong>drawloweredge</strong></a>(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1)</dt></dl>
- <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'src'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
-#<br>
-#&nbsp;Example:&nbsp;White-over-black-over&nbsp;gray&nbsp;text&nbsp;effect,&nbsp;seen&nbsp;in&nbsp;some&nbsp;early-90s&nbsp;Windows&nbsp;applications.<br>
-#&nbsp;----<br>
-#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x-1,&nbsp;y-1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[255,255,255])<br>
-#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x+1,&nbsp;y+1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[128,128,128])<br>
-#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x,y,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;0,&nbsp;0])</span></dd></dl>
+ <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color)</dt></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
  <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
@@ -618,7 +623,18 @@ Data descriptors defined here:<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;colors&nbsp;other&nbsp;than&nbsp;gray&nbsp;tones<br>
-#&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.</span></dd></dl>
+#&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.<br>
+#<br>
+#&nbsp;&nbsp;Example:&nbsp;Generate&nbsp;a&nbsp;random&nbsp;background&nbsp;image,&nbsp;dither&nbsp;to&nbsp;black,&nbsp;gray,<br>
+#&nbsp;and&nbsp;white,&nbsp;and&nbsp;map&nbsp;these&nbsp;gray&nbsp;tones&nbsp;to&nbsp;lighter&nbsp;tones.<br>
+#<br>
+#&nbsp;img2&nbsp;=&nbsp;dw.<a href="#-randombackgroundimage">randombackgroundimage</a>(320,&nbsp;240)<br>
+#&nbsp;dw.<a href="#-dithertograyimage">dithertograyimage</a>(img2,&nbsp;320,&nbsp;240,&nbsp;[0,&nbsp;128,&nbsp;255])<br>
+#&nbsp;colors&nbsp;=&nbsp;[[i,&nbsp;i,&nbsp;i]&nbsp;for&nbsp;i&nbsp;in&nbsp;range(256)]<br>
+#&nbsp;colors[192]&nbsp;=&nbsp;[255,&nbsp;255,&nbsp;255]<br>
+#&nbsp;colors[128]&nbsp;=&nbsp;[192,&nbsp;192,&nbsp;192]<br>
+#&nbsp;colors[0]&nbsp;=&nbsp;[128,&nbsp;128,&nbsp;128]<br>
+#&nbsp;dw.<a href="#-graymap">graymap</a>(img2,&nbsp;320,&nbsp;240,&nbsp;colors)</span></dd></dl>
  <dl><dt><a name="-groupCmm"><strong>groupCmm</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Cmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;For&nbsp;best&nbsp;results,&nbsp;the&nbsp;command&nbsp;should&nbsp;be&nbsp;applied&nbsp;to&nbsp;images&nbsp;whose<br>
 #&nbsp;last&nbsp;row's&nbsp;and&nbsp;last&nbsp;column's&nbsp;first&nbsp;half&nbsp;is&nbsp;a&nbsp;mirror&nbsp;of&nbsp;its<br>
@@ -1295,6 +1311,7 @@ Data descriptors defined here:<br>
 #&nbsp;'darkcolor'&nbsp;is&nbsp;a&nbsp;darker&nbsp;version&nbsp;of&nbsp;the&nbsp;color,&nbsp;at&nbsp;position&nbsp;128/255&nbsp;between&nbsp;black&nbsp;and<br>
 #&nbsp;the&nbsp;specified&nbsp;color.<br>
 #&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
+ <dl><dt><a name="-roundedborder"><strong>roundedborder</strong></a>(helper, x0, y0, x1, y1, upper, lower, topdom=True)</dt></dl>
  <dl><dt><a name="-setpixel"><strong>setpixel</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
@@ -1392,7 +1409,35 @@ Data descriptors defined here:<br>
 #&nbsp;edges.<br>
 #&nbsp;'layercolors'&nbsp;is&nbsp;an&nbsp;list&nbsp;of&nbsp;two-element&nbsp;lists&nbsp;for&nbsp;the&nbsp;borders&nbsp;to&nbsp;draw&nbsp;from&nbsp;outermost<br>
 #&nbsp;to&nbsp;innermost.&nbsp;&nbsp;Each&nbsp;two-element&nbsp;list&nbsp;contains&nbsp;the&nbsp;upper&nbsp;color&nbsp;and&nbsp;the&nbsp;lower&nbsp;color<br>
-#&nbsp;for&nbsp;a&nbsp;specific&nbsp;border.</span></dd></dl>
+#&nbsp;for&nbsp;a&nbsp;specific&nbsp;border.<br>
+#<br>
+#&nbsp;Example:&nbsp;Draws&nbsp;a&nbsp;raised&nbsp;outline,&nbsp;along&nbsp;with&nbsp;a&nbsp;lower&nbsp;right&nbsp;black&nbsp;edge,<br>
+#&nbsp;around&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;two-level&nbsp;mask&nbsp;image.<br>
+#<br>
+#&nbsp;helper&nbsp;=&nbsp;dw.<a href="#ImageWraparoundDraw">ImageWraparoundDraw</a>(image,&nbsp;w,&nbsp;h)<br>
+#&nbsp;dw.<a href="#-threedee">threedee</a>(<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;helper,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mask,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;w,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Raised&nbsp;outline&nbsp;has&nbsp;two&nbsp;layers<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Upper&nbsp;color,&nbsp;lower&nbsp;coloe<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traceInnerCorners=True,<br>
+#&nbsp;)<br>
+#&nbsp;dw.<a href="#-bottomedge">bottomedge</a>(helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;0,&nbsp;0])<br>
+#<br>
+#&nbsp;Example:&nbsp;Draw&nbsp;a&nbsp;yellow&nbsp;outline&nbsp;and&nbsp;a&nbsp;blue&nbsp;fill.<br>
+#<br>
+#&nbsp;helper&nbsp;=&nbsp;dw.<a href="#ImageWraparoundDraw">ImageWraparoundDraw</a>(image,&nbsp;w,&nbsp;h)<br>
+#&nbsp;dw.<a href="#-threedee">threedee</a>(<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[[[255,&nbsp;255,&nbsp;0],&nbsp;[255,&nbsp;255,&nbsp;0]]],&nbsp;fillColor=[0,&nbsp;0,&nbsp;255]<br>
+#&nbsp;)</span></dd></dl>
  <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
 #&nbsp;seamlessly&nbsp;tileable.<br>

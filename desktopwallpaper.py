@@ -3952,6 +3952,17 @@ def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=F
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
 # If 'ignoreNonGrays' is True, leave colors other than gray tones
 # in the image unchanged.  Default is False.
+#
+#  Example: Generate a random background image, dither to black, gray,
+# and white, and map these gray tones to lighter tones.
+#
+# img2 = dw.randombackgroundimage(320, 240)
+# dw.dithertograyimage(img2, 320, 240, [0, 128, 255])
+# colors = [[i, i, i] for i in range(256)]
+# colors[192] = [255, 255, 255]
+# colors[128] = [192, 192, 192]
+# colors[0] = [128, 128, 128]
+# dw.graymap(img2, 320, 240, colors)
 def graymap(image, width, height, colors=None, alpha=False, ignoreNonGrays=False):
     pixelSize = 4 if alpha else 3
     for y in range(height):
@@ -4942,13 +4953,13 @@ def roundedborder(helper, x0, y0, x1, y1, upper, lower, topdom=True):
         )
         i += 2
 
-# 'dst' and 'src' have the same format returned by the blankimage() method with alpha=False.
-def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2):
-    iters = srch
+# 'dst' and 'mask' have the same format returned by the blankimage() method with alpha=False.
+def drawgradientmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color1, color2):
+    iters = maskh
     rowsize = 1
     if color1 == color2:
         iters = 1
-        rowsize = srch
+        rowsize = maskh
     for i in range(0, iters):
         c = [a + (b - a) * i // iters for a, b in zip(color1, color2)]
         imageblitex(
@@ -4957,24 +4968,24 @@ def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color
             dsth,
             dstx,
             dsty + i,
-            dstx + srcw,
+            dstx + maskw,
             dsty + i + rowsize,
-            src,
-            srcw,
-            srch,
+            mask,
+            maskw,
+            maskh,
             0,
             i,
             patternimage=c,
             patternwidth=1,
             patternheight=1,
-            # where the source is 1, leave unchanged;
+            # where the source (here, mask) is 1, leave unchanged;
             # where the pattern is 0 and source is 0, set black;
             # where the pattern is 1 and source is 0, set white
             ropForeground=0xB8,
             wraparound=False,
         )
 
-# 'dst' and 'src' have the same format returned by the blankimage() method with alpha=False.
+# 'dst' and 'mask' have the same format returned by the blankimage() method with alpha=False.
 #
 # Example: White-over-black-over gray text effect, seen in some early-90s Windows applications.
 # ----
@@ -4990,8 +5001,8 @@ def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color
 # dw.drawmask(img, w, h, x-3, x+3, mask,maskWidth,maskHeight, [0, 255, 0])
 # dw.drawmask(img, w, h, x, x, img, w, h, [255, 255, 0]) # Main text
 
-def drawmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
-    drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color, color)
+def drawmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color):
+    drawgradientmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color, color)
 
 # 'image1' and 'image2' have the same format returned by the blankimage() method with alpha=False.
 def transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
@@ -5036,12 +5047,22 @@ def _transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
     return img
 
 def _off_mask(mask, w, h, x, y, pos, stride, ox, oy):
-    return y+oy < 0 or y+oy>=h or x+ox<0 or x+ox>=w or \
-          mask[pos + stride*oy + 3*ox] != 0
+    return (
+        y + oy < 0
+        or y + oy >= h
+        or x + ox < 0
+        or x + ox >= w
+        or mask[pos + stride * oy + 3 * ox] != 0
+    )
 
 def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
-    return y+oy >= 0 and y+oy<h and x+ox>=0 and x+ox<w and \
-          mask[pos + stride*oy + 3*ox] == 0
+    return (
+        y + oy >= 0
+        and y + oy < h
+        and x + ox >= 0
+        and x + ox < w
+        and mask[pos + stride * oy + 3 * ox] == 0
+    )
 
 # Draws one or more 3-D borders on the inner edge of a shape defined by a mask image,
 # each of whose pixels is all zeros or all ones.
@@ -5054,6 +5075,35 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 # 'layercolors' is an list of two-element lists for the borders to draw from outermost
 # to innermost.  Each two-element list contains the upper color and the lower color
 # for a specific border.
+#
+# Example: Draws a raised outline, along with a lower right black edge,
+# around a shape defined by a two-level mask image.
+#
+# helper = dw.ImageWraparoundDraw(image, w, h)
+# dw.threedee(
+#     helper,
+#     0,
+#     0,
+#     mask,
+#     w,
+#     h,
+#     # Raised outline has two layers
+#     [
+#         # Upper color, lower coloe
+#         [[255, 255, 255], [128, 128, 128]],
+#         [[255, 255, 255], [128, 128, 128]],
+#     ],
+#     traceInnerCorners=True,
+# )
+# dw.bottomedge(helper, 0, 0, mask, w, h, [0, 0, 0])
+#
+# Example: Draw a yellow outline and a blue fill.
+#
+# helper = dw.ImageWraparoundDraw(image, w, h)
+# dw.threedee(
+#    helper, 0, 0, mask, w, h, [[[255, 255, 0], [255, 255, 0]]], fillColor=[0, 0, 255]
+# )
+#
 def threedee(
     helper,
     x0,
@@ -5088,7 +5138,8 @@ def threedee(
             for x in range(w):
                 if frontmask[pos] != 0:
                     # Pixel not in mask
-                    if backmask: backmask[pos]=0xff
+                    if backmask:
+                        backmask[pos] = 0xFF
                     pos += 3
                     continue
                 # Nonmask pixel flags.
@@ -5113,14 +5164,14 @@ def threedee(
                             (
                                 # nonmask pixel at upper left, and mask pixels above
                                 upperleft
-                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,-1)
-                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,-2)
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, -1)
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, -2)
                             )
                             or (
                                 # nonmask pixel at lower left, and mask pixels below:
                                 lowerleft
-                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,1)
-                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,2)
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, 1)
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, 2)
                             )
                         )
                     )
@@ -5135,14 +5186,14 @@ def threedee(
                             (
                                 # nonmask pixel at lower right, and mask pixels below
                                 lowerright
-                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,1)
-                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,2)
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, 1)
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, 2)
                             )
                             or (
-                               # nonmask pixel at upper right, and mask pixels above:
-                               upperright
-                               and _on_mask(frontmask,w,h,x,y,pos,stride,0,-1)
-                               and _on_mask(frontmask,w,h,x,y,pos,stride,0,-2)
+                                # nonmask pixel at upper right, and mask pixels above:
+                                upperright
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, -1)
+                                and _on_mask(frontmask, w, h, x, y, pos, stride, 0, -2)
                             )
                         )
                     )
@@ -5152,16 +5203,12 @@ def threedee(
                     if topshade and botshade:
                         # avoid unsightly changes in relief color
                         if _off_mask(
-                            frontmask, w, h, x, y,pos,stride,0,-1
-                        ) and not _off_mask(
-                            frontmask, w, h, x, y,pos,stride,-1,-1
-                        ):
+                            frontmask, w, h, x, y, pos, stride, 0, -1
+                        ) and not _off_mask(frontmask, w, h, x, y, pos, stride, -1, -1):
                             botshade = False
                         elif _off_mask(
-                            frontmask, w, h, x,y,pos,stride,-1,0
-                        ) and not _off_mask(
-                            frontmask, w, h, x,y,pos,stride,-1,-1
-                        ):
+                            frontmask, w, h, x, y, pos, stride, -1, 0
+                        ) and not _off_mask(frontmask, w, h, x, y, pos, stride, -1, -1):
                             botshade = False
                     if topshade:
                         helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc1)
@@ -5175,16 +5222,12 @@ def threedee(
                     if topshade and botshade:
                         # avoid unsightly changes in relief color
                         if _off_mask(
-                            frontmask, w, h, x, y,pos,stride,0,1
-                        ) and not _off_mask(
-                            frontmask, w, h, x, y,pos,stride,1,1
-                        ):
+                            frontmask, w, h, x, y, pos, stride, 0, 1
+                        ) and not _off_mask(frontmask, w, h, x, y, pos, stride, 1, 1):
                             botshade = False
                         elif _off_mask(
-                            frontmask, w, h, x,y,pos,stride,1,0
-                        ) and not _off_mask(
-                            frontmask, w, h, x,y,pos,stride,1,1
-                        ):
+                            frontmask, w, h, x, y, pos, stride, 1, 0
+                        ) and not _off_mask(frontmask, w, h, x, y, pos, stride, 1, 1):
                             botshade = False
                     if botshade:
                         helper.rect(x + x0, y + y0, x + x0 + 1, y + y0 + 1, lc2)
