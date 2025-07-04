@@ -4876,6 +4876,72 @@ def simplepolygonfill(helper, color, points):
         i += 2
         y += 1
 
+def roundedborder(helper, x0, y0, x1, y1, upper, lower, topdom=True):
+    if x0 >= x1 or y0 >= y1:
+        raise ValueError
+    if topdom:
+        upperlines = [
+            x1 - 2,
+            y0 + 1,
+            x1 - 3,
+            y0,
+            x0 + 2,
+            y0,
+            x0,
+            y0 + 2,
+            x0,
+            y1 - 3,
+            x0 + 1,
+            y1 - 2,
+        ]
+        lowerlines = [x0 + 2, y1 - 1, x1 - 3, y1 - 1, x1 - 1, y1 - 3, x1 - 1, y0 + 2]
+    else:
+        upperlines = [x1 - 3, y0, x0 + 2, y0, x0, y0 + 2, x0, y1 - 3]
+        lowerlines = [
+            x0 + 1,
+            y1 - 2,
+            x0 + 2,
+            y1 - 1,
+            x1 - 3,
+            y1 - 1,
+            x1 - 1,
+            y1 - 3,
+            x1 - 1,
+            y0 + 2,
+            x1 - 2,
+            y0 + 1,
+        ]
+    for i in range(len(upperlines) // 2):
+        upperlines[i * 2] = min(x1, max(x0, upperlines[i * 2]))
+        upperlines[i * 2 + 1] = min(y1, max(y0, upperlines[i * 2 + 1]))
+    for i in range(len(lowerlines) // 2):
+        lowerlines[i * 2] = min(x1, max(x0, lowerlines[i * 2]))
+        lowerlines[i * 2 + 1] = min(y1, max(y0, lowerlines[i * 2 + 1]))
+    i = 2
+    while i < len(upperlines):
+        dw.helperlinedraw(
+            helper,
+            upper,
+            upperlines[i - 2],
+            upperlines[i - 1],
+            upperlines[i],
+            upperlines[i + 1],
+            drawEndPoint=True,
+        )
+        i += 2
+    i = 2
+    while i < len(lowerlines):
+        dw.helperlinedraw(
+            helper,
+            lower,
+            lowerlines[i - 2],
+            lowerlines[i - 1],
+            lowerlines[i],
+            lowerlines[i + 1],
+            drawEndPoint=True,
+        )
+        i += 2
+
 # 'dst' and 'src' have the same format returned by the blankimage() method with alpha=False.
 def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color2):
     iters = srch
@@ -4914,7 +4980,16 @@ def drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color1, color
 # ----
 # dw.drawmask(img, w, h, x-1, y-1, mask,maskWidth,maskHeight, [255,255,255])
 # dw.drawmask(img, w, h, x+1, y+1, mask,maskWidth,maskHeight, [128,128,128])
-# dw.drawmask(img, w, h, x,y, mask,maskWidth,maskHeight, [0, 0, 0])
+# dw.drawmask(img, w, h, x,y, mask,maskWidth,maskHeight, [0, 0, 0]) # Main text
+#
+# Example: Shadowed in the upper right and more strongly in the lower left
+# ----
+# dw.drawmask(img, w, h, x+1, x-1, mask,maskWidth,maskHeight, [0, 255, 0]) # Upper shadow
+# dw.drawmask(img, w, h, x-1, x+1, mask,maskWidth,maskHeight, [0, 255, 0]) # Lower shadow
+# dw.drawmask(img, w, h, x-2, x+2, mask,maskWidth,maskHeight, [0, 255, 0])
+# dw.drawmask(img, w, h, x-3, x+3, mask,maskWidth,maskHeight, [0, 255, 0])
+# dw.drawmask(img, w, h, x, x, img, w, h, [255, 255, 0]) # Main text
+
 def drawmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
     drawgradientmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color, color)
 
@@ -4960,8 +5035,13 @@ def _transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
                 setpixel(img, w, h, x, y, pb)
     return img
 
-def _is_off_mask(mask, w, h, x, y, pos):
-    return x < 0 or x >= w or y < 0 or y >= h or mask[pos] != 0
+def _off_mask(mask, w, h, x, y, pos, stride, ox, oy):
+    return y+oy < 0 or y+oy>=h or x+ox<0 or x+ox>=w or \
+          mask[pos + stride*oy + 3*ox] != 0
+
+def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
+    return y+oy >= 0 and y+oy<h and x+ox>=0 and x+ox<w and \
+          mask[pos + stride*oy + 3*ox] == 0
 
 # Draws one or more 3-D borders on the inner edge of a shape defined by a mask image,
 # each of whose pixels is all zeros or all ones.
@@ -5008,6 +5088,7 @@ def threedee(
             for x in range(w):
                 if frontmask[pos] != 0:
                     # Pixel not in mask
+                    if backmask: backmask[pos]=0xff
                     pos += 3
                     continue
                 # Nonmask pixel flags.
@@ -5030,15 +5111,17 @@ def threedee(
                         traceInnerCorners
                         and (
                             (
-                                # nonmask pixel at upper left, and mask pixel above
+                                # nonmask pixel at upper left, and mask pixels above
                                 upperleft
-                                and (y != 0 and frontmask[pos - stride] == 0)
+                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,-1)
+                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,-2)
                             )
-                            # nonmask pixel at lower left, and mask pixel below:
-                            # or (
-                            #    lowerleft
-                            #    and (y != h - 1 and frontmask[pos + stride] == 0)
-                            # )
+                            or (
+                                # nonmask pixel at lower left, and mask pixels below:
+                                lowerleft
+                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,1)
+                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,2)
+                            )
                         )
                     )
                 )
@@ -5050,15 +5133,17 @@ def threedee(
                         traceInnerCorners
                         and (
                             (
-                                # nonmask pixel at lower right, and mask pixel below
+                                # nonmask pixel at lower right, and mask pixels below
                                 lowerright
-                                and (y != h - 1 and frontmask[pos + stride] == 0)
+                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,1)
+                                and _on_mask(frontmask,w,h,x,y,pos,stride,0,2)
                             )
-                            # nonmask pixel at upper right, and mask pixel above:
-                            # or (
-                            #    upperright
-                            #    and (y != 0 and frontmask[pos - stride] == 0)
-                            # )
+                            or (
+                               # nonmask pixel at upper right, and mask pixels above:
+                               upperright
+                               and _on_mask(frontmask,w,h,x,y,pos,stride,0,-1)
+                               and _on_mask(frontmask,w,h,x,y,pos,stride,0,-2)
+                            )
                         )
                     )
                 )
@@ -5066,16 +5151,16 @@ def threedee(
                 if not lowerDominates:
                     if topshade and botshade:
                         # avoid unsightly changes in relief color
-                        if _is_off_mask(
-                            frontmask, w, h, x, y - 1, pos - stride
-                        ) and not _is_off_mask(
-                            frontmask, w, h, x - 1, y - 1, pos - stride - 3
+                        if _off_mask(
+                            frontmask, w, h, x, y,pos,stride,0,-1
+                        ) and not _off_mask(
+                            frontmask, w, h, x, y,pos,stride,-1,-1
                         ):
                             botshade = False
-                        elif _is_off_mask(
-                            frontmask, w, h, x - 1, y, pos - 3
-                        ) and not _is_off_mask(
-                            frontmask, w, h, x - 1, y - 1, pos - stride + 3
+                        elif _off_mask(
+                            frontmask, w, h, x,y,pos,stride,-1,0
+                        ) and not _off_mask(
+                            frontmask, w, h, x,y,pos,stride,-1,-1
                         ):
                             botshade = False
                     if topshade:
@@ -5089,16 +5174,16 @@ def threedee(
                 else:
                     if topshade and botshade:
                         # avoid unsightly changes in relief color
-                        if _is_off_mask(
-                            frontmask, w, h, x, y + 1, pos + stride
-                        ) and not _is_off_mask(
-                            frontmask, w, h, x + 1, y + 1, pos + stride + 3
+                        if _off_mask(
+                            frontmask, w, h, x, y,pos,stride,0,1
+                        ) and not _off_mask(
+                            frontmask, w, h, x, y,pos,stride,1,1
                         ):
                             botshade = False
-                        elif _is_off_mask(
-                            frontmask, w, h, x + 1, y, pos + 3
-                        ) and not _is_off_mask(
-                            frontmask, w, h, x + 1, y + 1, pos + stride + 3
+                        elif _off_mask(
+                            frontmask, w, h, x,y,pos,stride,1,0
+                        ) and not _off_mask(
+                            frontmask, w, h, x,y,pos,stride,1,1
                         ):
                             botshade = False
                     if botshade:
@@ -5120,7 +5205,6 @@ def threedee(
                     xfill = -1
                 pos += 3
             if xfill >= 0:
-                print([x + xfill, x + w])
                 helper.rect(x + xfill, y + y0, w + x0, y + y0 + 1, fillColor)
                 xfill = -1
         frontmask = backmask
