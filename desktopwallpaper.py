@@ -5070,6 +5070,8 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 # 'mask' has the same format returned by the blankimage() method with alpha=False.
 # 'fillColor' is the fill color, if any; can be None, and default is None, indicating
 # no fill color.
+# 'traceInnerCorners' means whether the inner corners of a mask's outline are filled in
+# by a pixel.
 # 'lowerDominates' means the lower and right edges "dominate" over the upper and left
 # edges.
 # 'layercolors' is an list of two-element lists for the borders to draw from outermost
@@ -5093,9 +5095,8 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 #         [[255, 255, 255], [128, 128, 128]],
 #         [[255, 255, 255], [128, 128, 128]],
 #     ],
-#     traceInnerCorners=True,
 # )
-# dw.bottomedge(helper, 0, 0, mask, w, h, [0, 0, 0])
+# dw.outeredge(helper, 0, 0, mask, w, h, [0, 0, 0],upperEdge=False,lowerEdge=True)
 #
 # Example: Draw a yellow outline and a blue fill.
 #
@@ -5113,7 +5114,7 @@ def threedee(
     h,
     layercolors,
     fillColor=None,
-    traceInnerCorners=False,
+    traceInnerCorners=True,
     lowerDominates=True,
 ):
     if len(layercolors) <= 0:
@@ -5253,7 +5254,9 @@ def threedee(
         frontmask = backmask
         backmask = maskbuffer1 if i % 2 == 0 else maskbuffer2
 
-def bottomedge(helper, x0, y0, mask, w, h, color=None):
+def outeredge(helper, x0, y0, mask, w, h, color, upperEdge=True, lowerEdge=True):
+    if (not upperEdge) and (not lowerEdge):
+        return
     maskbuffer1 = None
     maskbuffer2 = None
     frontmask = mask
@@ -5282,8 +5285,18 @@ def bottomedge(helper, x0, y0, mask, w, h, color=None):
                     x < w - 1 and y < h - 1 and frontmask[pos + stride + 3] == 0
                 )
                 lowerleft = y < h - 1 and x < 0 and frontmask[pos + stride - 3] == 0
-                botshade = (left and (upperleft or lowerleft)) or (
-                    upper and (upperleft or upperright)
+                botshade = (
+                    lowerEdge
+                    and (
+                        (left and (upperleft or lowerleft))
+                        or (upper and (upperleft or upperright))
+                    )
+                ) or (
+                    upperEdge
+                    and (
+                        (right and (upperright or lowerright))
+                        or (lower and (lowerleft or lowerright))
+                    )
                 )
                 isFill = False
                 if botshade:
@@ -7763,7 +7776,6 @@ if __name__ == "__main__":
         3,
         3,
         [[[255, 255, 255], [128, 128, 128]]],
-        traceInnerCorners=True,
     )
     if img2 != expected:
         print("unexpected output of threedee")

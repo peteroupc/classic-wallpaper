@@ -2376,14 +2376,20 @@ def _readicon(f, packedWinBitmap=False):
     bitfields = None
     andmaskextra = None
     if andmaskhdr[0] == 0x0C:
-        andmaskhdr += struct.unpack("<HHHH", f.read(8))
+        fr = f.read(8)
+        if len(fr) < 8:
+            return None
+        andmaskhdr += struct.unpack("<HHHH", fr)
         if andmaskhdr[4] <= 8:
             andpalette = 1 << andmaskhdr[4]
     elif andmaskhdr[0] < 0x10:
         _errprint("unsupported header size")
         return None
     elif andmaskhdr[0] >= 40:
-        andmaskhdr += struct.unpack("<llHHLLllLL", f.read(36))
+        fr = f.read(36)
+        if len(fr) < 36:
+            return None
+        andmaskhdr += struct.unpack("<llHHLLllLL", fr)
         slack = f.read(andmaskhdr[0] - 40)
         andmaskextra = slack
         andsizeImage = andmaskhdr[6]

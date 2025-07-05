@@ -286,7 +286,6 @@ Data descriptors defined here:<br>
 #&nbsp;of&nbsp;'contour',&nbsp;as&nbsp;its&nbsp;absolute&nbsp;value,&nbsp;is&nbsp;a&nbsp;point&nbsp;along&nbsp;the&nbsp;gradient&nbsp;in&nbsp;which&nbsp;to&nbsp;color<br>
 #&nbsp;the&nbsp;specified&nbsp;point:&nbsp;0&nbsp;means&nbsp;first&nbsp;color&nbsp;in&nbsp;the&nbsp;gradient;&nbsp;1&nbsp;and&nbsp;-1&nbsp;mean&nbsp;the&nbsp;last<br>
 #&nbsp;color&nbsp;in&nbsp;the&nbsp;gradient;&nbsp;points&nbsp;in&nbsp;between&nbsp;are&nbsp;intermediate&nbsp;colors&nbsp;along&nbsp;the&nbsp;gradient.</span></dd></dl>
- <dl><dt><a name="-bottomedge"><strong>bottomedge</strong></a>(helper, x0, y0, mask, w, h, color=None)</dt></dl>
  <dl><dt><a name="-brushedmetal"><strong>brushedmetal</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;brushed&nbsp;metal&nbsp;texture&nbsp;from&nbsp;a&nbsp;noise&nbsp;image.<br>
 #&nbsp;A&nbsp;brushed&nbsp;metal&nbsp;texture&nbsp;was&nbsp;featured&nbsp;in&nbsp;Mac&nbsp;OS&nbsp;X&nbsp;Panther&nbsp;and<br>
 #&nbsp;Tiger&nbsp;(10.3,&nbsp;10.4)&nbsp;and&nbsp;other&nbsp;Apple&nbsp;products<br>
@@ -1112,6 +1111,7 @@ Data descriptors defined here:<br>
 #&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;If&nbsp;'bgcolor'&nbsp;is&nbsp;None&nbsp;or&nbsp;not&nbsp;given,&nbsp;it&nbsp;becomes&nbsp;(255,255,255).<br>
 #&nbsp;If&nbsp;'noisecolor'&nbsp;is&nbsp;None&nbsp;or&nbsp;not&nbsp;given,&nbsp;it&nbsp;becomes&nbsp;(0,0,0).</span></dd></dl>
+ <dl><dt><a name="-outeredge"><strong>outeredge</strong></a>(helper, x0, y0, mask, w, h, color, upperEdge=True, lowerEdge=True)</dt></dl>
  <dl><dt><a name="-outlineimage"><strong>outlineimage</strong></a>(image, width, height, lt=None, sh=None)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3D&nbsp;outline&nbsp;over&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;with&nbsp;transparent<br>
 #&nbsp;pixels,&nbsp;assuming&nbsp;a&nbsp;light&nbsp;source&nbsp;from&nbsp;the&nbsp;upper&nbsp;left.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
@@ -1397,7 +1397,7 @@ Data descriptors defined here:<br>
     h,
     layercolors,
     fillColor=None,
-    traceInnerCorners=False,
+    traceInnerCorners=True,
     lowerDominates=True
 )</dt><dd><span class="code">#&nbsp;Draws&nbsp;one&nbsp;or&nbsp;more&nbsp;3-D&nbsp;borders&nbsp;on&nbsp;the&nbsp;inner&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
 #&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;ones.<br>
@@ -1405,6 +1405,8 @@ Data descriptors defined here:<br>
 #&nbsp;'mask'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'fillColor'&nbsp;is&nbsp;the&nbsp;fill&nbsp;color,&nbsp;if&nbsp;any;&nbsp;can&nbsp;be&nbsp;None,&nbsp;and&nbsp;default&nbsp;is&nbsp;None,&nbsp;indicating<br>
 #&nbsp;no&nbsp;fill&nbsp;color.<br>
+#&nbsp;'traceInnerCorners'&nbsp;means&nbsp;whether&nbsp;the&nbsp;inner&nbsp;corners&nbsp;of&nbsp;a&nbsp;mask's&nbsp;outline&nbsp;are&nbsp;filled&nbsp;in<br>
+#&nbsp;by&nbsp;a&nbsp;pixel.<br>
 #&nbsp;'lowerDominates'&nbsp;means&nbsp;the&nbsp;lower&nbsp;and&nbsp;right&nbsp;edges&nbsp;"dominate"&nbsp;over&nbsp;the&nbsp;upper&nbsp;and&nbsp;left<br>
 #&nbsp;edges.<br>
 #&nbsp;'layercolors'&nbsp;is&nbsp;an&nbsp;list&nbsp;of&nbsp;two-element&nbsp;lists&nbsp;for&nbsp;the&nbsp;borders&nbsp;to&nbsp;draw&nbsp;from&nbsp;outermost<br>
@@ -1428,9 +1430,8 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
-#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traceInnerCorners=True,<br>
 #&nbsp;)<br>
-#&nbsp;dw.<a href="#-bottomedge">bottomedge</a>(helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;0,&nbsp;0])<br>
+#&nbsp;dw.<a href="#-outeredge">outeredge</a>(helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;0,&nbsp;0],upperEdge=False,lowerEdge=True)<br>
 #<br>
 #&nbsp;Example:&nbsp;Draw&nbsp;a&nbsp;yellow&nbsp;outline&nbsp;and&nbsp;a&nbsp;blue&nbsp;fill.<br>
 #<br>
