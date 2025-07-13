@@ -19,7 +19,8 @@
 #&nbsp;To&nbsp;improve&nbsp;the&nbsp;handling&nbsp;of&nbsp;certain&nbsp;file&nbsp;types,&nbsp;answers&nbsp;to&nbsp;the&nbsp;following<br>
 #&nbsp;questions&nbsp;would&nbsp;be&nbsp;welcome:<br>
 #<br>
-#&nbsp;1.&nbsp;When&nbsp;OS/2&nbsp;draws&nbsp;a&nbsp;color&nbsp;icon,&nbsp;does&nbsp;OS/2&nbsp;ignore&nbsp;the&nbsp;color&nbsp;table&nbsp;of&nbsp;the&nbsp;icon's<br>
+#&nbsp;1.&nbsp;When&nbsp;OS/2&nbsp;Presentation&nbsp;Manager&nbsp;draws&nbsp;a&nbsp;color&nbsp;icon,&nbsp;does<br>
+#&nbsp;Presentation&nbsp;Manager&nbsp;ignore&nbsp;the&nbsp;color&nbsp;table&nbsp;of&nbsp;the&nbsp;icon's<br>
 #&nbsp;AND/XOR&nbsp;mask&nbsp;(a&nbsp;two-level&nbsp;bitmap&nbsp;with&nbsp;the&nbsp;AND&nbsp;mask&nbsp;at&nbsp;the&nbsp;top&nbsp;and&nbsp;the&nbsp;XOR&nbsp;mask&nbsp;at<br>
 #&nbsp;the&nbsp;bottom)?<br>
 #&nbsp;2.&nbsp;Can&nbsp;an&nbsp;Apple&nbsp;icon&nbsp;resource&nbsp;(.icns)&nbsp;have&nbsp;two&nbsp;or&nbsp;more&nbsp;icons&nbsp;of&nbsp;the&nbsp;same&nbsp;type<br>
@@ -152,17 +153,17 @@ Data descriptors defined here:<br>
 #&nbsp;as&nbsp;icon&nbsp;family&nbsp;or&nbsp;icon&nbsp;suite),&nbsp;in&nbsp;the&nbsp;'.icns'&nbsp;format.&nbsp;&nbsp;This&nbsp;format&nbsp;was<br>
 #&nbsp;introduced&nbsp;in&nbsp;Mac&nbsp;OS&nbsp;8.5&nbsp;(see&nbsp;Apple&nbsp;TN1142:&nbsp;"Mac&nbsp;OS&nbsp;8.5").&nbsp;&nbsp;The&nbsp;return&nbsp;value<br>
 #&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-reados2icon">reados2icon</a>()&nbsp;method.</span></dd></dl>
- <dl><dt><a name="-readitr"><strong>readitr</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;bitmaps,&nbsp;icons,&nbsp;and&nbsp;pointers&nbsp;in&nbsp;an&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file.<br>
-#&nbsp;An&nbsp;OS/2&nbsp;theme&nbsp;resource&nbsp;file&nbsp;is&nbsp;a&nbsp;collection&nbsp;of&nbsp;OS/2&nbsp;resources<br>
-#&nbsp;such&nbsp;as&nbsp;bitmaps,&nbsp;icons,&nbsp;pointers,&nbsp;and&nbsp;text&nbsp;string&nbsp;tables.<br>
+ <dl><dt><a name="-readitr"><strong>readitr</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;bitmaps,&nbsp;icons,&nbsp;and&nbsp;pointers&nbsp;in&nbsp;an&nbsp;OS/2&nbsp;Presentation&nbsp;Manager&nbsp;theme&nbsp;resource&nbsp;file.<br>
+#&nbsp;A&nbsp;Presentation&nbsp;Manager&nbsp;theme&nbsp;resource&nbsp;file&nbsp;is&nbsp;a&nbsp;collection&nbsp;of&nbsp;Presentation&nbsp;Manager-compatible<br>
+#&nbsp;resources&nbsp;such&nbsp;as&nbsp;bitmaps,&nbsp;icons,&nbsp;pointers,&nbsp;and&nbsp;text&nbsp;string&nbsp;tables.<br>
 #&nbsp;These&nbsp;theme&nbsp;resource&nbsp;files&nbsp;have&nbsp;the&nbsp;extensions&nbsp;.itr,&nbsp;.cmr,&nbsp;.ecr,<br>
 #&nbsp;.inr,&nbsp;.mmr,&nbsp;and&nbsp;.pmr.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;elements,&nbsp;each&nbsp;of&nbsp;which&nbsp;has&nbsp;the&nbsp;format&nbsp;described<br>
 #&nbsp;in&nbsp;the&nbsp;_reados2icon_&nbsp;method.</span></dd></dl>
- <dl><dt><a name="-reados2icon"><strong>reados2icon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;an&nbsp;OS/2&nbsp;icon,&nbsp;mouse&nbsp;pointer&nbsp;(cursor),&nbsp;bitmap,&nbsp;or&nbsp;bitmap&nbsp;array,<br>
+ <dl><dt><a name="-reados2icon"><strong>reados2icon</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;an&nbsp;OS/2&nbsp;Presentation&nbsp;Manager&nbsp;(PM)&nbsp;icon,&nbsp;mouse&nbsp;pointer&nbsp;(cursor),&nbsp;bitmap,&nbsp;or&nbsp;bitmap&nbsp;array,<br>
 #&nbsp;or&nbsp;a&nbsp;Windows&nbsp;bitmap,&nbsp;icon,&nbsp;or&nbsp;cursor.<br>
-#&nbsp;OS/2&nbsp;and&nbsp;Windows&nbsp;icons&nbsp;have&nbsp;the&nbsp;'.ico'&nbsp;file&nbsp;extension;&nbsp;OS/2&nbsp;cursors,&nbsp;'.ptr';<br>
-#&nbsp;OS/2&nbsp;and&nbsp;Windows&nbsp;bitmaps,&nbsp;'.bmp';&nbsp;and&nbsp;Windows&nbsp;cursors,&nbsp;'.cur'.<br>
+#&nbsp;PM&nbsp;and&nbsp;Windows&nbsp;icons&nbsp;have&nbsp;the&nbsp;'.ico'&nbsp;file&nbsp;extension;&nbsp;PM&nbsp;cursors,&nbsp;'.ptr';<br>
+#&nbsp;PM&nbsp;and&nbsp;Windows&nbsp;bitmaps,&nbsp;'.bmp';&nbsp;and&nbsp;Windows&nbsp;cursors,&nbsp;'.cur'.<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;five-element&nbsp;lists,&nbsp;representing&nbsp;the&nbsp;decoded&nbsp;images<br>
 #&nbsp;in&nbsp;the&nbsp;order&nbsp;in&nbsp;which&nbsp;they&nbsp;were&nbsp;read.&nbsp;&nbsp;If&nbsp;an&nbsp;icon,&nbsp;pointer,&nbsp;or<br>
 #&nbsp;bitmap&nbsp;could&nbsp;not&nbsp;be&nbsp;read,&nbsp;the&nbsp;value&nbsp;None&nbsp;takes&nbsp;the&nbsp;place&nbsp;of&nbsp;the<br>
@@ -176,12 +177,12 @@ Data descriptors defined here:<br>
 #&nbsp;drawn&nbsp;on&nbsp;the&nbsp;screen.&nbsp;&nbsp;The&nbsp;hot&nbsp;spot&nbsp;makes&nbsp;sense&nbsp;only&nbsp;for&nbsp;mouse&nbsp;pointers;<br>
 #&nbsp;the&nbsp;hot&nbsp;spot&nbsp;x-&nbsp;and&nbsp;y-coordinates&nbsp;are&nbsp;each&nbsp;0&nbsp;if&nbsp;the&nbsp;image&nbsp;relates&nbsp;to<br>
 #&nbsp;an&nbsp;icon&nbsp;or&nbsp;bitmap,&nbsp;rather&nbsp;than&nbsp;a&nbsp;pointer.<br>
-#&nbsp;2.&nbsp;Although&nbsp;OS/2&nbsp;and&nbsp;Windows&nbsp;icons&nbsp;and&nbsp;cursors&nbsp;support&nbsp;pixels&nbsp;that&nbsp;invert<br>
+#&nbsp;2.&nbsp;Although&nbsp;PM&nbsp;and&nbsp;Windows&nbsp;icons&nbsp;and&nbsp;cursors&nbsp;support&nbsp;pixels&nbsp;that&nbsp;invert<br>
 #&nbsp;the&nbsp;screen&nbsp;colors,&nbsp;this&nbsp;feature&nbsp;is&nbsp;not&nbsp;supported&nbsp;in&nbsp;images&nbsp;returned&nbsp;by<br>
 #&nbsp;this&nbsp;function;&nbsp;areas&nbsp;where&nbsp;the&nbsp;icon&nbsp;or&nbsp;cursor&nbsp;would&nbsp;invert&nbsp;screen&nbsp;colors<br>
 #&nbsp;are&nbsp;treated&nbsp;as&nbsp;transparent&nbsp;instead.<br>
 #<br>
-#&nbsp;NOTE:&nbsp;Windows&nbsp;icons&nbsp;and&nbsp;cursors&nbsp;(and&nbsp;OS/2&nbsp;two-color&nbsp;icons&nbsp;and&nbsp;cursors)&nbsp;are<br>
+#&nbsp;NOTE:&nbsp;Windows&nbsp;icons&nbsp;and&nbsp;cursors&nbsp;(and&nbsp;OS/2&nbsp;PM&nbsp;two-color&nbsp;icons&nbsp;and&nbsp;cursors)&nbsp;are<br>
 #&nbsp;stored&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;an&nbsp;_XOR&nbsp;mask_&nbsp;(color&nbsp;mask)&nbsp;as&nbsp;well&nbsp;as&nbsp;an&nbsp;_AND&nbsp;mask_<br>
 #&nbsp;("inverted&nbsp;alpha"&nbsp;mask)&nbsp;where&nbsp;each&nbsp;pixel&nbsp;is&nbsp;either&nbsp;0&nbsp;or&nbsp;1,&nbsp;a&nbsp;format&nbsp;that<br>
 #&nbsp;additionally&nbsp;allows&nbsp;for&nbsp;so-called&nbsp;"inverted&nbsp;pixels",&nbsp;where&nbsp;some&nbsp;existing<br>
@@ -205,14 +206,14 @@ Data descriptors defined here:<br>
 #&nbsp;follows:&nbsp;Where&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;0,&nbsp;the&nbsp;XOR&nbsp;mask's&nbsp;pixels&nbsp;are&nbsp;blended&nbsp;onto<br>
 #&nbsp;the&nbsp;output&nbsp;pixels&nbsp;with&nbsp;the&nbsp;specified&nbsp;alpha&nbsp;component&nbsp;as&nbsp;opacity,&nbsp;and&nbsp;where<br>
 #&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;1,&nbsp;the&nbsp;output&nbsp;pixels&nbsp;are&nbsp;left&nbsp;unchanged.<br>
-#&nbsp;OS/2&nbsp;color&nbsp;icons&nbsp;employ&nbsp;three&nbsp;masks:&nbsp;a&nbsp;two-level&nbsp;AND&nbsp;mask,&nbsp;a&nbsp;two-level&nbsp;XOR<br>
+#&nbsp;Presentation&nbsp;Manager&nbsp;color&nbsp;icons&nbsp;employ&nbsp;three&nbsp;masks:&nbsp;a&nbsp;two-level&nbsp;AND&nbsp;mask,&nbsp;a&nbsp;two-level&nbsp;XOR<br>
 #&nbsp;mask,&nbsp;and&nbsp;a&nbsp;color&nbsp;mask:&nbsp;where&nbsp;the&nbsp;AND&nbsp;mask&nbsp;is&nbsp;0,&nbsp;the&nbsp;color&nbsp;mask&nbsp;is&nbsp;copied&nbsp;to<br>
 #&nbsp;the&nbsp;output;&nbsp;otherwise,&nbsp;where&nbsp;the&nbsp;XOR&nbsp;mask&nbsp;is&nbsp;1,&nbsp;the&nbsp;output's&nbsp;colors&nbsp;are<br>
 #&nbsp;inverted;&nbsp;otherwise,&nbsp;the&nbsp;output&nbsp;is&nbsp;left&nbsp;unchanged&nbsp;(see&nbsp;"Bitmap&nbsp;File&nbsp;Format",<br>
 #&nbsp;in&nbsp;the&nbsp;_Presentation&nbsp;Manager&nbsp;Programming&nbsp;Guide&nbsp;and&nbsp;Reference_).</span></dd></dl>
  <dl><dt><a name="-reados2iconcore"><strong>reados2iconcore</strong></a>(f)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;'reados2icon',&nbsp;but&nbsp;takes&nbsp;an&nbsp;I/O&nbsp;<a href="builtins.html#object">object</a>&nbsp;such&nbsp;as&nbsp;one<br>
 #&nbsp;returned&nbsp;by&nbsp;Python's&nbsp;'open'&nbsp;method.</span></dd></dl>
- <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;or&nbsp;Windows&nbsp;palette&nbsp;file.<br>
+ <dl><dt><a name="-reados2palette"><strong>reados2palette</strong></a>(infile)</dt><dd><span class="code">#&nbsp;Reads&nbsp;the&nbsp;color&nbsp;table&nbsp;from&nbsp;an&nbsp;OS/2&nbsp;Presentation&nbsp;Manager&nbsp;or&nbsp;Windows&nbsp;palette&nbsp;file.<br>
 #&nbsp;Returns&nbsp;an&nbsp;list&nbsp;of&nbsp;the&nbsp;colors&nbsp;read&nbsp;from&nbsp;the&nbsp;file.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;three-element&nbsp;list&nbsp;consisting&nbsp;of<br>
 #&nbsp;the&nbsp;color's&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;component,&nbsp;in&nbsp;that<br>

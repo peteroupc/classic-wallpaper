@@ -1314,7 +1314,7 @@ def hatchedbox_alignorigins(
 # 0xBB: "Merge paint", "merge not pen".
 # 0xCC: "Source copy"; copy source to destination.
 # 0xDD: "Merge pen not".
-# 0xEE: "Source paint"; "merge pen not".
+# 0xEE: "Source paint"; "merge pen not"; "source OR destination".
 # 0xFF: Turn destination "white" (bits are all ones).
 # 0x5A: Pattern invert.
 # 0xC0: "Merge copy"; where pattern pixel's bits are all ones, copy the source to the
@@ -3844,7 +3844,7 @@ def recolordither(image, width, height, color, grays, darkcolor=None, alpha=Fals
         raise ValueError
     if darkcolor != None and len(darkcolor) < 3:
         raise ValueError
-    dithertograyimage(image, width, height, grays, alpha=alpha, ignoreNonGrays=True)
+    dithertograyimage(image, width, height, grays, alpha=alpha, disregardNonGrays=True)
     pixelSize = 4 if alpha else 3
     for y in range(height):
         yp = y * width * pixelSize
@@ -3892,7 +3892,7 @@ def recolordither(image, width, height, color, grays, darkcolor=None, alpha=Fals
                     image[xp + 1] = 0
                     image[xp + 2] = 0
             else:
-                raise ValueError("Invalid color")
+                raise ValueError("Invalid color: %d %d %d" % (r, g, b))
     return image
 
 # Converts the image to grayscale and dithers the resulting image
@@ -3902,12 +3902,14 @@ def recolordither(image, width, height, color, grays, darkcolor=None, alpha=Fals
 # 'grays' is a sorted list of gray tones.  Each gray tone must be an integer
 # from 0 through 255.  The list must have a length of 2 or greater.
 # 'grays' can be None, in which case this method behaves like 'graymap'.
-# If 'ignoreNonGrays' is True, just dither the gray tones and leave the other
+# If 'disregardNonGrays' is True, just dither the gray tones and leave the other
 # colors in the image unchanged.  Default is False.
 # This method disregards the input image's alpha channel.
-def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=False):
+def dithertograyimage(
+    image, width, height, grays, alpha=False, disregardNonGrays=False
+):
     if not grays:
-        if ignoreNonGrays:
+        if disregardNonGrays:
             return image
         return graymap(image, width, height, alpha=alpha)
     if len(grays) < 2:
@@ -3927,7 +3929,7 @@ def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=F
         for x in range(width):
             xp = yp + x * pixelSize
             c = image[xp]
-            if ignoreNonGrays:
+            if disregardNonGrays:
                 if c != image[xp + 1] or image[xp + 1] != image[xp + 2]:
                     continue
             else:
@@ -3950,7 +3952,7 @@ def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=F
 # to colors in the specified colors array.  If 'colors' is None (the default),
 # the mapping step is skipped.
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
-# If 'ignoreNonGrays' is True, leave colors other than gray tones
+# If 'disregardNonGrays' is True, leave colors other than gray tones
 # in the image unchanged.  Default is False.
 #
 #  Example: Generate a random background image, dither to black, gray,
@@ -3963,7 +3965,7 @@ def dithertograyimage(image, width, height, grays, alpha=False, ignoreNonGrays=F
 # colors[128] = [192, 192, 192]
 # colors[0] = [128, 128, 128]
 # dw.graymap(img2, 320, 240, colors)
-def graymap(image, width, height, colors=None, alpha=False, ignoreNonGrays=False):
+def graymap(image, width, height, colors=None, alpha=False, disregardNonGrays=False):
     pixelSize = 4 if alpha else 3
     for y in range(height):
         yp = y * width * pixelSize
@@ -3971,7 +3973,7 @@ def graymap(image, width, height, colors=None, alpha=False, ignoreNonGrays=False
             xp = yp + x * pixelSize
             c = image[xp]
             if c != image[xp + 1] or image[xp + 1] != image[xp + 2]:
-                if ignoreNonGrays:
+                if disregardNonGrays:
                     continue
                 # Not a gray pixel, so find gray value
                 c = (
@@ -4538,7 +4540,7 @@ def uicolorgradient(
 #  import imageformat as ifmt
 #
 #  grad = dw.uicolorgradient2([220, 200, 150])
-#  img256 = dw.graymap([x for x in img], w, h, grad, ignoreNonGrays=True)
+#  img256 = dw.graymap([x for x in img], w, h, grad, disregardNonGrays=True)
 #  ifmt.writepng("button.png",img256, w, h)
 #
 # Example 2: Same as the previous example, but the image is first dithered
@@ -4549,10 +4551,10 @@ def uicolorgradient(
 #  import imageformat as ifmt
 #
 #  img = dw.dithertograyimage(
-#    [x for x in img], w, h, [0, 128, 192, 255], ignoreNonGrays=True
+#    [x for x in img], w, h, [0, 128, 192, 255], disregardNonGrays=True
 #  )
 #  grad = dw.uicolorgradient2([220, 200, 150])
-#  img256 = dw.graymap([x for x in img], w, h, grad, ignoreNonGrays=True)
+#  img256 = dw.graymap([x for x in img], w, h, grad, disregardNonGrays=True)
 #  ifmt.writepng("button.png", img256, w, h)
 def uicolorgradient2(btnface=None):
     if not btnface:
@@ -4632,6 +4634,21 @@ def circledraw(image, width, height, c, cx, cy, r, wraparound=True, alpha=False)
         image, width, height, wraparound=wraparound, alpha=alpha
     )
     helpercircledraw(helper, c, cx, cy, r)
+
+# Fills a circle using a drawing helper.
+def helpercirclefill(helper, color, x0, y0, x1, y1):
+    if x0 == x1 or y0 == y1:
+        return
+    poly = []
+    szx = abs(x1 - x0)
+    szy = abs(y1 - y0)
+    xUpperLeft = min(x0, x1)
+    yUpperLeft = min(y0, y1)
+    for i in range(0, 72 + 1):
+        s = int(0.5 + szy / 2.0 + math.sin(i * 5 * math.pi / 180) * szy / 2)
+        c = int(0.5 + szx / 2.0 + math.cos(i * 5 * math.pi / 180) * szx / 2)
+        poly.append([c + xUpperLeft, s + yUpperLeft])
+    simplepolygonfill(helper, color, poly)
 
 # Draws a circle using a drawing helper.
 def helpercircledraw(helper, c, cx, cy, r):
@@ -4838,6 +4855,7 @@ def _edgetoscans(
                 z += b
                 y += coordchange
             p = y - scanY
+            # print([y,scanY,p,len(scans)])
             scans[p * 2] = min(scans[p * 2], x) if scans[p * 2] != None else x
             scans[p * 2 + 1] = (
                 max(scans[p * 2 + 1], x) if scans[p * 2 + 1] != None else x
@@ -4856,21 +4874,17 @@ def simplepolygonfill(helper, color, points):
     direcChanged = False
     splitPoint = True
     lasty = 0
-    minY = points[0][0]
+    minY = points[0][1]
     maxY = points[0][1]
-    minP = 0
-    maxP = 0
     for i in range(1, len(points)):
         y = points[i][1]
         if y < minY:
-            minP = i
             minY = y
         elif y > maxY:
-            maxP = i
             maxY = y
-    length = maxY - minY
-    if length <= 0:
+    if maxY == minY:
         return
+    length = maxY - minY + 1
     edges = [None for i in range(length * 2)]
     for i in range(1, len(points)):
         _edgetoscans(
@@ -4954,7 +4968,10 @@ def roundedborder(helper, x0, y0, x1, y1, upper, lower, topdom=True):
         i += 2
 
 # 'dst' and 'mask' have the same format returned by the blankimage() method with alpha=False.
-def drawgradientmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color1, color2):
+# 'wraparound' has the same meaning as in imageblitex(); default is False.
+def drawgradientmask(
+    dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color1, color2, wraparound=False
+):
     iters = maskh
     rowsize = 1
     if color1 == color2:
@@ -4982,10 +4999,11 @@ def drawgradientmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color1, co
             # where the pattern is 0 and source is 0, set black;
             # where the pattern is 1 and source is 0, set white
             ropForeground=0xB8,
-            wraparound=False,
+            wraparound=wraparound,
         )
 
 # 'dst' and 'mask' have the same format returned by the blankimage() method with alpha=False.
+# 'wraparound' has the same meaning as in imageblitex(); default is False.
 #
 # Example: White-over-black-over gray text effect, seen in some early-90s Windows applications.
 # ----
@@ -4995,14 +5013,37 @@ def drawgradientmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color1, co
 #
 # Example: Shadowed in the upper right and more strongly in the lower left
 # ----
-# dw.drawmask(img, w, h, x+1, x-1, mask,maskWidth,maskHeight, [0, 255, 0]) # Upper shadow
-# dw.drawmask(img, w, h, x-1, x+1, mask,maskWidth,maskHeight, [0, 255, 0]) # Lower shadow
-# dw.drawmask(img, w, h, x-2, x+2, mask,maskWidth,maskHeight, [0, 255, 0])
-# dw.drawmask(img, w, h, x-3, x+3, mask,maskWidth,maskHeight, [0, 255, 0])
-# dw.drawmask(img, w, h, x, x, img, w, h, [255, 255, 0]) # Main text
-
-def drawmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color):
-    drawgradientmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color, color)
+# dw.drawmask(img, w, h, x+1, y-1, mask,maskWidth,maskHeight, [0, 255, 0]) # Upper shadow
+# dw.drawmask(img, w, h, x-1, y+1, mask,maskWidth,maskHeight, [0, 255, 0]) # Lower shadow
+# dw.drawmask(img, w, h, x-2, y+2, mask,maskWidth,maskHeight, [0, 255, 0])
+# dw.drawmask(img, w, h, x-3, y+3, mask,maskWidth,maskHeight, [0, 255, 0])
+# dw.drawmask(img, w, h, x, y, img, w, h, [255, 255, 0]) # Main text
+#
+# Example: Create a dark-over-light pattern over a midtone, given a tileable
+# mask pattern.
+#
+# darktone=[0,0,0]
+# midtone=[128,0,0]
+# lighttone=[255,0,0]
+# img=dw.blankimage(maskWidth,maskHeight,midtone)
+# dw.drawmask(img,maskWidth,maskHeight,0,0,mask,maskWidth,maskHeight,
+#    darktone,wraparound=True)
+# dw.drawmask(img,maskWidth,maskHeight,1,1,mask,maskWidth,maskHeight,
+#    lighttone,wraparound=True)
+def drawmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color, wraparound=False):
+    drawgradientmask(
+        dst,
+        dstw,
+        dsth,
+        dstx,
+        dsty,
+        mask,
+        maskw,
+        maskh,
+        color,
+        color,
+        wraparound=wraparound,
+    )
 
 # 'image1' and 'image2' have the same format returned by the blankimage() method with alpha=False.
 def transition(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25):
@@ -6337,17 +6378,46 @@ def drawedgenodom(
         bordersize=bordersize,
     )
 
-def drawindentborder(
-    helper, x0, y0, x1, y1, hilt, sh, frame, outerbordersize=1, innerbordersize=1
+# If basrelief=True: draw a sunken-middle-raised border (from outer to inner).
+# If basrelief=False: draw a raised-middle-sunken border (from outer to inner).
+def drawreliefborder(
+    helper,
+    x0,
+    y0,
+    x1,
+    y1,
+    hilt=None,
+    sh=None,
+    lt=None,
+    frame=None,
+    outerbordersize=1,
+    innerbordersize=1,
+    midbordersize=1,
+    basrelief=True,
 ):
+    if hilt == None:
+        hilt = [255, 255, 255]
+    if sh == None:
+        sh = [128, 128, 128]
+    if lt == None:
+        lt = [128, 128, 128]
+    if frame == None:
+        frame = [0, 0, 0]
     if innerbordersize < 0:
         raise ValueError
     if outerbordersize < 0:
         raise ValueError
+    if midbordersize < 0:
+        raise ValueError
     # Outer border
-    drawsunkenborderbotdom(
-        helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize
-    )
+    if basrelief:
+        drawsunkenborderbotdom(
+            helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize
+        )
+    else:
+        drawraisedborderbotdom(
+            helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize
+        )
     # Middle border
     drawedgebotdom(
         helper,
@@ -6355,23 +6425,38 @@ def drawindentborder(
         y1 + outerbordersize,
         x1 - outerbordersize,
         y1 - outerbordersize,
-        frame,
-        frame,
+        frame if basrelief else lt,
+        frame if basrelief else lt,
+        bordersize=midbordersize,
     )
     # Inner border
-    drawraisedborderbotdom(
-        helper,
-        x0 + outerbordersize + 1,
-        y1 + outerbordersize + 1,
-        x1 - outerbordersize - 1,
-        y1 - outerbordersize - 1,
-        hilt,
-        None,
-        sh,
-        None,
-        bordersize=innerbordersize,
-    )
-    c = 1 + outerbordersize + innerbordersize
+    if basrelief:
+        drawraisedborderbotdom(
+            helper,
+            x0 + outerbordersize + midbordersize,
+            y1 + outerbordersize + midbordersize,
+            x1 - outerbordersize - midbordersize,
+            y1 - outerbordersize - midbordersize,
+            hilt,
+            None,
+            sh,
+            None,
+            bordersize=innerbordersize,
+        )
+    else:
+        drawsunkenborderbotdom(
+            helper,
+            x0 + outerbordersize + midbordersize,
+            y1 + outerbordersize + midbordersize,
+            x1 - outerbordersize - midbordersize,
+            y1 - outerbordersize - midbordersize,
+            hilt,
+            None,
+            sh,
+            None,
+            bordersize=innerbordersize,
+        )
+    c = midbordersize + outerbordersize + innerbordersize
     return [x0 + c, y0 + c, x0 - c, y0 - c]
 
 # The following four functions draw window edges

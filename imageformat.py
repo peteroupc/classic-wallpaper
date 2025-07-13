@@ -8,7 +8,8 @@
 # To improve the handling of certain file types, answers to the following
 # questions would be welcome:
 #
-# 1. When OS/2 draws a color icon, does OS/2 ignore the color table of the icon's
+# 1. When OS/2 Presentation Manager draws a color icon, does
+# Presentation Manager ignore the color table of the icon's
 # AND/XOR mask (a two-level bitmap with the AND mask at the top and the XOR mask at
 # the bottom)?
 # 2. Can an Apple icon resource (.icns) have two or more icons of the same type
@@ -1478,10 +1479,10 @@ def _rle4decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
 
-# Reads an OS/2 icon, mouse pointer (cursor), bitmap, or bitmap array,
+# Reads an OS/2 Presentation Manager (PM) icon, mouse pointer (cursor), bitmap, or bitmap array,
 # or a Windows bitmap, icon, or cursor.
-# OS/2 and Windows icons have the '.ico' file extension; OS/2 cursors, '.ptr';
-# OS/2 and Windows bitmaps, '.bmp'; and Windows cursors, '.cur'.
+# PM and Windows icons have the '.ico' file extension; PM cursors, '.ptr';
+# PM and Windows bitmaps, '.bmp'; and Windows cursors, '.cur'.
 # Returns a list of five-element lists, representing the decoded images
 # in the order in which they were read.  If an icon, pointer, or
 # bitmap could not be read, the value None takes the place of the
@@ -1495,12 +1496,12 @@ def _rle4decompress(bitdata, dst, width, height):
 # drawn on the screen.  The hot spot makes sense only for mouse pointers;
 # the hot spot x- and y-coordinates are each 0 if the image relates to
 # an icon or bitmap, rather than a pointer.
-# 2. Although OS/2 and Windows icons and cursors support pixels that invert
+# 2. Although PM and Windows icons and cursors support pixels that invert
 # the screen colors, this feature is not supported in images returned by
 # this function; areas where the icon or cursor would invert screen colors
 # are treated as transparent instead.
 #
-# NOTE: Windows icons and cursors (and OS/2 two-color icons and cursors) are
+# NOTE: Windows icons and cursors (and OS/2 PM two-color icons and cursors) are
 # stored in the form of an _XOR mask_ (color mask) as well as an _AND mask_
 # ("inverted alpha" mask) where each pixel is either 0 or 1, a format that
 # additionally allows for so-called "inverted pixels", where some existing
@@ -1524,7 +1525,7 @@ def _rle4decompress(bitdata, dst, width, height):
 # follows: Where the AND mask is 0, the XOR mask's pixels are blended onto
 # the output pixels with the specified alpha component as opacity, and where
 # the AND mask is 1, the output pixels are left unchanged.
-# OS/2 color icons employ three masks: a two-level AND mask, a two-level XOR
+# Presentation Manager color icons employ three masks: a two-level AND mask, a two-level XOR
 # mask, and a color mask: where the AND mask is 0, the color mask is copied to
 # the output; otherwise, where the XOR mask is 1, the output's colors are
 # inverted; otherwise, the output is left unchanged (see "Bitmap File Format",
@@ -1660,7 +1661,7 @@ def reados2iconcore(f):
         f.seek(ft)
         return [_readicon(f)]
 
-# Reads the color table from an OS/2 or Windows palette file.
+# Reads the color table from an OS/2 Presentation Manager or Windows palette file.
 # Returns an list of the colors read from the file.
 # Each element in the list is a color in the form of a three-element list consisting of
 # the color's red, green, and blue component, in that
@@ -1845,9 +1846,9 @@ def _readoldbitmap(f):
     f.close()
     return [[img, header[4], header[5], 0, 0]]
 
-# Reads the bitmaps, icons, and pointers in an OS/2 theme resource file.
-# An OS/2 theme resource file is a collection of OS/2 resources
-# such as bitmaps, icons, pointers, and text string tables.
+# Reads the bitmaps, icons, and pointers in an OS/2 Presentation Manager theme resource file.
+# A Presentation Manager theme resource file is a collection of Presentation Manager-compatible
+# resources such as bitmaps, icons, pointers, and text string tables.
 # These theme resource files have the extensions .itr, .cmr, .ecr,
 # .inr, .mmr, and .pmr.
 # Returns a list of elements, each of which has the format described
@@ -1896,19 +1897,19 @@ def readitr(infile):
 
 def _read1bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 1-bit-per-pixel
-    # Windows or OS/2 bitmap data.
+    # Windows or Presentation Manager bitmap data.
     return (byteData[scanSize * (height - 1 - y) + (x >> 3)] >> (7 - (x & 7))) & 1
 
 def _read4bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 4-bit-per-pixel
-    # Windows or OS/2 bitmap data.
+    # Windows or Presentation Manager bitmap data.
     return (
         byteData[scanSize * (height - 1 - y) + (x >> 1)] >> (4 * (1 - (x & 1)))
     ) & 0x0F
 
 def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
     # Reads the alpha value at the specified pixel position of a bitmap image,
-    # represented by an array of bottom-up Windows or OS/2 bitmap data.
+    # represented by an array of bottom-up Windows or Presentation Manager bitmap data.
     # Returns 255 if bpp is not 32.
     if bpp == 32:
         row = scanSize * (height - 1 - y)
@@ -1969,7 +1970,7 @@ def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields
 
 def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
     # Reads the pixel color value at the specified position of a bitmap image,
-    # represented by an array of bottom-up Windows or OS/2 bitmap data.
+    # represented by an array of bottom-up Windows or Presentation Manager bitmap data.
     # The color value is returned as an array containing the blue, green,
     # and red components, in that order.
     match bpp:
@@ -2353,7 +2354,7 @@ def _readicon(f, packedWinBitmap=False):
         isPointer = tag == b"CP" or tag == b"PT"
         isBitmap = tag == b"BM"
         andmaskinfo = struct.unpack("<LHHL", f.read(0x0C))
-        # The meaning of this field differs in Windows and OS/2 bitmaps
+        # The meaning of this field differs in Windows and Presentation Manager bitmaps
         offsetToImage = andmaskinfo[3]
         if not isBitmap:
             hotspotX = andmaskinfo[1]  # hot spot is valid for icons and pointers
@@ -2376,6 +2377,7 @@ def _readicon(f, packedWinBitmap=False):
     bitfields = None
     andmaskextra = None
     if andmaskhdr[0] == 0x0C:
+        # BITMAPCOREHEADER from OS/2 Presentation Manager
         fr = f.read(8)
         if len(fr) < 8:
             return None
@@ -2480,7 +2482,9 @@ def _readicon(f, packedWinBitmap=False):
         if isBitmap:
             _errprint("top-down bitmaps not supported for this kind of bitmap")
         else:
-            _errprint("top-down bitmaps not supported for OS/2 icons and cursors")
+            _errprint(
+                "top-down bitmaps not supported for Presentation Manager icons and cursors"
+            )
         return None
     if andmaskhdr[1] == 0 or andmaskhdr[2] == 0:
         _errprint("zero image size not supported")
@@ -2588,11 +2592,13 @@ def _readicon(f, packedWinBitmap=False):
             return None
         colorbpp = colormaskhdr[4]
         if colormaskhdr[2] < 0:
-            _errprint("top-down color mask is not supported for OS/2 icons and cursors")
+            _errprint(
+                "top-down color mask is not supported for Presentation Manager icons and cursors"
+            )
             return None
         if colorbpp == 3:
             # NOTE: A 3 BPP color icon was attested, but it is unclear whether
-            # OS/2 supports such 3 BPP icons.
+            # Presentation Manager supports such 3 BPP icons.
             _errprint("3 bits per pixel not supported")
             return None
         if colormaskhdr[1] == 0 or colormaskhdr[2] == 0:
@@ -2633,7 +2639,7 @@ def _readicon(f, packedWinBitmap=False):
     # The palette of icons' and pointers' AND/XOR mask
     # is effectively fixed at black and white (that is,
     # (0,0,0) and (255,255,255), respectively).
-    # It may be, but I am not sure, that OS/2
+    # It may be, but I am not sure, that OS/2 Presentation Manager
     # ignores the color table of icons' and pointers' AND/XOR mask.
     andmaskcolors = []
     if not (isIcon or isPointer):
@@ -2776,7 +2782,7 @@ def _readicon(f, packedWinBitmap=False):
     height = 0
     ret = None
     if isBitmap:
-        # OS/2 or Windows bitmap
+        # Presentation Manager or Windows bitmap
         cw = andmaskhdr[1]
         ch = abs(andmaskhdr[2])
         bpp = andmaskhdr[4]
@@ -2805,7 +2811,7 @@ def _readicon(f, packedWinBitmap=False):
         width = cw
         height = ch
     elif isColor:
-        # OS/2 color icon
+        # Presentation Manager color icon
         cw = colormaskhdr[1]
         ch = colormaskhdr[2]
         bpp = colormaskhdr[4]
@@ -2818,14 +2824,14 @@ def _readicon(f, packedWinBitmap=False):
                 bitand = _read1bppBitmap(andmask, andmaskscan, andmaskhdr[2], x, y)
                 bitxor = _read1bppBitmap(andmask, andmaskscan, andmaskhdr[2], x, y + ch)
                 # Windows color icons employ a simpler 2-mask system (an AND mask and
-                # an XOR mask) than OS/2 color icons (AND/XOR mask and color mask).
-                # The XOR mask for Windows icons is the same as the OS/2 icon's
-                # color mask except that, where the OS/2 icon's XOR mask bit (in the bottom
+                # an XOR mask) than Presentation Manager (PM) color icons (AND/XOR mask and color mask).
+                # The XOR mask for Windows icons is the same as the PM icon's
+                # color mask except that, where the PM icon's XOR mask bit (in the bottom
                 # half of the AND/XOR mask) and its AND mask bit (in the top half) are 1,
                 # the Windows icon's XOR mask bits are all ones.
                 # See "Bitmap File Format", in the _Presentation Manager Programming
                 # Guide and Reference_.
-                # However, the presence of nonzero values in an OS/2 icon's or OS/2 cursor's
+                # However, the presence of nonzero values in a PM icon's or PM cursor's
                 # XOR mask is unusual for color icons and pointers.
                 # Moreover, PNGs don't support color inversions.
                 px = (
@@ -2840,7 +2846,7 @@ def _readicon(f, packedWinBitmap=False):
         height = ch
         ret = bl
     else:
-        # OS/2 two-color icon
+        # Presentation Manager two-color icon
         trueheight = andmaskhdr[2] // 2
         bl = dw.blankimage(andmaskhdr[1], trueheight, alpha=True)
         blackalpha0 = [0, 0, 0, 0]

@@ -384,7 +384,7 @@ Data descriptors defined here:<br>
     height,
     grays,
     alpha=False,
-    ignoreNonGrays=False
+    disregardNonGrays=False
 )</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;dithers&nbsp;the&nbsp;resulting&nbsp;image<br>
 #&nbsp;to&nbsp;the&nbsp;gray&nbsp;tones&nbsp;given.&nbsp;&nbsp;The&nbsp;conversion&nbsp;is&nbsp;in-place.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
@@ -392,7 +392,7 @@ Data descriptors defined here:<br>
 #&nbsp;'grays'&nbsp;is&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;gray&nbsp;tones.&nbsp;&nbsp;Each&nbsp;gray&nbsp;tone&nbsp;must&nbsp;be&nbsp;an&nbsp;integer<br>
 #&nbsp;from&nbsp;0&nbsp;through&nbsp;255.&nbsp;&nbsp;The&nbsp;list&nbsp;must&nbsp;have&nbsp;a&nbsp;length&nbsp;of&nbsp;2&nbsp;or&nbsp;greater.<br>
 #&nbsp;'grays'&nbsp;can&nbsp;be&nbsp;None,&nbsp;in&nbsp;which&nbsp;case&nbsp;this&nbsp;method&nbsp;behaves&nbsp;like&nbsp;'graymap'.<br>
-#&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;just&nbsp;dither&nbsp;the&nbsp;gray&nbsp;tones&nbsp;and&nbsp;leave&nbsp;the&nbsp;other<br>
+#&nbsp;If&nbsp;'disregardNonGrays'&nbsp;is&nbsp;True,&nbsp;just&nbsp;dither&nbsp;the&nbsp;gray&nbsp;tones&nbsp;and&nbsp;leave&nbsp;the&nbsp;other<br>
 #&nbsp;colors&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.<br>
 #&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
  <dl><dt><a name="-doubleargyle"><strong>doubleargyle</strong></a>(
@@ -512,8 +512,10 @@ Data descriptors defined here:<br>
     maskw,
     maskh,
     color1,
-    color2
-)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+    color2,
+    wraparound=False
+)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'wraparound'&nbsp;has&nbsp;the&nbsp;same&nbsp;meaning&nbsp;as&nbsp;in&nbsp;<a href="#-imageblitex">imageblitex</a>();&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
@@ -522,20 +524,46 @@ Data descriptors defined here:<br>
 #&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;horizontal&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
 #&nbsp;hatchthick&nbsp;-&nbsp;thickness&nbsp;in&nbsp;pixels&nbsp;of&nbsp;each&nbsp;horizontal&nbsp;hash&nbsp;line.</span></dd></dl>
- <dl><dt><a name="-drawindentborder"><strong>drawindentborder</strong></a>(
-    helper,
-    x0,
-    y0,
-    x1,
-    y1,
-    hilt,
-    sh,
-    frame,
-    outerbordersize=1,
-    innerbordersize=1
-)</dt></dl>
  <dl><dt><a name="-drawloweredge"><strong>drawloweredge</strong></a>(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1)</dt></dl>
- <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color)</dt></dl>
+ <dl><dt><a name="-drawmask"><strong>drawmask</strong></a>(
+    dst,
+    dstw,
+    dsth,
+    dstx,
+    dsty,
+    mask,
+    maskw,
+    maskh,
+    color,
+    wraparound=False
+)</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'wraparound'&nbsp;has&nbsp;the&nbsp;same&nbsp;meaning&nbsp;as&nbsp;in&nbsp;<a href="#-imageblitex">imageblitex</a>();&nbsp;default&nbsp;is&nbsp;False.<br>
+#<br>
+#&nbsp;Example:&nbsp;White-over-black-over&nbsp;gray&nbsp;text&nbsp;effect,&nbsp;seen&nbsp;in&nbsp;some&nbsp;early-90s&nbsp;Windows&nbsp;applications.<br>
+#&nbsp;----<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x-1,&nbsp;y-1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[255,255,255])<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x+1,&nbsp;y+1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[128,128,128])<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x,y,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;0,&nbsp;0])&nbsp;#&nbsp;Main&nbsp;text<br>
+#<br>
+#&nbsp;Example:&nbsp;Shadowed&nbsp;in&nbsp;the&nbsp;upper&nbsp;right&nbsp;and&nbsp;more&nbsp;strongly&nbsp;in&nbsp;the&nbsp;lower&nbsp;left<br>
+#&nbsp;----<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x+1,&nbsp;y-1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;255,&nbsp;0])&nbsp;#&nbsp;Upper&nbsp;shadow<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x-1,&nbsp;y+1,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;255,&nbsp;0])&nbsp;#&nbsp;Lower&nbsp;shadow<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x-2,&nbsp;y+2,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;255,&nbsp;0])<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x-3,&nbsp;y+3,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;255,&nbsp;0])<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x,&nbsp;y,&nbsp;img,&nbsp;w,&nbsp;h,&nbsp;[255,&nbsp;255,&nbsp;0])&nbsp;#&nbsp;Main&nbsp;text<br>
+#<br>
+#&nbsp;Example:&nbsp;Create&nbsp;a&nbsp;dark-over-light&nbsp;pattern&nbsp;over&nbsp;a&nbsp;midtone,&nbsp;given&nbsp;a&nbsp;tileable<br>
+#&nbsp;mask&nbsp;pattern.<br>
+#<br>
+#&nbsp;darktone=[0,0,0]<br>
+#&nbsp;midtone=[128,0,0]<br>
+#&nbsp;lighttone=[255,0,0]<br>
+#&nbsp;img=dw.<a href="#-blankimage">blankimage</a>(maskWidth,maskHeight,midtone)<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,maskWidth,maskHeight,0,0,mask,maskWidth,maskHeight,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;darktone,wraparound=True)<br>
+#&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,maskWidth,maskHeight,1,1,mask,maskWidth,maskHeight,<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;lighttone,wraparound=True)</span></dd></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
  <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
@@ -550,14 +578,16 @@ Data descriptors defined here:<br>
     y0,
     x1,
     y1,
-    hilt,
-    lt,
-    shadow,
-    dkshadow,
-    outerbevel=1,
-    midframe=1,
-    innerbevel=1
-)</dt></dl>
+    hilt=None,
+    sh=None,
+    lt=None,
+    frame=None,
+    outerbordersize=1,
+    innerbordersize=1,
+    midbordersize=1,
+    basrelief=True
+)</dt><dd><span class="code">#&nbsp;If&nbsp;basrelief=True:&nbsp;draw&nbsp;a&nbsp;sunken-middle-raised&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).<br>
+#&nbsp;If&nbsp;basrelief=False:&nbsp;draw&nbsp;a&nbsp;raised-middle-sunken&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).</span></dd></dl>
  <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkenbordernodom"><strong>drawsunkenbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
@@ -617,11 +647,11 @@ Data descriptors defined here:<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and&nbsp;alpha<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-grayblackshadow"><strong>grayblackshadow</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, ignoreNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
+ <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, disregardNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
 #&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;specified&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
-#&nbsp;If&nbsp;'ignoreNonGrays'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;colors&nbsp;other&nbsp;than&nbsp;gray&nbsp;tones<br>
+#&nbsp;If&nbsp;'disregardNonGrays'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;colors&nbsp;other&nbsp;than&nbsp;gray&nbsp;tones<br>
 #&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.<br>
 #<br>
 #&nbsp;&nbsp;Example:&nbsp;Generate&nbsp;a&nbsp;random&nbsp;background&nbsp;image,&nbsp;dither&nbsp;to&nbsp;black,&nbsp;gray,<br>
@@ -719,6 +749,7 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False</span></dd></dl>
  <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-helpercircledraw"><strong>helpercircledraw</strong></a>(helper, c, cx, cy, r)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;circle&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
+ <dl><dt><a name="-helpercirclefill"><strong>helpercirclefill</strong></a>(helper, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Fills&nbsp;a&nbsp;circle&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
  <dl><dt><a name="-helperlinedraw"><strong>helperlinedraw</strong></a>(helper, c, x0, y0, x1, y1, drawEndPoint=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;line&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
  <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1, alpha=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;horizontal&nbsp;hatch&nbsp;pattern.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
@@ -831,7 +862,7 @@ Data descriptors defined here:<br>
 #&nbsp;0xBB:&nbsp;"Merge&nbsp;paint",&nbsp;"merge&nbsp;not&nbsp;pen".<br>
 #&nbsp;0xCC:&nbsp;"Source&nbsp;copy";&nbsp;copy&nbsp;source&nbsp;to&nbsp;destination.<br>
 #&nbsp;0xDD:&nbsp;"Merge&nbsp;pen&nbsp;not".<br>
-#&nbsp;0xEE:&nbsp;"Source&nbsp;paint";&nbsp;"merge&nbsp;pen&nbsp;not".<br>
+#&nbsp;0xEE:&nbsp;"Source&nbsp;paint";&nbsp;"merge&nbsp;pen&nbsp;not";&nbsp;"source&nbsp;OR&nbsp;destination".<br>
 #&nbsp;0xFF:&nbsp;Turn&nbsp;destination&nbsp;"white"&nbsp;(bits&nbsp;are&nbsp;all&nbsp;ones).<br>
 #&nbsp;0x5A:&nbsp;Pattern&nbsp;invert.<br>
 #&nbsp;0xC0:&nbsp;"Merge&nbsp;copy";&nbsp;where&nbsp;pattern&nbsp;pixel's&nbsp;bits&nbsp;are&nbsp;all&nbsp;ones,&nbsp;copy&nbsp;the&nbsp;source&nbsp;to&nbsp;the<br>
@@ -1488,7 +1519,7 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;import&nbsp;imageformat&nbsp;as&nbsp;ifmt<br>
 #<br>
 #&nbsp;&nbsp;grad&nbsp;=&nbsp;dw.<a href="#-uicolorgradient2">uicolorgradient2</a>([220,&nbsp;200,&nbsp;150])<br>
-#&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;ignoreNonGrays=True)<br>
+#&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;disregardNonGrays=True)<br>
 #&nbsp;&nbsp;ifmt.writepng("button.png",img256,&nbsp;w,&nbsp;h)<br>
 #<br>
 #&nbsp;Example&nbsp;2:&nbsp;Same&nbsp;as&nbsp;the&nbsp;previous&nbsp;example,&nbsp;but&nbsp;the&nbsp;image&nbsp;is&nbsp;first&nbsp;dithered<br>
@@ -1499,10 +1530,10 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;import&nbsp;imageformat&nbsp;as&nbsp;ifmt<br>
 #<br>
 #&nbsp;&nbsp;img&nbsp;=&nbsp;dw.<a href="#-dithertograyimage">dithertograyimage</a>(<br>
-#&nbsp;&nbsp;&nbsp;&nbsp;[x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;128,&nbsp;192,&nbsp;255],&nbsp;ignoreNonGrays=True<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;[x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;128,&nbsp;192,&nbsp;255],&nbsp;disregardNonGrays=True<br>
 #&nbsp;&nbsp;)<br>
 #&nbsp;&nbsp;grad&nbsp;=&nbsp;dw.<a href="#-uicolorgradient2">uicolorgradient2</a>([220,&nbsp;200,&nbsp;150])<br>
-#&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;ignoreNonGrays=True)<br>
+#&nbsp;&nbsp;img256&nbsp;=&nbsp;dw.<a href="#-graymap">graymap</a>([x&nbsp;for&nbsp;x&nbsp;in&nbsp;img],&nbsp;w,&nbsp;h,&nbsp;grad,&nbsp;disregardNonGrays=True)<br>
 #&nbsp;&nbsp;ifmt.writepng("button.png",&nbsp;img256,&nbsp;w,&nbsp;h)</span></dd></dl>
  <dl><dt><a name="-unavailable"><strong>unavailable</strong></a>(
     bgColor=None,
