@@ -553,25 +553,32 @@ Data descriptors defined here:<br>
 #&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x-3,&nbsp;y+3,&nbsp;mask,maskWidth,maskHeight,&nbsp;[0,&nbsp;255,&nbsp;0])<br>
 #&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,&nbsp;w,&nbsp;h,&nbsp;x,&nbsp;y,&nbsp;img,&nbsp;w,&nbsp;h,&nbsp;[255,&nbsp;255,&nbsp;0])&nbsp;#&nbsp;Main&nbsp;text<br>
 #<br>
-#&nbsp;Example:&nbsp;Create&nbsp;a&nbsp;dark-over-light&nbsp;pattern&nbsp;over&nbsp;a&nbsp;midtone,&nbsp;given&nbsp;a&nbsp;tileable<br>
+#&nbsp;Example:&nbsp;Create&nbsp;a&nbsp;dark-over-light&nbsp;pattern&nbsp;over&nbsp;a&nbsp;midtone&nbsp;background,&nbsp;given&nbsp;a&nbsp;tileable<br>
 #&nbsp;mask&nbsp;pattern.<br>
 #<br>
 #&nbsp;darktone=[0,0,0]<br>
 #&nbsp;midtone=[128,0,0]<br>
 #&nbsp;lighttone=[255,0,0]<br>
-#&nbsp;img=dw.<a href="#-blankimage">blankimage</a>(maskWidth,maskHeight,midtone)<br>
+#&nbsp;img=dw.<a href="#-blankimage">blankimage</a>(maskWidth,maskHeight,midtone)&nbsp;#&nbsp;Midtone&nbsp;background<br>
 #&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,maskWidth,maskHeight,0,0,mask,maskWidth,maskHeight,<br>
-#&nbsp;&nbsp;&nbsp;&nbsp;darktone,wraparound=True)<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;darktone,wraparound=True)&nbsp;#&nbsp;Dark&nbsp;pattern<br>
 #&nbsp;dw.<a href="#-drawmask">drawmask</a>(img,maskWidth,maskHeight,1,1,mask,maskWidth,maskHeight,<br>
-#&nbsp;&nbsp;&nbsp;&nbsp;lighttone,wraparound=True)</span></dd></dl>
+#&nbsp;&nbsp;&nbsp;&nbsp;lighttone,wraparound=True)<br>
+#<br>
+#&nbsp;Example:&nbsp;Same&nbsp;as&nbsp;previous,&nbsp;but&nbsp;"1,1"&nbsp;becomes&nbsp;"0,1".&nbsp;&nbsp;In&nbsp;this&nbsp;case,&nbsp;the&nbsp;light-toned&nbsp;pattern<br>
+#&nbsp;is&nbsp;shifted&nbsp;1&nbsp;pixel&nbsp;downward&nbsp;rather&nbsp;than&nbsp;1&nbsp;pixel&nbsp;downward&nbsp;and&nbsp;rightward.</span></dd></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
  <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
  <dl><dt><a name="-drawraisedbordertopdom"><strong>drawraisedbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates"</span></dd></dl>
- <dl><dt><a name="-drawraisedinnerwindow"><strong>drawraisedinnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
- <dl><dt><a name="-drawraisedinnerwindowbutton"><strong>drawraisedinnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawraisedinnerwindow"><strong>drawraisedinnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style,<br>
+#&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide&nbsp;(The&nbsp;Windows<br>
+#&nbsp;Interface&nbsp;Guidelines&nbsp;for&nbsp;Software&nbsp;Design).</span></dd></dl>
+ <dl><dt><a name="-drawraisedinnerwindowbutton"><strong>drawraisedinnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style,<br>
+#&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide</span></dd></dl>
  <dl><dt><a name="-drawraisedouterwindow"><strong>drawraisedouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
- <dl><dt><a name="-drawraisedouterwindowbutton"><strong>drawraisedouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawraisedouterwindowbutton"><strong>drawraisedouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;raised&nbsp;style,<br>
+#&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide</span></dd></dl>
  <dl><dt><a name="-drawreliefborder"><strong>drawreliefborder</strong></a>(
     helper,
     x0,
@@ -586,17 +593,21 @@ Data descriptors defined here:<br>
     innerbordersize=1,
     midbordersize=1,
     basrelief=True
-)</dt><dd><span class="code">#&nbsp;If&nbsp;basrelief=True:&nbsp;draw&nbsp;a&nbsp;sunken-middle-raised&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).<br>
-#&nbsp;If&nbsp;basrelief=False:&nbsp;draw&nbsp;a&nbsp;raised-middle-sunken&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).</span></dd></dl>
+)</dt><dd><span class="code">#&nbsp;If&nbsp;basrelief=True:&nbsp;draw&nbsp;a&nbsp;sunken-middle-raised&nbsp;"groove"&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).<br>
+#&nbsp;If&nbsp;basrelief=False:&nbsp;draw&nbsp;a&nbsp;raised-middle-sunken&nbsp;"bump"&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).</span></dd></dl>
  <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
  <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkenbordernodom"><strong>drawsunkenbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkenbordertopdom"><strong>drawsunkenbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates"</span></dd></dl>
  <dl><dt><a name="-drawsunkengroup"><strong>drawsunkengroup</strong></a>(helper, x0, y0, x1, y1, hilt, lt, shadow, dkshadow)</dt></dl>
- <dl><dt><a name="-drawsunkeninnerwindow"><strong>drawsunkeninnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
- <dl><dt><a name="-drawsunkeninnerwindowbutton"><strong>drawsunkeninnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
- <dl><dt><a name="-drawsunkenouterwindow"><strong>drawsunkenouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
- <dl><dt><a name="-drawsunkenouterwindowbutton"><strong>drawsunkenouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style.</span></dd></dl>
+ <dl><dt><a name="-drawsunkeninnerwindow"><strong>drawsunkeninnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style,<br>
+#&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide</span></dd></dl>
+ <dl><dt><a name="-drawsunkeninnerwindowbutton"><strong>drawsunkeninnerwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style,<br>
+#&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide</span></dd></dl>
+ <dl><dt><a name="-drawsunkenouterwindow"><strong>drawsunkenouterwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style,<br>
+#&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide</span></dd></dl>
+ <dl><dt><a name="-drawsunkenouterwindowbutton"><strong>drawsunkenouterwindowbutton</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;button&nbsp;edge&nbsp;(or&nbsp;"soft"&nbsp;edge)&nbsp;in&nbsp;sunken&nbsp;style,<br>
+#&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide</span></dd></dl>
  <dl><dt><a name="-drawupperedge"><strong>drawupperedge</strong></a>(helper, x0, y0, x1, y1, upper, edgesize=1, bordersize=1)</dt></dl>
  <dl><dt><a name="-ega8colors"><strong>ega8colors</strong></a>()</dt><dd><span class="code">#&nbsp;8-color&nbsp;palette&nbsp;where&nbsp;each&nbsp;color&nbsp;opponent&nbsp;is&nbsp;0&nbsp;or&nbsp;255<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;list&nbsp;of&nbsp;its&nbsp;red,<br>
@@ -1332,13 +1343,21 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
- <dl><dt><a name="-recolordither"><strong>recolordither</strong></a>(image, width, height, color, grays, darkcolor=None, alpha=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;as&nbsp;in&nbsp;<a href="#-recolor">recolor</a>()&nbsp;and&nbsp;dithers&nbsp;the&nbsp;image&nbsp;to&nbsp;the<br>
+ <dl><dt><a name="-recolordither"><strong>recolordither</strong></a>(
+    image,
+    width,
+    height,
+    color,
+    grays=None,
+    darkcolor=None,
+    alpha=False
+)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;as&nbsp;in&nbsp;<a href="#-recolor">recolor</a>()&nbsp;and&nbsp;dithers&nbsp;the&nbsp;image&nbsp;to&nbsp;the<br>
 #&nbsp;gray&nbsp;tones&nbsp;given&nbsp;and&nbsp;the&nbsp;specified&nbsp;color.&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed<br>
 #&nbsp;in&nbsp;the&nbsp;input&nbsp;image&nbsp;are&nbsp;gray&nbsp;tones&nbsp;(x,x,x);&nbsp;shades&nbsp;of&nbsp;red&nbsp;(x,0,0);&nbsp;and&nbsp;tints&nbsp;of&nbsp;red&nbsp;(255,x,x),<br>
 #&nbsp;disregarding&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;if&nbsp;any.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
-#&nbsp;'grays'&nbsp;is&nbsp;as&nbsp;in&nbsp;<a href="#-dithertograyimage">dithertograyimage</a>().<br>
+#&nbsp;'grays'&nbsp;is&nbsp;as&nbsp;in&nbsp;<a href="#-dithertograyimage">dithertograyimage</a>().&nbsp;&nbsp;If&nbsp;None,&nbsp;uses&nbsp;[0,&nbsp;128,&nbsp;192,&nbsp;255].<br>
 #&nbsp;'darkcolor'&nbsp;is&nbsp;a&nbsp;darker&nbsp;version&nbsp;of&nbsp;the&nbsp;color,&nbsp;at&nbsp;position&nbsp;128/255&nbsp;between&nbsp;black&nbsp;and<br>
 #&nbsp;the&nbsp;specified&nbsp;color.<br>
 #&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
@@ -1355,6 +1374,24 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-setpixelbgralpha"><strong>setpixelbgralpha</strong></a>(image, width, height, x, y, c)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
 #&nbsp;'c'&nbsp;is&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and<br>
 #&nbsp;alpha&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
+ <dl><dt><a name="-shadeabove"><strong>shadeabove</strong></a>(
+    image,
+    w,
+    h,
+    x,
+    y,
+    mask,
+    maskwidth,
+    maskheight,
+    shiftx,
+    shifty,
+    color,
+    shadowcolor,
+    midcolor,
+    wraparound=False
+)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;mask&nbsp;pattern&nbsp;with&nbsp;a&nbsp;"shaded"&nbsp;and&nbsp;shifted&nbsp;mask&nbsp;pattern&nbsp;above&nbsp;it.<br>
+#&nbsp;'image'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'mask'&nbsp;should&nbsp;be&nbsp;limited&nbsp;to&nbsp;"black"&nbsp;pixels&nbsp;(0,0,0)&nbsp;and&nbsp;"white"&nbsp;pixels&nbsp;(255,255,255).</span></dd></dl>
  <dl><dt><a name="-shadowedborderedbox"><strong>shadowedborderedbox</strong></a>(
     image,
     width,
@@ -1388,7 +1425,8 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;simple&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-simplepolygonfill"><strong>simplepolygonfill</strong></a>(helper, color, points)</dt></dl>
- <dl><dt><a name="-slider3d"><strong>slider3d</strong></a>(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;3-D&nbsp;slider&nbsp;thumb</span></dd></dl>
+ <dl><dt><a name="-slider3d"><strong>slider3d</strong></a>(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;3-D&nbsp;slider&nbsp;thumb.<br>
+#&nbsp;'dst'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
 #&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.<br>
@@ -1492,6 +1530,10 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
  <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
+ <dl><dt><a name="-toonSphere"><strong>toonSphere</strong></a>(img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=128)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;colored&nbsp;cartoon&nbsp;or&nbsp;"pixel-art"&nbsp;sphere&nbsp;using&nbsp;only&nbsp;colors&nbsp;accepted&nbsp;by&nbsp;<a href="#-recolor">recolor</a>()<br>
+#&nbsp;and&nbsp;<a href="#-recolordither">recolordither</a>().<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-transition"><strong>transition</strong></a>(image1, image2, w, h, transition, tw, th, t, fuzziness=0.25)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-twobyonestretch"><strong>twobyonestretch</strong></a>(image, w, h, alpha=False)</dt><dd><span class="code">#&nbsp;Generates&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;horizontal&nbsp;doubling&nbsp;of&nbsp;pixels.<br>
 #&nbsp;The&nbsp;returned&nbsp;image&nbsp;has&nbsp;width&nbsp;2*'w'&nbsp;and&nbsp;height&nbsp;2*'h'.<br>

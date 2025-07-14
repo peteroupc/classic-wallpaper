@@ -3817,9 +3817,9 @@ def recolor(image, width, height, color, alpha=False):
                 pass
             elif r == 255 and g == b:
                 # Mixture of color and white
-                image[xp] = (255 - g) * color[0] // 255
-                image[xp + 1] = (255 - g) * color[1] // 255
-                image[xp + 2] = (255 - g) * color[2] // 255
+                image[xp] = color[0] + (255 - color[0]) * g // 255
+                image[xp + 1] = color[1] + (255 - color[1]) * g // 255
+                image[xp + 2] = color[2] + (255 - color[2]) * g // 255
             elif g == 0 and b == 0:
                 # Mixture of color and black
                 image[xp] = r * color[0] // 255
@@ -3835,11 +3835,13 @@ def recolor(image, width, height, color, alpha=False):
 # disregarding the alpha channel if any.
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
-# 'grays' is as in dithertograyimage().
+# 'grays' is as in dithertograyimage().  If None, uses [0, 128, 192, 255].
 # 'darkcolor' is a darker version of the color, at position 128/255 between black and
 # the specified color.
 # This method disregards the input image's alpha channel.
-def recolordither(image, width, height, color, grays, darkcolor=None, alpha=False):
+def recolordither(image, width, height, color, grays=None, darkcolor=None, alpha=False):
+    if grays == None:
+        grays = [0, 128, 192, 255]
     if color == None or len(color) < 3:
         raise ValueError
     if darkcolor != None and len(darkcolor) < 3:
@@ -5019,17 +5021,20 @@ def drawgradientmask(
 # dw.drawmask(img, w, h, x-3, y+3, mask,maskWidth,maskHeight, [0, 255, 0])
 # dw.drawmask(img, w, h, x, y, img, w, h, [255, 255, 0]) # Main text
 #
-# Example: Create a dark-over-light pattern over a midtone, given a tileable
+# Example: Create a dark-over-light pattern over a midtone background, given a tileable
 # mask pattern.
 #
 # darktone=[0,0,0]
 # midtone=[128,0,0]
 # lighttone=[255,0,0]
-# img=dw.blankimage(maskWidth,maskHeight,midtone)
+# img=dw.blankimage(maskWidth,maskHeight,midtone) # Midtone background
 # dw.drawmask(img,maskWidth,maskHeight,0,0,mask,maskWidth,maskHeight,
-#    darktone,wraparound=True)
+#    darktone,wraparound=True) # Dark pattern
 # dw.drawmask(img,maskWidth,maskHeight,1,1,mask,maskWidth,maskHeight,
 #    lighttone,wraparound=True)
+#
+# Example: Same as previous, but "1,1" becomes "0,1".  In this case, the light-toned pattern
+# is shifted 1 pixel downward rather than 1 pixel downward and rightward.
 def drawmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color, wraparound=False):
     drawgradientmask(
         dst,
@@ -5353,6 +5358,66 @@ def grayblackshadow(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
     drawmask(dst, dstw, dsth, dstx - 2, dsty - 2, src, srcw, srch, [192, 192, 192])
     drawmask(dst, dstw, dsth, dstx + 2, dsty + 2, src, srcw, srch, [128, 128, 128])
     drawmask(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)
+
+# Draws a colored cartoon or "pixel-art" sphere using only colors accepted by recolor()
+# and recolordither().
+# Image has the same format returned by the blankimage() method with the
+# specified value of 'alpha' (default value for 'alpha' is False).
+def toonSphere(img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=128):
+    w = sizewidth
+    h = sizeheight
+    cc2 = blankimage(w, h)
+    cmask = blankimage(w, h, [0, 0, 0])
+    chelper = ImageWraparoundDraw(cmask, w, h)
+    helpercirclefill(chelper, [255, 255, 255], 0, 0, w, h)
+    helper = ImageWraparoundDraw(cc2, w, h)
+    levels = 20
+    # To achieve the "pixel-art" shading, fill concentric
+    # circles.  This was a suggestion from a tutorial
+    # video by "Mislav".
+    for i in range(levels):
+        cx = int(w * (0.5 - 0.25 * (i) / levels))
+        cy = int(h * (0.5 - 0.25 * (i) / levels))
+        radius = 0.5 - 0.49 * (i) / levels
+        # Calculate circle position and size based
+        # on a light source shining from the upper left
+        # The outermost circle fills the entire final sphere; the
+        # innermost circle pinpoints the specular highlight
+        # on the sphere.
+        if i == 0:
+            # Outermost circle
+            x0, y0, x1, y1 = (0, 0, w, h)
+        else:
+            x0 = int(cx - radius * w)
+            y0 = int(cy - radius * h)
+            x1 = int(cx + radius * w)
+            y1 = int(cy + radius * h)
+        col = None
+        half = levels / 2
+        if i <= half:
+            # "Black" to color for the outer circles
+            col = [min(255, int(255 * (i) / half) + 64), 0, 0]
+        else:
+            # Color to "white" for the inner circles;
+            # this simulates a specular highlight
+            v = min(255, int(255 * (i - half) / half) + 32)
+            col = [255, v, v]
+        helpercirclefill(helper, col, x0, y0, x1, y1)
+    imageblitex(
+        img,
+        imgwidth,
+        imgheight,
+        0,
+        0,
+        w,
+        h,
+        cc2,
+        w,
+        h,
+        maskimage=cmask,
+        maskwidth=w,
+        maskheight=h,
+    )
 
 # Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False.
@@ -6378,8 +6443,8 @@ def drawedgenodom(
         bordersize=bordersize,
     )
 
-# If basrelief=True: draw a sunken-middle-raised border (from outer to inner).
-# If basrelief=False: draw a raised-middle-sunken border (from outer to inner).
+# If basrelief=True: draw a sunken-middle-raised "groove" border (from outer to inner).
+# If basrelief=False: draw a raised-middle-sunken "bump" border (from outer to inner).
 def drawreliefborder(
     helper,
     x0,
@@ -6476,34 +6541,42 @@ def drawraisedouterwindow(
 ):
     drawedgebotdom(helper, x0, y0, x1, y1, lt, dksh)
 
-# Draw an inner window edge in raised style.
+# Draw an inner window edge in raised style,
+# according to Windows 95 design guide (The Windows
+# Interface Guidelines for Software Design).
 def drawraisedinnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh)
 
-# Draw an outer window edge in sunken style.
+# Draw an outer window edge in sunken style,
+# according to Windows 95 design guide
 def drawsunkenouterwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt)
 
-# Draw an outer window edge in sunken style.
+# Draw an outer window edge in sunken style,
+# according to Windows 95 design guide
 def drawsunkeninnerwindow(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, dksh, lt)
 
 # The following four functions draw button edges (also known as "soft" edges)
 # in raised or sunken style
 
-# Draw an outer button edge (or "soft" edge) in raised style.
+# Draw an outer button edge (or "soft" edge) in raised style,
+# according to Windows 95 design guide
 def drawraisedouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, hilt, dksh)
 
-# Draw an inner button edge (or "soft" edge) in raised style.
+# Draw an inner button edge (or "soft" edge) in raised style,
+# according to Windows 95 design guide
 def drawraisedinnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, lt, sh)
 
-# Draw an outer button edge (or "soft" edge) in sunken style.
+# Draw an outer button edge (or "soft" edge) in sunken style,
+# according to Windows 95 design guide
 def drawsunkenouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0, y0, x1, y1, dksh, hilt)
 
-# Draw an inner button edge (or "soft" edge) in sunken style.
+# Draw an inner button edge (or "soft" edge) in sunken style,
+# according to Windows 95 design guide
 def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, lt)
 
@@ -6844,7 +6917,108 @@ def draw16button(
     else:
         return [x0 + edge + 2, y0 + edge + 2, x1 - edge - 2, y1 - edge - 2, btn]
 
-# Draw a 3-D slider thumb
+# Draws a mask pattern with a "shaded" and shifted mask pattern above it.
+# 'image' and 'mask' have the same format returned by the blankimage() method with alpha=False.
+# 'mask' should be limited to "black" pixels (0,0,0) and "white" pixels (255,255,255).
+def shadeabove(
+    image,
+    w,
+    h,
+    x,
+    y,
+    mask,
+    maskwidth,
+    maskheight,
+    shiftx,  # X shift of shaded shape
+    shifty,  # Y shift of shaded shape
+    color,
+    shadowcolor,  # Optional; can be None
+    midcolor,
+    wraparound=False,
+):
+    newmask = [x for x in mask]
+    sx = shiftx
+    sy = shifty
+    # Do an OR on the mask with a shifted version of itself
+    imageblitex(
+        newmask,
+        maskwidth,
+        maskheight,
+        sx,
+        sy,
+        maskwidth + sx,
+        maskheight + sy,
+        mask,
+        maskwidth,
+        maskheight,
+        0,
+        0,
+        ropForeground=0xEE,
+        wraparound=False,
+    )
+    # Fill upper rows with "white"
+    imageblitex(
+        newmask,
+        maskwidth,
+        maskheight,
+        0,
+        0,
+        maskwidth,
+        sy,
+        mask,
+        maskwidth,
+        maskheight,
+        0,
+        0,
+        ropForeground=0xFF,
+    )
+    # Fill left-hand columns with "white"
+    imageblitex(
+        newmask,
+        maskwidth,
+        maskheight,
+        0,
+        sy,
+        sx,
+        maskheight,
+        mask,
+        maskwidth,
+        maskheight,
+        0,
+        0,
+        ropForeground=0xFF,
+    )
+    drawmask(
+        image, w, h, x, y, mask, maskwidth, maskheight, color, wraparound=wraparound
+    )
+    if shadowcolor != None:
+        drawmask(
+            image,
+            w,
+            h,
+            x + sx,
+            y + sy,
+            mask,
+            maskwidth,
+            maskheight,
+            shadowcolor,
+            wraparound=wraparound,
+        )
+    drawmask(
+        image,
+        w,
+        h,
+        x,
+        y,
+        newmask,
+        maskwidth,
+        maskheight,
+        midcolor,
+        wraparound=wraparound,
+    )
+
+# Draw a 3-D slider thumb.
+# 'dst' has the same format returned by the blankimage() method with alpha=False.
 def slider3d(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24):
     # Draw slider thumb mask
     mask = blankimage(sw, sh)
