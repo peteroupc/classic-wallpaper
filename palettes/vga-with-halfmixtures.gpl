@@ -1,6 +1,12 @@
 GIMP Palette
 Name: VGA Palette with Half-and-Half Mixtures
 Columns: 8
+# NOTE: Images drawn with this palette should
+# be in solid colors only; "manual" dithering patterns
+# to simulate off-palette colors should be avoided.
+# The `desktopwallpaper` Python module contains the method
+# `dw.halfhalfditherimage(image,width,height,dw.classiccolors())`
+# to dither images using this palette.
 0 0 0 black #000000
 0 0 64 #000040
 0 0 128 navy #000080

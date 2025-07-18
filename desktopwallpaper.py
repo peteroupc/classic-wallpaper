@@ -4211,10 +4211,14 @@ def websafeDither(image, width, height, alpha=False, includeVga=False):
                 image[xp + i] = (c - cm) + 51 if bdither < cm * 64 // 51 else c - cm
     return image
 
+# Dithers in place the specified image to the colors in color palette returned by classiccolors().
+# Image has the same format returned by the blankimage() method with the specified value
+# of 'alpha' (default value for 'alpha' is False).
 def vgaPaletteDither(image, width, height, alpha=False):
     pixelSize = 4 if alpha else 3
     if len(image) < width * height * pixelSize:
         raise ValueError("len=%d width=%d height=%d" % (len(image), width, height))
+    missing = False
     for y in range(height):
         yp = y * width * pixelSize
         for x in range(width):
@@ -4222,7 +4226,13 @@ def vgaPaletteDither(image, width, height, alpha=False):
             r = image[xp]
             g = image[xp + 1]
             b = image[xp + 2]
-            if (
+            if r <= 128 and g <= 128 and b <= 128:
+                # Red, green, and blue are in lowest-valued corner of color cube.
+                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
+                image[xp] = 128 if bdither < ((r >> 1) & 0xFF) else 0
+                image[xp + 1] = 128 if bdither < ((g >> 1) & 0xFF) else 0
+                image[xp + 2] = 128 if bdither < ((b >> 1) & 0xFF) else 0
+            elif (
                 (g == 0 and b == 0)
                 or (r == 0 and b == 0)
                 or (r == 0 and g == 0)
@@ -4237,22 +4247,11 @@ def vgaPaletteDither(image, width, height, alpha=False):
                         image[xp + i] = 128 if bdither < v * 64 // 128 else 0
                     else:
                         image[xp + i] = 255 if bdither < (v - 128) * 64 // 127 else 128
-            elif (
-                (g == 255 and b == 255)
-                or (r == 255 and b == 255)
-                or (r == 255 and g == 255)
-                or (g == 255 and b == r)
-                or (r == 255 and b == g)
-                or (b == 255 and g == r)
-            ):
-                bdither = _DitherMatrix[(y & 7) * 8 + (x & 7)]
-                for i in range(3):
-                    c = image[xp + i]
-                    cm = c
-                    image[xp + i] = (
-                        (c - cm) + 255 if bdither < cm * 64 // 255 else c - cm
-                    )
-    return patternDither(image, width, height, classiccolors(), alpha=alpha)
+            else:
+                missing = True
+    if missing:
+        return patternDither(image, width, height, classiccolors(), alpha=alpha)
+    return image
 
 # Dithers in place the specified image to the colors in an 8-bit color palette returned by ega8colors().
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
@@ -4646,9 +4645,12 @@ def helpercirclefill(helper, color, x0, y0, x1, y1):
     szy = abs(y1 - y0)
     xUpperLeft = min(x0, x1)
     yUpperLeft = min(y0, y1)
-    for i in range(0, 72 + 1):
-        s = int(0.5 + szy / 2.0 + math.sin(i * 5 * math.pi / 180) * szy / 2)
-        c = int(0.5 + szx / 2.0 + math.cos(i * 5 * math.pi / 180) * szx / 2)
+    twopi = 2 * math.pi
+    numpoints = int(max(szx, szy) * twopi + 1)
+    twopidivnumpoints = twopi / numpoints
+    for i in range(0, numpoints):
+        s = int(0.5 + szy / 2.0 + math.sin(i * twopidivnumpoints) * szy / 2)
+        c = int(0.5 + szx / 2.0 + math.cos(i * twopidivnumpoints) * szx / 2)
         poly.append([c + xUpperLeft, s + yUpperLeft])
     simplepolygonfill(helper, color, poly)
 
@@ -5442,7 +5444,7 @@ def brushednoise(width, height, tileable=True, alpha=False):
         )
     return image
 
-# Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
+# Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.  The returned image is of dots at random positions and random gray tones.
 # The default value for 'alpha' is False.
 def marknoise(width, height, tileable=True, alpha=False):
     image = blankimage(width, height, [192, 192, 192], alpha=alpha)
@@ -6738,6 +6740,7 @@ def wellborder(helper, x0, y0, x1, y1, hilt, windowText):
     # Return upper left and lower right coordinates of button face rectangle
     return [x0 + 2, y0 + 2, x1 - 2, y1 - 2]
 
+# Draws a grouping box, intended to resemble a grooved box, in Windows 95 style.
 def groupingbox(
     helper,
     x0,
@@ -6757,6 +6760,7 @@ def groupingbox(
     # along with the face background color
     return [x0 + 2, y0 + 2, x1 - 2, y1 - 2, face]
 
+# Draws a status field box, intended to resemble a slightly recessed box, in Windows 95 style.
 def statusfieldbox(
     helper,
     x0,
@@ -7825,7 +7829,7 @@ def _colorname(colorhash, c):
         return colorhash[cname] + " " + cname
     return cname
 
-def writepalette(f, palette, name=None, raiseIfExists=False):
+def writepalette(f, palette, name=None, raiseIfExists=False, comment=None):
     if name and "\n" in name:
         raise ValueError
     if (not palette) or len(palette) > 512:
@@ -7838,6 +7842,11 @@ def writepalette(f, palette, name=None, raiseIfExists=False):
         bytes("Name: " + (name.replace("\n", " ").replace("#", "_")) + "\n", "utf-8")
     )
     ff.write(bytes("Columns: 8\n", "utf-8"))
+    if comment:
+        for c in comment:
+            ff.write(
+                bytes("# " + (c.replace("\n", " ").replace("#", "_")) + "\n", "utf-8")
+            )
     for c in palette:
         col = [c[0] & 0xFF, c[1] & 0xFF, c[2] & 0xFF]
         ff.write(
@@ -7945,6 +7954,10 @@ if __name__ == "__main__":
         "palettes/recolor",
         reco,
         "Recolorable Palette",
+        comment=[
+            "NOTE: Designed for recoloring using the recolor() and recolordither()",
+            "methods in the `desktopwallpaper` Python module.",
+        ],
     )
     writepalette("palettes/256gray", [[x, x, x] for x in range(256)], "256 Grays")
     writepalette(
@@ -7954,6 +7967,14 @@ if __name__ == "__main__":
         "palettes/cga-with-halfmixtures",
         paletteandhalfhalf(cgacolors()),
         "Canonical CGA Palette with Half-and-Half Mixtures",
+        comment=[
+            "NOTE: Images drawn with this palette should",
+            'be in solid colors only; "manual" dithering patterns',
+            "to simulate off-palette colors should be avoided.",
+            "The `desktopwallpaper` Python module contains the method",
+            "`dw.halfhalfditherimage(image,width,height,dw.cgacolors())`",
+            "to dither images using this palette.",
+        ],
     )
     writepalette("palettes/vga", classiccolors(), "VGA (Windows) 16-Color Palette")
     writepalette("palettes/16color", classiccolors(), "VGA (Windows) 16-Color Palette")
@@ -7984,6 +8005,14 @@ if __name__ == "__main__":
         "palettes/vga-with-halfmixtures",
         paletteandhalfhalf(classiccolors()),
         "VGA Palette with Half-and-Half Mixtures",
+        comment=[
+            "NOTE: Images drawn with this palette should",
+            'be in solid colors only; "manual" dithering patterns',
+            "to simulate off-palette colors should be avoided.",
+            "The `desktopwallpaper` Python module contains the method",
+            "`dw.halfhalfditherimage(image,width,height,dw.classiccolors())`",
+            "to dither images using this palette.",
+        ],
     )
 
     ##### Tests

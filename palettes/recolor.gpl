@@ -1,6 +1,8 @@
 GIMP Palette
 Name: Recolorable Palette
 Columns: 8
+# NOTE: Designed for recoloring using the recolor() and recolordither()
+# methods in the `desktopwallpaper` Python module.
 0 0 0 black #000000
 3 3 3 #030303
 6 6 6 #060606

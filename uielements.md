@@ -12,7 +12,7 @@ A _display mode_ is a way to set up a computer display to show graphics.  Some d
 
 An image can be adapted for display modes with logical resolutions that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).
 
-Logical resolutions also cover the special case of _pixel density_, or a number to multiply by the logical resolution of 96 horizontal and vertical pixels per inch.  Examples of pixel densities are 1.25 (IBM 8514/a), 2, and 3.
+Logical resolutions also cover the special case of _pixel density_ (such as 2 to 1).  Pixel density is determined by a scale factor, or a number to multiply by the logical resolution of 96 horizontal and vertical pixels per inch, such as 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2, and 3.
 
 More generally, units similar to pixels may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [_dialog box units_](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [_effective pixels_](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display, its size, and its resolution).
 
@@ -142,4 +142,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^8]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.
 
-[^9]: This is evident in the graphics of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.
+[^9]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.
