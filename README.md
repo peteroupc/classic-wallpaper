@@ -27,7 +27,10 @@ Also welcome would be computer code (released to the public domain or licensed u
 
 meeting the requirements given earlier.
 
-Photographic images are not within the scope of this challenge.  See "Wallpaper Generation Notes", later in this document.
+In general, the following are not within the scope of this challenge.
+
+- Photographic images (see "Wallpaper Generation Notes", later in this document).
+- Images with a single solid color on all four sides; such images are trivially tileable.
 
 ## Color Palettes
 
