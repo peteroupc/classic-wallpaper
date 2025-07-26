@@ -955,6 +955,22 @@ def brushedmetal():
 def simplebox(
     image, width, height, color, x0, y0, x1, y1, wraparound=True, alpha=False
 ):
+    if (
+        x0 >= 0
+        and y0 >= 0
+        and x1 <= width
+        and y0 < height
+        and (not alpha)
+        and x0 < x1
+        and y1 == y0 + 1
+    ):
+        pos = (y0 * width + x0) * 3
+        for x in range(x0, x1):
+            image[pos] = color[0]
+            image[pos + 1] = color[1]
+            image[pos + 2] = color[2]
+            pos += 3
+        return
     borderedbox(
         image,
         width,
@@ -3382,7 +3398,7 @@ def borderedbox(
         raise ValueError
     c1a = color1[3] if (alpha and len(color1) > 3) else 255
     c2a = color2[3] if (alpha and len(color2) > 3) else 255
-    ba = border[3] if (alpha and len(border) > 3) else 255
+    ba = border[3] if (alpha and border and len(border) > 3) else 255
     if x0 == x1 or y0 == y1:
         return
     if not wraparound:
@@ -3956,6 +3972,7 @@ def dithertograyimage(
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
 # If 'disregardNonGrays' is True, leave colors other than gray tones
 # in the image unchanged.  Default is False.
+# Returns the value of 'image'; the image is modified in place.
 #
 #  Example: Generate a random background image, dither to black, gray,
 # and white, and map these gray tones to lighter tones.
@@ -4631,9 +4648,7 @@ def noiseimage2(width=64, height=64, bgcolor=None, noisecolor=None):
 # Draws a circle that optionally wraps around.
 # Image has the same format returned by the blankimage() method with alpha=False.
 def circledraw(image, width, height, c, cx, cy, r, wraparound=True, alpha=False):
-    helper = ImageWraparoundDraw(
-        image, width, height, wraparound=wraparound, alpha=alpha
-    )
+    helper = ImageDrawHelper(image, width, height, wraparound=wraparound, alpha=alpha)
     helpercircledraw(helper, c, cx, cy, r)
 
 # Fills a circle using a drawing helper.
@@ -4641,18 +4656,19 @@ def helpercirclefill(helper, color, x0, y0, x1, y1):
     if x0 == x1 or y0 == y1:
         return
     poly = []
-    szx = abs(x1 - x0)
-    szy = abs(y1 - y0)
-    xUpperLeft = min(x0, x1)
-    yUpperLeft = min(y0, y1)
-    twopi = 2 * math.pi
-    numpoints = int(max(szx, szy) * twopi + 1)
-    twopidivnumpoints = twopi / numpoints
-    for i in range(0, numpoints):
-        s = int(0.5 + szy / 2.0 + math.sin(i * twopidivnumpoints) * szy / 2)
-        c = int(0.5 + szx / 2.0 + math.cos(i * twopidivnumpoints) * szx / 2)
-        poly.append([c + xUpperLeft, s + yUpperLeft])
-    simplepolygonfill(helper, color, poly)
+    xmin = min(x0, x1)
+    xmax = max(x1, y1)
+    xmid = (xmin + xmax) / 2
+    xhalf = (xmax - xmin) / 2
+    ymin = min(y0, y1)
+    ymax = max(y0, y1)
+    for i in range(ymin, ymax):
+        # Calculate this scan line at 'i'
+        yp = ((i - ymin) / (ymax - ymin)) * 2 - 1
+        s = math.sqrt(1 - yp**2)
+        xa = int(xmid - xhalf * s)
+        xb = int(xmid + xhalf * s)
+        drawpositiverect(helper, xa, i, xb, i + 1, color)
 
 # Draws a circle using a drawing helper.
 def helpercircledraw(helper, c, cx, cy, r):
@@ -4692,9 +4708,7 @@ def linedraw(
         raise ValueError
     if len(c) >= 4:
         raise NotImplementedError("color values with alpha are currently not supported")
-    helper = ImageWraparoundDraw(
-        image, width, height, wraparound=wraparound, alpha=alpha
-    )
+    helper = ImageDrawHelper(image, width, height, wraparound=wraparound, alpha=alpha)
     helperlinedraw(helper, c, x0, y0, x1, y1, drawEndPoint=drawEndPoint)
 
 # Draws a line using a drawing helper.
@@ -5129,7 +5143,7 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 # Example: Draws a raised outline, along with a lower right black edge,
 # around a shape defined by a two-level mask image.
 #
-# helper = dw.ImageWraparoundDraw(image, w, h)
+# helper = dw.ImageDrawHelper(image, w, h)
 # dw.threedee(
 #     helper,
 #     0,
@@ -5148,7 +5162,7 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 #
 # Example: Draw a yellow outline and a blue fill.
 #
-# helper = dw.ImageWraparoundDraw(image, w, h)
+# helper = dw.ImageDrawHelper(image, w, h)
 # dw.threedee(
 #    helper, 0, 0, mask, w, h, [[[255, 255, 0], [255, 255, 0]]], fillColor=[0, 0, 255]
 # )
@@ -5365,14 +5379,18 @@ def grayblackshadow(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
 # and recolordither().
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
-def toonSphere(img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=128):
+def toonSphere(
+    img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=128, alpha=False
+):
     w = sizewidth
     h = sizeheight
-    cc2 = blankimage(w, h)
-    cmask = blankimage(w, h, [0, 0, 0])
-    chelper = ImageWraparoundDraw(cmask, w, h)
-    helpercirclefill(chelper, [255, 255, 255], 0, 0, w, h)
-    helper = ImageWraparoundDraw(cc2, w, h)
+    cc2 = blankimage(w, h, [0, 0, 0, 0], alpha=alpha)
+    # black mask
+    cmask = blankimage(w, h, [0, 0, 0, 255], alpha=alpha)
+    cmaskhelper = ImageDrawHelper(cmask, w, h, alpha=alpha)
+    # draw white on the mask where the filled circle is
+    helpercirclefill(cmaskhelper, [255, 255, 255, 255], 0, 0, w, h)
+    helper = ImageDrawHelper(cc2, w, h, alpha=alpha)
     levels = 20
     # To achieve the "pixel-art" shading, fill concentric
     # circles.  This was a suggestion from a tutorial
@@ -5398,12 +5416,12 @@ def toonSphere(img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=1
         half = levels / 2
         if i <= half:
             # "Black" to color for the outer circles
-            col = [min(255, int(255 * (i) / half) + 64), 0, 0]
+            col = [min(255, int(255 * (i) / half) + 64), 0, 0, 255]
         else:
             # Color to "white" for the inner circles;
             # this simulates a specular highlight
             v = min(255, int(255 * (i - half) / half) + 32)
-            col = [255, v, v]
+            col = [255, v, v, 255]
         helpercirclefill(helper, col, x0, y0, x1, y1)
     imageblitex(
         img,
@@ -5419,7 +5437,159 @@ def toonSphere(img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=1
         maskimage=cmask,
         maskwidth=w,
         maskheight=h,
+        alpha=alpha,
     )
+
+# 3-dimensional vector dot product
+def _dot3(a, b):
+    return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2])
+
+# 3-dimensional vector addition
+def _vecadd3(a, b):
+    return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
+
+# 3-dimensional vector subtraction
+def _vecsub3(a, b):
+    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+
+# Normalize 3-dimensional vector to a unit vector
+def _normalize3(a):
+    d = math.sqrt(abs(a[0] ** 2) + abs(a[1] ** 2) + abs(a[2] ** 2))
+    if d == 0:
+        # Degenerate (near-zero) vector
+        return a
+    return [v / d for v in a]
+
+# Drawing modes:
+# 0 = Colored mask
+# 1 = Ambient/diffuse only
+# 2 = Ambient/diffuse and specular
+# 3 = Ambient/diffuse and two-level specular
+# 4 = Two-level specular
+def _threedeeCapsule(
+    helper, xOff, yOff, color=None, sizewidth=128, sizeheight=128, drawingMode=0
+):
+    if color == None:
+        color = [192, 0, 0]
+    dcolor = [c / 255.0 for c in color]
+    minsize = min(sizewidth, sizeheight)
+    halfsize = minsize / 2
+    xdiff = sizewidth - minsize
+    ydiff = sizeheight - minsize
+    drewSpecular = False
+    lightpos = [-3, -3, 10]  # Light position
+    if sizewidth > sizeheight:
+        fac = max(sizewidth, sizeheight) / minsize
+        lightpos = [-3 * fac, -3, 10]
+    else:
+        fac = max(sizewidth, sizeheight) / minsize
+        lightpos = [-3, -3 * fac, 10]
+    for y in range(sizeheight):
+        # Vertex position
+        yypos = (y + 0.5 - sizeheight / 2) / (sizeheight / 2)
+        # Vertex normal
+        yy = (
+            (y + 0.5 - halfsize) / halfsize
+            if y < halfsize
+            else (
+                (y + 0.5 - halfsize - ydiff) / halfsize
+                if y > sizeheight - halfsize
+                else 0
+            )
+        )
+        haveSpecular = False
+        for x in range(sizewidth):
+            # Vertex normal
+            xx = (
+                (x + 0.5 - halfsize) / halfsize
+                if x < halfsize
+                else (
+                    (x + 0.5 - halfsize - xdiff) / halfsize
+                    if x > sizewidth - halfsize
+                    else 0
+                )
+            )
+            if xx * xx + yy * yy <= 1:  # On or inside capsule
+                # Vertex position
+                xxpos = (x + 0.5 - sizewidth / 2) / (sizewidth / 2)
+                if drawingMode == 0:
+                    # Drawing colored mask
+                    helper.rect(x, y, x + 1, y + 1, color)
+                    continue
+                # z-coordinate of capsule
+                z = (1 - xx * xx - yy * yy) ** (1 / 2)
+                if z < 0:
+                    raise ValueError
+                vec = [xxpos, yypos, z]  # Vertex position for capsule
+                n = [xx, yy, z]  # Vertex normal for capsule
+                lightdir = _normalize3(_vecsub3(lightpos, vec))
+                # Diffusion
+                dd = _dot3(n, lightdir)
+                newColor = [0, 0, 0]
+                if dd >= 0:
+                    if drawingMode >= 1 and drawingMode <= 3:
+                        # Add diffuse color
+                        newColor[0] += dcolor[0] * dd
+                        newColor[1] += dcolor[1] * dd
+                        newColor[2] += dcolor[2] * dd
+                    if drawingMode >= 2:
+                        # Calculate specular color with shininess of 40
+                        half = _normalize3(
+                            _vecadd3(_normalize3(_vecsub3([0, 0, 3], vec)), lightpos)
+                        )
+                        ds = max(0, _dot3(n, half)) ** 40
+                        if ds > 0.5:  # Specular reflection bright enough
+                            if drawingMode == 4:
+                                haveSpecular = True
+                                drewSpecular = True
+                                helper.rect(
+                                    x + xOff,
+                                    y + yOff,
+                                    x + xOff + 1,
+                                    y + yOff + 1,
+                                    color,
+                                )
+                            if drawingMode == 3:
+                                ds = 1 if ds > 0.5 else 0
+                            if drawingMode == 2 or drawingMode == 3:
+                                newColor[0] += ds
+                                newColor[1] += ds
+                                newColor[2] += ds
+                if drawingMode >= 1 and drawingMode <= 3:
+                    # Add 1/4 of diffuse color as ambient color
+                    newColor[0] += dcolor[0] / 4
+                    newColor[1] += dcolor[1] / 4
+                    newColor[2] += dcolor[2] / 4
+                    newColor = [max(0, min(255, int(v * 255))) for v in newColor]
+                    helper.rect(
+                        x + xOff, y + yOff, x + xOff + 1, y + yOff + 1, newColor
+                    )
+        if (not haveSpecular) and drewSpecular:
+            # finished drawing specular, which must be in one piece, so exit
+            return
+
+def threedeeCapsuleMask(sizewidth=128, sizeheight=128):
+    img2 = dw.blankimage(sizewidth, sizeheight)
+    helper = dw.ImageDrawHelper(img2, sizewidth, sizeheight)
+    _threedeeCapsule(helper, 0, 0, [0, 0, 0], sizewidth, sizeheight, drawingMode=0)
+    return img2
+
+def threedeeCapsule(
+    helper,
+    x,
+    y,
+    sizewidth=128,
+    sizeheight=128,
+    color=None,
+    specular=False,
+    twoLevelSpecular=False,
+):
+    mode = 1
+    if specular and twoLevelSpecular:
+        mode = 3
+    elif specular:
+        mode = 2
+    _threedeeCapsule(helper, x, y, color, sizewidth, sizeheight, drawingMode=mode)
 
 # Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False.
@@ -5959,7 +6129,7 @@ def svgimagepattern(idstr, image, width, height, transcolor=None, originX=0, ori
                 helper.rect(x, y, x + 1, y + 1, c)
     return str(helper) + "</pattern>"
 
-class ImageWraparoundDraw:
+class ImageDrawHelper:
     # Image has the same format returned by the blankimage() method with
     # the specified value of 'alpha'.  The default value of 'alpha' is False.
     def __init__(self, image, width, height, wraparound=True, alpha=False):
@@ -6021,7 +6191,7 @@ class SvgDraw:
         if '"' in idstr:
             raise ValueError
         image = blankimage(2, 2)
-        helper = ImageWraparoundDraw(image, 2, 2)
+        helper = ImageDrawHelper(image, 2, 2)
         if hiltIsScrollbarColor:
             helper.rect(0, 0, 2, 2, hilt)
         # elif 256 or more colors and hilt is not white:
@@ -7026,14 +7196,14 @@ def shadeabove(
 def slider3d(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24):
     # Draw slider thumb mask
     mask = blankimage(sw, sh)
-    helper = ImageWraparoundDraw(mask, sw, sh)
+    helper = ImageDrawHelper(mask, sw, sh)
     simplepolygonfill(
         helper,
         [0, 0, 0],
         [[0, 0], [sw, 0], [sw, sh - sw // 2], [sw // 2, sh], [0, sh - sw // 2]],
     )
     # Draw 3-D effect using mask
-    helper = ImageWraparoundDraw(dst, dstwidth, dstheight)
+    helper = ImageDrawHelper(dst, dstwidth, dstheight)
     threedee(
         helper,
         x0,
@@ -7180,6 +7350,21 @@ def _randomcontour(tileable=True, includeWhole=False):
 def _randomgradientfill(width, height, palette, tileable=True):
     return _randomgradientfillex(width, height, palette, _randomcontour(tileable))
 
+def _colorizeInPlaceFromFourGrays(image, width, height):
+    black = [0, 0, 0]
+    white = [255, 255, 255]
+    # dark gray and light gray from the VGA palette
+    color0 = [128, 128, 128]
+    color1 = [192, 192, 192]
+    r2 = random.randint(0, 6)
+    if r2 > 0:
+        # use a "colored" dark gray and light gray from the VGA palette instead
+        color0 = [(r2 & 1) * 0x80, ((r2 >> 1) & 1) * 0x80, ((r2 >> 2) & 1) * 0x80]
+        color1 = [(r2 & 1) * 0xFF, ((r2 >> 1) & 1) * 0xFF, ((r2 >> 2) & 1) * 0xFF]
+    # replace the grays with the colors
+    gcolors = _gradient([[0, black], [128, color0], [192, color1], [255, white]])
+    return graymap(image, width, height, gcolors)
+
 # Image has the same format returned by the blankimage() method with alpha=False.
 def randommaybemonochrome(image, width, height, vga=False):
     r = random.randint(0, 99)
@@ -7208,15 +7393,12 @@ def randommaybemonochrome(image, width, height, vga=False):
             )
             # replace the grays with the colors
             gcolors = _gradient([[0, minipal[0]], [128, minipal[1]], [255, minipal[2]]])
+            return graymap([x for x in image], width, height, gcolors)
         else:
             image = dithertograyimage(
                 [x for x in image], width, height, [0, 128, 192, 255] if vga else None
             )
-            # replace the grays with the colors
-            gcolors = _gradient(
-                [[0, black], [128, color0], [192, color1], [255, white]]
-            )
-        return graymap([x for x in image], width, height, gcolors)
+            return _colorizeInPlaceFromFourGrays(image, width, height)
     else:
         return image
 
@@ -7472,7 +7654,7 @@ def _tileborder2(image, width, height, orgx=0, orgy=0):
     if width < mindim or height < mindim:
         _tileborder1(image, width, height, orgx, orgy)
         return
-    helper = ImageWraparoundDraw(image, width, height)
+    helper = ImageDrawHelper(image, width, height)
     z = 0
     x0 = orgx
     y0 = orgy
@@ -7512,7 +7694,7 @@ def _tileborder1(image, width, height, orgx=0, orgy=0):
     hatchedbox(image, width, height, [0, 0, 0], pattern, x0, 0, x0 + thick, height)
     simplebox(image, width, height, [128, 128, 128], 0, y0, width, y0 + thick)
     hatchedbox(image, width, height, [0, 0, 0], pattern, 0, y0, width, y0 + thick)
-    helper = ImageWraparoundDraw(image, width, height)
+    helper = ImageDrawHelper(image, width, height)
     xt = x0 + thick
     yt = y0 + thick
     drawedgetopdom(
@@ -7579,6 +7761,15 @@ def _hatchoverlay(image, width, height, hatchColor, rows=2):
 # Generates a random checkerboard pattern image (using the specified palette, if any)
 # Image returned by this method has the same format returned by the blankimage() method with alpha=False.
 def randomcheckimage(w, h, palette=None, tileable=True):
+    if w % 2 == 0 and h % 2 == 0 and random.randint(0, 100) < 10:
+        otherImage = _randombackground(w // 2, h // 2, palette, tileable=tileable)
+        return _colorizeInPlaceFromFourGrays(
+            graychecker(
+                otherImage, w // 2, h // 2, lightFirst=(random.randint(0, 1) == 0)
+            ),
+            w,
+            h,
+        )
     expandedpal = paletteandhalfhalf(palette) if palette else []
     hatch = (
         None
@@ -7698,6 +7889,44 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
         y1 = h if r == 0 else h - hstart
         hatchedbox(ret, w, h, color, _randomhatch(), x0, y0, x1, y1)
     return ret
+
+# Creates a checkerboard pattern of a "light" version and a "dark" version of the specified image,
+# after converting that image to grayscale.
+# Input image has the same format returned by the blankimage() method with alpha=False.
+def graychecker(image, width, height, lightFirst=False):
+    # darker image
+    colors = [[i * 192 // 255, i * 192 // 255, i * 192 // 255] for i in range(256)]
+    image1 = graymap([x for x in image], width, height, colors)
+    # lighter image
+    colors = [
+        [128 + i * 127 // 255, 128 + i * 127 // 255, 128 + i * 127 // 255]
+        for i in range(256)
+    ]
+    image2 = graymap([x for x in image], width, height, colors)
+    if lightFirst:
+        return checkerboardtile(image2, image1, width, height)
+    else:
+        return checkerboardtile(image1, image2, width, height)
+
+# Input image uses only three colors: (0,0,0) or black,(128,128,128),(255,255,255) or white
+# Creates a checkerboard pattern of a "light" version and a "dark" version of the specified image.
+# Input image has the same format returned by the blankimage() method with alpha=False.
+def checkerFromThreeGrays(image, width, height, lightFirst=False):
+    colors = [[] for i in range(256)]
+    # darker image
+    colors[0] = [0, 0, 0]
+    colors[128] = [128, 128, 128]
+    colors[255] = [192, 192, 192]
+    image1 = graymap([x for x in image], width, height, colors)
+    # lighter image
+    colors[0] = [128, 128, 128]
+    colors[128] = [192, 192, 192]
+    colors[255] = [255, 255, 255]
+    image2 = graymap([x for x in image], width, height, colors)
+    if lightFirst:
+        return checkerboardtile(image2, image1, width, height)
+    else:
+        return checkerboardtile(image1, image2, width, height)
 
 # Input image uses only three colors: (0,0,0) or black,(128,128,128),(255,255,255) or white
 # Turns the image into a black-and-white image, with middle gray dithered.
@@ -8020,7 +8249,7 @@ if __name__ == "__main__":
     # Test threedee
     img2 = blankimage(3, 3, [192, 192, 192])
     mask = blankimage(3, 3, [0, 0, 0])  # black mask
-    helper = ImageWraparoundDraw(img2, 3, 3)
+    helper = ImageDrawHelper(img2, 3, 3)
     threedee(helper, 0, 0, mask, 3, 3, [[[255, 255, 255], [128, 128, 128]]])
     expected = [
         255,
@@ -8055,7 +8284,7 @@ if __name__ == "__main__":
         print("unexpected output of threedee")
         print(img2)
     img2 = blankimage(3, 3, [192, 192, 192])
-    helper = ImageWraparoundDraw(img2, 3, 3)
+    helper = ImageDrawHelper(img2, 3, 3)
     threedee(
         helper,
         0,

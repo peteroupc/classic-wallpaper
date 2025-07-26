@@ -63,7 +63,7 @@
 <dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
 </dt><dd>
 <dl>
-<dt class="heading-text"><a href="desktopwallpaper.html#ImageWraparoundDraw">ImageWraparoundDraw</a>
+<dt class="heading-text"><a href="desktopwallpaper.html#ImageDrawHelper">ImageDrawHelper</a>
 </dt><dt class="heading-text"><a href="desktopwallpaper.html#SvgDraw">SvgDraw</a>
 </dt><dt class="heading-text"><a href="desktopwallpaper.html#WindowsMetafileDraw">WindowsMetafileDraw</a>
 </dt></dl>
@@ -72,17 +72,17 @@
  <p>
 <table class="section">
 <tr class="decor title-decor heading-text">
-<td class="section-title" colspan=3>&nbsp;<br><a name="ImageWraparoundDraw">class <strong>ImageWraparoundDraw</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+<td class="section-title" colspan=3>&nbsp;<br><a name="ImageDrawHelper">class <strong>ImageDrawHelper</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
 
 <tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
-<td class="decor title-decor" colspan=2><span class="code"><a href="#ImageWraparoundDraw">ImageWraparoundDraw</a>(image,&nbsp;width,&nbsp;height,&nbsp;wraparound=True,&nbsp;alpha=False)<br>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#ImageDrawHelper">ImageDrawHelper</a>(image,&nbsp;width,&nbsp;height,&nbsp;wraparound=True,&nbsp;alpha=False)<br>
 &nbsp;<br>
 <br>&nbsp;</span></td></tr>
 <tr><td>&nbsp;</td>
 <td class="singlecolumn">Methods defined here:<br>
-<dl><dt><a name="ImageWraparoundDraw-__init__"><strong>__init__</strong></a>(self, image, width, height, wraparound=True, alpha=False)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+<dl><dt><a name="ImageDrawHelper-__init__"><strong>__init__</strong></a>(self, image, width, height, wraparound=True, alpha=False)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
 
-<dl><dt><a name="ImageWraparoundDraw-rect"><strong>rect</strong></a>(self, x0, y0, x1, y1, c)</dt></dl>
+<dl><dt><a name="ImageDrawHelper-rect"><strong>rect</strong></a>(self, x0, y0, x1, y1, c)</dt></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -303,6 +303,9 @@ Data descriptors defined here:<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;list&nbsp;of&nbsp;its&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
+ <dl><dt><a name="-checkerFromThreeGrays"><strong>checkerFromThreeGrays</strong></a>(image, width, height, lightFirst=False)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
+#&nbsp;Creates&nbsp;a&nbsp;checkerboard&nbsp;pattern&nbsp;of&nbsp;a&nbsp;"light"&nbsp;version&nbsp;and&nbsp;a&nbsp;"dark"&nbsp;version&nbsp;of&nbsp;the&nbsp;specified&nbsp;image.<br>
+#&nbsp;Input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-checkerboard"><strong>checkerboard</strong></a>(
     upperLeftImage,
     otherImage,
@@ -658,12 +661,16 @@ Data descriptors defined here:<br>
 #&nbsp;Returns&nbsp;a&nbsp;list&nbsp;describing&nbsp;a&nbsp;color;&nbsp;its&nbsp;elements&nbsp;are&nbsp;the&nbsp;blue,&nbsp;green,&nbsp;red,&nbsp;and&nbsp;alpha<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-grayblackshadow"><strong>grayblackshadow</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-graychecker"><strong>graychecker</strong></a>(image, width, height, lightFirst=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;checkerboard&nbsp;pattern&nbsp;of&nbsp;a&nbsp;"light"&nbsp;version&nbsp;and&nbsp;a&nbsp;"dark"&nbsp;version&nbsp;of&nbsp;the&nbsp;specified&nbsp;image,<br>
+#&nbsp;after&nbsp;converting&nbsp;that&nbsp;image&nbsp;to&nbsp;grayscale.<br>
+#&nbsp;Input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, disregardNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
 #&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;specified&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;If&nbsp;'disregardNonGrays'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;colors&nbsp;other&nbsp;than&nbsp;gray&nbsp;tones<br>
 #&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.<br>
+#&nbsp;Returns&nbsp;the&nbsp;value&nbsp;of&nbsp;'image';&nbsp;the&nbsp;image&nbsp;is&nbsp;modified&nbsp;in&nbsp;place.<br>
 #<br>
 #&nbsp;&nbsp;Example:&nbsp;Generate&nbsp;a&nbsp;random&nbsp;background&nbsp;image,&nbsp;dither&nbsp;to&nbsp;black,&nbsp;gray,<br>
 #&nbsp;and&nbsp;white,&nbsp;and&nbsp;map&nbsp;these&nbsp;gray&nbsp;tones&nbsp;to&nbsp;lighter&nbsp;tones.<br>
@@ -1485,7 +1492,7 @@ Data descriptors defined here:<br>
 #&nbsp;Example:&nbsp;Draws&nbsp;a&nbsp;raised&nbsp;outline,&nbsp;along&nbsp;with&nbsp;a&nbsp;lower&nbsp;right&nbsp;black&nbsp;edge,<br>
 #&nbsp;around&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;two-level&nbsp;mask&nbsp;image.<br>
 #<br>
-#&nbsp;helper&nbsp;=&nbsp;dw.<a href="#ImageWraparoundDraw">ImageWraparoundDraw</a>(image,&nbsp;w,&nbsp;h)<br>
+#&nbsp;helper&nbsp;=&nbsp;dw.<a href="#ImageDrawHelper">ImageDrawHelper</a>(image,&nbsp;w,&nbsp;h)<br>
 #&nbsp;dw.<a href="#-threedee">threedee</a>(<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;helper,<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,<br>
@@ -1504,10 +1511,21 @@ Data descriptors defined here:<br>
 #<br>
 #&nbsp;Example:&nbsp;Draw&nbsp;a&nbsp;yellow&nbsp;outline&nbsp;and&nbsp;a&nbsp;blue&nbsp;fill.<br>
 #<br>
-#&nbsp;helper&nbsp;=&nbsp;dw.<a href="#ImageWraparoundDraw">ImageWraparoundDraw</a>(image,&nbsp;w,&nbsp;h)<br>
+#&nbsp;helper&nbsp;=&nbsp;dw.<a href="#ImageDrawHelper">ImageDrawHelper</a>(image,&nbsp;w,&nbsp;h)<br>
 #&nbsp;dw.<a href="#-threedee">threedee</a>(<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[[[255,&nbsp;255,&nbsp;0],&nbsp;[255,&nbsp;255,&nbsp;0]]],&nbsp;fillColor=[0,&nbsp;0,&nbsp;255]<br>
 #&nbsp;)</span></dd></dl>
+ <dl><dt><a name="-threedeeCapsule"><strong>threedeeCapsule</strong></a>(
+    helper,
+    x,
+    y,
+    sizewidth=128,
+    sizeheight=128,
+    color=None,
+    specular=False,
+    twoLevelSpecular=False
+)</dt></dl>
+ <dl><dt><a name="-threedeeCapsuleMask"><strong>threedeeCapsuleMask</strong></a>(sizewidth=128, sizeheight=128)</dt></dl>
  <dl><dt><a name="-tileable"><strong>tileable</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;to&nbsp;generate&nbsp;a&nbsp;Pmm&nbsp;wallpaper&nbsp;group&nbsp;tiling&nbsp;pattern.<br>
 #&nbsp;This&nbsp;command&nbsp;can&nbsp;be&nbsp;applied&nbsp;to&nbsp;arbitrary&nbsp;images&nbsp;to&nbsp;render&nbsp;them<br>
 #&nbsp;seamlessly&nbsp;tileable.<br>
@@ -1530,7 +1548,16 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;The&nbsp;output&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.</span></dd></dl>
  <dl><dt><a name="-tograyditherstyle"><strong>tograyditherstyle</strong></a>(image, width, height, palette=None, light=False, alpha=False)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-toonSphere"><strong>toonSphere</strong></a>(img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=128)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;colored&nbsp;cartoon&nbsp;or&nbsp;"pixel-art"&nbsp;sphere&nbsp;using&nbsp;only&nbsp;colors&nbsp;accepted&nbsp;by&nbsp;<a href="#-recolor">recolor</a>()<br>
+ <dl><dt><a name="-toonSphere"><strong>toonSphere</strong></a>(
+    img,
+    imgwidth,
+    imgheight,
+    xOff,
+    yOff,
+    sizewidth=128,
+    sizeheight=128,
+    alpha=False
+)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;colored&nbsp;cartoon&nbsp;or&nbsp;"pixel-art"&nbsp;sphere&nbsp;using&nbsp;only&nbsp;colors&nbsp;accepted&nbsp;by&nbsp;<a href="#-recolor">recolor</a>()<br>
 #&nbsp;and&nbsp;<a href="#-recolordither">recolordither</a>().<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
