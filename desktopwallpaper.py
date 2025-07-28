@@ -959,7 +959,7 @@ def simplebox(
         x0 >= 0
         and y0 >= 0
         and x1 <= width
-        and y0 < height
+        and y1 <= height
         and (not alpha)
         and x0 < x1
         and y1 == y0 + 1
@@ -2969,6 +2969,8 @@ def tileableImage(img, width, height, alpha=False):
     i2, w2, h2 = groupPmImage(img, width, height, alpha=alpha)
     return groupPgImage(i2, w2, h2, alpha=alpha)
 
+# Returns an image with the specified destination width and height ('dstwidth', ´destheight'),
+# in the form of a repeated tiling of the source image.
 # 'srcimage' has the same format returned by the blankimage() method with
 # the specified value of 'alpha' (the default value for 'alpha' is False).
 def tiledImage(srcimage, srcwidth, srcheight, dstwidth, dstheight, alpha=False):
@@ -4651,24 +4653,37 @@ def circledraw(image, width, height, c, cx, cy, r, wraparound=True, alpha=False)
     helper = ImageDrawHelper(image, width, height, wraparound=wraparound, alpha=alpha)
     helpercircledraw(helper, c, cx, cy, r)
 
-# Fills a circle using a drawing helper.
-def helpercirclefill(helper, color, x0, y0, x1, y1):
-    if x0 == x1 or y0 == y1:
+# Fills a superellipse using a drawing helper.
+# Default for 'expo' is 2, indicating an ordinary ellipse.
+def helperellipsefill(helper, color, x0, y0, x1, y1, expo=2):
+    if x1 < x0 or y1 < y0:
+        raise ValueError
+    if expo <= 0:
+        raise ValueError
+    # Shrink the ellipse by 1 pixel for drawing purposes
+    x1 -= 1
+    y1 -= 1
+    if x0 >= x1 or y0 >= y1:
+        # Empty or too-small ellipse
         return
-    poly = []
+    invexpo = 1 / expo
     xmin = min(x0, x1)
-    xmax = max(x1, y1)
+    xmax = max(x0, x1)
     xmid = (xmin + xmax) / 2
     xhalf = (xmax - xmin) / 2
     ymin = min(y0, y1)
     ymax = max(y0, y1)
-    for i in range(ymin, ymax):
+    for i in range(ymin, ymax + 1):
         # Calculate this scan line at 'i'
         yp = ((i - ymin) / (ymax - ymin)) * 2 - 1
-        s = math.sqrt(1 - yp**2)
-        xa = int(xmid - xhalf * s)
-        xb = int(xmid + xhalf * s)
-        drawpositiverect(helper, xa, i, xb, i + 1, color)
+        if abs(yp) < 0 or abs(yp) > 1:
+            raise ValueError
+        s = (1 - abs(yp) ** expo) ** invexpo
+        if s < 0 or s > 1:
+            raise ValueError
+        xa = int(xmid - xhalf * s + 0.5)
+        xb = int(xmid + xhalf * s + 0.5)
+        drawpositiverect(helper, xa, i, xb + 1, i + 1, color)
 
 # Draws a circle using a drawing helper.
 def helpercircledraw(helper, c, cx, cy, r):
@@ -5389,7 +5404,7 @@ def toonSphere(
     cmask = blankimage(w, h, [0, 0, 0, 255], alpha=alpha)
     cmaskhelper = ImageDrawHelper(cmask, w, h, alpha=alpha)
     # draw white on the mask where the filled circle is
-    helpercirclefill(cmaskhelper, [255, 255, 255, 255], 0, 0, w, h)
+    helperellipsefill(cmaskhelper, [255, 255, 255, 255], 0, 0, w, h)
     helper = ImageDrawHelper(cc2, w, h, alpha=alpha)
     levels = 20
     # To achieve the "pixel-art" shading, fill concentric
@@ -5422,7 +5437,7 @@ def toonSphere(
             # this simulates a specular highlight
             v = min(255, int(255 * (i - half) / half) + 32)
             col = [255, v, v, 255]
-        helpercirclefill(helper, col, x0, y0, x1, y1)
+        helperellipsefill(helper, col, x0, y0, x1, y1)
     imageblitex(
         img,
         imgwidth,
@@ -7418,7 +7433,7 @@ def _randomdither(image, width, height, palette):
     return image
 
 def _randombackground(w, h, palette, tileable=True):
-    r = random.randint(0, 100)
+    r = random.randint(0, 99)
     if r < 25:
         return _randomnoiseimage(w, h, palette, tileable=tileable)
     elif r < 80:
@@ -7761,7 +7776,7 @@ def _hatchoverlay(image, width, height, hatchColor, rows=2):
 # Generates a random checkerboard pattern image (using the specified palette, if any)
 # Image returned by this method has the same format returned by the blankimage() method with alpha=False.
 def randomcheckimage(w, h, palette=None, tileable=True):
-    if w % 2 == 0 and h % 2 == 0 and random.randint(0, 100) < 10:
+    if w % 2 == 0 and h % 2 == 0 and random.randint(0, 99) < 10:
         otherImage = _randombackground(w // 2, h // 2, palette, tileable=tileable)
         return _colorizeInPlaceFromFourGrays(
             graychecker(

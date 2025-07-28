@@ -201,73 +201,94 @@ def randomwallpaper3(palette=None):
     return [image, w, h]
 
 def randomwallpaper2(palette=None):
-    w = random.randint(32, 128)
-    h = random.randint(32, 128)
-    w -= w % 8
-    h -= h % 8
-    # shape background, which need not be tileable
-    imagebg = dw.randombackgroundimage(w, h, palette, tileable=False)
-    # combinations
-    columns = 2
-    rows = 2
-    ia = dw.argyle(
-        dw.randombackgroundimage(w, h, palette, tileable=False),
-        imagebg,
-        w,
-        h,
-        expo=random.uniform(0.5, 2.5),
-        shiftImageBg=True,
+    return _randomwallpaper1ex(palette=palette, variant=2)
+
+def _argylemask(width, height, expo):
+    img = dw.blankimage(width, height, [0, 0, 0], alpha=False)
+    helper = dw.ImageDrawHelper(img, width, height, alpha=False)
+    dw.helperellipsefill(helper, [255, 255, 255], 0, 0, width, height, expo=expo)
+    return img
+
+def _shiftImage(image, width, height):
+    dw.imageblitex(
+        image,
+        width,
+        height,
+        width // 2,
+        height // 2,
+        width + width // 2,
+        height + height // 2,
+        image,
+        width,
+        height,
+        0,
+        0,
+        wraparound=True,
+        alpha=False,
     )
-    ib = dw.argyle(
-        dw.randombackgroundimage(w, h, palette, tileable=False),
-        imagebg,
-        w,
-        h,
-        expo=random.uniform(0.5, 2.5),
-        shiftImageBg=True,
-    )
-    image3 = dw.checkerboardtile(ia, ib, w, h, columns, rows)
-    image3, width, height = _randomRotated(image3, w * columns, h * rows)
-    image3 = dw.randommaybemonochrome(image3, width, height)
-    return [image3, width, height]
 
 def randomwallpaper1(palette=None):
+    return _randomwallpaper1ex(palette=palette, variant=1)
+
+def _randomwallpaper1ex(palette=None, variant=1):
     w = random.randint(96, 256)
     h = random.randint(96, 256)
-    columns = random.choice([1, 1, 1, 2, 3, 4, 5])
-    rows = random.choice([1, 1, 1, 2, 3, 4, 5])
+    columns = 2 if variant == 2 else random.choice([1, 1, 1, 2, 3, 4, 5])
+    rows = 2 if variant == 2 else random.choice([1, 1, 1, 2, 3, 4, 5])
     w = w // columns
     h = h // rows
     w = max(32, w - w % 8)
     h = max(32, h - h % 8)
-    # shape background, which need not be tileable
-    imagebg = dw.randombackgroundimage(w, h, palette, tileable=False)
     # shape foregrounds, which need not be tileable
     image1 = dw.randombackgroundimage(w, h, palette, tileable=False)
     image1a = dw.randombackgroundimage(w, h, palette, tileable=False)
-    image1b = dw.randombackgroundimage(w, h, palette, tileable=False)
-    # combinations
-    image3 = dw.argyle(
-        image1, imagebg, w, h, expo=random.uniform(0.5, 2.5), shiftImageBg=True
+    image1b = (
+        None
+        if variant == 2
+        else dw.randombackgroundimage(w, h, palette, tileable=False)
     )
-    image3a = dw.argyle(
-        image1a,
-        imagebg,
-        w,
-        h,
-        expo=random.uniform(0.5, 2.5),
-        shiftImageBg=True,
-    )
-    image3b = dw.argyle(
-        image1b,
-        imagebg,
-        w,
-        h,
-        expo=random.uniform(0.5, 2.5),
-        shiftImageBg=True,
-    )
-    # tiling
-    image3 = dw.randomtiles(columns, rows, [image3, image3a, image3b], w, h)
-    image3, width, height = _randomRotated(image3, w * columns, h * rows)
+    expo1 = random.uniform(0.5, 2.5)
+    expo1a = random.uniform(0.5, 2.5)
+    expo1b = random.uniform(0.5, 2.5)
+    ###############
+    if random.randint(0, 99) < 90:
+        # shape background
+        imagebg = dw.randombackgroundimage(
+            w * columns, h * rows, palette, tileable=True
+        )
+    else:
+        # shape background, tiled style
+        imagebg = dw.randombackgroundimage(w, h, palette, tileable=False)
+        _shiftImage(imagebg, w, h)
+        imagebg = dw.tiledImage(imagebg, w, h, w * columns, h * rows)
+    mask1 = _argylemask(w, h, expo1)
+    mask2 = _argylemask(w, h, expo1a)
+    mask3 = None if variant == 2 else _argylemask(w, h, expo1b)
+    for y in range(rows):
+        for x in range(columns):
+            i = random.choice([0, 1, 2])
+            if variant == 2:
+                mask = [mask1, mask2][(x + y) % 2]
+                img = [image1, image1a][(x + y) % 2]
+            else:
+                mask = [mask1, mask2, mask3][i]
+                img = [image1, image1a, image1b][i]
+            dw.imageblitex(
+                imagebg,
+                w * columns,
+                h * rows,
+                w * x,
+                h * y,
+                w * (x + 1),
+                h * (y + 1),
+                img,
+                w,
+                h,
+                maskimage=mask,
+                maskwidth=w,
+                maskheight=h,
+                alpha=False,
+            )
+    image3, width, height = _randomRotated(imagebg, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
     return [image3, width, height]

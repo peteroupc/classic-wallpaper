@@ -28,7 +28,7 @@ Here is a challenge.  Write computer code (released to the public domain or lice
     - Checkboxes when unset, when set, and in mixed-value state.
     - Option buttons ("radio buttons") when unset, option buttons when set, sliders.
 - Toolbar buttons in normal, mixed-value, and "option-set" states:  Hover style.
-- Optionally, other user-interface elements (such as scroll bars).
+- Optionally, other user-interface elements (such as scroll bars and toggle switches).
 
 Using only the following colors and with some pixels allowed to be transparent:
 
@@ -101,7 +101,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
 - The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^9]
-- Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look.
+- Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^10]
 - For graphics limited to the 16-color VGA palette[^1]:
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
@@ -120,7 +120,7 @@ For a high degree of flexibility, new graphical user interface systems should al
 - Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
 - Designing user-interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
-    - in multiple sizes, each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^10], and
+    - in multiple sizes, each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^11], and
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
 - Animation of icons and cursors.
 
@@ -138,7 +138,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^5]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.
 
-[^6]: Dithering is the scattering of colors in a limited set to simulate colors outside that set.
+[^6]: _Dithering_ is the scattering of colors in a limited set to simulate colors outside that set.
 
 [^7]: _Window borders_ are the outer edges of desktop windows.  Text box borders are also known as "field borders".  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.
 
@@ -146,4 +146,6 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^9]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.
 
-[^10]: Multiple sizes and vector versions of a graphic are useful for several reasons, including: (1) to accommodate different display modes and pixel densities; (2) to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm).
+[^10]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially one-pixel thick lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill an area of pixels that is surrounded by pixels of other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines is rarer and less systematic.
+
+[^11]: Multiple sizes and vector versions of a graphic are useful for several reasons, including: (1) to accommodate different display modes and pixel densities; (2) to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm).  They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.

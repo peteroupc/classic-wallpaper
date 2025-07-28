@@ -767,7 +767,8 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False</span></dd></dl>
  <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
  <dl><dt><a name="-helpercircledraw"><strong>helpercircledraw</strong></a>(helper, c, cx, cy, r)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;circle&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
- <dl><dt><a name="-helpercirclefill"><strong>helpercirclefill</strong></a>(helper, color, x0, y0, x1, y1)</dt><dd><span class="code">#&nbsp;Fills&nbsp;a&nbsp;circle&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
+ <dl><dt><a name="-helperellipsefill"><strong>helperellipsefill</strong></a>(helper, color, x0, y0, x1, y1, expo=2)</dt><dd><span class="code">#&nbsp;Fills&nbsp;a&nbsp;superellipse&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.<br>
+#&nbsp;Default&nbsp;for&nbsp;'expo'&nbsp;is&nbsp;2,&nbsp;indicating&nbsp;an&nbsp;ordinary&nbsp;ellipse.</span></dd></dl>
  <dl><dt><a name="-helperlinedraw"><strong>helperlinedraw</strong></a>(helper, c, x0, y0, x1, y1, drawEndPoint=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;line&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
  <dl><dt><a name="-horizhatchedbox"><strong>horizhatchedbox</strong></a>(image, width, height, color, x0, y0, x1, y1, alpha=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;box&nbsp;filled&nbsp;with&nbsp;a&nbsp;transparent&nbsp;horizontal&nbsp;hatch&nbsp;pattern.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
@@ -1541,7 +1542,9 @@ Data descriptors defined here:<br>
 #&nbsp;Returns&nbsp;a&nbsp;three-element&nbsp;list&nbsp;with&nbsp;the&nbsp;new&nbsp;image,&nbsp;its&nbsp;width,&nbsp;and&nbsp;its&nbsp;height.<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;and&nbsp;the&nbsp;returned&nbsp;image&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
- <dl><dt><a name="-tiledImage"><strong>tiledImage</strong></a>(srcimage, srcwidth, srcheight, dstwidth, dstheight, alpha=False)</dt><dd><span class="code">#&nbsp;'srcimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
+ <dl><dt><a name="-tiledImage"><strong>tiledImage</strong></a>(srcimage, srcwidth, srcheight, dstwidth, dstheight, alpha=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;specified&nbsp;destination&nbsp;width&nbsp;and&nbsp;height&nbsp;('dstwidth',&nbsp;´destheight'),<br>
+#&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;repeated&nbsp;tiling&nbsp;of&nbsp;the&nbsp;source&nbsp;image.<br>
+#&nbsp;'srcimage'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with<br>
 #&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(the&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-toalpha"><strong>toalpha</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Converts&nbsp;an&nbsp;image&nbsp;without&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;an&nbsp;image&nbsp;with&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;by<br>
 #&nbsp;setting&nbsp;the&nbsp;alpha&nbsp;value&nbsp;of&nbsp;every&nbsp;pixel&nbsp;in&nbsp;the&nbsp;output&nbsp;to&nbsp;255.<br>
