@@ -766,7 +766,9 @@ Data descriptors defined here:<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False</span></dd></dl>
  <dl><dt><a name="-hautrelief"><strong>hautrelief</strong></a>(bg=[192, 192, 192], highlight=[255, 255, 255], shadow=[0, 0, 0])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command.</span></dd></dl>
- <dl><dt><a name="-helpercircledraw"><strong>helpercircledraw</strong></a>(helper, c, cx, cy, r)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;circle&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
+ <dl><dt><a name="-helpercircledraw"><strong>helpercircledraw</strong></a>(helper, color, cx, cy, r)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;circle&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
+ <dl><dt><a name="-helperellipsedraw"><strong>helperellipsedraw</strong></a>(helper, color, x0, y0, x1, y1, expo=2, fill=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;the&nbsp;outline&nbsp;of&nbsp;a&nbsp;superellipse&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.<br>
+#&nbsp;Default&nbsp;for&nbsp;'expo'&nbsp;is&nbsp;2,&nbsp;indicating&nbsp;an&nbsp;ordinary&nbsp;ellipse.</span></dd></dl>
  <dl><dt><a name="-helperellipsefill"><strong>helperellipsefill</strong></a>(helper, color, x0, y0, x1, y1, expo=2)</dt><dd><span class="code">#&nbsp;Fills&nbsp;a&nbsp;superellipse&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.<br>
 #&nbsp;Default&nbsp;for&nbsp;'expo'&nbsp;is&nbsp;2,&nbsp;indicating&nbsp;an&nbsp;ordinary&nbsp;ellipse.</span></dd></dl>
  <dl><dt><a name="-helperlinedraw"><strong>helperlinedraw</strong></a>(helper, c, x0, y0, x1, y1, drawEndPoint=False)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;line&nbsp;using&nbsp;a&nbsp;drawing&nbsp;helper.</span></dd></dl>
@@ -1474,7 +1476,7 @@ Data descriptors defined here:<br>
     h,
     layercolors,
     fillColor=None,
-    traceInnerCorners=True,
+    traceInnerCorners=False,
     lowerDominates=True
 )</dt><dd><span class="code">#&nbsp;Draws&nbsp;one&nbsp;or&nbsp;more&nbsp;3-D&nbsp;borders&nbsp;on&nbsp;the&nbsp;inner&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
 #&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;ones.<br>
@@ -1506,15 +1508,15 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Upper&nbsp;color,&nbsp;lower&nbsp;coloe<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
-#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],&nbsp;traceInnerCorners=True<br>
 #&nbsp;)<br>
-#&nbsp;dw.<a href="#-outeredge">outeredge</a>(helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;0,&nbsp;0],upperEdge=False,lowerEdge=True)<br>
+#&nbsp;dw.<a href="#-outeredge">outeredge</a>(helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[0,&nbsp;0,&nbsp;0],upperEdge=False,lowerEdge=True,&nbsp;traceInnerCorners=True)<br>
 #<br>
 #&nbsp;Example:&nbsp;Draw&nbsp;a&nbsp;yellow&nbsp;outline&nbsp;and&nbsp;a&nbsp;blue&nbsp;fill.<br>
 #<br>
 #&nbsp;helper&nbsp;=&nbsp;dw.<a href="#ImageDrawHelper">ImageDrawHelper</a>(image,&nbsp;w,&nbsp;h)<br>
 #&nbsp;dw.<a href="#-threedee">threedee</a>(<br>
-#&nbsp;&nbsp;&nbsp;&nbsp;helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[[[255,&nbsp;255,&nbsp;0],&nbsp;[255,&nbsp;255,&nbsp;0]]],&nbsp;fillColor=[0,&nbsp;0,&nbsp;255]<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;helper,&nbsp;0,&nbsp;0,&nbsp;mask,&nbsp;w,&nbsp;h,&nbsp;[[[255,&nbsp;255,&nbsp;0],&nbsp;[255,&nbsp;255,&nbsp;0]]],&nbsp;fillColor=[0,&nbsp;0,&nbsp;255],&nbsp;traceInnerCorners=True<br>
 #&nbsp;)</span></dd></dl>
  <dl><dt><a name="-threedeeCapsule"><strong>threedeeCapsule</strong></a>(
     helper,
@@ -1559,6 +1561,7 @@ Data descriptors defined here:<br>
     yOff,
     sizewidth=128,
     sizeheight=128,
+    drawOutline=True,
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;colored&nbsp;cartoon&nbsp;or&nbsp;"pixel-art"&nbsp;sphere&nbsp;using&nbsp;only&nbsp;colors&nbsp;accepted&nbsp;by&nbsp;<a href="#-recolor">recolor</a>()<br>
 #&nbsp;and&nbsp;<a href="#-recolordither">recolordither</a>().<br>

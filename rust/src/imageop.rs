@@ -151,7 +151,7 @@ pub fn websafedither<T: BasicRgbImage>(image: &mut T, include_vga: bool) -> &mut
     image
 }
 
-fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
+pub fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
     let mut best: usize = 0;
     let mut ret: usize = 0;
     for (i, color) in palette.iter().enumerate() {
@@ -171,19 +171,21 @@ fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
 }
 
 pub fn floyd_steinberg_dither<T: BasicRgbImage>(image: &mut T, palette: &[[u8; 3]]) {
-    if image.width() == 0 || image.height() == 0 {
+    let imagewidth = image.width();
+    let imageheight = image.height();
+    if imagewidth == 0 || imageheight == 0 {
         return;
     }
-    let mut err = vec![0; (image.width() * 6).try_into().unwrap()];
+    let mut err = vec![0; (imagewidth * 6).try_into().unwrap()];
     let rerr1: usize = 0;
-    let uswidth: usize = image.width() as usize;
+    let uswidth: usize = imagewidth as usize;
     let rerr2 = rerr1 + uswidth;
     let gerr1 = rerr2 + uswidth;
     let gerr2 = gerr1 + uswidth;
     let berr1 = gerr2 + uswidth;
     let berr2 = berr1 + uswidth;
-    for j in 0..image.height() {
-        for i in 0..image.width() {
+    for j in 0..imageheight {
+        for i in 0..imagewidth {
             let cr = image.get_pixel(i, j);
             let ui = i as usize;
             err[rerr1 + ui] = err[rerr2 + ui] + (cr[0] as i32);
@@ -203,7 +205,7 @@ pub fn floyd_steinberg_dither<T: BasicRgbImage>(image: &mut T, palette: &[[u8; 3
             err[berr1] as u8,
         );
         image.put_pixel(0, j, palette[idx]);
-        for i in 0..(image.width() - 1) {
+        for i in 0..(imagewidth - 1) {
             let ui = i as usize;
             err[rerr1 + ui] = err[rerr1 + ui].clamp(0, 255);
             err[gerr1 + ui] = err[gerr1 + ui].clamp(0, 255);

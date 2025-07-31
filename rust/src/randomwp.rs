@@ -60,11 +60,11 @@ pub fn randomwallpaper<T: BasicRgbImage>() -> T {
         };
         image = wallpaper_image(w2, h2, &image, [0.0, 0.0, w as f64, h as f64], group);
     }
-    if zero_or_one.sample(&mut rng) == 0 {
-        websafedither(&mut image, true);
-    } else {
-        let cc = classiccolors();
-        floyd_steinberg_dither(&mut image, &cc);
-    }
+    // if zero_or_one.sample(&mut rng) == 0 {
+    websafedither(&mut image, true);
+    //} else {
+    //    let cc = classiccolors();
+    //    floyd_steinberg_dither(&mut image, &cc);
+    //}
     image
 }

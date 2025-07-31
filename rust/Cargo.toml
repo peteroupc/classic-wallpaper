@@ -8,3 +8,7 @@ rand = "0.8.5"
 orx-parallel = "*"
 image = "*"
 png = "*"
+softbuffer = "*"
+winit = "0.30.12"
+web-time = "1.1.0"
+

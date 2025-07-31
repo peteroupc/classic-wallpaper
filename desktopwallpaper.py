@@ -4653,9 +4653,9 @@ def circledraw(image, width, height, c, cx, cy, r, wraparound=True, alpha=False)
     helper = ImageDrawHelper(image, width, height, wraparound=wraparound, alpha=alpha)
     helpercircledraw(helper, c, cx, cy, r)
 
-# Fills a superellipse using a drawing helper.
+# Draws the outline of a superellipse using a drawing helper.
 # Default for 'expo' is 2, indicating an ordinary ellipse.
-def helperellipsefill(helper, color, x0, y0, x1, y1, expo=2):
+def helperellipsedraw(helper, color, x0, y0, x1, y1, expo=2, fill=False):
     if x1 < x0 or y1 < y0:
         raise ValueError
     if expo <= 0:
@@ -4673,6 +4673,10 @@ def helperellipsefill(helper, color, x0, y0, x1, y1, expo=2):
     xhalf = (xmax - xmin) / 2
     ymin = min(y0, y1)
     ymax = max(y0, y1)
+    last2xa = 0
+    last2xb = 0
+    lastxa = 0
+    lastxb = 0
     for i in range(ymin, ymax + 1):
         # Calculate this scan line at 'i'
         yp = ((i - ymin) / (ymax - ymin)) * 2 - 1
@@ -4683,10 +4687,39 @@ def helperellipsefill(helper, color, x0, y0, x1, y1, expo=2):
             raise ValueError
         xa = int(xmid - xhalf * s + 0.5)
         xb = int(xmid + xhalf * s + 0.5)
-        drawpositiverect(helper, xa, i, xb + 1, i + 1, color)
+        if fill or i == ymin:
+            drawpositiverect(helper, xa, i, xb + 1, i + 1, color)
+        elif i == ymax:
+            xxa = max(last2xa, xa)
+            if xxa == lastxa:
+                xxa = lastxa + 1
+            xxb = min(last2xb + 1, xb + 1)
+            if xxb == lastxb + 1:
+                xxb = lastxb
+            drawpositiverect(helper, lastxa, i - 1, xxa, i, color)
+            drawpositiverect(helper, xxb, i - 1, lastxb + 1, i, color)
+            drawpositiverect(helper, xa, i, xb + 1, i + 1, color)
+        else:
+            xxa = max(last2xa, xa)
+            if xxa == lastxa:
+                xxa = lastxa + 1
+            xxb = min(last2xb + 1, xb + 1)
+            if xxb == lastxb + 1:
+                xxb = lastxb
+            drawpositiverect(helper, lastxa, i - 1, xxa, i, color)
+            drawpositiverect(helper, xxb, i - 1, lastxb + 1, i, color)
+        last2xa = xa if i == ymin else lastxa
+        last2xb = xb if i == ymin else lastxb
+        lastxa = xa
+        lastxb = xb
+
+# Fills a superellipse using a drawing helper.
+# Default for 'expo' is 2, indicating an ordinary ellipse.
+def helperellipsefill(helper, color, x0, y0, x1, y1, expo=2):
+    helperellipsedraw(helper, color, x0, y0, x1, y1, expo=expo, fill=True)
 
 # Draws a circle using a drawing helper.
-def helpercircledraw(helper, c, cx, cy, r):
+def helpercircledraw(helper, color, cx, cy, r):
     # midpoint circle algorithm
     z = -r
     x = r
@@ -4696,7 +4729,7 @@ def helpercircledraw(helper, c, cx, cy, r):
         for xx, yy in octs:
             px = cx + xx
             py = cy + yy
-            drawpositiverect(helper, px, py, px + 1, py + 1, c)
+            drawpositiverect(helper, px, py, px + 1, py + 1, color)
         z += 1 + y + y
         y += 1
         if z >= 0:
@@ -5171,15 +5204,15 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 #         # Upper color, lower coloe
 #         [[255, 255, 255], [128, 128, 128]],
 #         [[255, 255, 255], [128, 128, 128]],
-#     ],
+#     ], traceInnerCorners=True
 # )
-# dw.outeredge(helper, 0, 0, mask, w, h, [0, 0, 0],upperEdge=False,lowerEdge=True)
+# dw.outeredge(helper, 0, 0, mask, w, h, [0, 0, 0],upperEdge=False,lowerEdge=True, traceInnerCorners=True)
 #
 # Example: Draw a yellow outline and a blue fill.
 #
 # helper = dw.ImageDrawHelper(image, w, h)
 # dw.threedee(
-#    helper, 0, 0, mask, w, h, [[[255, 255, 0], [255, 255, 0]]], fillColor=[0, 0, 255]
+#    helper, 0, 0, mask, w, h, [[[255, 255, 0], [255, 255, 0]]], fillColor=[0, 0, 255], traceInnerCorners=True
 # )
 #
 def threedee(
@@ -5191,7 +5224,7 @@ def threedee(
     h,
     layercolors,
     fillColor=None,
-    traceInnerCorners=True,
+    traceInnerCorners=False,
     lowerDominates=True,
 ):
     if len(layercolors) <= 0:
@@ -5395,13 +5428,21 @@ def grayblackshadow(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color):
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
 def toonSphere(
-    img, imgwidth, imgheight, xOff, yOff, sizewidth=128, sizeheight=128, alpha=False
+    img,
+    imgwidth,
+    imgheight,
+    xOff,
+    yOff,
+    sizewidth=128,
+    sizeheight=128,
+    drawOutline=True,
+    alpha=False,
 ):
     w = sizewidth
     h = sizeheight
     cc2 = blankimage(w, h, [0, 0, 0, 0], alpha=alpha)
     # black mask
-    cmask = blankimage(w, h, [0, 0, 0, 255], alpha=alpha)
+    cmask = blankimage(w, h, [0, 0, 0, 0], alpha=alpha)
     cmaskhelper = ImageDrawHelper(cmask, w, h, alpha=alpha)
     # draw white on the mask where the filled circle is
     helperellipsefill(cmaskhelper, [255, 255, 255, 255], 0, 0, w, h)
@@ -5454,6 +5495,9 @@ def toonSphere(
         maskheight=h,
         alpha=alpha,
     )
+    if drawOutline:
+        helper = ImageDrawHelper(img, imgwidth, imgheight, alpha=alpha)
+        helperellipsedraw(helper, [128, 0, 0, 255], 0, 0, imgwidth, imgheight)
 
 # 3-dimensional vector dot product
 def _dot3(a, b):
@@ -7231,6 +7275,7 @@ def slider3d(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24):
             [[192, 192, 192], [128, 128, 128]],
         ],
         fillColor=[150, 150, 150],
+        traceInnerCorners=True,
     )
 
 # random wallpaper generation
@@ -8265,7 +8310,16 @@ if __name__ == "__main__":
     img2 = blankimage(3, 3, [192, 192, 192])
     mask = blankimage(3, 3, [0, 0, 0])  # black mask
     helper = ImageDrawHelper(img2, 3, 3)
-    threedee(helper, 0, 0, mask, 3, 3, [[[255, 255, 255], [128, 128, 128]]])
+    threedee(
+        helper,
+        0,
+        0,
+        mask,
+        3,
+        3,
+        [[[255, 255, 255], [128, 128, 128]]],
+        traceInnerCorners=True,
+    )
     expected = [
         255,
         255,
@@ -8308,6 +8362,7 @@ if __name__ == "__main__":
         3,
         3,
         [[[255, 255, 255], [128, 128, 128]]],
+        traceInnerCorners=True,
     )
     if img2 != expected:
         print("unexpected output of threedee")
