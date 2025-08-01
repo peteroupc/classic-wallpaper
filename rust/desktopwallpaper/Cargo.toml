@@ -10,16 +10,13 @@ png = "*"
 softbuffer = "*"
 winit = "0.30.12"
 web-time = "1.1.0"
-js-sys = "0.3.76"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 rand = "0.8.5"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
 wasm-bindgen = "0.2.99"
 wasm-bindgen-futures = "0.4.49"
+js-sys = "0.3.76"
 web-sys = { version = "0.3", features = ["Document", "Window", "Element", "Location"] }
-reqwest = { version = "0.11" }
-

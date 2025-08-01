@@ -75,10 +75,6 @@ macro_rules! sample_rng {
   }
 }
 
-#[cfg(not(target_arch="wasm32"))]
-use rand::distributions::Distribution;
-#[cfg(not(target_arch="wasm32"))]
-use rand::distributions::Uniform;
 
 #[cfg(not(target_arch="wasm32"))]
 #[macro_export]

@@ -3,7 +3,6 @@ mod imageop;
 mod parfor;
 mod randomwp;
 mod random;
-mod writers;
 
 //////////////////
 
@@ -108,19 +107,32 @@ struct AppState {
     pub wp: basicrgbimage::BasicRgbImageData,
 }
 
+fn shader(
+   width:u32, height:u32,
+   fx: f32, fy: f32, elapsed: f32
+) -> [f32;3] {
+   let cx:f32=(fx*2.0)-1.0;
+   let cy:f32=(fy*2.0)-1.0;
+   let len:f32=(cx*cx+cy*cy).sqrt();
+   let elap:f32=(elapsed%3.0)/3.0;
+   let rv:f32=len.clamp(0.0,1.0);
+   [(rv+elap)%1.0,0.0,0.0]
+}
+
 impl winit::application::ApplicationHandler for AppState {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let mut attribs=Window::default_attributes()
                 .with_inner_size(
-                    winit::dpi::LogicalSize::new(640,480)).with_resizable(false).with_visible(true);
+                    winit::dpi::LogicalSize::new(640,480)).with_resizable(false);
         
         #[cfg(target_arch="wasm32")]
         {
-               if(!self.started) {
+               if !self.started {
                    write("<canvas width=640 height=480 id=wasmcanvas></canvas>");
                }
                attribs=attribs.with_canvas(Some(getElementById("wasmcanvas")));
         }
+        attribs=attribs.with_visible(true);
         self.window = Some(Rc::new(
               event_loop.create_window(attribs).unwrap()
         ));
@@ -167,6 +179,20 @@ impl winit::application::ApplicationHandler for AppState {
                 self.frame+=1;
                 let mut buffer = surface.buffer_mut().unwrap();
                 // Draw on buffer
+                let mut pos:usize = 0;
+                let f32elapsed:f32 = self.start.elapsed().as_secs_f32();
+                for y in 0..height {
+                  let yp:f32=(y as f32)/(height as f32);
+                  for x in 0..width {
+                    let xp:f32=(x as f32)/(width as f32);
+                    let sh=shader(width,height,xp,yp,f32elapsed);
+                    let r:u32=(sh[0].clamp(0.0,1.0)*255.0) as u32;
+                    let g:u32=(sh[1].clamp(0.0,1.0)*255.0) as u32;
+                    let b:u32=(sh[2].clamp(0.0,1.0)*255.0) as u32;
+                    buffer[pos]=b|(g<<8)|(r<<16);
+                    pos+=1;
+                  }
+                }
                 copy_to_buffer_tiled(&mut buffer,width,height,&self.wp,0,0);
                 // End drawing on buffer
                 buffer.present().unwrap();
@@ -193,16 +219,4 @@ pub fn start(){
          wp: randomwp::randomwallpaper(),
     };
     event_loop.run_app(&mut app).unwrap();
-}
-
-//////////////////
-
-fn main0() {
-    parfor::parfor(10, |i| {
-        let wp: basicrgbimage::BasicRgbImageData = randomwp::randomwallpaper();
-        let filename = format!("{}/image{}.png", std::env::temp_dir().display(), i);
-        writers::writepng(&wp, filename).expect("Failure");
-        let pcx = format!("{}/image{}.pcx", std::env::temp_dir().display(), i);
-        writers::writepcx(&wp, pcx).expect("Failure");
-    });
 }

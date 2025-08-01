@@ -1,6 +1,5 @@
 use orx_parallel::IntoParIter;
 use orx_parallel::ParIter;
-use orx_parallel::computational_variants::Par;
 
 /**
  * Run `count` many of the given task (`func`) in parallel.

@@ -7,8 +7,6 @@ use std::cmp::max;
 
 #[cfg(not(target_arch="wasm32"))]
 use rand::distributions::Distribution;
-#[cfg(not(target_arch="wasm32"))]
-use rand::distributions::Uniform;
 
 pub fn randomboxes<T: BasicRgbImage>(image: &mut T) -> &mut T {
     let ux0 = new_uniform!(0, image.width() - 1);
