@@ -31,14 +31,14 @@ extern "C" {
     fn getElementById(s: &str) -> web_sys::HtmlCanvasElement;
 }
 
-
-struct BasicImageData32<'a> {
+pub struct SoftbufferData<'a> {
   width: u32,
   height: u32,
-  data: &'a mut Buffer<'a, Rc<Window>, Rc<Window>>,
+  // https://github.com/rust-windowing/softbuffer/issues/274
+  data: &'a mut [u32],
 }
 
-impl<'a> basicrgbimage::BasicRgbImage for BasicImageData32<'a> {
+impl<'a> basicrgbimage::BasicRgbImage for SoftbufferData<'a> {
     fn width(&self) -> u32 {
         self.width
     }
@@ -54,47 +54,46 @@ impl<'a> basicrgbimage::BasicRgbImage for BasicImageData32<'a> {
         let us: usize = (y * self.width + x).try_into().unwrap();
         self.data[us] = (pixel[2] as u32)|((pixel[1] as u32)<<8)|((pixel[0] as u32)<<16);
     }
-    fn new(_width: u32, _height: u32) -> BasicImageData32<'a> {
+    fn new(_width: u32, _height: u32) -> SoftbufferData<'a> {
         panic!("Not supported");
     }
 }
 
-fn copy_to_buffer<T: basicrgbimage::BasicRgbImage>(
-   image: &mut Buffer<Rc<Window>, Rc<Window>>, width:u32, height:u32,
-   srcimage: &T) {
+macro_rules! softbuffer_data_mut {
+  ($buffer:expr, $width:expr, $height:expr) => {
+    &mut SoftbufferData{width:$width,height:$height,
+                 data:&mut *$buffer as &mut [u32]}
+  }
+}
+
+fn copy_to_buffer<T: basicrgbimage::BasicRgbImage, U: basicrgbimage::BasicRgbImage>(
+   image: &mut T,
+   srcimage: &U) {
+  let width: u32=image.width();
+  let height: u32=image.height();
   let srcwidth: u32=srcimage.width();
   let srcheight: u32=srcimage.height();
   for y in 0..std::cmp::min(srcheight,height) {
      for x in 0..std::cmp::min(srcwidth,width) {
-        putpixel(image,width,height,x,y,srcimage.get_pixel(x,y));
+        image.put_pixel(x,y,srcimage.get_pixel(x,y));
      }
   }
 }
 
-fn copy_to_buffer_tiled<T: basicrgbimage::BasicRgbImage>(
-   image: &mut Buffer<Rc<Window>, Rc<Window>>, width:u32, height:u32,
-   srcimage: &T, ox:u32, oy:u32) {
+fn copy_to_buffer_tiled<T: basicrgbimage::BasicRgbImage, U: basicrgbimage::BasicRgbImage>(
+   image: &mut T,
+   srcimage: &U, ox:u32, oy:u32) {
+  let width: u32=image.width();
+  let height: u32=image.height();
   let srcwidth: u32=srcimage.width();
   let srcheight: u32=srcimage.height();
   for y in 0..(height) {
      let yp = (y+oy) % srcheight;
      for x in 0..(width) {
         let xp = (x+ox) % srcwidth;
-        putpixel(image,width,height,x,y,srcimage.get_pixel(xp,yp));
+        image.put_pixel(x,y,srcimage.get_pixel(xp,yp));
      }
   }
-}
-
-
-fn getpixel(image: &mut Buffer<Rc<Window>, Rc<Window>>, width:u32, _height:u32, x:u32, y:u32) -> [u8;3]{
-        let us: usize = (y * width + x).try_into().unwrap();
-        let d=image[us];
-        [((d>>16)&0xFF) as u8, ((d>>8)&0xFF) as u8, (d&0xFF) as u8]
-}
-
-fn putpixel(image: &mut Buffer<Rc<Window>, Rc<Window>>, width:u32, _height:u32, x:u32, y:u32, pixel:[u8;3]){
-        let us: usize = (y * width + x).try_into().unwrap();
-        image[us] = (pixel[2] as u32)|((pixel[1] as u32)<<8)|((pixel[0] as u32)<<16);
 }
 
 struct AppState {
@@ -108,7 +107,7 @@ struct AppState {
 }
 
 fn shader(
-   width:u32, height:u32,
+   _width:u32, _height:u32,
    fx: f32, fy: f32, elapsed: f32
 ) -> [f32;3] {
    let cx:f32=(fx*2.0)-1.0;
@@ -117,6 +116,23 @@ fn shader(
    let elap:f32=(elapsed%3.0)/3.0;
    let rv:f32=len.clamp(0.0,1.0);
    [(rv+elap)%1.0,0.0,0.0]
+}
+
+fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_time::Instant){
+                let f32elapsed:f32 = startTime.elapsed().as_secs_f32();
+                let height=image.height();
+                let width=image.width();
+                for y in 0..height {
+                  let yp:f32=(y as f32)/(height as f32);
+                  for x in 0..width {
+                    let xp:f32=(x as f32)/(width as f32);
+                    let sh=shader(width,height,xp,yp,f32elapsed);
+                    let r:u8=(sh[0].clamp(0.0,1.0)*255.0) as u8;
+                    let g:u8=(sh[1].clamp(0.0,1.0)*255.0) as u8;
+                    let b:u8=(sh[2].clamp(0.0,1.0)*255.0) as u8;
+                    image.put_pixel(x,y,[r,g,b]);
+                  }
+                }
 }
 
 impl winit::application::ApplicationHandler for AppState {
@@ -179,21 +195,10 @@ impl winit::application::ApplicationHandler for AppState {
                 self.frame+=1;
                 let mut buffer = surface.buffer_mut().unwrap();
                 // Draw on buffer
-                let mut pos:usize = 0;
-                let f32elapsed:f32 = self.start.elapsed().as_secs_f32();
-                for y in 0..height {
-                  let yp:f32=(y as f32)/(height as f32);
-                  for x in 0..width {
-                    let xp:f32=(x as f32)/(width as f32);
-                    let sh=shader(width,height,xp,yp,f32elapsed);
-                    let r:u32=(sh[0].clamp(0.0,1.0)*255.0) as u32;
-                    let g:u32=(sh[1].clamp(0.0,1.0)*255.0) as u32;
-                    let b:u32=(sh[2].clamp(0.0,1.0)*255.0) as u32;
-                    buffer[pos]=b|(g<<8)|(r<<16);
-                    pos+=1;
-                  }
-                }
-                copy_to_buffer_tiled(&mut buffer,width,height,&self.wp,0,0);
+                let realframe=(((self.start.elapsed().as_secs_f64()*60.0) as u64) & 0xFFFFFFFF) as u32;
+                copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
+                imageop::websafedither(softbuffer_data_mut!(buffer,width,height), 
+                  false);                
                 // End drawing on buffer
                 buffer.present().unwrap();
             }
