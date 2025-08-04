@@ -151,6 +151,62 @@ pub fn websafedither<T: BasicRgbImage>(image: &mut T, include_vga: bool) -> &mut
     image
 }
 
+pub fn rectangle<T: BasicRgbImage>(
+   image: &mut T,
+   x0:u32,y0:u32,x1:u32,y1:u32, color:[u8;3]) {
+  if x0>=x1 || y0>=y1 { return; }
+  let width: u32=image.width();
+  let height: u32=image.height();
+  for y in y0..y1 {
+     for x in x0..x1 {
+        image.put_pixel(x,y,color);
+     }
+  }
+}
+
+pub fn edge3d<T: BasicRgbImage>(
+   image: &mut T,
+   x0:u32,y0:u32,x1:u32,y1:u32, upper:[u8;3], lower:[u8;3]) {
+  if x0>=x1 || y0>=y1 { return; }
+  rectangle(image,x0,y0,x1-1,y0+1,upper);
+  rectangle(image,x0,y0+1,x0+1,y1-1,upper);
+  rectangle(image,x1-1,y0,x1,y1-1,lower);
+  rectangle(image,x0,y1-1,x1,y1,lower);
+}
+
+
+pub fn copy_to_buffer<T: BasicRgbImage, U: BasicRgbImage>(
+   image: &mut T,
+   srcimage: &U) {
+  let width: u32=image.width();
+  let height: u32=image.height();
+  let srcwidth: u32=srcimage.width();
+  let srcheight: u32=srcimage.height();
+  for y in 0..std::cmp::min(srcheight,height) {
+     for x in 0..std::cmp::min(srcwidth,width) {
+        image.put_pixel(x,y,srcimage.get_pixel(x,y));
+     }
+  }
+}
+
+pub fn copy_to_buffer_tiled<T: BasicRgbImage, U: BasicRgbImage>(
+   image: &mut T,
+   srcimage: &U, ox:u32, oy:u32) {
+  let width: u32=image.width();
+  let height: u32=image.height();
+  let srcwidth: u32=srcimage.width();
+  let srcheight: u32=srcimage.height();
+  for y in 0..(height) {
+     let yp = (y+oy) % srcheight;
+     for x in 0..(width) {
+        let xp = (x+ox) % srcwidth;
+        image.put_pixel(x,y,srcimage.get_pixel(xp,yp));
+     }
+  }
+}
+
+
+
 pub fn nearestrgb3(palette: &[[u8; 3]], r: u8, g: u8, b: u8) -> usize {
     let mut best: usize = 0;
     let mut ret: usize = 0;

@@ -15,8 +15,6 @@ use winit::window::{Window, WindowId};
 use std::num::NonZeroU32;
 use std::rc::Rc;
 
-use softbuffer::Buffer;
-
 #[cfg(target_arch="wasm32")]
 use wasm_bindgen::prelude::*;
 
@@ -66,35 +64,6 @@ macro_rules! softbuffer_data_mut {
   }
 }
 
-fn copy_to_buffer<T: basicrgbimage::BasicRgbImage, U: basicrgbimage::BasicRgbImage>(
-   image: &mut T,
-   srcimage: &U) {
-  let width: u32=image.width();
-  let height: u32=image.height();
-  let srcwidth: u32=srcimage.width();
-  let srcheight: u32=srcimage.height();
-  for y in 0..std::cmp::min(srcheight,height) {
-     for x in 0..std::cmp::min(srcwidth,width) {
-        image.put_pixel(x,y,srcimage.get_pixel(x,y));
-     }
-  }
-}
-
-fn copy_to_buffer_tiled<T: basicrgbimage::BasicRgbImage, U: basicrgbimage::BasicRgbImage>(
-   image: &mut T,
-   srcimage: &U, ox:u32, oy:u32) {
-  let width: u32=image.width();
-  let height: u32=image.height();
-  let srcwidth: u32=srcimage.width();
-  let srcheight: u32=srcimage.height();
-  for y in 0..(height) {
-     let yp = (y+oy) % srcheight;
-     for x in 0..(width) {
-        let xp = (x+ox) % srcwidth;
-        image.put_pixel(x,y,srcimage.get_pixel(xp,yp));
-     }
-  }
-}
 
 struct AppState {
     window: Option<Rc<Window>>,
@@ -106,16 +75,9 @@ struct AppState {
     pub wp: basicrgbimage::BasicRgbImageData,
 }
 
-fn shader(
-   _width:u32, _height:u32,
-   fx: f32, fy: f32, elapsed: f32
-) -> [f32;3] {
-   let cx:f32=(fx*2.0)-1.0;
-   let cy:f32=(fy*2.0)-1.0;
-   let len:f32=(cx*cx+cy*cy).sqrt();
-   let elap:f32=(elapsed%3.0)/3.0;
-   let rv:f32=len.clamp(0.0,1.0);
-   [(rv+elap)%1.0,0.0,0.0]
+
+fn _length(a: f32, b: f32) -> f32{
+  return (a*a+b*b).sqrt();
 }
 
 fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_time::Instant){
@@ -126,11 +88,11 @@ fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_t
                   let yp:f32=(y as f32)/(height as f32);
                   for x in 0..width {
                     let xp:f32=(x as f32)/(width as f32);
-                    let sh=shader(width,height,xp,yp,f32elapsed);
+                    /*let sh=shader(width,height,xp,yp,f32elapsed);
                     let r:u8=(sh[0].clamp(0.0,1.0)*255.0) as u8;
                     let g:u8=(sh[1].clamp(0.0,1.0)*255.0) as u8;
                     let b:u8=(sh[2].clamp(0.0,1.0)*255.0) as u8;
-                    image.put_pixel(x,y,[r,g,b]);
+                    image.put_pixel(x,y,[r,g,b]);*/
                   }
                 }
 }
@@ -195,10 +157,11 @@ impl winit::application::ApplicationHandler for AppState {
                 self.frame+=1;
                 let mut buffer = surface.buffer_mut().unwrap();
                 // Draw on buffer
-                let realframe=(((self.start.elapsed().as_secs_f64()*60.0) as u64) & 0xFFFFFFFF) as u32;
-                copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
-                imageop::websafedither(softbuffer_data_mut!(buffer,width,height), 
-                  false);                
+                let elapsedu64: u64 = (self.start.elapsed().as_secs_f64()*60.0) as u64;
+                let realframe=(elapsedu64 & 0xFFFFFFFF) as u32;
+                //shader_draw(softbuffer_data_mut!(buffer,width,height),&self.start);
+                imageop::copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
+                imageop::websafedither(softbuffer_data_mut!(buffer,width,height), true);
                 // End drawing on buffer
                 buffer.present().unwrap();
             }
