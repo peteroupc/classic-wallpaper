@@ -60,14 +60,19 @@ The following appearances are traditionally seen in ordinary buttons:
     - such that the button face color and the button highlight color alternate every other pixel in a checkerboard pattern, or
     - as a solid color that's a mixture of the button face color and the button highlight color.
 
-Traditionally, to draw buttons, default buttons, and toolbar buttons:
+The following is typical in buttons found in Windows versions 3.0 and 3.1 [^3a], Windows 95 [^3], and applications for these systems:
 
 - For the pressed button style, the button's text and icons are shifted one pixel to the right and one pixel down, compared to the unpressed style.
+
+The following ways to draw buttons, default buttons, and toolbar buttons are typical in Windows 95 [^3] and applications for it:
+
 - The mixed value style tends to be drawn as the unpressed variant, except the button's text and icons have a _monochrome appearance_ and its inner background has a _mixed appearance_.
 - The unavailable style tends to be drawn as the unpressed variant, except the button's text and icons have an _unavailable appearance_.
 - For the option-set style, the button tends to be drawn as the normal pressed variant, except:
     - For the unpressed style, its inner background has a _mixed appearance_. [^2]
     - For the unavailable style, its text and icons have an _unavailable appearance_.
+
+The three-dimensional appearance of buttons and certain other interface elements in MacOS System 7 is described in "Working in the Third Dimension" (see "Relevant Works", later).
 
 Traditionally, the three dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3]
 
@@ -124,17 +129,34 @@ For a high degree of flexibility, new graphical user interface systems should al
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
 - Animation of icons and cursors.
 
+## Relevant Works
+
+The following books and other works discuss design matters on traditional user interfaces:
+
+- _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000
+- _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
+- _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
+- _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
+- Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
+- W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Microsoft Developer Network (1992-1993).
+- J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993.
+- ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
+
 ## License
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
+
+## Notes
 
 [^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.  Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128, 128, 128)).
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
-[^3]:  See, for example, _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
+[^3]:  See, for example, _The Windows Interface Guidelines for Software Design_.
 
-[^4]: ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)).  Similar advice was also given in _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000. <br>Before 1995 the icon outline tended to be black on all edges. And, before 1992, Windows version 3.0 icons tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two pixels.
+[^3a]:  Buttons possessed a 3-D effect in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that give 3-D effects to more places in an application.
+
+[^4]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges. And, before 1992, Windows version 3.0 icons tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two pixels.
 
 [^5]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.
 

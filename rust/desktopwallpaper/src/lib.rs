@@ -6,7 +6,8 @@ mod random;
 
 //////////////////
 
-use winit::event::WindowEvent;
+use winit::event::{WindowEvent, KeyEvent, ElementState};
+use winit::keyboard::{Key, NamedKey};
 use winit::event_loop::{ControlFlow, EventLoop, ActiveEventLoop};
 #[cfg(target_arch="wasm32")]
 use winit::platform::web::WindowAttributesExtWebSys;
@@ -80,6 +81,36 @@ fn _length(a: f32, b: f32) -> f32{
   return (a*a+b*b).sqrt();
 }
 
+#[cfg(not(target_arch="wasm32"))]
+use rand::distributions::Distribution;
+
+// Benchmark function that draws 100 random rectangles
+// to a frame buffer.
+fn randomrects<T: basicrgbimage::BasicRgbImage>(image: &mut T){
+  let unifx=new_uniform!(0,image.width());
+  let unify=new_uniform!(0,image.height());
+  let unifbyte=new_uniform!(0,255);
+  let mut rng=new_rng!();
+  let mut pixels:u64=0;
+  for _ in 0..100 {
+    let color=[
+      sample_rng!(unifbyte,&mut rng) as u8,
+      sample_rng!(unifbyte,&mut rng) as u8,
+      sample_rng!(unifbyte,&mut rng) as u8];
+    let x0=sample_rng!(unifx,&mut rng);
+    let x1=sample_rng!(unifx,&mut rng);
+    let y0=sample_rng!(unify,&mut rng);
+    let y1=sample_rng!(unify,&mut rng);
+    let rx0=std::cmp::min(x0,x1);
+    let ry0=std::cmp::min(y0,y1);
+    let rx1=std::cmp::max(x0,x1);
+    let ry1=std::cmp::max(y0,y1);
+    pixels+=((rx1-rx0) as u64)*((ry1-ry0) as u64);
+    imageop::rectangle(image, rx0,ry0,rx1,ry1,color);
+  }
+}
+
+
 fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_time::Instant){
                 let f32elapsed:f32 = startTime.elapsed().as_secs_f32();
                 let height=image.height();
@@ -101,8 +132,8 @@ impl winit::application::ApplicationHandler for AppState {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let mut attribs=Window::default_attributes()
                 .with_inner_size(
-                    winit::dpi::LogicalSize::new(640,480)).with_resizable(false);
-        
+                    winit::dpi::LogicalSize::new(640,480)).with_resizable(false)
+                .with_title("Desktop Wallpaper App");
         #[cfg(target_arch="wasm32")]
         {
                if !self.started {
@@ -127,6 +158,16 @@ impl winit::application::ApplicationHandler for AppState {
     fn window_event(&mut self, evloop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
         //println!("Window event");
         match event {
+            WindowEvent::KeyboardInput {
+               event:
+                  KeyEvent { logical_key: Key::Named(NamedKey::Enter),
+                                 state: ElementState::Pressed, .. },
+               ..
+            } => {
+               // Change the wallpaper
+               self.wp = randomwp::randomwallpaper();
+               self.window.as_ref().unwrap().request_redraw();
+            }
             WindowEvent::RedrawRequested => {
                 //println!("Redraw requested");
                 let Some(surface) = self.surface.as_mut() else {
@@ -159,7 +200,6 @@ impl winit::application::ApplicationHandler for AppState {
                 // Draw on buffer
                 let elapsedu64: u64 = (self.start.elapsed().as_secs_f64()*60.0) as u64;
                 let realframe=(elapsedu64 & 0xFFFFFFFF) as u32;
-                //shader_draw(softbuffer_data_mut!(buffer,width,height),&self.start);
                 imageop::copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
                 imageop::websafedither(softbuffer_data_mut!(buffer,width,height), true);
                 // End drawing on buffer

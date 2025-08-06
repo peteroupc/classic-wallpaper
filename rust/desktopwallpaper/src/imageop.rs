@@ -164,14 +164,24 @@ pub fn rectangle<T: BasicRgbImage>(
   }
 }
 
-pub fn edge3d<T: BasicRgbImage>(
+pub fn edge3d_upperdom<T: BasicRgbImage>(
    image: &mut T,
    x0:u32,y0:u32,x1:u32,y1:u32, upper:[u8;3], lower:[u8;3]) {
   if x0>=x1 || y0>=y1 { return; }
-  rectangle(image,x0,y0,x1-1,y0+1,upper);
-  rectangle(image,x0,y0+1,x0+1,y1-1,upper);
-  rectangle(image,x1-1,y0,x1,y1-1,lower);
-  rectangle(image,x0,y1-1,x1,y1,lower);
+  rectangle(image,x0,y0,x1,y0+1,upper); // upper edge
+  rectangle(image,x0,y0+1,x0+1,y1,upper); // left edge
+  rectangle(image,x1-1,y0+1,x1,y1-1,lower); // right edge
+  rectangle(image,x0+1,y1-1,x1,y1,lower); // lower edge
+}
+
+pub fn edge3d_lowerdom<T: BasicRgbImage>(
+   image: &mut T,
+   x0:u32,y0:u32,x1:u32,y1:u32, upper:[u8;3], lower:[u8;3]) {
+  if x0>=x1 || y0>=y1 { return; }
+  rectangle(image,x0,y0,x1-1,y0+1,upper); // upper edge
+  rectangle(image,x0,y0+1,x0+1,y1-1,upper); // left edge
+  rectangle(image,x1-1,y0,x1,y1-1,lower); // right edge
+  rectangle(image,x0,y1-1,x1,y1,lower); // lower edge
 }
 
 
