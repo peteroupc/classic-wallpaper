@@ -72,8 +72,6 @@ The following ways to draw buttons, default buttons, and toolbar buttons are typ
     - For the unpressed style, its inner background has a _mixed appearance_. [^2]
     - For the unavailable style, its text and icons have an _unavailable appearance_.
 
-The three-dimensional appearance of buttons and certain other interface elements in MacOS System 7 is described in "Working in the Third Dimension" (see "Relevant Works", later).
-
 Traditionally, the three dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3]
 
 ## Icons and Cursors
@@ -115,7 +113,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 
 After about 2003, user-interface graphics tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
 
-Most text in this period was rendered in a solid color.  In fancier displays of text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
+From about 1990 to about 1997, most user-interface text was rendered in a solid color.  In fancier displays of text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
 
 ## Flexible User Interface Graphics
 
@@ -138,8 +136,9 @@ The following books and other works discuss design matters on traditional user i
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 - _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
 - Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
-- W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Microsoft Developer Network (1992-1993).
-- J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993.
+- W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
+- Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
+- J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with MacOS System 7.
 - ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
 
 ## License

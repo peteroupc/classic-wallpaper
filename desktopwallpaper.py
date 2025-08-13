@@ -804,8 +804,8 @@ def backgroundColorUnder(bgcolor=None):
     )
 
 # ImageMagick command to generate a diamond tiling pattern (or a brick tiling
-# pattern if the image the command is applied to has only its top half
-# or its bottom half drawn).  For best results, the command should be applied
+# pattern if the image the command is applied to has only its upper half
+# or its lower half drawn).  For best results, the command should be applied
 # to images with an even width and height.
 def diamondTiling():
     ret = [
