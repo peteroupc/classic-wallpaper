@@ -173,9 +173,9 @@ def _blackWhiteOnly(colortable, numuniques):
             and colortable[0] == colortable[1]
             and colortable[0] == colortable[2]
             and (colortable[0] == 0 or colortable[0] == 255)
-            and colortable[3] == colortable[4]
-            and colortable[3] == colortable[5]
-            and (colortable[3] == 0 or colortable[3] == 255)
+            and colortable[4] == colortable[5]
+            and colortable[4] == colortable[6]
+            and (colortable[4] == 0 or colortable[4] == 255)
         )
     )
 
@@ -557,7 +557,7 @@ def writeavi(
         #    image=images[14];
         pos = width * (height - 1) * 3  # Reference the bottom row first
         imagescans = []
-        if bpp == 2:
+        if bpp == 1:
             for y in range(height):
                 scan = [0 for i in range(scansize)]
                 for x in range(width // 8):
@@ -574,7 +574,7 @@ def writeavi(
                             image[pp] | (image[pp + 1] << 8) | (image[pp + 2] << 16)
                         ] << (7 - i)
                 if compressionMode == 0:
-                    fd.write(scan)
+                    fd.write(bytes(scan))
                     fd.write(paddingBytes)
                 else:
                     imagescans.append(bytes([scan[i] for i in range(scansize)]))
@@ -608,7 +608,7 @@ def writeavi(
                         << 4
                     )
                 if compressionMode == 0:
-                    fd.write(scan)
+                    fd.write(bytes(scan))
                     fd.write(paddingBytes)
                 else:
                     imagescans.append(bytes([scan[i] for i in range(scansize)]))
@@ -626,7 +626,7 @@ def writeavi(
                     ]
                 )
                 if compressionMode == 0:
-                    fd.write(scan)
+                    fd.write(bytes(scan))
                     fd.write(paddingBytes)
                 else:
                     imagescans.append(scan)
