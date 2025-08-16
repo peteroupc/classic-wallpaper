@@ -121,7 +121,7 @@ From about 1990 to about 1997, most user-interface text was rendered in a solid 
 
 For a high degree of flexibility, new graphical user interface systems should allow for the following:
 
-- Designing icons, cursors, and other user-interface elements in the form of vector graphics.
+- Designing icons, cursors, and other user-interface elements in the form of [vector graphics](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md).
 - Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
 - Designing user-interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;

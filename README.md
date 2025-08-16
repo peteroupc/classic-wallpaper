@@ -191,6 +191,8 @@ For discussions on the traditional design of user-interface elements such as but
 
 The page also describes an additional challenge to write computer code (released to the public domain or licensed under the Unlicense) to draw traditional button and border styles.
 
+For discussions on converting traditional icons to vector graphics, see [pixeltovector.md](https://github.com/peteroupc/classic-wallpaper/blob/main/uielements.md) in this repository.
+
 <a id=License></a>
 
 ## License
