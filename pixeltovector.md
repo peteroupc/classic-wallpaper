@@ -41,8 +41,10 @@ Take the following pixel image:
 
 The desired vector graphic should have the following commands in this order:
 
-1. Polygon, filled with white, connecting the points (1, 15), (15, 1), (29, 15), (15, 29).
+1. Polygon, filled with white, connecting the points (1.5, 15.5), (15.5, 1.5), (29.5, 15.5), (15.5, 29.5).  (The coordinates are adjusted by 0.5 because of the centering of pixels in SVG, for example.)
 2. 1-pixel-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-pixel-thick black outline in addition to being filled.
+
+In SVG, the desired vector graphic looks like:
 
 ![Diamond vector graphic](diamond.svg)
 
