@@ -80,7 +80,7 @@ Traditionally, the three dimensional effects of buttons, icons, and other user-i
 
 An icon (a small graphic representing a computer program) should come in a set of variations in color and dimensions:
 
-- The same icon should be drawn in up to 2, up to 8, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
+- The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
 - The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [logical display resolution](#logical-resolutions). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.

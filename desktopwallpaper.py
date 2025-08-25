@@ -312,15 +312,20 @@ def halfhalfditherimage(image, width, height, palette):
             image[xp * 3 + 1] = (col >> 8) & 0xFF
             image[xp * 3 + 2] = (col >> 16) & 0xFF
 
-# Returns a list of the unique colors in an image (disregarding
-# the alpha channel, if any).
+# Returns a list of the unique colors in an image.
+# Colors with the same red, green, and blue components are treated as the same
+# even if their alpha components differ.
+# If 'nontransparentOnly' is True (default is False), only nontransparent pixels are
+# considered by this method.
 # Each element in the return value is a color in the form of a 3-element list of its red,
 # green, and blue components in that order, where each
 # component is an integer from 0 through 255.
-def uniquecolors(image, width, height, alpha=False):
+def uniquecolors(image, width, height, alpha=False, nontransparentOnly=False):
     colors = {}
     bytesperpixel = 4 if alpha else 3
     for i in range(width * height):
+        if alpha and (nontransparentOnly) and image[i * bytesperpixel + 3] == 0:
+            continue
         c = (
             image[i * bytesperpixel]
             | (image[i * bytesperpixel + 1] << 8)

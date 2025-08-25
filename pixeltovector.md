@@ -9,6 +9,7 @@ This page concerns ways to go about remaking traditional user interface icons, w
 The output should be a vector graphic with the following properties:
 
 - When rendered without antialiasing or scaling, the vector graphic should closely match the pixel image.
+- The graphic is reasonably scalable, with horizontal and vertical scaling factors each from 50% through 300%.   The low end is given to accommodate displays with nonsquare pixels; the high end, displays with high pixel density (pixels per inch).
 - Single-pixel, single-color line segments or curves should be rendered as line or curve commands.
 - Simple polygons of a single color in the input image should be rendered as such in the vector graphic.
 - Size blowup compared to the pixel image should be reasonable (for example, no more than a 2-times blowup on average).  Notably, if the input image depicts a single-color polygon, the vector graphic should be a single-color polygon which often consumes less memory than the pixel image.
@@ -20,15 +21,17 @@ In addition, the algorithm:
 - Should not involve neural networks.
 - Should not be covered by patents or patent applications.
 
-Algorithms that convert pixel images to vector graphics in the form of rectangles that cover the input's pixels (for example, [_png2svg_](https://github.com/xyproto/png2svg)) are not within the scope of this document.
+Algorithms that convert pixel images to vector graphics in the form of unions of rectangles that cover the input's pixels (for example, [_png2svg_](https://github.com/xyproto/png2svg)) are not within the scope of this document.
 
 There is an algorithm by Kopf and Lischinski ("Depixelizing Pixel Art", _ACM Transactions on Graphics_ 30(4), 2011) that tackles the task of generating vector graphics from pixel-art images, including those of the kind at issue here.  However:
 
-- The algorithm generates smooth contours even if they originate from single-pixel line segments or curves.
-- The algorithm doesn't generate polygons even in cases where that shape is best.
-- The algorithm runs slowly: tens of seconds to generate a vector graphic from a 64-bit icon.
-- The resulting vector graphic does not have a reasonable size compared to the input pixel image.
-- I don't know whether the algorithm is covered by any pending or active patents.
+1. The algorithm generates curved contours even if they originate from single-pixel line segments or curves.
+2. The algorithm doesn't generate polygons even in cases where that shape is best.
+3. The algorithm runs slowly: tens of seconds to generate a vector graphic from a 64-bit icon.
+4. The resulting vector graphic does not have a reasonable size compared to the input pixel image.
+5. I don't know whether the algorithm is covered by any pending or active patents.
+
+Potrace version 1.16 (2019) likewise suffers from points 1 and 2, and also supports only black-and-white opaque pixel images and not color ones.
 
 ## License
 

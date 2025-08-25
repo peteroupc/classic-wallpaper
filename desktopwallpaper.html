@@ -1623,8 +1623,11 @@ Data descriptors defined here:<br>
 #&nbsp;background,&nbsp;given&nbsp;the&nbsp;light&nbsp;source&nbsp;just&nbsp;described.<br>
 #&nbsp;If&nbsp;'drawShiftedImageOver'&nbsp;is&nbsp;True,&nbsp;the&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonShadow'&nbsp;color&nbsp;is&nbsp;drawn&nbsp;above&nbsp;the<br>
 #&nbsp;image&nbsp;drawn&nbsp;in&nbsp;the&nbsp;'buttonHighlight'&nbsp;color.</span></dd></dl>
- <dl><dt><a name="-uniquecolors"><strong>uniquecolors</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;unique&nbsp;colors&nbsp;in&nbsp;an&nbsp;image&nbsp;(disregarding<br>
-#&nbsp;the&nbsp;alpha&nbsp;channel,&nbsp;if&nbsp;any).<br>
+ <dl><dt><a name="-uniquecolors"><strong>uniquecolors</strong></a>(image, width, height, alpha=False, nontransparentOnly=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;unique&nbsp;colors&nbsp;in&nbsp;an&nbsp;image.<br>
+#&nbsp;Colors&nbsp;with&nbsp;the&nbsp;same&nbsp;red,&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;are&nbsp;treated&nbsp;as&nbsp;the&nbsp;same<br>
+#&nbsp;even&nbsp;if&nbsp;their&nbsp;alpha&nbsp;components&nbsp;differ.<br>
+#&nbsp;If&nbsp;'nontransparentOnly'&nbsp;is&nbsp;True&nbsp;(default&nbsp;is&nbsp;False),&nbsp;only&nbsp;nontransparent&nbsp;pixels&nbsp;are<br>
+#&nbsp;considered&nbsp;by&nbsp;this&nbsp;method.<br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;list&nbsp;of&nbsp;its&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
