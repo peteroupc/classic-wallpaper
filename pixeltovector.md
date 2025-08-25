@@ -33,6 +33,24 @@ There is an algorithm by Kopf and Lischinski ("Depixelizing Pixel Art", _ACM Tra
 
 Potrace version 1.16 (2019) likewise suffers from points 1 and 2, and also supports only black-and-white opaque pixel images and not color ones.
 
+## Example
+
+Take the following pixel image:
+
+![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAVklEQVR42s3VgQkAIAwDwey/9DnEUzADHKht3HUsBYWAQEAgIBAQCAgEBAICAYGAQEAgIBAQCDgg6iH6NfaH7KPUh7mvU1/oXim91Hqt9mKf+jOl2Pd5x54PHO2d/jQAAAAASUVORK5CYII=)
+
+The desired vector graphic should have the following commands in this order:
+
+1. Polygon, filled with white, connecting the points (1, 15), (15, 1), (29, 15), (15, 29).
+2. 1-pixel-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-pixel-thick black outline in addition to being filled.
+
+-----
+
+<svg width='64px' height='64px' viewBox='0 0 64 64'
+     xmlns='http://www.w3.org/2000/svg'>
+<path style='stroke:black;fill:white' d='M1 15L15 1L29 15L15 29Z'/>
+</svg>
+
 ## License
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
