@@ -1,6 +1,6 @@
 # Converting Pixel Images to Vector Graphics
 
-This page concerns ways to go about remaking traditional user interface icons, which have the form of pixel images, as vector graphics.  The icons concerned here tend to have the following properties ]^1]:
+This page concerns ways to go about remaking traditional user interface icons, which have the form of pixel images, as vector graphics.  The icons concerned here tend to have the following properties [^1]:
 
 - The icon's dimensions in pixels are usually 32 &times; 32, but can range from 15 &times; 15 to 64 &times; 64.
 - The icon is drawn in a limited color palette (no more than 256 colors), ordinarily 16 colors or fewer.
