@@ -1,6 +1,6 @@
 # Converting Pixel Images to Vector Graphics
 
-This page concerns ways to go about remaking traditional user interface icons, which have the form of pixel images, as vector graphics.  The icons concerned here tend to have the following properties:
+This page concerns ways to go about remaking traditional user interface icons, which have the form of pixel images, as vector graphics.  The icons concerned here tend to have the following properties ]^1]:
 
 - The icon's dimensions in pixels are usually 32 &times; 32, but can range from 15 &times; 15 to 64 &times; 64.
 - The icon is drawn in a limited color palette (no more than 256 colors), ordinarily 16 colors or fewer.
@@ -44,10 +44,14 @@ The desired vector graphic should have the following commands in this order:
 1. Polygon, filled with white, connecting the points (1.5, 15.5), (15.5, 1.5), (29.5, 15.5), (15.5, 29.5).  (The coordinates are adjusted by 0.5 because of the centering of pixels in SVG, for example.)
 2. 1-pixel-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-pixel-thick black outline in addition to being filled.
 
-In SVG, the desired vector graphic looks like:
+[In SVG](https://peteroupc.github.io/svg.html), the desired vector graphic looks like:
 
 ![Diamond vector graphic](diamond.svg)
 
 ## License
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
+
+## Notes
+
+[^1]: A pixel image with a high number of unique colors (say, 65 or more), is hard to convert to a vector graphic without sacrificing image quality.  While such images ought to be designed as vector graphics from the start, a simple upscaling and downscaling solution, such as bilinear filtering, is acceptable for such pixel images, especially for the use case of user-interface graphics where scaling factors from 50% through 300% are expected.<br>Limited-color pixel images with a pixel size greater than 64 &times; 64 are also of interest and occur among user-interface graphics (such as wizard graphics in Windows 95), but are not the main priority; indeed, the larger the pixel size, the more time the conversion to a vector image is expected to take.
