@@ -1,6 +1,6 @@
 # Converting Pixel Images to Vector Graphics
 
-This page concerns ways to go about remaking traditional user interface icons, which have the form of pixel images, as vector graphics.  The icons concerned here tend to have the following properties [^1]:
+This page concerns ways to go about remaking traditional user interface icons, which have the form of pixel images, as vector graphics (a process sometimes called _image vectorization_).  The icons concerned here tend to have the following properties [^1]:
 
 - The icon's dimensions in pixels are usually 32 &times; 32, but can range from 15 &times; 15 to 64 &times; 64.
 - The icon is drawn in a limited color palette (no more than 256 colors), ordinarily 16 colors or fewer.
@@ -21,17 +21,26 @@ In addition, the algorithm:
 - Should not involve neural networks.
 - Should not be covered by patents or patent applications.
 
-Algorithms that convert pixel images to vector graphics in the form of unions of rectangles that cover the input's pixels (for example, [_png2svg_](https://github.com/xyproto/png2svg)) are not within the scope of this document.
+Algorithms that convert pixel images to vector graphics&mdash;
+
+- in the form of unions of rectangles that cover the input's pixels (for example, [_png2svg_](https://github.com/xyproto/png2svg)), or
+- in the form of halftone dots that simulate pixels or clusters of pixels (as in newsprint or comic book halftoning),
+
+are not within the scope of this document.
+
+## Existing Algorithms
 
 There is an algorithm by Kopf and Lischinski ("Depixelizing Pixel Art", _ACM Transactions on Graphics_ 30(4), 2011) that tackles the task of generating vector graphics from pixel-art images, including those of the kind at issue here.  However:
 
-1. The algorithm generates curved contours even if they originate from single-pixel line segments or curves.
+1. The algorithm generates curved shapes even if they originate from single-pixel line segments or curves.
 2. The algorithm doesn't generate polygons even in cases where that shape is best.
-3. The algorithm runs slowly: tens of seconds to generate a vector graphic from a 64-bit icon.
+3. The algorithm runs slowly: tens of seconds to generate a vector graphic from a 64 &times; 64 icon.
 4. The resulting vector graphic does not have a reasonable size compared to the input pixel image.
 5. I don't know whether the algorithm is covered by any pending or active patents.
 
 Potrace version 1.16 (2019) likewise suffers from points 1 and 2, and also supports only black-and-white opaque pixel images and not color ones.
+
+Algorithms designed for scaling pixel images, such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting a pixel image to a vector graphic.  In any case, none of the algorithms mentioned renders pixel lines as vector line commands.
 
 ## Example
 
