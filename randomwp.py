@@ -4,6 +4,7 @@
 # file is also licensed under the Unlicense: https://unlicense.org/
 
 import random
+import math
 import desktopwallpaper as dw
 
 def scatteredIconAnimationOverlay(icons, bgwidth, bgheight, framecount=40):
@@ -175,7 +176,47 @@ def randomwallpaper(palette=None):
         case _:
             return randomwallpaper3(palette=palette)
 
-def _randomRotated(image, w, h):
+# Image has the same format returned by the blankimage() method with the
+# specified value of 'alpha' (default value for 'alpha' is False).
+def _waverotaterows(image, width, height, wavesize, wavecount=1, alpha=False):
+    if wavecount == 0:
+        raise ValueError
+    for i in range(height):
+        p = math.sin((i / height) * wavecount * math.pi * 2)
+        dw.imagerotaterow(
+            image, width, height, i, int((0.5 * wavesize) * p + 0.5), alpha=alpha
+        )
+    return image
+
+# Image has the same format returned by the blankimage() method with the
+# specified value of 'alpha' (default value for 'alpha' is False).
+def _waverotatecolumns(image, width, height, wavesize, wavecount=1, alpha=False):
+    if wavecount == 0:
+        raise ValueError
+    for i in range(width):
+        p = math.sin((i / width) * wavecount * math.pi * 2)
+        dw.imagerotatecolumn(
+            image, width, height, i, int((0.5 * wavesize) * p + 0.5), alpha=alpha
+        )
+    return image
+
+def _randomTransformed(image, w, h):
+    if random.randint(0, 99) < 5 and w > 4 and h > 4:
+        image = _waverotatecolumns(
+            image,
+            w,
+            h,
+            wavesize=random.randint(h // 8, h // 3),
+            wavecount=random.randint(1, 3),
+        )
+    if random.randint(0, 99) < 5 and w > 4 and h > 4:
+        image = _waverotaterows(
+            image,
+            w,
+            h,
+            wavesize=random.randint(h // 8, h // 3),
+            wavecount=random.randint(1, 3),
+        )
     image2, w2, h2 = dw.randomRotated(image, w, h)
     if (w2 != w or h2 != h) and w2 * h2 >= (1920 * 1080 // 10):
         return (image, w, h)
@@ -196,7 +237,7 @@ def randomwallpaper3(palette=None):
             image, w, h = dw.tileableImage(image, w, h)
         case _:
             pass
-    image, w, h = _randomRotated(image, w, h)
+    image, w, h = _randomTransformed(image, w, h)
     image = dw.randommaybemonochrome(image, w, h)
     return [image, w, h]
 
@@ -289,6 +330,6 @@ def _randomwallpaper1ex(palette=None, variant=1):
                 maskheight=h,
                 alpha=False,
             )
-    image3, width, height = _randomRotated(imagebg, w * columns, h * rows)
+    image3, width, height = _randomTransformed(imagebg, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
     return [image3, width, height]

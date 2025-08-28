@@ -5998,7 +5998,9 @@ def horizskew(image, width, height, skew, alpha=False):
         raise ValueError
     for i in range(height):
         p = i / height
-        imagerotaterow(image, width, height, i, int(skew * p * width), alpha=alpha)
+        imagerotaterow(
+            image, width, height, i, int(skew * p * width + 0.5), alpha=alpha
+        )
     return image
 
 # Image has the same format returned by the blankimage() method with the
@@ -6008,7 +6010,9 @@ def vertskew(image, width, height, skew, alpha=False):
         raise ValueError
     for i in range(width):
         p = i / width
-        imagerotatecolumn(image, width, height, i, int(skew * p * height), alpha=alpha)
+        imagerotatecolumn(
+            image, width, height, i, int(skew * p * height + 0.5), alpha=alpha
+        )
     return image
 
 # Generates a sheared image, with optional resizing.
