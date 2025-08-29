@@ -478,7 +478,8 @@ Data descriptors defined here:<br>
 #&nbsp;right&nbsp;assuming&nbsp;the&nbsp;image's&nbsp;first&nbsp;row&nbsp;is&nbsp;the&nbsp;top&nbsp;row<br>
 #&nbsp;reverse=true:&nbsp;stripe&nbsp;runs&nbsp;from&nbsp;upper&nbsp;right&nbsp;to&nbsp;bottom<br>
 #&nbsp;left</span></dd></dl>
- <dl><dt><a name="-drawedgebotdom"><strong>drawedgebotdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(lower&nbsp;right&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawedgebotdom"><strong>drawedgebotdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(lower&nbsp;right&nbsp;edge&nbsp;"dominates"&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
+#&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;'lower'&nbsp;color)</span></dd></dl>
  <dl><dt><a name="-drawedgenodom"><strong>drawedgenodom</strong></a>(
     helper,
     x0,
@@ -504,7 +505,8 @@ Data descriptors defined here:<br>
     edgesize=1,
     bordersize=1
 )</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(neither&nbsp;edge&nbsp;"dominates")</span></dd></dl>
- <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
+ <dl><dt><a name="-drawedgetopdom"><strong>drawedgetopdom</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates"&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
+#&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;'upper'&nbsp;color)</span></dd></dl>
  <dl><dt><a name="-drawgradientmask"><strong>drawgradientmask</strong></a>(
     dst,
     dstw,
@@ -571,9 +573,12 @@ Data descriptors defined here:<br>
 #&nbsp;Example:&nbsp;Same&nbsp;as&nbsp;previous,&nbsp;but&nbsp;"1,1"&nbsp;becomes&nbsp;"0,1".&nbsp;&nbsp;In&nbsp;this&nbsp;case,&nbsp;the&nbsp;light-toned&nbsp;pattern<br>
 #&nbsp;is&nbsp;shifted&nbsp;1&nbsp;pixel&nbsp;downward&nbsp;rather&nbsp;than&nbsp;1&nbsp;pixel&nbsp;downward&nbsp;and&nbsp;rightward.</span></dd></dl>
  <dl><dt><a name="-drawpositiverect"><strong>drawpositiverect</strong></a>(helper, x0, y0, x1, y1, face)</dt></dl>
- <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
- <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
- <dl><dt><a name="-drawraisedbordertopdom"><strong>drawraisedbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawraisedborderbotdom"><strong>drawraisedborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates",&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
+#&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;lower&nbsp;edge's&nbsp;color.</span></dd></dl>
+ <dl><dt><a name="-drawraisedbordernodom"><strong>drawraisedbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates":&nbsp;the&nbsp;upper&nbsp;right&nbsp;and&nbsp;lower&nbsp;left<br>
+#&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;'lt'&nbsp;color&nbsp;(which&nbsp;is&nbsp;usually&nbsp;also&nbsp;the&nbsp;button&nbsp;face&nbsp;color).</span></dd></dl>
+ <dl><dt><a name="-drawraisedbordertopdom"><strong>drawraisedbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Raised&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates",&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
+#&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;upper&nbsp;edge's&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-drawraisedinnerwindow"><strong>drawraisedinnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;inner&nbsp;window&nbsp;edge&nbsp;in&nbsp;raised&nbsp;style,<br>
 #&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide&nbsp;(The&nbsp;Windows<br>
 #&nbsp;Interface&nbsp;Guidelines&nbsp;for&nbsp;Software&nbsp;Design).</span></dd></dl>
@@ -598,10 +603,14 @@ Data descriptors defined here:<br>
     basrelief=True
 )</dt><dd><span class="code">#&nbsp;If&nbsp;basrelief=True:&nbsp;draw&nbsp;a&nbsp;sunken-middle-raised&nbsp;"groove"&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).<br>
 #&nbsp;If&nbsp;basrelief=False:&nbsp;draw&nbsp;a&nbsp;raised-middle-sunken&nbsp;"bump"&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).</span></dd></dl>
- <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates")</span></dd></dl>
- <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates"</span></dd></dl>
- <dl><dt><a name="-drawsunkenbordernodom"><strong>drawsunkenbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates"</span></dd></dl>
- <dl><dt><a name="-drawsunkenbordertopdom"><strong>drawsunkenbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates"</span></dd></dl>
+ <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates"&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
+#&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;'upper'&nbsp;color)</span></dd></dl>
+ <dl><dt><a name="-drawsunkenborderbotdom"><strong>drawsunkenborderbotdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"lower&nbsp;right&nbsp;dominates",&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
+#&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;lower&nbsp;edge's&nbsp;color.</span></dd></dl>
+ <dl><dt><a name="-drawsunkenbordernodom"><strong>drawsunkenbordernodom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;neither&nbsp;edge&nbsp;"dominates":&nbsp;the&nbsp;upper&nbsp;right&nbsp;and&nbsp;lower&nbsp;left<br>
+#&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;'lt'&nbsp;color&nbsp;(which&nbsp;is&nbsp;usually&nbsp;also&nbsp;the&nbsp;button&nbsp;face&nbsp;color).</span></dd></dl>
+ <dl><dt><a name="-drawsunkenbordertopdom"><strong>drawsunkenbordertopdom</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1)</dt><dd><span class="code">#&nbsp;Sunken&nbsp;border&nbsp;where&nbsp;the&nbsp;"upper&nbsp;left&nbsp;dominates",&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
+#&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;upper&nbsp;edge's&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-drawsunkengroup"><strong>drawsunkengroup</strong></a>(helper, x0, y0, x1, y1, hilt, lt, shadow, dkshadow)</dt></dl>
  <dl><dt><a name="-drawsunkeninnerwindow"><strong>drawsunkeninnerwindow</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh)</dt><dd><span class="code">#&nbsp;Draw&nbsp;an&nbsp;outer&nbsp;window&nbsp;edge&nbsp;in&nbsp;sunken&nbsp;style,<br>
 #&nbsp;according&nbsp;to&nbsp;Windows&nbsp;95&nbsp;design&nbsp;guide</span></dd></dl>
@@ -1487,7 +1496,8 @@ Data descriptors defined here:<br>
 #&nbsp;'traceInnerCorners'&nbsp;means&nbsp;whether&nbsp;the&nbsp;inner&nbsp;corners&nbsp;of&nbsp;a&nbsp;mask's&nbsp;outline&nbsp;are&nbsp;filled&nbsp;in<br>
 #&nbsp;by&nbsp;a&nbsp;pixel.<br>
 #&nbsp;'lowerDominates'&nbsp;means&nbsp;the&nbsp;lower&nbsp;and&nbsp;right&nbsp;edges&nbsp;"dominate"&nbsp;over&nbsp;the&nbsp;upper&nbsp;and&nbsp;left<br>
-#&nbsp;edges.<br>
+#&nbsp;edges;&nbsp;that&nbsp;is,&nbsp;if&nbsp;this&nbsp;value&nbsp;is&nbsp;True,&nbsp;the&nbsp;upper&nbsp;right&nbsp;and&nbsp;lower-left&nbsp;corner&nbsp;pixels&nbsp;have&nbsp;the&nbsp;lower<br>
+#&nbsp;edge's&nbsp;color;&nbsp;if&nbsp;False,&nbsp;the&nbsp;upper&nbsp;edge's&nbsp;color.<br>
 #&nbsp;'layercolors'&nbsp;is&nbsp;an&nbsp;list&nbsp;of&nbsp;two-element&nbsp;lists&nbsp;for&nbsp;the&nbsp;borders&nbsp;to&nbsp;draw&nbsp;from&nbsp;outermost<br>
 #&nbsp;to&nbsp;innermost.&nbsp;&nbsp;Each&nbsp;two-element&nbsp;list&nbsp;contains&nbsp;the&nbsp;upper&nbsp;color&nbsp;and&nbsp;the&nbsp;lower&nbsp;color<br>
 #&nbsp;for&nbsp;a&nbsp;specific&nbsp;border.<br>

@@ -5188,7 +5188,8 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 # 'traceInnerCorners' means whether the inner corners of a mask's outline are filled in
 # by a pixel.
 # 'lowerDominates' means the lower and right edges "dominate" over the upper and left
-# edges.
+# edges; that is, if this value is True, the upper right and lower-left corner pixels have the lower
+# edge's color; if False, the upper edge's color.
 # 'layercolors' is an list of two-element lists for the borders to draw from outermost
 # to innermost.  Each two-element list contains the upper color and the lower color
 # for a specific border.
@@ -6564,7 +6565,8 @@ def drawloweredge(helper, x0, y0, x1, y1, lower, edgesize=1, bordersize=1):
         x1 -= edgesize
         y1 -= edgesize
 
-# helper for edge drawing (upper left edge "dominates")
+# helper for edge drawing (upper left edge "dominates" in the sense that the upper right
+# and lower-left corner pixels have the 'upper' color)
 def drawroundededge(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
     for i in range(bordersize):
         _drawroundededgecore(helper, x0, y0, x1, y1, upper, lower, edgesize=edgesize)
@@ -6573,7 +6575,8 @@ def drawroundededge(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize
         x1 -= edgesize
         y1 -= edgesize
 
-# helper for edge drawing (upper left edge "dominates")
+# helper for edge drawing (upper left edge "dominates" in the sense that the upper right
+# and lower-left corner pixels have the 'upper' color)
 def drawedgetopdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
     for i in range(bordersize):
         drawupperedge(helper, x0, y0, x1, y1, upper, edgesize=edgesize)
@@ -6623,7 +6626,8 @@ def drawreliefborder(
     drawedgebotdom(helper, x0 + z, y0 + z, x1 - z, y1 - z, dkshadow, dkshadow)
     return [x0 + z, y0 + z, max(x0 + z, x1 - z), max(y0 + z, y1 - z)]
 
-# helper for edge drawing (lower right edge "dominates")
+# helper for edge drawing (lower right edge "dominates" in the sense that the upper right
+# and lower-left corner pixels have the 'lower' color)
 def drawedgebotdom(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1):
     for i in range(bordersize):
         drawupperedge(
@@ -6644,8 +6648,8 @@ def drawedgenodomex(
     y1,
     upper,
     lower,
-    upperRight,
-    lowerLeft,
+    upperRight,  # Color for each edge's uupper-right corner
+    lowerLeft,  # Color for each edge's lower-left corner.
     edgesize=1,
     bordersize=1,
 ):
@@ -6656,7 +6660,7 @@ def drawedgenodomex(
         drawloweredge(
             helper, x0 + edgesize, y0 + edgesize, x1, y1, lower, edgesize=edgesize
         )
-        # uupper-right corner
+        # upper-right corner
         drawpositiverect(helper, x1 - edgesize, y0, x1, y0 + edgesize, upperRight)
         # lower-left corner
         drawpositiverect(helper, x0, y1 - edgesize, x0 + edgesize, y1, lowerLeft)
@@ -6822,27 +6826,33 @@ def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
 
 ####
 
-# Raised border where the "upper left dominates"
+# Raised border where the "upper left dominates", in the sense that the upper right
+# and lower-left corner pixels have the upper edge's color.
 def drawraisedbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgetopdom(helper, x0, y0, x1, y1, hilt, sh, bordersize=bordersize)
 
-# Sunken border where the "upper left dominates"
+# Sunken border where the "upper left dominates", in the sense that the upper right
+# and lower-left corner pixels have the upper edge's color.
 def drawsunkenbordertopdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgetopdom(helper, x0, y0, x1, y1, sh, hilt, bordersize=bordersize)
 
-# Raised border where neither edge "dominates"
+# Raised border where neither edge "dominates": the upper right and lower left
+# corner pixels have the 'lt' color (which is usually also the button face color).
 def drawraisedbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgenodom(helper, x0, y0, x1, y1, hilt, sh, lt, bordersize=bordersize)
 
-# Sunken border where neither edge "dominates"
+# Sunken border where neither edge "dominates": the upper right and lower left
+# corner pixels have the 'lt' color (which is usually also the button face color).
 def drawsunkenbordernodom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgenodom(helper, x0, y0, x1, y1, sh, hilt, lt, bordersize=bordersize)
 
-# Raised border where the "lower right dominates"
+# Raised border where the "lower right dominates", in the sense that the upper right
+# and lower-left corner pixels have the lower edge's color.
 def drawraisedborderbotdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgebotdom(helper, x0, y0, x1, y1, hilt, sh, bordersize=bordersize)
 
-# Sunken border where the "lower right dominates"
+# Sunken border where the "lower right dominates", in the sense that the upper right
+# and lower-left corner pixels have the lower edge's color.
 def drawsunkenborderbotdom(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, bordersize=1):
     drawedgebotdom(helper, x0, y0, x1, y1, sh, hilt, bordersize=bordersize)
 

@@ -9,9 +9,9 @@ Given that desktop backgrounds today tend to cover the full computer screen, to 
 Create a tileable desktop wallpaper image [^1] meeting the following requirements.
 
 - The image is one of the following:
-    - It is a raster (bitmap) image with one of the color palettes and one of the pixel dimensions given later.
+    - It is a pixel image (also known as _raster image_ or _bitmap_) with one of the color palettes and one of the pixel dimensions given later.
     - It is a vector graphic in the Scalable Vector Graphics (SVG) format made only of two-dimensional filled outlines with no stroke.  Excessive detail should be avoided.  Moreover:
-        - Each outline is filled black and either opaque or translucent (semitransparent).  The image can then be scaled to any pixel dimension desired and turned into a grayscale (see later) bitmap image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).  Or...
+        - Each outline is filled black and either opaque or translucent (semitransparent).  The image can then be scaled to any pixel dimension desired and turned into a grayscale (see later) pixel image using known techniques (see [_Hero Patterns_](https://heropatterns.com/) for an example).  Or...
         - Each outline is opaque and filled with one of up to ten colors from a color palette given later.  See [_colourlovers.com_](https://www.colourlovers.com/patterns) for examples.
 - The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
 - The image does not contain text.  Images that contain depictions of people or human faces are not preferred.
@@ -134,7 +134,7 @@ The texture generator at [`schalkt/tgen`](https://github.com/schalkt/tgen), unde
 
 ## Sample Wallpaper Generation Code
 
-This repository has the following code files in Python for generating tiled wallpapers and reading and writing icon and bitmap files: `desktopwallpaper.py`, `imageformat.py`, `randomwp.py`.
+This repository has the following code files in Python for generating tiled wallpapers and reading and writing Windows icon files and pixel images in the PNG and Windows bitmap formats: `desktopwallpaper.py`, `imageformat.py`, `randomwp.py`.
 
 This repository also has a directory (`rust/`) with Rust source code for generating a tiled wallpaper.
 

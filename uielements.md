@@ -135,7 +135,7 @@ The following books and other works discuss design matters on traditional user i
 
 - _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000
 - _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
-- "Wizard 97 Specifications and Development FAQ" (1999), part of the Windows Platform SDK, April 2000.
+- "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 - _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
 - Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
@@ -174,4 +174,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^11]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
 
-[^12]: Multiple sizes and vector versions of a graphic are useful for several reasons, including: (1) to accommodate different display modes and pixel densities; (2) to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm).  They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel bitmaps often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and one-pixel-thick line segments.
+[^12]: Multiple sizes and vector versions of a graphic are useful for several reasons, including: (1) to accommodate different display modes and pixel densities; (2) to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm).  They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-by-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and one-pixel-thick line segments.
