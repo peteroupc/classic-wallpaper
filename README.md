@@ -126,7 +126,7 @@ The texture generator at [`schalkt/tgen`](https://github.com/schalkt/tgen), unde
 
 2. Other tileable wallpapers employing more than 256 colors and otherwise satisfying the requirements above are acceptable, though not preferable.  If a wallpaper image has more than 256 colors and otherwise meets the requirements of this challenge, it can be adapted to have the colors of a limited-color palette (see the "Color Palettes" section below) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
 
-3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper file `RIBBONS.BMP and the Memphis Group-style wallpaper file PARTY.BMP`, both of which were distributed with Windows 3.0.
+3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper file `RIBBONS.BMP` and the Memphis Group-style wallpaper file `PARTY.BMP`, both of which were distributed with Windows 3.0.
 
 4. One example of tileable noise can be generated using the "[diamond-square algorithm](https://en.wikipedia.org/wiki/Diamond-square_algorithm)".
 

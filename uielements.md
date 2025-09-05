@@ -72,13 +72,13 @@ The following ways to draw buttons, default buttons, and toolbar buttons are typ
     - For the unpressed style, its inner background has a _mixed appearance_. [^2]
     - For the unavailable style, its text and icons have an _unavailable appearance_.
 
-In Presentation Manager, to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a checkerboard pattern.
+In Presentation Manager and in MacOS System 7 [^3b], to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a checkerboard pattern.
 
-Traditionally, the three dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3]
+Traditionally, the three-dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3]
 
 ## Icons and Cursors
 
-An icon (a small graphic representing a computer program) should come in a set of variations in color and dimensions:
+An icon (a small graphic representing a computer program, document, or resource) should come in a set of variations in color and dimensions:
 
 - The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
 - The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [logical display resolution](#logical-resolutions). [^5]
@@ -104,14 +104,16 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 
 - Curves and straight line segments are drawn unsmoothed and one pixel thick.
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
-- The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]  Thus, for example, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
+- The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]
+    - In 1995 and later, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^9]
 - Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^10]
 - For graphics limited to the 16-color VGA palette[^1]:
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
-- Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.
+- Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.[^8a]
+- Black-and-white graphics from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
 
 After about 2003, user-interface graphics tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
 
@@ -135,12 +137,14 @@ The following books and other works discuss design matters on traditional user i
 
 - _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000
 - _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
+- [_Macintosh Human Interface Guidelines_](https://dl.acm.org/doi/book/10.5555/573097), January 1992.
 - "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 - _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
 - Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
 - W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
 - Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
+- _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
 - J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with MacOS System 7.
 - ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
 
@@ -154,11 +158,13 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
-[^3]:  See, for example, _The Windows Interface Guidelines for Software Design_.
+[^3]:  _The Windows Interface Guidelines for Software Design_; _Macintosh Human Interface Guidelines_, p. 232.
 
 [^3a]:  Buttons possessed a 3-D effect in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that give 3-D effects to more places in an application.
 
-[^4]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges. And, before 1992, Windows version 3.0 icons tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two pixels.
+[^3b]:  _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in MacOS System 7 was designed to be legible even when rendered this way).
+
+[^4]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows before version 3.1 tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two pixels.
 
 [^5]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.
 
@@ -168,10 +174,14 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^8]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.
 
+[^8a]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
+
+[^8b]: _Macintosh Human Interface Guidelines_, p. 263.
+
 [^9]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.  But computer monitors may still be drawn straight on in order to accentuate what the monitor is showing.
 
 [^10]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially one-pixel-thick lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill an area of pixels that is surrounded by pixels of other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
 
 [^11]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
 
-[^12]: Multiple sizes and vector versions of a graphic are useful for several reasons, including: (1) to accommodate different display modes and pixel densities; (2) to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm).  They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-by-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and one-pixel-thick line segments.
+[^12]: Multiple sizes and vector versions of a graphic are useful for several reasons, including: (1) to accommodate different display modes and pixel densities; (2) to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm).  They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and one-pixel-thick line segments.
