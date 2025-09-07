@@ -74,7 +74,7 @@ The following ways to draw buttons, default buttons, and toolbar buttons are typ
 
 In Presentation Manager and in MacOS System 7 [^3b], to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a checkerboard pattern.
 
-Traditionally, the three-dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3]
+Traditionally, the three-dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3c]
 
 ## Icons and Cursors
 
@@ -105,7 +105,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 - Curves and straight line segments are drawn unsmoothed and one pixel thick.
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
 - The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]
-    - In 1995 and later, graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
+    - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^9]
 - Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^10]
 - For graphics limited to the 16-color VGA palette[^1]:
@@ -113,7 +113,8 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
 - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.[^8a]
-- Black-and-white graphics from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
+
+In general, in graphics before 1995, black-and-white graphics from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
 
 After about 2003, user-interface graphics tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
 
@@ -135,11 +136,13 @@ For a high degree of flexibility, new graphical user interface systems should al
 
 The following books and other works discuss design matters on traditional user interfaces:
 
-- _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000
+- _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
 - _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
-- [_Macintosh Human Interface Guidelines_](https://dl.acm.org/doi/book/10.5555/573097), January 1992.
+- [_Macintosh Human Interface Guidelines_](https://dl.acm.org/doi/book/10.5555/573097), 1992.
 - "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
+- Shiz Kobara, _Visual Design with OSF/Motif_, Addison-Wesley, 1991.
+- _OSF/Motif Style Guide_ (releases 1.1, 1.2, and 2.0), and _OSF/Motif Widget Writer's Guide_.
 - _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
 - Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
 - W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
@@ -158,11 +161,13 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
-[^3]:  _The Windows Interface Guidelines for Software Design_; _Macintosh Human Interface Guidelines_, p. 232.
+[^3]:  See _The Windows Interface Guidelines for Software Design_.
 
 [^3a]:  Buttons possessed a 3-D effect in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that give 3-D effects to more places in an application.
 
 [^3b]:  _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in MacOS System 7 was designed to be legible even when rendered this way).
+
+[^3c]:  _The Windows Interface Guidelines for Software Design_; _Macintosh Human Interface Guidelines_, p. 232.
 
 [^4]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows before version 3.1 tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two pixels.
 

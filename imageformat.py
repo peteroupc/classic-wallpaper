@@ -1,5 +1,5 @@
 # This Python script implements the reading and writing
-# of certain classic bitmap, icon, and cursor formats,
+# of certain classic pixel image, icon, and cursor formats,
 # and the writing of certain animation formats.
 #
 # This script is released to the public domain; in case that is not possible, the
@@ -57,7 +57,9 @@ class _LimitedIO:
         return self.f.tell() - self.start
 
     def seek(self, pos):
-        if pos < 0 or pos > self.size:
+        if pos < 0:
+            raise ValueError
+        if pos > self.size:
             raise ValueError
         self.f.seek(self.start + pos)
 
@@ -1479,7 +1481,7 @@ def _rle4decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
 
-# Reads an OS/2 Presentation Manager (PM) icon, mouse pointer (cursor), bitmap, or bitmap array,
+# Reads an OS/2 Presentation Manager (PM) icon, mouse pointer (cursor), bitmap (pixel image), or bitmap array,
 # or a Windows bitmap, icon, or cursor.
 # PM and Windows icons have the '.ico' file extension; PM cursors, '.ptr';
 # PM and Windows bitmaps, '.bmp'; and Windows cursors, '.cur'.
@@ -1913,7 +1915,7 @@ def _read4bppBitmap(byteData, scanSize, height, x, y):
     ) & 0x0F
 
 def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
-    # Reads the alpha value at the specified pixel position of a bitmap image,
+    # Reads the alpha value at the specified pixel position of a pixel image,
     # represented by an array of bottom-up Windows or Presentation Manager bitmap data.
     # Returns 255 if bpp is not 32.
     if bpp == 32:
@@ -1923,7 +1925,7 @@ def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
         return 255
 
 def _readBitmapAsAlphaBitfields(byteData, scanSize, height, bpp, x, y, alphamask):
-    # Reads the alpha at the specified pixel position of a bitmap image
+    # Reads the alpha at the specified pixel position of a pixel image
     # that uses a bitfield format and is
     # represented by an array of bottom-up Windows bitmap data.
     # Returns bytes([255]) if bpp is not 16 or 32.
@@ -1942,7 +1944,7 @@ def _readBitmapAsAlphaBitfields(byteData, scanSize, height, bpp, x, y, alphamask
             return bytes([255])
 
 def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields):
-    # Reads the pixel color value at the specified position of a bitmap image
+    # Reads the pixel color value at the specified position of a pixel image
     # that uses a bitfield format and is
     # represented by an array of bottom-up Windows bitmap data.
     # The color value is returned as an array containing the blue, green,
@@ -1974,7 +1976,7 @@ def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields
             raise ValueError("Bits per pixel not supported")
 
 def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
-    # Reads the pixel color value at the specified position of a bitmap image,
+    # Reads the pixel color value at the specified position of a pixel image,
     # represented by an array of bottom-up Windows or Presentation Manager bitmap data.
     # The color value is returned as an array containing the blue, green,
     # and red components, in that order.
@@ -3080,8 +3082,12 @@ def _readicns_core(lp, starttag):
             _errprint("tag already exists: %s" % (tag))
         else:
             tags[tag] = [lp.tell(), size - 8, index]
-        lp.seek(lp.tell() + size - 8)
         ret.append(None)
+        try:
+            lp.seek(lp.tell() + size - 8)
+        except ValueError:
+            # Size too small for this tag
+            return ret
         index += 1
     for tag in tags.keys():
         if (
