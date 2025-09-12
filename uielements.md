@@ -72,7 +72,7 @@ The following ways to draw buttons, default buttons, and toolbar buttons are typ
     - For the unpressed style, its inner background has a _mixed appearance_. [^2]
     - For the unavailable style, its text and icons have an _unavailable appearance_.
 
-In Presentation Manager and in MacOS System 7 [^3b], to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a checkerboard pattern.
+In Presentation Manager and in System 7 of the Macintosh Operating System [^3b], to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a checkerboard pattern.
 
 Traditionally, the three-dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^3c]
 
@@ -138,7 +138,6 @@ The following books and other works discuss design matters on traditional user i
 
 - _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
 - _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
-- [_Macintosh Human Interface Guidelines_](https://dl.acm.org/doi/book/10.5555/573097), 1992.
 - "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 - Shiz Kobara, _Visual Design with OSF/Motif_, Addison-Wesley, 1991.
@@ -148,8 +147,57 @@ The following books and other works discuss design matters on traditional user i
 - W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
 - Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
 - _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
-- J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with MacOS System 7.
+- [_Macintosh Human Interface Guidelines_](https://dl.acm.org/doi/book/10.5555/573097), 1992.
+- "Color, Windows, and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
+- _Mac OS 8 Human Interface Guidelines_ (addendum to _Macintosh User Interface Guidelines_), Sep. 2, 1997.
+- E. Voas, "Appearance: Not Just Another Pretty Interface", _develop_ (Apple), June 1997.
+- J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the
+authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
 - ["Creating Windows XP Icons"](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
+
+## Worthy mentions
+
+- The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics, not pixel images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
+- The [Motif interface toolkit](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^13]  The [pseudocode conventions](https://peteroupc.github.io/pseudocode.html) apply to the pseudocode below.
+
+```
+// First calculate the background color's "brightness",
+// then calculate the derivative colors.
+// Assumes each component of background color is
+// from 0 through 1.
+// 'getrgb' gets the color's three components.
+rgb=getrgb(background); r=rgb[0];g=rgb[1];b=rgb[2]
+// default values for thresholds
+foregroundThreshold=0.7
+lightThreshold=0.93
+darkThreshold=0.2
+// find "brightness" of background color
+brightness=0.75 * ((r+g+b)/3) + 0.25 * (0.3*r+0.59*g+0.11*b)
+// find foreground color
+if brightness>foregroundThreshold
+   foreground=[0,0,0] // black
+else
+   foreground=[1,1,1] // white
+end
+if brightness<darkThreshold
+    // very dark color
+    select_color=background+0.15*(1-background)
+    lower_shadow=background+0.3*(1-background)
+    upper_shadow=background+0.5*(1-background)
+else if brightness>lightThreshold
+    // very light color
+    select_color=background-0.15*background
+    lower_shadow=background-0.4*background
+    upper_shadow=background-0.2*background
+else
+    // medium color
+    select_color=background-0.15*background
+    fac = 0.6-0.2*brightness
+    lower_shadow=background-fac*background
+    fac = 0.5+0.1*brightness
+    upper_shadow=background+fac*(1-background)
+end
+```
 
 ## License
 
@@ -165,7 +213,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^3a]:  Buttons possessed a 3-D effect in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that give 3-D effects to more places in an application.
 
-[^3b]:  _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in MacOS System 7 was designed to be legible even when rendered this way).
+[^3b]:  _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in System 7 of the Macintosh Operating System was designed to be legible even when rendered this way).
 
 [^3c]:  _The Windows Interface Guidelines for Software Design_; _Macintosh Human Interface Guidelines_, p. 232.
 
@@ -190,3 +238,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^11]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
 
 [^12]: Multiple sizes and vector versions of a graphic are useful for several reasons, including: (1) to accommodate different display modes and pixel densities; (2) to render parts of the graphic more crisply, especially if their [smallest feature would measure less than two pixels](http://rastertragedy.com/RTRCh1.htm).  They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and one-pixel-thick line segments.
+
+[^13]: The resulting color may vary slightly from the one calculated by the Motif toolkit, because of rounding errors committed by that toolkit.
