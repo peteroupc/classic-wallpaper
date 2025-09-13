@@ -6068,7 +6068,9 @@ def randomRotated(image, width, height, alpha=False):
     # Do the rotation rarely
     if random.randint(0, 6) > 0:
         return [image, width, height]
-    # A rotated but still tileable version of the specified image
+    # A rotated but still tileable version of the specified image,
+    # If there is a rotation, the input image need not be tileable.  In fact,
+    # the image can have the same color on all edges.f
     stretch = 2  # must be an integer
     slant = int(math.hypot(width * stretch, height))
     size = width
