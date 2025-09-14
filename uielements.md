@@ -39,7 +39,7 @@ Using only the following colors and with some pixels allowed to be transparent:
 - Button face color (by default, (192, 192, 192)).
 - Window frame color (black by default).
 
-It is allowed to simulate the appearance of more colors using these six colors by means of dithering.[^6]
+It is allowed to simulate more colors using these six colors by means of dithering.[^6]
 
 The _desktopwallpaper.py_ file has some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial-intelligence tools.
 
@@ -104,7 +104,8 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 
 - Curves and straight line segments are drawn unsmoothed and one pixel thick.
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
-- The three-dimensional (3-D) appearance of buttons and other objects in graphics is based on a light source shining from the upper left.[^3]
+- There are no translucent (semitransparent) pixels.
+- The three-dimensional (3-D) appearance of buttons and other objects in graphics supposes the presence of a light source shining from the upper left.[^3]
     - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^9]
 - Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^10]
@@ -113,12 +114,18 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
 - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.[^8a]
+- Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s (for example, they can be colored and they have less harmony with accompanying text than such symbols as the at-sign `@`).[^8aa]
 
-In general, in graphics before 1995, black-and-white graphics from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
+In general, in graphics before 1995, black-and-white icons (with no gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
 
-After about 2003, user-interface graphics tend to be 8-bpc images and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
+After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
 
-From about 1990 to about 1997, most user-interface text was rendered in a solid color.  In fancier displays of text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
+From about 1990 to about 1997, user-interface text&mdash;
+
+- was mostly rendered in a solid color, and
+- was rarely antialiased, and then mainly if the display mode is greater than 8 bits per pixel.
+
+In fancier displays of text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
 
 ## Flexible User Interface Graphics
 
@@ -139,13 +146,13 @@ The following books and other works discuss design matters on traditional user i
 - _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
 - _The Windows Interface Guidelines for Software Design_, which applies to Windows 95.
 - "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
+- Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
+- W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
+- Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 - Shiz Kobara, _Visual Design with OSF/Motif_, Addison-Wesley, 1991.
 - _OSF/Motif Style Guide_ (releases 1.1, 1.2, and 2.0), and _OSF/Motif Widget Writer's Guide_.
 - _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
-- Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
-- W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
-- Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
 - _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
 - [_Macintosh Human Interface Guidelines_](https://dl.acm.org/doi/book/10.5555/573097), 1992.
 - "Color, Windows, and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
@@ -228,6 +235,8 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^8]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.
 
 [^8a]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
+
+[^8aa]: Exceptions are found in the [_Marlett_](https://learn.microsoft.com/en-us/typography/font-list/marlett), [_Wingdings_](https://learn.microsoft.com/en-us/typography/font-list/wingdings), and [_Webdings_](https://learn.microsoft.com/en-us/typography/font-list/webdings) symbol fonts in Microsoft operating systems.
 
 [^8b]: _Macintosh Human Interface Guidelines_, p. 263.
 

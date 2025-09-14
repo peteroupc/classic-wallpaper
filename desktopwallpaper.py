@@ -936,9 +936,11 @@ def groupPmg():
     )
 
 # ImageMagick command to generate a brushed metal texture from a noise image.
-# A brushed metal texture was featured in Mac OS X Panther and
-# Tiger (10.3, 10.4) and other Apple products
-# around the time of either operating system's release.
+# A brushed metal texture was featured in Mac OS X versions 10.3 and 10.4 (Panther and
+# Tiger) and other Apple products around the time of either version's release.  (The brushed metal texture
+# in windows back then were also slightly and gradually darker from the middle to
+# the left and right sides; this is currently not reflected in this method.)
+# The brushed-metal look was abandoned in Mac OS X v10.5 (Leopard).
 def brushedmetal():
     sz = 50
     return [
