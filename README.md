@@ -57,8 +57,9 @@ Additional color palettes allowed are as follows.
 - An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
 - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
 - The 64 colors displayable by Extended Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).
-- Up to 16 colors from those displayable by 12-bit color displays (each color component is a multiple of 17).
+- Up to 16 colors from those displayable by Amiga computers and other 12-bit color displays (each color component is a multiple of 17).
 - Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
+- Up to 32 colors from those displayable by 12-bit color displays.
 - A palette of the 256 colors used by default in [VGA 256-color mode](https://github.com/canidlogic/vgapal).
 - 5- to 64-color grayscale palette (all color components the same).
 - A 27-color palette where each color component is 0, 128, or 255.

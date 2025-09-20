@@ -57,6 +57,8 @@ The desired vector graphic should have the following commands in this order:
 
 ![Diamond vector graphic](diamond.svg)
 
+(Ideally, the polyline should look 1 pixel thick regardless of scaling, but I don't know how to achieve that effect in SVG.)
+
 ## License
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).

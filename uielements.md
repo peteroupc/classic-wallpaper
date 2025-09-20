@@ -114,7 +114,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
 - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.[^8a]
-- Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s (for example, they can be colored and they have less harmony with accompanying text than such symbols as the at-sign `@`).[^8aa]
+- Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in a typeface, or font; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^8aa]
 
 In general, in graphics before 1995, black-and-white icons (with no gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
 
@@ -125,7 +125,7 @@ From about 1990 to about 1997, user-interface text&mdash;
 - was mostly rendered in a solid color, and
 - was rarely antialiased, and then mainly if the display mode is greater than 8 bits per pixel.
 
-In fancier displays of text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
+In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
 
 ## Flexible User Interface Graphics
 
