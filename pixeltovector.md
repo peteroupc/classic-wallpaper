@@ -51,13 +51,11 @@ Take the following pixel image:
 The desired vector graphic should have the following commands in this order:
 
 1. Polygon, filled with white, connecting the points (1.5, 15.5), (15.5, 1.5), (29.5, 15.5), (15.5, 29.5).  (The coordinates are adjusted by 0.5 because of the centering of pixels in SVG, for example.)
-2. 1-pixel-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-pixel-thick black outline in addition to being filled.
+2. 1-pixel-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-pixel-thick black outline in addition to being filled. [^2]
 
 [In SVG](https://peteroupc.github.io/svg.html), the desired vector graphic looks like:
 
 ![Diamond vector graphic](diamond.svg)
-
-(Ideally, the polyline should look 1 pixel thick regardless of scaling, but I don't know how to achieve that effect in SVG.)
 
 ## License
 
@@ -66,3 +64,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 ## Notes
 
 [^1]: A pixel image with a high number of unique colors (say, 65 or more), is hard to convert to a vector graphic without sacrificing image quality.  While such images ought to be designed as vector graphics from the start, a simple upscaling and downscaling solution, such as bilinear filtering, is acceptable for such pixel images, especially for the use case of user-interface graphics where scaling factors from 50% through 300% are expected.<br>Limited-color pixel images with a pixel size greater than 64 &times; 64 are also of interest and occur among user-interface graphics (such as wizard graphics in Windows 95), but are not the main priority; indeed, the larger the pixel size, the more time the conversion to a vector graphic is expected to take.
+
+[^2]: In SVG, the stroke would also be marked with the `vector-effect:non-scaling-stroke` style, so that the stroke looks 1 pixel thick regardless of scaling.

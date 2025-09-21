@@ -219,7 +219,17 @@ Data descriptors defined here:<br>
 #&nbsp;using&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method.&nbsp;&nbsp;Moreover,&nbsp;converting&nbsp;an&nbsp;image&nbsp;from&nbsp;a&nbsp;nonlinear<br>
 #&nbsp;to&nbsp;a&nbsp;linear&nbsp;color&nbsp;space&nbsp;and&nbsp;back&nbsp;can&nbsp;lead&nbsp;to&nbsp;data&nbsp;loss&nbsp;especially&nbsp;if&nbsp;the&nbsp;image's&nbsp;color<br>
 #&nbsp;components&nbsp;are&nbsp;8&nbsp;bits&nbsp;or&nbsp;fewer&nbsp;in&nbsp;length&nbsp;(as&nbsp;with&nbsp;images&nbsp;returned&nbsp;by&nbsp;<a href="#-blankimage">blankimage</a>()).<br>
-#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.</span></dd></dl>
+#&nbsp;This&nbsp;function&nbsp;does&nbsp;not&nbsp;do&nbsp;any&nbsp;such&nbsp;conversion.<br>
+#<br>
+#&nbsp;Examples:<br>
+#<br>
+#&nbsp;Take&nbsp;two&nbsp;images&nbsp;described&nbsp;in&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False,<br>
+#&nbsp;call&nbsp;them&nbsp;'img'&nbsp;and&nbsp;'mask',&nbsp;and&nbsp;both&nbsp;images&nbsp;have&nbsp;the&nbsp;same&nbsp;width&nbsp;and&nbsp;height,<br>
+#&nbsp;and&nbsp;'mask'&nbsp;has&nbsp;only&nbsp;black&nbsp;and&nbsp;white&nbsp;pixels&nbsp;((0,0,0)&nbsp;and&nbsp;(255,255,255),&nbsp;respectively).<br>
+#&nbsp;Then&nbsp;the&nbsp;following&nbsp;'darkens'&nbsp;the&nbsp;areas&nbsp;in&nbsp;'img'&nbsp;where&nbsp;'mask'&nbsp;is&nbsp;"black".<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;img=[a//2&nbsp;if&nbsp;b==0&nbsp;else&nbsp;a&nbsp;for&nbsp;a,b&nbsp;in&nbsp;zip(img,mask)]<br>
+#&nbsp;Alternatively,&nbsp;the&nbsp;following&nbsp;'lightens'&nbsp;those&nbsp;same&nbsp;areas.<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;img=[a+(255-a)//2&nbsp;if&nbsp;b==0&nbsp;else&nbsp;a&nbsp;for&nbsp;a,b&nbsp;in&nbsp;zip(img,mask)]</span></dd></dl>
  <dl><dt><a name="-borderedbox"><strong>borderedbox</strong></a>(
     image,
     width,

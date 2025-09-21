@@ -3494,6 +3494,16 @@ def interlace(image, width, height, alpha=False):
 # to a linear color space and back can lead to data loss especially if the image's color
 # components are 8 bits or fewer in length (as with images returned by blankimage()).
 # This function does not do any such conversion.
+#
+# Examples:
+#
+# Take two images described in the blankimage() method with alpha=False,
+# call them 'img' and 'mask', and both images have the same width and height,
+# and 'mask' has only black and white pixels ((0,0,0) and (255,255,255), respectively).
+# Then the following 'darkens' the areas in 'img' where 'mask' is "black".
+#    img=[a//2 if b==0 else a for a,b in zip(img,mask)]
+# Alternatively, the following 'lightens' those same areas.
+#    img=[a+(255-a)//2 if b==0 else a for a,b in zip(img,mask)]
 def blankimage(width, height, color=None, alpha=False):
     if color and len(color) < (4 if alpha else 3):
         raise ValueError
