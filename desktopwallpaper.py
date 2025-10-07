@@ -995,7 +995,7 @@ def simplebox(
 
 # Draw a wraparound hatched box on an image.
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
-# 'color' is the color of the hatch, drawn on every "black" pixel (defined below)
+# 'color' is the color of the hatch, drawn on every "black" pixel (defined next)
 # in the pattern's tiling.
 # This method currently does no "alpha blending".
 # 'pattern' is an 8-element array with integers in the interval [0,255].
@@ -7854,15 +7854,20 @@ def _hatchoverlay(image, width, height, hatchColor, rows=2):
 # Generates a random checkerboard pattern image (using the specified palette, if any)
 # Image returned by this method has the same format returned by the blankimage() method with alpha=False.
 def randomcheckimage(w, h, palette=None, tileable=True):
-    if w % 2 == 0 and h % 2 == 0 and random.randint(0, 99) < 10:
+    if w % 2 == 0 and h % 2 == 0 and random.randint(0, 99) < 20:
         otherImage = _randombackground(w // 2, h // 2, palette, tileable=tileable)
-        return _colorizeInPlaceFromFourGrays(
-            graychecker(
+        if random.randint(0, 1) == 0:
+            return _colorizeInPlaceFromFourGrays(
+                graychecker(
+                    otherImage, w // 2, h // 2, lightFirst=(random.randint(0, 1) == 0)
+                ),
+                w,
+                h,
+            )
+        else:
+            return lightdarkchecker(
                 otherImage, w // 2, h // 2, lightFirst=(random.randint(0, 1) == 0)
-            ),
-            w,
-            h,
-        )
+            )
     expandedpal = paletteandhalfhalf(palette) if palette else []
     hatch = (
         None
@@ -7874,8 +7879,8 @@ def randomcheckimage(w, h, palette=None, tileable=True):
         )
     )
     if w >= 64 and h >= 64:
-        rows = random.choice([2, 2, 2, 4, 6, 8])
-        columns = random.choice([2, 2, 2, 4, 6, 8])
+        rows = random.choice([2, 2, 2, 2, 4, 6, 8])
+        columns = random.choice([2, 2, 2, 2, 4, 6, 8])
     else:
         rows = 2
         columns = 2
@@ -7982,6 +7987,18 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
         y1 = h if r == 0 else h - hstart
         hatchedbox(ret, w, h, color, _randomhatch(), x0, y0, x1, y1)
     return ret
+
+# Creates a checkerboard pattern of a "light" version and a "dark" version of the specified image.
+# Input image has the same format returned by the blankimage() method with alpha=False.
+def lightdarkchecker(image, width, height, lightFirst=False):
+    # darker image
+    image1 = [i * 192 // 255 for i in image]
+    # lighter image
+    image2 = [128 + i * 127 // 255 for i in image]
+    if lightFirst:
+        return checkerboardtile(image2, image1, width, height)
+    else:
+        return checkerboardtile(image1, image2, width, height)
 
 # Creates a checkerboard pattern of a "light" version and a "dark" version of the specified image,
 # after converting that image to grayscale.

@@ -111,6 +111,16 @@ fn randomrects<T: basicrgbimage::BasicRgbImage>(image: &mut T){
 }
 
 
+fn blacken<T: basicrgbimage::BasicRgbImage>(image: &mut T){
+                let height=image.height();
+                let width=image.width();
+                for y in 0..height {
+                  for x in 0..width {
+                    image.put_pixel(x,y,[0,0,0]);
+                  }
+                }
+}
+
 fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_time::Instant){
                 let f32elapsed:f32 = startTime.elapsed().as_secs_f32();
                 let height=image.height();

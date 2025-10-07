@@ -58,6 +58,7 @@ Additional color palettes allowed are as follows.
 - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
 - The 64 colors displayable by Extended Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).
 - Up to 16 colors from those displayable by Amiga computers and other 12-bit color displays (each color component is a multiple of 17).
+- Up to 16 colors from those displayable by original Atari ST computers and other 9-bit color displays (each color component is either 255 or a multiple of 32).
 - Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - Up to 32 colors from those displayable by 12-bit color displays.
 - A palette of the 256 colors used by default in [VGA 256-color mode](https://github.com/canidlogic/vgapal).
@@ -125,13 +126,20 @@ The texture generator at [`schalkt/tgen`](https://github.com/schalkt/tgen), unde
      - This point can also apply to an image if only part of the image has only colors of the same hue and "saturation", and the rest is grayscale.  In that case, the color shifting can then be made to apply only to the nongrayscale part of the image.
      - If the automatic adaptation to a particular color palette (such as black and white, or the three VGA gray tones, or the full VGA palette; see "Color Palettes", earlier) leads to an unsatisfactory appearance, then a version optimized for that palette can be supplied.
 
-2. Other tileable wallpapers employing more than 256 colors and otherwise satisfying the requirements above are acceptable, though not preferable.  If a wallpaper image has more than 256 colors and otherwise meets the requirements of this challenge, it can be adapted to have the colors of a limited-color palette (see the "Color Palettes" section below) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
+2. Other tileable wallpapers employing more than 256 colors and otherwise satisfying the challenge's requirements are acceptable, though not preferable.  If a wallpaper image has more than 256 colors and otherwise meets those requirements, it can be adapted to have the colors of a limited-color palette (see the "Color Palettes" section below) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
 
-3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper file `RIBBONS.BMP` and the Memphis Group-style wallpaper file `PARTY.BMP`, both of which were distributed with Windows 3.0.
+3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper files `RIBBONS.BMP` and `PARTY.BMP`, both of which were distributed with Windows 3.0 and the latter was inspired by the Memphis group style.
 
 4. One example of tileable noise can be generated using the "[diamond-square algorithm](https://en.wikipedia.org/wiki/Diamond-square_algorithm)".
 
 5. One way to generate a wallpaper image is by blending a solid color (or another tileable wallpaper) with a tileable image consisting of only transparent pixels and semitransparent and opaque black pixels (such as a masonry pattern).
+
+6. **Stochastic Tiling:** Wang tiles are a finite set of tiles (here, wallpaper images) that can cover an arbitrary grid without seams.  One example is the [set of 16 tiles](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
+
+    - A randomized tiling, or _stochastic tiling_, can be generated from this tile set by repeatedly selecting a grid position and choosing a random tile that can go in that position without introducing seams, until the whole grid is covered.
+    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper image at each grid position, where each version has the same size and the same edges as each other version but can otherwise vary.[^8]
+
+    Both kinds of stochastic tiling can be combined.  [See example](https://web.archive.org/web/20160220062702/http://www.cr31.co.uk/stagecast/wang/2edge.html).[^9]
 
 ## Sample Wallpaper Generation Code
 
@@ -211,3 +219,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^6]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
 
 [^7]: The "safety palette", also known as the "Web safe" colors, consists of 216 colors that are uniformly spaced in the red&ndash;green&ndash;blue color cube.  Robert Hess's article "[The Safety Palette](https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10))", 1996, described the advantage that images that use only colors in this palette won't dither when displayed by Web browsers on displays that can show up to 256 colors at once. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors). Dithering is the scattering of colors in a limited set to simulate colors outside that set.)  When the "safety palette" forms part of a 256-color repertoire, as it usually does, 40 slots are left that can be filled with additional colors, and as Hess mentions, graphics designers have no control over what these additional colors are. Usually these additional colors include the four legacy Windows colors plus the eight VGA palette colors not already in the "safety palette".  For Java's `BufferedImage.TYPE_BYTE_INDEXED`, these 40 colors are gray tones not already in the "safety palette".
+
+[^8]: This covers the special case of _Truchet tiles_, involving two versions of an image where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
+
+[^9]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.

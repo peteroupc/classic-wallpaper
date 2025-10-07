@@ -754,7 +754,7 @@ Data descriptors defined here:<br>
     alpha=False
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;hatched&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
-#&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;hatch,&nbsp;drawn&nbsp;on&nbsp;every&nbsp;"black"&nbsp;pixel&nbsp;(defined&nbsp;below)<br>
+#&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;hatch,&nbsp;drawn&nbsp;on&nbsp;every&nbsp;"black"&nbsp;pixel&nbsp;(defined&nbsp;next)<br>
 #&nbsp;in&nbsp;the&nbsp;pattern's&nbsp;tiling.<br>
 #&nbsp;This&nbsp;method&nbsp;currently&nbsp;does&nbsp;no&nbsp;"alpha&nbsp;blending".<br>
 #&nbsp;'pattern'&nbsp;is&nbsp;an&nbsp;8-element&nbsp;array&nbsp;with&nbsp;integers&nbsp;in&nbsp;the&nbsp;interval&nbsp;[0,255].<br>
@@ -1120,6 +1120,8 @@ Data descriptors defined here:<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;first&nbsp;image&nbsp;should&nbsp;be&nbsp;displayed&nbsp;at&nbsp;even-numbered&nbsp;frames;&nbsp;the&nbsp;second,<br>
 #&nbsp;odd-numbered.</span></dd></dl>
+ <dl><dt><a name="-lightdarkchecker"><strong>lightdarkchecker</strong></a>(image, width, height, lightFirst=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;checkerboard&nbsp;pattern&nbsp;of&nbsp;a&nbsp;"light"&nbsp;version&nbsp;and&nbsp;a&nbsp;"dark"&nbsp;version&nbsp;of&nbsp;the&nbsp;specified&nbsp;image.<br>
+#&nbsp;Input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;light&nbsp;gray&nbsp;(192,192,192)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;white&nbsp;(255,255,255)&nbsp;background.</span></dd></dl>
  <dl><dt><a name="-linedraw"><strong>linedraw</strong></a>(
     image,

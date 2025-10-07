@@ -127,6 +127,8 @@ From about 1990 to about 1997, user-interface text&mdash;
 
 In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
 
+New user-interface graphics with limited colors ought to be designed as vector graphics (for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when rendered in their original size.
+
 ## Flexible User Interface Graphics
 
 For a high degree of flexibility, new graphical user interface systems should allow for the following:
@@ -165,7 +167,7 @@ authors' suggestions for the three-dimensional appearance of buttons and certain
 ## Worthy mentions
 
 - The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics, not pixel images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
-- The [Motif interface toolkit](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^13]  The [pseudocode conventions](https://peteroupc.github.io/pseudocode.html) apply to the pseudocode below.
+- The [Motif interface toolkit](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^13]  The [pseudocode conventions](https://peteroupc.github.io/pseudocode.html) apply to the following pseudocode.
 
 ```
 // First calculate the background color's "brightness",
