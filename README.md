@@ -31,6 +31,7 @@ In general, the following are not within the scope of this challenge.
 
 - Photographic images (see "Wallpaper Generation Notes", later in this document).
 - Images with a single solid color on all four sides; such images are trivially tileable.
+- Images that can be tiled in one dimension only, such as those depicting horizontal or vertical borders with an "infinitely" extending background.
 
 ## Color Palettes
 
@@ -134,10 +135,10 @@ The texture generator at [`schalkt/tgen`](https://github.com/schalkt/tgen), unde
 
 5. One way to generate a wallpaper image is by blending a solid color (or another tileable wallpaper) with a tileable image consisting of only transparent pixels and semitransparent and opaque black pixels (such as a masonry pattern).
 
-6. **Stochastic Tiling:** Wang tiles are a finite set of tiles (here, wallpaper images) that can cover an arbitrary grid without seams.  One example is the [set of 16 tiles](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
+6. **Stochastic tiling:** Wang tiles are a finite set of tiles (here, wallpaper images) that can cover an arbitrary grid without seams.  One example is the [set of 16 tiles](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
 
     - A randomized tiling, or _stochastic tiling_, can be generated from this tile set by repeatedly selecting a grid position and choosing a random tile that can go in that position without introducing seams, until the whole grid is covered.
-    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper image at each grid position, where each version has the same size and the same edges as each other version but can otherwise vary.[^8]
+    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper image at each grid position, where each version has the same dimensions and the same edges as each other version but can otherwise vary.[^8]
 
     Both kinds of stochastic tiling can be combined.  [See example](https://web.archive.org/web/20160220062702/http://www.cr31.co.uk/stagecast/wang/2edge.html).[^9]
 
@@ -208,7 +209,7 @@ For discussions on converting traditional icons to vector graphics, see [pixelto
 
 Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
 
-[^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.  Many tileable wallpapers are _seamless_, but not all (consider a pattern of bricks or square floor tiles).<br>Images that can be tiled in one dimension only, such as those depicting horizontal or vertical borders with an "infinitely" extending background, are not tileable for purposes of this challenge.<br>For the Macintosh operating system, System 7.5.x and Mac OS 7.6.x, 8.x, and 9.x supported _desktop patterns_ of size up to 128 &times; 128 pixels, Mac OS 8.x and 9.x distinguished between desktop patterns and _desktop pictures_ (of usually larger size and lying above the desktop pattern), and versions earlier than System 7.5 supported only 8-&times;-8-pixel desktop patterns.<br>In Windows version 3.1, Windows 95, and Windows 98, _desktop patterns_ are of size 8x8 pixels and have only two colors (black and the desktop background color), and _desktop wallpaper_ is of arbitrary size and lies above the desktop pattern.
+[^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [_wallpaper groups_](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.  Many tileable wallpapers are _seamless_, but not all (consider a pattern of bricks or square floor tiles).<br>For the Macintosh operating system, System 7.5.x and Mac OS 7.6.x, 8.x, and 9.x supported _desktop patterns_ of size up to 128 &times; 128 pixels, Mac OS 8.x and 9.x distinguished between desktop patterns and _desktop pictures_ (of usually larger size and lying above the desktop pattern), and versions earlier than System 7.5 supported only 8-&times;-8-pixel desktop patterns.<br>In Windows version 3.1, Windows 95, and Windows 98, _desktop patterns_ are of size 8x8 pixels and have only two colors (black and the desktop background color), and _desktop wallpaper_ is of arbitrary size and lies above the desktop pattern.
 
 [^2]: Can be generated from `dstripe` using the following ImageMagick command: `magick dstripe.png \( +clone -flop \) +append dzigzag.png`.
 

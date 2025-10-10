@@ -78,7 +78,7 @@ struct AppState {
 
 
 fn _length(a: f32, b: f32) -> f32{
-  return (a*a+b*b).sqrt();
+  (a*a+b*b).sqrt()
 }
 
 #[cfg(not(target_arch="wasm32"))]
@@ -110,6 +110,32 @@ fn randomrects<T: basicrgbimage::BasicRgbImage>(image: &mut T){
   }
 }
 
+// Benchmark function that draws 512 random "sprites"
+// to a frame buffer.
+fn randomsprites<T: basicrgbimage::BasicRgbImage>(image: &mut T){
+  let unifx=new_uniform!(0,if image.width()<64 { 0 } else {image.width()-64} );
+  let unify=new_uniform!(0,if image.height()<64 { 0 } else {image.height()-64} );
+  let unifbyte=new_uniform!(0,255);
+  let mut rng=new_rng!();
+  let mut pixels:u64=0;
+  for _ in 0..512 {
+    let color=[
+      sample_rng!(unifbyte,&mut rng) as u8,
+      sample_rng!(unifbyte,&mut rng) as u8,
+      sample_rng!(unifbyte,&mut rng) as u8];
+    let x0=sample_rng!(unifx,&mut rng);
+    let x1=std::cmp::min(image.width(), ((x0+64) as u64).try_into().unwrap());
+    let y0=sample_rng!(unify,&mut rng);
+    let y1=std::cmp::min(image.height(), ((y0+64) as u64).try_into().unwrap());
+    let rx0=std::cmp::min(x0,x1);
+    let ry0=std::cmp::min(y0,y1);
+    let rx1=std::cmp::max(x0,x1);
+    let ry1=std::cmp::max(y0,y1);
+    pixels+=((rx1-rx0) as u64)*((ry1-ry0) as u64);
+    imageop::rectangle(image, rx0,ry0,rx1,ry1,color);
+  }
+}
+
 
 fn blacken<T: basicrgbimage::BasicRgbImage>(image: &mut T){
                 let height=image.height();
@@ -129,11 +155,11 @@ fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_t
                   let yp:f32=(y as f32)/(height as f32);
                   for x in 0..width {
                     let xp:f32=(x as f32)/(width as f32);
-                    /*let sh=shader(width,height,xp,yp,f32elapsed);
+                    let sh:[f32;3]=[0.0,0.0,0.0]; //shader(width,height,xp,yp,f32elapsed);
                     let r:u8=(sh[0].clamp(0.0,1.0)*255.0) as u8;
                     let g:u8=(sh[1].clamp(0.0,1.0)*255.0) as u8;
                     let b:u8=(sh[2].clamp(0.0,1.0)*255.0) as u8;
-                    image.put_pixel(x,y,[r,g,b]);*/
+                    image.put_pixel(x,y,[r,g,b]);
                   }
                 }
 }
@@ -210,7 +236,8 @@ impl winit::application::ApplicationHandler for AppState {
                 // Draw on buffer
                 let elapsedu64: u64 = (self.start.elapsed().as_secs_f64()*60.0) as u64;
                 let realframe=(elapsedu64 & 0xFFFFFFFF) as u32;
-                imageop::copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
+                //imageop::copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
+                randomsprites(softbuffer_data_mut!(buffer,width,height));
                 imageop::websafedither(softbuffer_data_mut!(buffer,width,height), true);
                 // End drawing on buffer
                 buffer.present().unwrap();
