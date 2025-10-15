@@ -168,12 +168,12 @@ impl winit::application::ApplicationHandler for AppState {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let mut attribs=Window::default_attributes()
                 .with_inner_size(
-                    winit::dpi::LogicalSize::new(640,480)).with_resizable(false)
+                    winit::dpi::LogicalSize::new(320,240)).with_resizable(false)
                 .with_title("Desktop Wallpaper App");
         #[cfg(target_arch="wasm32")]
         {
                if !self.started {
-                   write("<canvas width=640 height=480 id=wasmcanvas></canvas>");
+                   write("<canvas width=320 height=240 id=wasmcanvas></canvas>");
                }
                attribs=attribs.with_canvas(Some(getElementById("wasmcanvas")));
         }
@@ -227,10 +227,10 @@ impl winit::application::ApplicationHandler for AppState {
                    return;
                 };
                 surface.resize(w,h).unwrap();
-                if self.frame%60==0{
+                /*if self.frame%60==0{
                    let fps=(self.frame as f64) / self.start.elapsed().as_secs_f64();
                    eprintln!("{} fps",fps);
-                }
+                }*/
                 self.frame+=1;
                 let mut buffer = surface.buffer_mut().unwrap();
                 // Draw on buffer

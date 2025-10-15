@@ -1326,10 +1326,10 @@ def hatchedbox_alignorigins(
 # 0x00: Turn destination "black" (bits are all zeros).
 # 0x11: "Not source erase", "not merge pen" ("pen" is understood as the source pixel).
 # 0x22: "Mask not pen".
-# 0x33: "Not source copy", "not copy pen".
+# 0x33: "Not source copy", "not copy pen"; copy inverted source to destination.
 # 0x44: "Source erase", "mask pen not".
 # 0x55: "Destination invert".
-# 0x66: "Source invert", "XOR pen".
+# 0x66: "Source invert", "XOR pen"; invert destination where the source bit is 1.
 # 0x77: "Not mask pen".
 # 0x88: "Source AND".
 # 0x99: "Not XOR pen".
@@ -5192,7 +5192,7 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
     )
 
 # Draws one or more 3-D borders on the inner edge of a shape defined by a mask image,
-# each of whose pixels is all zeros or all ones.
+# each of whose pixels is all zeros or all one-bits (equal to 255 in this case).
 # The area of the shape is defined by the all-zero pixels.
 # 'mask' has the same format returned by the blankimage() method with alpha=False.
 # 'fillColor' is the fill color, if any; can be None, and default is None, indicating
@@ -5219,7 +5219,7 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
 #     h,
 #     # Raised outline has two layers
 #     [
-#         # Upper color, lower coloe
+#         # Upper color, lower color
 #         [[255, 255, 255], [128, 128, 128]],
 #         [[255, 255, 255], [128, 128, 128]],
 #     ], traceInnerCorners=True
@@ -5382,6 +5382,11 @@ def threedee(
         frontmask = backmask
         backmask = maskbuffer1 if i % 2 == 0 else maskbuffer2
 
+# Draws a border on the outer edge of a shape defined by a mask image,
+# each of whose pixels is all zeros or all one-bits (equal to 255 in this case).
+# The area of the shape is defined by the all-zero pixels.
+# 'mask' has the same format returned by the blankimage() method with alpha=False.
+# 'color' is the color of the border.
 def outeredge(helper, x0, y0, mask, w, h, color, upperEdge=True, lowerEdge=True):
     if (not upperEdge) and (not lowerEdge):
         return

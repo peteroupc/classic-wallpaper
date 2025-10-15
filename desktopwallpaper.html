@@ -893,10 +893,10 @@ Data descriptors defined here:<br>
 #&nbsp;0x00:&nbsp;Turn&nbsp;destination&nbsp;"black"&nbsp;(bits&nbsp;are&nbsp;all&nbsp;zeros).<br>
 #&nbsp;0x11:&nbsp;"Not&nbsp;source&nbsp;erase",&nbsp;"not&nbsp;merge&nbsp;pen"&nbsp;("pen"&nbsp;is&nbsp;understood&nbsp;as&nbsp;the&nbsp;source&nbsp;pixel).<br>
 #&nbsp;0x22:&nbsp;"Mask&nbsp;not&nbsp;pen".<br>
-#&nbsp;0x33:&nbsp;"Not&nbsp;source&nbsp;copy",&nbsp;"not&nbsp;copy&nbsp;pen".<br>
+#&nbsp;0x33:&nbsp;"Not&nbsp;source&nbsp;copy",&nbsp;"not&nbsp;copy&nbsp;pen";&nbsp;copy&nbsp;inverted&nbsp;source&nbsp;to&nbsp;destination.<br>
 #&nbsp;0x44:&nbsp;"Source&nbsp;erase",&nbsp;"mask&nbsp;pen&nbsp;not".<br>
 #&nbsp;0x55:&nbsp;"Destination&nbsp;invert".<br>
-#&nbsp;0x66:&nbsp;"Source&nbsp;invert",&nbsp;"XOR&nbsp;pen".<br>
+#&nbsp;0x66:&nbsp;"Source&nbsp;invert",&nbsp;"XOR&nbsp;pen";&nbsp;invert&nbsp;destination&nbsp;where&nbsp;the&nbsp;source&nbsp;bit&nbsp;is&nbsp;1.<br>
 #&nbsp;0x77:&nbsp;"Not&nbsp;mask&nbsp;pen".<br>
 #&nbsp;0x88:&nbsp;"Source&nbsp;AND".<br>
 #&nbsp;0x99:&nbsp;"Not&nbsp;XOR&nbsp;pen".<br>
@@ -1186,7 +1186,11 @@ Data descriptors defined here:<br>
 #&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;If&nbsp;'bgcolor'&nbsp;is&nbsp;None&nbsp;or&nbsp;not&nbsp;given,&nbsp;it&nbsp;becomes&nbsp;(255,255,255).<br>
 #&nbsp;If&nbsp;'noisecolor'&nbsp;is&nbsp;None&nbsp;or&nbsp;not&nbsp;given,&nbsp;it&nbsp;becomes&nbsp;(0,0,0).</span></dd></dl>
- <dl><dt><a name="-outeredge"><strong>outeredge</strong></a>(helper, x0, y0, mask, w, h, color, upperEdge=True, lowerEdge=True)</dt></dl>
+ <dl><dt><a name="-outeredge"><strong>outeredge</strong></a>(helper, x0, y0, mask, w, h, color, upperEdge=True, lowerEdge=True)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;border&nbsp;on&nbsp;the&nbsp;outer&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
+#&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;one-bits&nbsp;(equal&nbsp;to&nbsp;255&nbsp;in&nbsp;this&nbsp;case).<br>
+#&nbsp;The&nbsp;area&nbsp;of&nbsp;the&nbsp;shape&nbsp;is&nbsp;defined&nbsp;by&nbsp;the&nbsp;all-zero&nbsp;pixels.<br>
+#&nbsp;'mask'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'color'&nbsp;is&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;border.</span></dd></dl>
  <dl><dt><a name="-outlineimage"><strong>outlineimage</strong></a>(image, width, height, lt=None, sh=None)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;3D&nbsp;outline&nbsp;over&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;with&nbsp;transparent<br>
 #&nbsp;pixels,&nbsp;assuming&nbsp;a&nbsp;light&nbsp;source&nbsp;from&nbsp;the&nbsp;upper&nbsp;left.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
@@ -1502,7 +1506,7 @@ Data descriptors defined here:<br>
     traceInnerCorners=False,
     lowerDominates=True
 )</dt><dd><span class="code">#&nbsp;Draws&nbsp;one&nbsp;or&nbsp;more&nbsp;3-D&nbsp;borders&nbsp;on&nbsp;the&nbsp;inner&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
-#&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;ones.<br>
+#&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;one-bits&nbsp;(equal&nbsp;to&nbsp;255&nbsp;in&nbsp;this&nbsp;case).<br>
 #&nbsp;The&nbsp;area&nbsp;of&nbsp;the&nbsp;shape&nbsp;is&nbsp;defined&nbsp;by&nbsp;the&nbsp;all-zero&nbsp;pixels.<br>
 #&nbsp;'mask'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'fillColor'&nbsp;is&nbsp;the&nbsp;fill&nbsp;color,&nbsp;if&nbsp;any;&nbsp;can&nbsp;be&nbsp;None,&nbsp;and&nbsp;default&nbsp;is&nbsp;None,&nbsp;indicating<br>
@@ -1529,7 +1533,7 @@ Data descriptors defined here:<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h,<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Raised&nbsp;outline&nbsp;has&nbsp;two&nbsp;layers<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<br>
-#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Upper&nbsp;color,&nbsp;lower&nbsp;coloe<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Upper&nbsp;color,&nbsp;lower&nbsp;color<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[255,&nbsp;255,&nbsp;255],&nbsp;[128,&nbsp;128,&nbsp;128]],<br>
 #&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],&nbsp;traceInnerCorners=True<br>
