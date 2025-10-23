@@ -80,7 +80,7 @@ Traditionally, the three-dimensional effects of buttons, icons, and other user-i
 
 An icon (a small graphic representing a computer program, document, or resource) should come in a set of variations in color and dimensions:
 
-- The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette; for 8-color icons, an 8-color palette where each color component is 0 or 255 [^1].
+- The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette.[^1]
 - The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [logical display resolution](#logical-resolutions). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.
@@ -150,6 +150,7 @@ The following books and other works discuss design matters on traditional user i
 - "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
 - Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
 - W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
+- Microsoft Knowledge Base article Q69079, "How to Give a 3-D Effect to Windows Controls".
 - Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 - Shiz Kobara, _Visual Design with OSF/Motif_, Addison-Wesley, 1991.
@@ -158,6 +159,7 @@ The following books and other works discuss design matters on traditional user i
 - _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
 - [_Macintosh Human Interface Guidelines_](https://dl.acm.org/doi/book/10.5555/573097), 1992.
 - "Color, Windows, and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
+- The "Visual Design Guide" that came with Microsoft Visual Basic 3.0 Professional Edition.
 - _Mac OS 8 Human Interface Guidelines_ (addendum to _Macintosh User Interface Guidelines_), Sep. 2, 1997.
 - E. Voas, "Appearance: Not Just Another Pretty Interface", _develop_ (Apple), June 1997.
 - J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the
@@ -214,13 +216,13 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 ## Notes
 
-[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128, 128, 128)).<br>Eight-color icons (as opposed to 2- or 16-color icons), although supported by the Windows color icon format, are rarely displayed in practice; I am not aware of any video driver for Windows version 3.1 or earlier that supports displaying only eight colors at a time (which is not the case for the CGA, EGA, and VGA video drivers).  By contrast, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color displays.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color (192, 192, 192) is missing and often replaced with a dithered mixture of light gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
+[^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128, 128, 128)).<br>Eight-color icons, although supported by the Windows color icon format like 2- or 16-color icons, are rarely displayed in practice; I am not aware of any video driver for Windows version 3.1 or earlier that supports displaying only eight colors at a time (which is not the case for the CGA, EGA, and VGA video drivers).  By contrast, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards. A traditional color choice for 8-color icons was an 8-color palette where each color component is 0 or 255.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color (192, 192, 192) is missing and often replaced with a dithered mixture of light gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
 [^3]:  See _The Windows Interface Guidelines for Software Design_.
 
-[^3a]:  Buttons possessed a 3-D effect in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that give 3-D effects to more places in an application.
+[^3a]:  Buttons possessed a 3-D effect in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that gives 3-D effects to more places in an application.
 
 [^3b]:  _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in System 7 of the Macintosh Operating System was designed to be legible even when rendered this way).
 

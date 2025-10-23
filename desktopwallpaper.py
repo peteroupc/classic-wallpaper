@@ -6722,6 +6722,7 @@ def drawreliefborder(
     innerbordersize=1,
     midbordersize=1,
     basrelief=True,
+    lowerDominates=True,
 ):
     if hilt == None:
         hilt = [255, 255, 255]
@@ -6738,16 +6739,13 @@ def drawreliefborder(
     if midbordersize < 0:
         raise ValueError
     # Outer border
-    if basrelief:
-        drawsunkenborderbotdom(
-            helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize
-        )
-    else:
-        drawraisedborderbotdom(
-            helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize
-        )
+    (
+        (drawsunkenborderbotdom if basrelief else drawraisedborderbotdom)
+        if lowerDominates
+        else (drawsunkenbordertopdom if basrelief else drawraisedbordertopdom)
+    )(helper, x0, y1, x1, y1, hilt, None, sh, None, bordersize=outerbordersize)
     # Middle border
-    drawedgebotdom(
+    (drawedgebotdom if lowerDominates else drawedgetopdom)(
         helper,
         x0 + outerbordersize,
         y1 + outerbordersize,
@@ -6758,32 +6756,22 @@ def drawreliefborder(
         bordersize=midbordersize,
     )
     # Inner border
-    if basrelief:
-        drawraisedborderbotdom(
-            helper,
-            x0 + outerbordersize + midbordersize,
-            y1 + outerbordersize + midbordersize,
-            x1 - outerbordersize - midbordersize,
-            y1 - outerbordersize - midbordersize,
-            hilt,
-            None,
-            sh,
-            None,
-            bordersize=innerbordersize,
-        )
-    else:
-        drawsunkenborderbotdom(
-            helper,
-            x0 + outerbordersize + midbordersize,
-            y1 + outerbordersize + midbordersize,
-            x1 - outerbordersize - midbordersize,
-            y1 - outerbordersize - midbordersize,
-            hilt,
-            None,
-            sh,
-            None,
-            bordersize=innerbordersize,
-        )
+    (
+        (drawraisedborderbotdom if basrelief else drawsunkenborderbotdom)
+        if lowerDominates
+        else (drawraisedbordertopdom if basrelief else drawsunkenbordertopdom)
+    )(
+        helper,
+        x0 + outerbordersize + midbordersize,
+        y1 + outerbordersize + midbordersize,
+        x1 - outerbordersize - midbordersize,
+        y1 - outerbordersize - midbordersize,
+        hilt,
+        None,
+        sh,
+        None,
+        bordersize=innerbordersize,
+    )
     c = midbordersize + outerbordersize + innerbordersize
     return [x0 + c, y0 + c, x0 - c, y0 - c]
 
@@ -8046,7 +8034,7 @@ def checkerFromThreeGrays(image, width, height, lightFirst=False):
 # Input image uses only three colors: (0,0,0) or black,(128,128,128),(255,255,255) or white
 # Turns the image into a black-and-white image, with middle gray dithered.
 # Image has the same format returned by the blankimage() method with alpha=False.
-def monochromeFromThreeGrays(image, width, height):
+def blackWhiteFromThreeGrays(image, width, height):
     image = [x for x in image]
     dithertograyimage(image, width, height, [0, 255])
     return image

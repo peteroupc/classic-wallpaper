@@ -40,7 +40,7 @@ There is an algorithm by Kopf and Lischinski ("Depixelizing Pixel Art", _ACM Tra
 
 Potrace version 1.16 (2019) likewise suffers from points 1 and 2, and also supports only black-and-white opaque pixel images and not color ones.
 
-Algorithms designed for scaling pixel images, such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting a pixel image to a vector graphic.  In any case, none of the algorithms mentioned renders pixel lines as vector line commands.
+[Algorithms designed for scaling pixel images](http://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms), such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting a pixel image to a vector graphic.  In any case, none of the algorithms mentioned renders pixel lines as vector line commands.
 
 ## Example
 

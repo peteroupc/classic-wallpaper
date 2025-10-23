@@ -191,6 +191,9 @@ Data descriptors defined here:<br>
 #&nbsp;bg&nbsp;is&nbsp;treated&nbsp;as&nbsp;[192,&nbsp;192,&nbsp;192]&nbsp;if&nbsp;None.<br>
 #&nbsp;highlight&nbsp;is&nbsp;treated&nbsp;as&nbsp;[255,&nbsp;255,&nbsp;255]&nbsp;if&nbsp;None.<br>
 #&nbsp;shadow&nbsp;is&nbsp;treated&nbsp;as&nbsp;[0,&nbsp;0,&nbsp;0]&nbsp;if&nbsp;None.</span></dd></dl>
+ <dl><dt><a name="-blackWhiteFromThreeGrays"><strong>blackWhiteFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
+#&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-blankimage"><strong>blankimage</strong></a>(width, height, color=None, alpha=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;blank&nbsp;image&nbsp;with&nbsp;3&nbsp;or&nbsp;4&nbsp;bytes&nbsp;per&nbsp;pixel&nbsp;and&nbsp;the&nbsp;specified&nbsp;width,&nbsp;height,<br>
 #&nbsp;and&nbsp;fill&nbsp;color.<br>
 #<br>
@@ -612,7 +615,8 @@ Data descriptors defined here:<br>
     outerbordersize=1,
     innerbordersize=1,
     midbordersize=1,
-    basrelief=True
+    basrelief=True,
+    lowerDominates=True
 )</dt><dd><span class="code">#&nbsp;If&nbsp;basrelief=True:&nbsp;draw&nbsp;a&nbsp;sunken-middle-raised&nbsp;"groove"&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).<br>
 #&nbsp;If&nbsp;basrelief=False:&nbsp;draw&nbsp;a&nbsp;raised-middle-sunken&nbsp;"bump"&nbsp;border&nbsp;(from&nbsp;outer&nbsp;to&nbsp;inner).</span></dd></dl>
  <dl><dt><a name="-drawroundededge"><strong>drawroundededge</strong></a>(helper, x0, y0, x1, y1, upper, lower, edgesize=1, bordersize=1)</dt><dd><span class="code">#&nbsp;helper&nbsp;for&nbsp;edge&nbsp;drawing&nbsp;(upper&nbsp;left&nbsp;edge&nbsp;"dominates"&nbsp;in&nbsp;the&nbsp;sense&nbsp;that&nbsp;the&nbsp;upper&nbsp;right<br>
@@ -1174,9 +1178,6 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-marknoise"><strong>marknoise</strong></a>(width, height, tileable=True, alpha=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'.&nbsp;&nbsp;The&nbsp;returned&nbsp;image&nbsp;is&nbsp;of&nbsp;dots&nbsp;at&nbsp;random&nbsp;positions&nbsp;and&nbsp;random&nbsp;gray&nbsp;tones.<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-monoborder"><strong>monoborder</strong></a>(helper, x0, y0, x1, y1, clientAreaColor, windowFrameColor)</dt></dl>
- <dl><dt><a name="-monochromeFromThreeGrays"><strong>monochromeFromThreeGrays</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Input&nbsp;image&nbsp;uses&nbsp;only&nbsp;three&nbsp;colors:&nbsp;(0,0,0)&nbsp;or&nbsp;black,(128,128,128),(255,255,255)&nbsp;or&nbsp;white<br>
-#&nbsp;Turns&nbsp;the&nbsp;image&nbsp;into&nbsp;a&nbsp;black-and-white&nbsp;image,&nbsp;with&nbsp;middle&nbsp;gray&nbsp;dithered.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-noalpha"><strong>noalpha</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Converts&nbsp;an&nbsp;image&nbsp;with&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;to&nbsp;an&nbsp;image&nbsp;without&nbsp;an&nbsp;alpha&nbsp;channel&nbsp;by<br>
 #&nbsp;removing&nbsp;that&nbsp;alpha&nbsp;channel.<br>
 #&nbsp;The&nbsp;input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
