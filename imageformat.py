@@ -1907,6 +1907,13 @@ def _read1bppBitmap(byteData, scanSize, height, x, y):
     # Windows or Presentation Manager bitmap data.
     return (byteData[scanSize * (height - 1 - y) + (x >> 3)] >> (7 - (x & 7))) & 1
 
+def _read2bppBitmap(byteData, scanSize, height, x, y):
+    # Reads the bit value of an array of bottom-up 2-bit-per-pixel
+    # Windows CE bitmap data.
+    # References: Black, J., Christiansen, J., "Microsoft Windows CE Display
+    # Drivers and Hardware", September 1997.
+    return (byteData[scanSize * (height - 1 - y) + (x >> 2)] >> (3 - (x & 3))) & 3
+
 def _read4bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 4-bit-per-pixel
     # Windows or Presentation Manager bitmap data.
@@ -1983,6 +1990,8 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
     match bpp:
         case 1:
             return palette[_read1bppBitmap(byteData, scanSize, height, x, y)]
+        case 2:
+            return palette[_read2bppBitmap(byteData, scanSize, height, x, y)]
         case 4:
             return palette[_read4bppBitmap(byteData, scanSize, height, x, y)]
         case 8:
@@ -2524,6 +2533,10 @@ def _readicon(f, packedWinBitmap=False):
         if (
             andmaskhdr[4] != 1
             and andmaskhdr[4] != 4
+            # support 2-bit-per-pixel bitmaps only if header's size is
+            # that of BITMAPINFOHEADER and only if uncompressed;
+            # such bitmaps are a Windows CE peculiarity
+            and not (andmaskhdr[4] == 2 and andmaskhdr[0] == 40 and andcompression == 0)
             and andmaskhdr[4] != 8
             and andmaskhdr[4] != 16
             and andmaskhdr[4] != 24

@@ -42,6 +42,7 @@ The color palettes allowed are as follows.
 - 16-color VGA (video graphics array) palette (light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).
 - 216-color "safety palette" (each color component is a multiple of 51). [^7]
 - 216-color "safety palette" plus VGA palette.
+- The VGA palette without the color (192, 192, 192).
 - A subset of a color palette given earlier.
 
 Any 16-color or 256-color repertoire that was used in a significant volume of application and video-game graphics before the year 2000 is also allowed.
