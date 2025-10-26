@@ -7,7 +7,7 @@ This page discusses aspects of the traditional design of user-interface graphics
 A _display mode_ is a way to set up a computer display to show graphics.  Some display modes follow:
 
 - VGA's (IBM Video Graphics Array) 640 &times; 480 display mode: A _logical resolution_ of 96 horizontal and vertical pixels per inch (pixels are "squares").
-- IBM Extended Graphics Adapter's (EGA) 640 &times; 350 color display mode: 96 horizontal and 72 vertical pixels per inch (pixels are not squares).
+- IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 color display mode: 96 horizontal and 72 vertical pixels per inch (pixels are not squares).
 - IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-tone display mode: 96 horizontal and 48 vertical pixels per inch (pixels are not squares).
 
 An image can be adapted for display modes with logical resolutions that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).

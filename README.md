@@ -58,7 +58,7 @@ Additional color palettes allowed are as follows.
 - 16-color [**canonical Color/Graphics Adapter (CGA) palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).
 - An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
 - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
-- The 64 colors displayable by Extended Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).
+- The 64 colors displayable by Enhanced Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).
 - Up to 16 colors from those displayable by Amiga computers and other 12-bit color displays (each color component is a multiple of 17).
 - Up to 16 colors from those displayable by original Atari ST computers and other 9-bit color displays (each color component is either 255 or a multiple of 32).
 - Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
