@@ -6,9 +6,9 @@ This page discusses aspects of the traditional design of user-interface graphics
 
 A _display mode_ is a way to set up a computer display to show graphics.  Some display modes follow:
 
-- VGA's (IBM Video Graphics Array) 640 &times; 480 display mode: A _logical resolution_ of 96 horizontal and vertical pixels per inch (pixels are "squares").
-- IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 color display mode: 96 horizontal and 72 vertical pixels per inch (pixels are not squares).
-- IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-tone display mode: 96 horizontal and 48 vertical pixels per inch (pixels are not squares).
+- VGA's (IBM Video Graphics Array) 640 &times; 480 16-color display mode: A _logical resolution_ of 96 horizontal and vertical pixels per inch (pixels are "squares").
+- IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch (pixels are not squares).
+- IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-level monochrome display mode: 96 horizontal and 48 vertical pixels per inch (pixels are not squares).
 
 An image can be adapted for display modes with logical resolutions that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).
 
@@ -105,7 +105,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 - Curves and straight line segments are drawn unsmoothed and one pixel thick.
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
 - There are no translucent (semitransparent) pixels.
-- The three-dimensional (3-D) appearance of buttons and other objects in graphics supposes the presence of a light source shining from the upper left.[^3]
+- The three-dimensional (3-D) appearance of buttons and other objects in two-dimensional graphics supposes the presence of a light source shining from the upper left.[^3]
     - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^4]
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^9]
 - Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^10]
@@ -222,7 +222,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^3]:  See _The Windows Interface Guidelines for Software Design_.
 
-[^3a]:  Buttons possessed a 3-D effect in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that gives 3-D effects to more places in an application.
+[^3a]:  Buttons possessed a 3-D look (in that they appear to have depth or elevation) in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that gives 3-D appearances to more places in an application.
 
 [^3b]:  _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in System 7 of the Macintosh Operating System was designed to be legible even when rendered this way).
 

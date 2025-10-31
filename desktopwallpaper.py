@@ -331,6 +331,7 @@ def uniquecolors(image, width, height, alpha=False, nontransparentOnly=False):
             | (image[i * bytesperpixel + 1] << 8)
             | (image[i * bytesperpixel + 2] << 16)
         )
+        #print([c,image[i*bytesperpixel+3]])
         colors[c] = True
     ck = [[k & 0xFF, (k >> 8) & 0xFF, (k >> 16) & 0xFF] for k in colors.keys()]
     ck.sort()
@@ -5191,7 +5192,8 @@ def _on_mask(mask, w, h, x, y, pos, stride, ox, oy):
         and mask[pos + stride * oy + 3 * ox] == 0
     )
 
-# Draws one or more 3-D borders on the inner edge of a shape defined by a mask image,
+# Draws one or more borders, with a three-dimensional look, on the
+# inner edge of a shape defined by a mask image,
 # each of whose pixels is all zeros or all one-bits (equal to 255 in this case).
 # The area of the shape is defined by the all-zero pixels.
 # 'mask' has the same format returned by the blankimage() method with alpha=False.
@@ -7276,7 +7278,7 @@ def shadeabove(
         wraparound=wraparound,
     )
 
-# Draw a 3-D slider thumb.
+# Draw a slider thumb with a three-dimensional look.
 # 'dst' has the same format returned by the blankimage() method with alpha=False.
 def slider3d(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24):
     # Draw slider thumb mask
@@ -7287,7 +7289,7 @@ def slider3d(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24):
         [0, 0, 0],
         [[0, 0], [sw, 0], [sw, sh - sw // 2], [sw // 2, sh], [0, sh - sw // 2]],
     )
-    # Draw 3-D effect using mask
+    # Draw three-dimensional look using mask
     helper = ImageDrawHelper(dst, dstwidth, dstheight)
     threedee(
         helper,

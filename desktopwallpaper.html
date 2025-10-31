@@ -1463,7 +1463,7 @@ Data descriptors defined here:<br>
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;wraparound&nbsp;simple&nbsp;box&nbsp;on&nbsp;an&nbsp;image.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).</span></dd></dl>
  <dl><dt><a name="-simplepolygonfill"><strong>simplepolygonfill</strong></a>(helper, color, points)</dt></dl>
- <dl><dt><a name="-slider3d"><strong>slider3d</strong></a>(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;3-D&nbsp;slider&nbsp;thumb.<br>
+ <dl><dt><a name="-slider3d"><strong>slider3d</strong></a>(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;slider&nbsp;thumb&nbsp;with&nbsp;a&nbsp;three-dimensional&nbsp;look.<br>
 #&nbsp;'dst'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
@@ -1506,7 +1506,8 @@ Data descriptors defined here:<br>
     fillColor=None,
     traceInnerCorners=False,
     lowerDominates=True
-)</dt><dd><span class="code">#&nbsp;Draws&nbsp;one&nbsp;or&nbsp;more&nbsp;3-D&nbsp;borders&nbsp;on&nbsp;the&nbsp;inner&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
+)</dt><dd><span class="code">#&nbsp;Draws&nbsp;one&nbsp;or&nbsp;more&nbsp;borders,&nbsp;with&nbsp;a&nbsp;three-dimensional&nbsp;look,&nbsp;on&nbsp;the<br>
+#&nbsp;inner&nbsp;edge&nbsp;of&nbsp;a&nbsp;shape&nbsp;defined&nbsp;by&nbsp;a&nbsp;mask&nbsp;image,<br>
 #&nbsp;each&nbsp;of&nbsp;whose&nbsp;pixels&nbsp;is&nbsp;all&nbsp;zeros&nbsp;or&nbsp;all&nbsp;one-bits&nbsp;(equal&nbsp;to&nbsp;255&nbsp;in&nbsp;this&nbsp;case).<br>
 #&nbsp;The&nbsp;area&nbsp;of&nbsp;the&nbsp;shape&nbsp;is&nbsp;defined&nbsp;by&nbsp;the&nbsp;all-zero&nbsp;pixels.<br>
 #&nbsp;'mask'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
