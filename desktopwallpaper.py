@@ -6833,6 +6833,25 @@ def drawsunkenouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
 def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, lt)
 
+# The following four functions draw Windows CE button edges,
+# in raised and sunken style.
+
+# Draw an outer Windows CE button edge in raised style.
+def drawraisedouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0, y0, x1, y1, sh, dksh)
+
+# Draw an inner Windows CE button edge in raised style.
+def drawraisedinnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, hilt, sh)
+
+# Draw an outer Windows CE button edge in sunken style.
+def drawsunkenouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0, y0, x1, y1, dksh, sh)
+
+# Draw an inner Windows CE button edge in sunken style.
+def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
+    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, dksh,hilt)
+
 ####
 
 # Raised border where the "upper left dominates", in the sense that the upper right
