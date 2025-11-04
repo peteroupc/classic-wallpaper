@@ -65,14 +65,12 @@ Additional color palettes allowed are as follows.
 - 5- to 64-color grayscale palette (all color components the same).
 - A 27-color palette where each color component is 0, 128, or 255.
 - A 125-color palette where each color component is 0, 64, 128, 192, or 255.
-- Up to four colors from a palette mentioned earlier in this section.
-- Up to eight colors from a palette mentioned earlier in this section.
-- Up to 16 colors from a palette mentioned earlier in this section.
 - A 255-color palette in which each color component is a multiple of 3 and each color is as follows: All components are the same; or both the green and blue components are 0; or the red component is 255 and the green and blue components are the same.
     - Essentially, the palette is made of two color gradients: one going from black to white, and another going from black to "red" (255,0,0) to white.
     - This palette is proposed to allow for easy "recoloring" of an image based on a so-called _accent color_: the cases just given deal with a mixture of "black" and "white"; a mixture of "black" (0,0,0) and the accent color; and a mixture of "white" (255,255,255) and the accent color.[^7a]  An example occurs with "red" and "blue" variants of a playing card back.  For examples, see the `recolor()` and `recolordither()` methods in `desktopwallpaper.py`.
 - A palette just described, except (129, 129, 129) is replaced with (128, 128, 128); (129, 0, 0), with (128, 0, 0); and (255, 129, 129), with (255, 128, 128).
 - A 255-color palette consisting of a gradient from "black" to "white": (0, 0, 0), (2, 2, 2), (4, 4, 4), ..., (250, 250, 250), (252, 252, 252), (255, 255, 255); and a gradient from "black" to "red": (2, 0, 0), (4, 0, 0), ..., (250, 0, 0), (252, 0, 0), (254, 0, 0), (255, 0, 0).
+- A subset of a color palette mentioned earlier in this section.
 
 The following color palettes are allowed, but not preferred:
 
