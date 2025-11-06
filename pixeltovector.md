@@ -23,10 +23,12 @@ In addition, the algorithm:
 
 Algorithms that convert pixel images to vector graphics&mdash;
 
-- in the form of unions of rectangles that cover the input's pixels (for example, [_png2svg_](https://github.com/xyproto/png2svg)), or
+- in the form of unions of rectangles that cover the input's pixels (for example, [**_png2svg_**](https://github.com/xyproto/png2svg)), or
 - in the form of halftone dots that simulate pixels or clusters of pixels (as in newsprint or comic book halftoning),
 
 are not within the scope of this document.
+
+<a id=Existing_Algorithms></a>
 
 ## Existing Algorithms
 
@@ -40,31 +42,35 @@ There is an algorithm by Kopf and Lischinski ("Depixelizing Pixel Art", _ACM Tra
 
 Potrace version 1.16 (2019) likewise suffers from points 1 and 2, and also supports only black-and-white opaque pixel images and not color ones.
 
-[Algorithms designed for scaling pixel images](http://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms), such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting a pixel image to a vector graphic.  In any case, none of the algorithms mentioned renders pixel lines as vector line commands.
+[**Algorithms designed for scaling pixel images**](http://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms), such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting a pixel image to a vector graphic.  In any case, none of the algorithms mentioned renders pixel lines as vector line commands.
 
-A [related project](https://github.com/eviltrout/agi-upscale) involves drawing enlarged versions of a vector graphic defined essentially by single-pixel lines and by flood fills rather than polygons.
+A [**related project**](https://github.com/eviltrout/agi-upscale) involves drawing enlarged versions of a vector graphic defined essentially by single-pixel lines and by flood fills rather than polygons.
+
+<a id=Example></a>
 
 ## Example
 
 Take the following pixel image:
 
-![Diamond pixel image](diamond.png)
+![**Diamond pixel image**](diamond.png)
 
 The desired vector graphic should have the following commands in this order:
 
 1. Polygon, filled with white, connecting the points (1.5, 15.5), (15.5, 1.5), (29.5, 15.5), (15.5, 29.5).  (The coordinates are adjusted by 0.5 because of the centering of pixels in SVG, for example.)
-2. 1-pixel-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-pixel-thick black outline in addition to being filled. [^2]
+2. 1-pixel-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-pixel-thick black outline in addition to being filled. [^1]
 
-[In SVG](https://peteroupc.github.io/svg.html), the desired vector graphic looks like:
+[**In SVG**](https://peteroupc.github.io/svg.html), the desired vector graphic looks like:
 
-![Diamond vector graphic](diamond.svg)
+![**Diamond vector graphic**](diamond.svg)
+
+<a id=License></a>
 
 ## License
 
-Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [Unlicense](https://unlicense.org).
+Any copyright to this page is released to the Public Domain.  In case this is not possible, this page is also licensed under the [**Unlicense**](https://unlicense.org).
+
+<a id=Notes></a>
 
 ## Notes
 
-[^1]: A pixel image with a high number of unique colors (say, 65 or more), is hard to convert to a vector graphic without sacrificing image quality.  While such images ought to be designed as vector graphics from the start, a simple upscaling and downscaling solution, such as bilinear filtering, is acceptable for such pixel images, especially for the use case of user-interface graphics where scaling factors from 50% through 300% are expected.<br>Limited-color pixel images with a pixel size greater than 64 &times; 64 are also of interest and occur among user-interface graphics (such as wizard graphics in Windows 95), but are not the main priority; indeed, the larger the pixel size, the more time the conversion to a vector graphic is expected to take.
-
-[^2]: In SVG, the stroke would also be marked with the `vector-effect:non-scaling-stroke` style, so that the stroke looks 1 pixel thick regardless of scaling.
+[^1]: In SVG, the stroke would also be marked with the `vector-effect:non-scaling-stroke` style, so that the stroke looks 1 pixel thick regardless of scaling.
