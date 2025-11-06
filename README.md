@@ -39,20 +39,20 @@ The color palettes allowed are as follows.
 
 - Two colors only.
     - Such as black and white, which allows for hue shifting to, say, a black-to-red or gray-to-blue palette.
-- 16-color VGA (video graphics array) palette (light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).
+- 16-color VGA (Video Graphics Array) palette (light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).
 - 216-color "safety palette" (each color component is a multiple of 51). [^7]
 - 216-color "safety palette" plus VGA palette.
-- The VGA palette without the color (192, 192, 192).
 - A subset of a color palette given earlier, such as:
     - The following gray tones: black (0, 0, 0), gray (128, 128, 128), white (255, 255, 255). (Allows for hue shifting to, say, a black-to-red palette.)
     - The VGA palette's four gray tones: black, gray (128, 128, 128), light gray (192, 192, 192), white. (Allows for hue shifting to, say, a black-to-red palette.)
     - An 8-color palette where each color component is 0 or 255 (a subset of the 16-color VGA palette).
+    - The VGA palette without the color (192, 192, 192).[^7b]
 
 Any 16-color or 256-color repertoire that was used in a significant volume of application and video-game graphics before the year 2000 is also allowed.
 
 Additional color palettes allowed are as follows.
 
-- The VGA palette plus the following four colors set by legacy versions of Windows: (192,220,192), (160,160,164), (255,251,240), (166,202,240).
+- The VGA palette plus the following four colors set by early versions of Windows: (192,220,192), (160,160,164), (255,251,240), (166,202,240).
 - The VGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 98 unique colors (each color component is 0, 64, 128, or 192; or each color component is 0, 128, or 255; or each color component is 96 or 160; or each color component is 96 or 224).
 - 16-color [**canonical Color/Graphics Adapter (CGA) palette**](https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/) (each color component is 85 or 255; or each color component is 0 or 170, except (170, 85, 0) instead of (170, 170, 0)).
 - The canonical CGA palette plus each "half-and-half mixture" [^6] of any two colors in the palette, for a total of 85 unique colors.
@@ -219,6 +219,8 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^7]: The "safety palette", also known as the "Web safe" colors, consists of 216 colors that are uniformly spaced in the red&ndash;green&ndash;blue color cube.  Robert Hess's article "[The Safety Palette](https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10))", 1996, described the advantage that images that use only colors in this palette won't dither when displayed by Web browsers on displays that can show up to 256 colors at once. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors). Dithering is the scattering of colors in a limited set to simulate colors outside that set.)  When the "safety palette" forms part of a 256-color repertoire, as it usually does, 40 slots are left that can be filled with additional colors, and as Hess mentions, graphics designers have no control over what these additional colors are. Usually these additional colors include the four legacy Windows colors plus the eight VGA palette colors not already in the "safety palette".  For Java's `BufferedImage.TYPE_BYTE_INDEXED`, these 40 colors are gray tones not already in the "safety palette".
 
 [^7a]: See also _OpenGL Programming Guide_ (1993), chapter 6; D. Rogerson, "OpenGL IV: Color Index Mode" (Jan. 19, 1995).
+
+[^7b]: The Enhanced Graphics Adapter (EGA) video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color (192, 192, 192) is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
 
 [^8]: This covers the special case of _Truchet tiles_, involving two versions of an image where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
 

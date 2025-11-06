@@ -2,19 +2,26 @@
 
 This page discusses aspects of the traditional design of user-interface graphics, such as button and border styles, icons, and mouse pointers.
 
-## Logical Resolutions
+## Display Modes
 
-A _display mode_ is a way to set up a computer display to show graphics.  Some display modes follow:
+In this document:
 
-- VGA's (IBM Video Graphics Array) 640 &times; 480 16-color display mode: A _logical resolution_ of 96 horizontal and vertical pixels per inch (pixels are "squares").
-- IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch (pixels are not squares).
-- IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-level monochrome display mode: 96 horizontal and 48 vertical pixels per inch (pixels are not squares).
+- A _display mode_ is a way to set up a computer display to show graphics.
+- _Screen resolution_ gives the number of columns and rows of pixels the display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.
+- _Pixel resolution_ gives a display mode's horizontal pixels per inch and vertical pixels per inch.  These two values need not match the true pixel resolution of a particular computer display.  If these two values are the same, then the pixels are "square".[^1a]
+- _Pixel aspect ratio_ is the ratio of _vertical_ pixels per inch to _horizontal_ pixels per inch.
 
-An image can be adapted for display modes with logical resolutions that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).
+Some display modes follow along with their screen and pixel resolutions:
 
-Logical resolutions also cover the special case of _pixel density_ (such as 2 to 1).  Pixel density is determined by a scale factor, or a number to multiply by the logical resolution of 96 horizontal and vertical pixels per inch, such as 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2, and 3.
+- VGA's (IBM Video Graphics Array) 640 &times; 480 16-color display mode: 96 horizontal and vertical pixels per inch.
+- IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch.
+- IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-level monochrome display mode: 96 horizontal and 48 vertical pixels per inch.
 
-More generally, units similar to pixels may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [_dialog box units_](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [_effective pixels_](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display, its size, and its resolution).
+An image can be adapted for display modes with pixel resolutions that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).
+
+Pixel resolutions also cover the special case of _pixel density_ (such as 2 to 1).  Pixel density is determined by a scale factor, or a number to multiply by the pixel resolution of 96 horizontal and vertical pixels per inch, such as 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2, and 3.
+
+More generally, units similar to pixels may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [_dialog box units_](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [_effective pixels_](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display and its size, among other things).
 
 ## Button and Border Styles
 
@@ -81,7 +88,7 @@ Traditionally, the three-dimensional effects of buttons, icons, and other user-i
 An icon (a small graphic representing a computer program, document, or resource) should come in a set of variations in color and dimensions:
 
 - The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette.[^1]
-- The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [logical display resolution](#logical-resolutions). [^5]
+- The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [pixel resolution](#display-modes). [^5]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.
 
@@ -89,8 +96,8 @@ Traditionally, 32 &times; 32 icons with the VGA palette are the most common vari
 
 Cursors (mouse pointer graphics) can follow the guidelines given earlier as well, but most cursors are traditionally drawn:
 
-- In a single width and height, generally 32 &times; 32 pixels, except to account for [logical display resolution](#logical-resolutions).
-- In black and white or in grayscale (with colors limited to white, black, and other gray tones), in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
+- In a single width and height, generally 32 &times; 32 pixels, except to account for [pixel resolution](#display-modes).
+- Either in black and white, or with colors limited to white, black, and other gray tones, in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** Icon formats for OS/2 Presentation Manager and Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [`imageformat` module documentation](./imageformat.html).
 
@@ -116,14 +123,14 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.[^8a]
 - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in a typeface, or font; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^8aa]
 
-In general, in graphics before 1995, black-and-white icons (with no gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
+In general, in graphics before 1995, black-and-white icons (with no intermediate gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^8b]
 
 After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^6] or similar techniques.
 
 From about 1990 to about 1997, user-interface text&mdash;
 
 - was mostly rendered in a solid color, and
-- was rarely antialiased, and then mainly if the display mode is greater than 8 bits per pixel.
+- was rarely antialiased, and then mainly if the display mode supports showing more than 256 simultaneous colors.
 
 In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^11]  But new applications should avoid having text in icons, cursors, and pixel images.
 
@@ -135,7 +142,7 @@ For a high degree of flexibility, new graphical user interface systems should al
 
 - Designing icons, cursors, and other user-interface elements in the form of [vector graphics](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md).
 - Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
-- Designing user-interface elements as grayscale images, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
+- Designing user-interface elements as images limited to gray tones, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
     - in multiple sizes, each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [vector graphics](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^12], and
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
@@ -217,6 +224,8 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 ## Notes
 
 [^1]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128, 128, 128)).<br>Eight-color icons, although supported by the Windows color icon format like 2- or 16-color icons, are rarely displayed in practice; I am not aware of any video driver for Windows version 3.1 or earlier that supports displaying only eight colors at a time (which is not the case for the CGA, EGA, and VGA video drivers).  By contrast, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards. A traditional color choice for 8-color icons was an 8-color palette where each color component is 0 or 255.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color (192, 192, 192) is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
+
+[^1a]: Two display modes with the same screen resolution can differ in their pixel resolution, even if both are meant for displays with the same aspect ratio.  For example, the pixel resolution of a 320-&times;-200 display mode can be 40 or 48 vertical pixels per inch, even if both are intended for displays with the 4:3 aspect ratio typical in 2000 and earlier.
 
 [^2]:  In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
 
