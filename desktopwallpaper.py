@@ -342,7 +342,7 @@ def _isqrtceil(i):
     return r if r * r == i else r + 1
 
 # Returns an ImageMagick filter string to generate a desktop background from an image, in three steps.
-# 1. If rgb1 and rgb2 are not nil, converts the input image to grayscale, then translates the grayscale
+# 1. If rgb1 and rgb2 are not nil, converts the input image to be limited to gray tones, then translates the grayscale
 # palette to a gradient starting at rgb1 for grayscale level 0 (a 3-element list of the red,
 # green, and blue components in that order; for example, [2,10,255] where each
 # component is from 0 through 255) and ending at rgb2 for grayscale level 255 (same format as rgb1).
@@ -3044,6 +3044,17 @@ def horizhatchedbox(image, width, height, color, x0, y0, x1, y1, alpha=False):
     pattern = [0xFF, 0, 0xFF, 0, 0xFF, 0, 0xFF, 0]
     hatchedbox(image, width, height, color, pattern, x0, y0, x1, y1, alpha=alpha)
 
+# Returns whether the image's colors are gray tones only, disregarding the image's alpha channel.
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
+# The default value for 'alpha' is False
+def isgray(img,width,height,alpha=False):
+   px=4 if alpha else 3
+   pos=0
+   for i in range(width*height):
+      if not (img[pos]==img[pos+1] and img[pos+1]==img[pos+2]): return False
+      pos+=px
+   return True
+
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False
 def shadowedborderedbox(
@@ -3834,6 +3845,7 @@ def getgrays(palette):
 # or "red".  The only colors allowed in the input image are gray tones
 # (x,x,x); shades of red (x,0,0); and tints of red (255,x,x),
 # disregarding the alpha channel if any.
+# Returns the value of 'image'.  The image is modified in place.
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
 # This method disregards the input image's alpha channel.
@@ -3865,10 +3877,34 @@ def recolor(image, width, height, color, alpha=False):
                 raise ValueError("Invalid color")
     return image
 
+# Returns whether the image can be an input to the recolor() method.
+# Image has the same format returned by the blankimage() method with the
+# specified value of 'alpha' (default value for 'alpha' is False).
+# This method disregards the input image's alpha channel.
+def canrecolor(image, width, height, alpha=False):
+    pixelSize = 4 if alpha else 3
+    for y in range(height):
+        yp = y * width * pixelSize
+        for x in range(width):
+            xp = yp + x * pixelSize
+            r = image[xp]
+            g = image[xp + 1]
+            b = image[xp + 2]
+            if r == g and g == b:
+                pass
+            elif r == 255 and g == b:
+                pass
+            elif g == 0 and b == 0:
+                pass
+            else:
+                return False
+    return True
+
 # Converts the image as in recolor() and dithers the image to the
 # gray tones given and the specified color.  The only colors allowed
 # in the input image are gray tones (x,x,x); shades of red (x,0,0); and tints of red (255,x,x),
 # disregarding the alpha channel if any.
+# Returns the value of 'image'.  The image is modified in place.
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
 # 'grays' is as in dithertograyimage().  If None, uses [0, 128, 192, 255].
@@ -3933,7 +3969,7 @@ def recolordither(image, width, height, color, grays=None, darkcolor=None, alpha
                 raise ValueError("Invalid color: %d %d %d" % (r, g, b))
     return image
 
-# Converts the image to grayscale and dithers the resulting image
+# Converts the image to be limited to gray tones and dithers the resulting image
 # to the gray tones given.  The conversion is in-place.
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
@@ -3986,10 +4022,10 @@ def dithertograyimage(
             image[xp] = image[xp + 1] = image[xp + 2] = r
     return image
 
-# Converts the image to grayscale and maps the resulting gray tones
+# Converts the image to be limited to gray tones and maps the resulting gray tones
 # to colors in the specified colors array.  If 'colors' is None (the default),
 # the mapping step is skipped.
-# Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
+# Image has the same format returned by the blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).  This method disregards the image's alpha channel.
 # If 'disregardNonGrays' is True, leave colors other than gray tones
 # in the image unchanged.  Default is False.
 # Returns the value of 'image'; the image is modified in place.
@@ -4501,9 +4537,12 @@ def patternDither(image, width, height, palette, alpha=False, fast=False):
             image[xp + 2] = fcan[2]
     return image
 
-# Returns a 256-element color gradient starting at 'blackColor' and ending at 'whiteColor'.
+# Returns a 'size'-element color gradient starting at 'blackColor' and ending at 'whiteColor'.
 # 'blackColor' and 'whiteColor' are each three-element lists identifying colors.
-def colorgradient(blackColor, whiteColor):
+# Default for 'size' is 256.  Returns a list consisting of a copy of 'blackColor' if 'size' is 1.
+def colorgradient(blackColor, whiteColor, size=256):
+    if size<0: raise ValueError
+    if size==0: return []
     if (
         (not blackColor)
         or (not whiteColor)
@@ -4511,9 +4550,10 @@ def colorgradient(blackColor, whiteColor):
         or len(whiteColor) != 3
     ):
         raise ValueError
+    if size==1: return [[blackColor[0],blackColor[1],blackColor[2]]]
     return [
-        [blackColor[i] + (whiteColor[i] - blackColor[i]) * j // 255 for i in range(3)]
-        for j in range(256)
+        [blackColor[i] + (whiteColor[i] - blackColor[i]) * j // (size-1) for i in range(3)]
+        for j in range(size)
     ]
 
 def _gradient(stops, count=256):
@@ -8015,7 +8055,7 @@ def lightdarkchecker(image, width, height, lightFirst=False):
         return checkerboardtile(image1, image2, width, height)
 
 # Creates a checkerboard pattern of a "light" version and a "dark" version of the specified image,
-# after converting that image to grayscale.
+# after converting that image to be limited to gray tones.
 # Input image has the same format returned by the blankimage() method with alpha=False.
 def graychecker(image, width, height, lightFirst=False):
     # darker image

@@ -8,14 +8,14 @@ This page discusses aspects of the traditional design of user-interface graphics
 
 - [**Contents**](#Contents)
 - [**Display Modes**](#Display_Modes)
-    - [**Button and Border Styles**](#Button_and_Border_Styles)
+- [**Button and Border Styles**](#Button_and_Border_Styles)
 - [**Traditional Button Styles**](#Traditional_Button_Styles)
 - [**Icons and Cursors**](#Icons_and_Cursors)
 - [**Animations**](#Animations)
 - [**Drawing Style**](#Drawing_Style)
 - [**Flexible User Interface Graphics**](#Flexible_User_Interface_Graphics)
 - [**Relevant Works**](#Relevant_Works)
-- [**Worthy mentions**](#Worthy_mentions)
+- [**Worthy Mentions**](#Worthy_Mentions)
 - [**License**](#License)
 - [**End Notes**](#End_Notes)
 
@@ -30,19 +30,19 @@ In this document:
 - _Pixel density_ gives a display mode's horizontal pixels per inch and vertical pixels per inch.  These two values need not match the true pixel density of a particular computer display.  If these two values are the same, then the pixels are "square".[^1]
 - _Pixel aspect ratio_ is the ratio of _vertical_ pixels per inch to _horizontal_ pixels per inch.
 
-Some display modes follow along with their screen and pixel densities:
+Some display modes follow along with their screen densities and commonly implemented pixel densities:
 
 - VGA's (IBM Video Graphics Array) 640 &times; 480 16-color display mode: 96 horizontal and vertical pixels per inch.
 - IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch.
 - IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-level monochrome display mode: 96 horizontal and 48 vertical pixels per inch.
 
-An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  A _pixel density factor_ is a number to multiply by the pixel density of 96 horizontal and vertical pixels per inch, such as 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), or 3 (for very-high-pixel-density displays).
+An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode has "square" pixels, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
 
 More generally, units similar to pixels may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [**_dialog box units_**](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [**_effective pixels_**](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display and its size, among other things).
 
 <a id=Button_and_Border_Styles></a>
 
-### Button and Border Styles
+## Button and Border Styles
 
 Here is a challenge.  Write computer code (released to the public domain or licensed under the Unlicense) to draw the following ways to style borders and buttons:
 
@@ -143,7 +143,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^12]
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^13]
 - Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^14]
-- For graphics limited to the 16-color VGA palette[^1]:
+- For graphics limited to the 16-color VGA palette: [^9]
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
 - For graphics in a 256-color palette, gradient fills are present but subtle.
@@ -204,9 +204,9 @@ The following books and other works discuss design matters on traditional user i
 authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
 - [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
 
-<a id=Worthy_mentions></a>
+<a id=Worthy_Mentions></a>
 
-## Worthy mentions
+## Worthy Mentions
 
 - The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics, not pixel images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
 - The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^20]  The [**pseudocode conventions**](https://peteroupc.github.io/pseudocode.html) apply to the following pseudocode.

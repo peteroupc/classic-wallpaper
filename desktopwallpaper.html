@@ -313,6 +313,10 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False.</span></dd></dl>
  <dl><dt><a name="-buttondown"><strong>buttondown</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-buttonup"><strong>buttonup</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
+ <dl><dt><a name="-canrecolor"><strong>canrecolor</strong></a>(image, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;whether&nbsp;the&nbsp;image&nbsp;can&nbsp;be&nbsp;an&nbsp;input&nbsp;to&nbsp;the&nbsp;<a href="#-recolor">recolor</a>()&nbsp;method.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
+#&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
  <dl><dt><a name="-cgacolors"><strong>cgacolors</strong></a>()</dt><dd><span class="code">#&nbsp;Canonical&nbsp;16-color&nbsp;CGA&nbsp;palette<br>
 #&nbsp;see&nbsp;also:&nbsp;<a href="https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/">https://int10h.org/blog/2022/06/ibm-5153-color-true-cga-palette/</a><br>
 #&nbsp;Each&nbsp;element&nbsp;in&nbsp;the&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;color&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;3-element&nbsp;list&nbsp;of&nbsp;its&nbsp;red,<br>
@@ -368,8 +372,9 @@ Data descriptors defined here:<br>
 #&nbsp;lower-left&nbsp;corner,&nbsp;and&nbsp;lower-right&nbsp;corner&nbsp;of&nbsp;a&nbsp;rectangle&nbsp;that&nbsp;takes&nbsp;the&nbsp;lower<br>
 #&nbsp;half&nbsp;of&nbsp;the&nbsp;destination&nbsp;image.&nbsp;To&nbsp;generate&nbsp;seamless&nbsp;images&nbsp;with&nbsp;this&nbsp;group<br>
 #&nbsp;function,&nbsp;the&nbsp;source&nbsp;shape&nbsp;should&nbsp;satisfy&nbsp;the&nbsp;following:&nbsp;Lower&nbsp;edge&nbsp;is&nbsp;mirrored.</span></dd></dl>
- <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;'blackColor'&nbsp;and&nbsp;ending&nbsp;at&nbsp;'whiteColor'.<br>
-#&nbsp;'blackColor'&nbsp;and&nbsp;'whiteColor'&nbsp;are&nbsp;each&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.</span></dd></dl>
+ <dl><dt><a name="-colorgradient"><strong>colorgradient</strong></a>(blackColor, whiteColor, size=256)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;'size'-element&nbsp;color&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;'blackColor'&nbsp;and&nbsp;ending&nbsp;at&nbsp;'whiteColor'.<br>
+#&nbsp;'blackColor'&nbsp;and&nbsp;'whiteColor'&nbsp;are&nbsp;each&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.<br>
+#&nbsp;Default&nbsp;for&nbsp;'size'&nbsp;is&nbsp;256.&nbsp;&nbsp;Returns&nbsp;a&nbsp;list&nbsp;consisting&nbsp;of&nbsp;a&nbsp;copy&nbsp;of&nbsp;'blackColor'&nbsp;if&nbsp;'size'&nbsp;is&nbsp;1.</span></dd></dl>
  <dl><dt><a name="-convolveRow"><strong>convolveRow</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-darkmodePattern"><strong>darkmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;gray&nbsp;(128,128,128)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;black&nbsp;(0,0,0)&nbsp;background.</span></dd></dl>
  <dl><dt><a name="-diamondTiled"><strong>diamondTiled</strong></a>(bgcolor=None, kind=0)</dt><dd><span class="code">#&nbsp;kind=0:&nbsp;image&nbsp;drawn&nbsp;in&nbsp;middle&nbsp;and&nbsp;padded<br>
@@ -403,7 +408,7 @@ Data descriptors defined here:<br>
     grays,
     alpha=False,
     disregardNonGrays=False
-)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;dithers&nbsp;the&nbsp;resulting&nbsp;image<br>
+)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;be&nbsp;limited&nbsp;to&nbsp;gray&nbsp;tones&nbsp;and&nbsp;dithers&nbsp;the&nbsp;resulting&nbsp;image<br>
 #&nbsp;to&nbsp;the&nbsp;gray&nbsp;tones&nbsp;given.&nbsp;&nbsp;The&nbsp;conversion&nbsp;is&nbsp;in-place.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
@@ -683,12 +688,12 @@ Data descriptors defined here:<br>
 #&nbsp;components,&nbsp;in&nbsp;that&nbsp;order.</span></dd></dl>
  <dl><dt><a name="-grayblackshadow"><strong>grayblackshadow</strong></a>(dst, dstw, dsth, dstx, dsty, src, srcw, srch, color)</dt><dd><span class="code">#&nbsp;'image1'&nbsp;and&nbsp;'image2'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-graychecker"><strong>graychecker</strong></a>(image, width, height, lightFirst=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;checkerboard&nbsp;pattern&nbsp;of&nbsp;a&nbsp;"light"&nbsp;version&nbsp;and&nbsp;a&nbsp;"dark"&nbsp;version&nbsp;of&nbsp;the&nbsp;specified&nbsp;image,<br>
-#&nbsp;after&nbsp;converting&nbsp;that&nbsp;image&nbsp;to&nbsp;grayscale.<br>
+#&nbsp;after&nbsp;converting&nbsp;that&nbsp;image&nbsp;to&nbsp;be&nbsp;limited&nbsp;to&nbsp;gray&nbsp;tones.<br>
 #&nbsp;Input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
- <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, disregardNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;grayscale&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
+ <dl><dt><a name="-graymap"><strong>graymap</strong></a>(image, width, height, colors=None, alpha=False, disregardNonGrays=False)</dt><dd><span class="code">#&nbsp;Converts&nbsp;the&nbsp;image&nbsp;to&nbsp;be&nbsp;limited&nbsp;to&nbsp;gray&nbsp;tones&nbsp;and&nbsp;maps&nbsp;the&nbsp;resulting&nbsp;gray&nbsp;tones<br>
 #&nbsp;to&nbsp;colors&nbsp;in&nbsp;the&nbsp;specified&nbsp;colors&nbsp;array.&nbsp;&nbsp;If&nbsp;'colors'&nbsp;is&nbsp;None&nbsp;(the&nbsp;default),<br>
 #&nbsp;the&nbsp;mapping&nbsp;step&nbsp;is&nbsp;skipped.<br>
-#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).&nbsp;&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;image's&nbsp;alpha&nbsp;channel.<br>
 #&nbsp;If&nbsp;'disregardNonGrays'&nbsp;is&nbsp;True,&nbsp;leave&nbsp;colors&nbsp;other&nbsp;than&nbsp;gray&nbsp;tones<br>
 #&nbsp;in&nbsp;the&nbsp;image&nbsp;unchanged.&nbsp;&nbsp;Default&nbsp;is&nbsp;False.<br>
 #&nbsp;Returns&nbsp;the&nbsp;value&nbsp;of&nbsp;'image';&nbsp;the&nbsp;image&nbsp;is&nbsp;modified&nbsp;in&nbsp;place.<br>
@@ -1120,6 +1125,9 @@ Data descriptors defined here:<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;The&nbsp;first&nbsp;image&nbsp;should&nbsp;be&nbsp;displayed&nbsp;at&nbsp;even-numbered&nbsp;frames;&nbsp;the&nbsp;second,<br>
 #&nbsp;odd-numbered.</span></dd></dl>
+ <dl><dt><a name="-isgray"><strong>isgray</strong></a>(img, width, height, alpha=False)</dt><dd><span class="code">#&nbsp;Returns&nbsp;whether&nbsp;the&nbsp;image's&nbsp;colors&nbsp;are&nbsp;gray&nbsp;tones&nbsp;only,&nbsp;disregarding&nbsp;the&nbsp;image's&nbsp;alpha&nbsp;channel.<br>
+#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'.<br>
+#&nbsp;The&nbsp;default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False</span></dd></dl>
  <dl><dt><a name="-lightdarkchecker"><strong>lightdarkchecker</strong></a>(image, width, height, lightFirst=False)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;checkerboard&nbsp;pattern&nbsp;of&nbsp;a&nbsp;"light"&nbsp;version&nbsp;and&nbsp;a&nbsp;"dark"&nbsp;version&nbsp;of&nbsp;the&nbsp;specified&nbsp;image.<br>
 #&nbsp;Input&nbsp;image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-lightmodePattern"><strong>lightmodePattern</strong></a>()</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;setting&nbsp;a&nbsp;light&nbsp;gray&nbsp;(192,192,192)&nbsp;foreground&nbsp;pattern&nbsp;on&nbsp;a&nbsp;white&nbsp;(255,255,255)&nbsp;background.</span></dd></dl>
@@ -1145,7 +1153,7 @@ Data descriptors defined here:<br>
     hue=0,
     dither=True
 )</dt><dd><span class="code">#&nbsp;Returns&nbsp;an&nbsp;ImageMagick&nbsp;filter&nbsp;string&nbsp;to&nbsp;generate&nbsp;a&nbsp;desktop&nbsp;background&nbsp;from&nbsp;an&nbsp;image,&nbsp;in&nbsp;three&nbsp;steps.<br>
-#&nbsp;1.&nbsp;If&nbsp;rgb1&nbsp;and&nbsp;rgb2&nbsp;are&nbsp;not&nbsp;nil,&nbsp;converts&nbsp;the&nbsp;input&nbsp;image&nbsp;to&nbsp;grayscale,&nbsp;then&nbsp;translates&nbsp;the&nbsp;grayscale<br>
+#&nbsp;1.&nbsp;If&nbsp;rgb1&nbsp;and&nbsp;rgb2&nbsp;are&nbsp;not&nbsp;nil,&nbsp;converts&nbsp;the&nbsp;input&nbsp;image&nbsp;to&nbsp;be&nbsp;limited&nbsp;to&nbsp;gray&nbsp;tones,&nbsp;then&nbsp;translates&nbsp;the&nbsp;grayscale<br>
 #&nbsp;palette&nbsp;to&nbsp;a&nbsp;gradient&nbsp;starting&nbsp;at&nbsp;rgb1&nbsp;for&nbsp;grayscale&nbsp;level&nbsp;0&nbsp;(a&nbsp;3-element&nbsp;list&nbsp;of&nbsp;the&nbsp;red,<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order;&nbsp;for&nbsp;example,&nbsp;[2,10,255]&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;from&nbsp;0&nbsp;through&nbsp;255)&nbsp;and&nbsp;ending&nbsp;at&nbsp;rgb2&nbsp;for&nbsp;grayscale&nbsp;level&nbsp;255&nbsp;(same&nbsp;format&nbsp;as&nbsp;rgb1).<br>
@@ -1374,6 +1382,7 @@ Data descriptors defined here:<br>
 #&nbsp;or&nbsp;"red".&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed&nbsp;in&nbsp;the&nbsp;input&nbsp;image&nbsp;are&nbsp;gray&nbsp;tones<br>
 #&nbsp;(x,x,x);&nbsp;shades&nbsp;of&nbsp;red&nbsp;(x,0,0);&nbsp;and&nbsp;tints&nbsp;of&nbsp;red&nbsp;(255,x,x),<br>
 #&nbsp;disregarding&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;if&nbsp;any.<br>
+#&nbsp;Returns&nbsp;the&nbsp;value&nbsp;of&nbsp;'image'.&nbsp;&nbsp;The&nbsp;image&nbsp;is&nbsp;modified&nbsp;in&nbsp;place.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;This&nbsp;method&nbsp;disregards&nbsp;the&nbsp;input&nbsp;image's&nbsp;alpha&nbsp;channel.</span></dd></dl>
@@ -1389,6 +1398,7 @@ Data descriptors defined here:<br>
 #&nbsp;gray&nbsp;tones&nbsp;given&nbsp;and&nbsp;the&nbsp;specified&nbsp;color.&nbsp;&nbsp;The&nbsp;only&nbsp;colors&nbsp;allowed<br>
 #&nbsp;in&nbsp;the&nbsp;input&nbsp;image&nbsp;are&nbsp;gray&nbsp;tones&nbsp;(x,x,x);&nbsp;shades&nbsp;of&nbsp;red&nbsp;(x,0,0);&nbsp;and&nbsp;tints&nbsp;of&nbsp;red&nbsp;(255,x,x),<br>
 #&nbsp;disregarding&nbsp;the&nbsp;alpha&nbsp;channel&nbsp;if&nbsp;any.<br>
+#&nbsp;Returns&nbsp;the&nbsp;value&nbsp;of&nbsp;'image'.&nbsp;&nbsp;The&nbsp;image&nbsp;is&nbsp;modified&nbsp;in&nbsp;place.<br>
 #&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;the<br>
 #&nbsp;specified&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;'grays'&nbsp;is&nbsp;as&nbsp;in&nbsp;<a href="#-dithertograyimage">dithertograyimage</a>().&nbsp;&nbsp;If&nbsp;None,&nbsp;uses&nbsp;[0,&nbsp;128,&nbsp;192,&nbsp;255].<br>
