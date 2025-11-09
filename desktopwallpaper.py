@@ -4055,6 +4055,7 @@ def graymap(image, width, height, colors=None, alpha=False, disregardNonGrays=Fa
                     image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722
                 ) // 10000
             if colors:
+                if c>=len(colors): raise ValueError
                 col = colors[c]
                 if not col:
                     # No color defined at this index

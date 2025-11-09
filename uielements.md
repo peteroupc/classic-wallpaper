@@ -122,7 +122,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given earlier as well
 - In a single width and height, generally 32 &times; 32 pixels, except to account for [**pixel density**](#display-modes).
 - Either in black and white, or with colors limited to white, black, and other gray tones, in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
 
-> **Note:** Icon formats for OS/2 Presentation Manager and Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](./imageformat.html).
+> **Note:** Icon formats for OS/2 Presentation Manager and Microsoft Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](./imageformat.html).
 
 <a id=Animations></a>
 
@@ -189,16 +189,19 @@ The following books and other works discuss design matters on traditional user i
 - Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
 - W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
 - Microsoft Knowledge Base article Q69079, "How to Give a 3-D Effect to Windows Controls".
+- K. Brockschmidt, "A Primer on Designing Custom Controls", _Microsoft Systems Journal_ 7(2).
+- K. P. Welch, "Extending the Windows 3.0 Interface with Installable Custom Controls", _Microsoft Systems Journal_ 5(4), July 1990.
+- Kyle Marsh, "Implementing a Status Bar", Technical Note (Microsoft), April 2, 1992.
 - Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
+- The "Visual Design Guide" that came with Microsoft Visual Basic 3.0 Professional Edition.
 - _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 - Shiz Kobara, _Visual Design with OSF/Motif_, Addison-Wesley, 1991.
 - _OSF/Motif Style Guide_ (releases 1.1, 1.2, and 2.0), and _OSF/Motif Widget Writer's Guide_.
 - _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
 - _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
 - [**_Macintosh Human Interface Guidelines_**](https://dl.acm.org/doi/book/10.5555/573097), 1992.
-- "Color, Windows, and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
-- The "Visual Design Guide" that came with Microsoft Visual Basic 3.0 Professional Edition.
 - _Mac OS 8 Human Interface Guidelines_ (addendum to _Macintosh User Interface Guidelines_), Sep. 2, 1997.
+- "Color, Windows, and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
 - E. Voas, "Appearance: Not Just Another Pretty Interface", _develop_ (Apple), June 1997.
 - J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the
 authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
@@ -276,7 +279,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^8]: _The Windows Interface Guidelines for Software Design_; _Macintosh Human Interface Guidelines_, p. 232.
 
-[^9]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE also supports icons with colors limited to the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128, 128, 128)).<br>Eight-color icons, although supported by the Windows color icon format like 2- or 16-color icons, are rarely displayed in practice; I am not aware of any video driver for Windows version 3.1 or earlier that supports displaying only eight colors at a time (which is not the case for the CGA, EGA, and VGA video drivers).  By contrast, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards. A traditional color choice for 8-color icons was an 8-color palette where each color component is 0 or 255.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color (192, 192, 192) is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
+[^9]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE also supports four-color icons in a two-bit-per-pixel format, where the colors tend to be the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128, 128, 128)) ("Display Buffer Formats", Windows CE Device Driver Kit).<br>A Windows color icon file can store an icon limited to 8 colors, but still in the 4-bits-per pixel format, separately from 16-color icons in that format (C. Petzold, _Programming Windows 3.0_, chapter 8), but such an 8-color icon is rarely seen in practice.  Indeed, before version 3.0, the Windows EGA and VGA video drivers supported only eight logical colors rather than sixteen (Petzold, ch. 14), and there were no standard Windows color icon and bitmap file formats.  (In addition, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards.) A traditional color choice for 8-color icons was an 8-color palette where each color component is 0 or 255.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color (192, 192, 192) is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
 
 [^10]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.
 
