@@ -538,9 +538,12 @@ Data descriptors defined here:<br>
     maskh,
     color1,
     color2,
+    paintAtZero=True,
     wraparound=False
 )</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
-#&nbsp;'wraparound'&nbsp;has&nbsp;the&nbsp;same&nbsp;meaning&nbsp;as&nbsp;in&nbsp;<a href="#-imageblitex">imageblitex</a>();&nbsp;default&nbsp;is&nbsp;False.</span></dd></dl>
+#&nbsp;'wraparound'&nbsp;has&nbsp;the&nbsp;same&nbsp;meaning&nbsp;as&nbsp;in&nbsp;<a href="#-imageblitex">imageblitex</a>();&nbsp;default&nbsp;is&nbsp;False.<br>
+#&nbsp;Each&nbsp;pixel&nbsp;in&nbsp;'mask'&nbsp;must&nbsp;be&nbsp;all&nbsp;zeros&nbsp;("black")&nbsp;or&nbsp;all&nbsp;ones&nbsp;("white").&nbsp;&nbsp;Paints&nbsp;the&nbsp;specified&nbsp;color&nbsp;gradient<br>
+#&nbsp;where&nbsp;the&nbsp;mask&nbsp;is&nbsp;"black"&nbsp;if&nbsp;'paintAtZero'&nbsp;is&nbsp;True&nbsp;(default),&nbsp;or&nbsp;where&nbsp;the&nbsp;mask&nbsp;is&nbsp;"white"&nbsp;otherwise.</span></dd></dl>
  <dl><dt><a name="-drawhatchcolumns"><strong>drawhatchcolumns</strong></a>(image, width, height, hatchdist=8, hatchthick=1, fgcolor=None)</dt><dd><span class="code">#&nbsp;Image&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;hatchdist&nbsp;-&nbsp;distance&nbsp;from&nbsp;beginning&nbsp;of&nbsp;one&nbsp;vertical&nbsp;hash&nbsp;line&nbsp;to&nbsp;the<br>
 #&nbsp;beginning&nbsp;of&nbsp;the&nbsp;next,&nbsp;in&nbsp;pixels.<br>
@@ -560,9 +563,12 @@ Data descriptors defined here:<br>
     maskw,
     maskh,
     color,
+    paintAtZero=True,
     wraparound=False
 )</dt><dd><span class="code">#&nbsp;'dst'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
 #&nbsp;'wraparound'&nbsp;has&nbsp;the&nbsp;same&nbsp;meaning&nbsp;as&nbsp;in&nbsp;<a href="#-imageblitex">imageblitex</a>();&nbsp;default&nbsp;is&nbsp;False.<br>
+#&nbsp;Each&nbsp;pixel&nbsp;in&nbsp;'mask'&nbsp;must&nbsp;be&nbsp;all&nbsp;zeros&nbsp;("black")&nbsp;or&nbsp;all&nbsp;ones&nbsp;("white").&nbsp;&nbsp;Paints&nbsp;the&nbsp;specified&nbsp;color<br>
+#&nbsp;where&nbsp;the&nbsp;mask&nbsp;is&nbsp;"black"&nbsp;if&nbsp;'paintAtZero'&nbsp;is&nbsp;True&nbsp;(default),&nbsp;or&nbsp;where&nbsp;the&nbsp;mask&nbsp;is&nbsp;"white"&nbsp;otherwise.<br>
 #<br>
 #&nbsp;Example:&nbsp;White-over-black-over&nbsp;gray&nbsp;text&nbsp;effect,&nbsp;seen&nbsp;in&nbsp;some&nbsp;early-90s&nbsp;Windows&nbsp;applications.<br>
 #&nbsp;----<br>

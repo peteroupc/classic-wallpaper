@@ -331,7 +331,7 @@ def uniquecolors(image, width, height, alpha=False, nontransparentOnly=False):
             | (image[i * bytesperpixel + 1] << 8)
             | (image[i * bytesperpixel + 2] << 16)
         )
-        #print([c,image[i*bytesperpixel+3]])
+        # print([c,image[i*bytesperpixel+3]])
         colors[c] = True
     ck = [[k & 0xFF, (k >> 8) & 0xFF, (k >> 16) & 0xFF] for k in colors.keys()]
     ck.sort()
@@ -3047,13 +3047,14 @@ def horizhatchedbox(image, width, height, color, x0, y0, x1, y1, alpha=False):
 # Returns whether the image's colors are gray tones only, disregarding the image's alpha channel.
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False
-def isgray(img,width,height,alpha=False):
-   px=4 if alpha else 3
-   pos=0
-   for i in range(width*height):
-      if not (img[pos]==img[pos+1] and img[pos+1]==img[pos+2]): return False
-      pos+=px
-   return True
+def isgray(img, width, height, alpha=False):
+    px = 4 if alpha else 3
+    pos = 0
+    for i in range(width * height):
+        if not (img[pos] == img[pos + 1] and img[pos + 1] == img[pos + 2]):
+            return False
+        pos += px
+    return True
 
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False
@@ -4055,7 +4056,8 @@ def graymap(image, width, height, colors=None, alpha=False, disregardNonGrays=Fa
                     image[xp] * 2126 + image[xp + 1] * 7152 + image[xp + 2] * 722
                 ) // 10000
             if colors:
-                if c>=len(colors): raise ValueError
+                if c >= len(colors):
+                    raise ValueError
                 col = colors[c]
                 if not col:
                     # No color defined at this index
@@ -4542,8 +4544,10 @@ def patternDither(image, width, height, palette, alpha=False, fast=False):
 # 'blackColor' and 'whiteColor' are each three-element lists identifying colors.
 # Default for 'size' is 256.  Returns a list consisting of a copy of 'blackColor' if 'size' is 1.
 def colorgradient(blackColor, whiteColor, size=256):
-    if size<0: raise ValueError
-    if size==0: return []
+    if size < 0:
+        raise ValueError
+    if size == 0:
+        return []
     if (
         (not blackColor)
         or (not whiteColor)
@@ -4551,9 +4555,13 @@ def colorgradient(blackColor, whiteColor, size=256):
         or len(whiteColor) != 3
     ):
         raise ValueError
-    if size==1: return [[blackColor[0],blackColor[1],blackColor[2]]]
+    if size == 1:
+        return [[blackColor[0], blackColor[1], blackColor[2]]]
     return [
-        [blackColor[i] + (whiteColor[i] - blackColor[i]) * j // (size-1) for i in range(3)]
+        [
+            blackColor[i] + (whiteColor[i] - blackColor[i]) * j // (size - 1)
+            for i in range(3)
+        ]
         for j in range(size)
     ]
 
@@ -5094,8 +5102,21 @@ def roundedborder(helper, x0, y0, x1, y1, upper, lower, topdom=True):
 
 # 'dst' and 'mask' have the same format returned by the blankimage() method with alpha=False.
 # 'wraparound' has the same meaning as in imageblitex(); default is False.
+# Each pixel in 'mask' must be all zeros ("black") or all ones ("white").  Paints the specified color gradient
+# where the mask is "black" if 'paintAtZero' is True (default), or where the mask is "white" otherwise.
 def drawgradientmask(
-    dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color1, color2, wraparound=False
+    dst,
+    dstw,
+    dsth,
+    dstx,
+    dsty,
+    mask,
+    maskw,
+    maskh,
+    color1,
+    color2,
+    paintAtZero=True,
+    wraparound=False,
 ):
     iters = maskh
     rowsize = 1
@@ -5120,15 +5141,22 @@ def drawgradientmask(
             patternimage=c,
             patternwidth=1,
             patternheight=1,
+            # If paintAtZero=True:
             # where the source (here, mask) is 1, leave unchanged;
             # where the pattern is 0 and source is 0, set black;
             # where the pattern is 1 and source is 0, set white
-            ropForeground=0xB8,
+            # If paintAtZero=False:
+            # where the source is 0, leave unchanged;
+            # where the pattern is 0 and source is 1, set black;
+            # where the pattern is 1 and source is 1, set white
+            ropForeground=(0xB8 if paintAtZero else 0xE2),
             wraparound=wraparound,
         )
 
 # 'dst' and 'mask' have the same format returned by the blankimage() method with alpha=False.
 # 'wraparound' has the same meaning as in imageblitex(); default is False.
+# Each pixel in 'mask' must be all zeros ("black") or all ones ("white").  Paints the specified color
+# where the mask is "black" if 'paintAtZero' is True (default), or where the mask is "white" otherwise.
 #
 # Example: White-over-black-over gray text effect, seen in some early-90s Windows applications.
 # ----
@@ -5158,7 +5186,19 @@ def drawgradientmask(
 #
 # Example: Same as previous, but "1,1" becomes "0,1".  In this case, the light-toned pattern
 # is shifted 1 pixel downward rather than 1 pixel downward and rightward.
-def drawmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color, wraparound=False):
+def drawmask(
+    dst,
+    dstw,
+    dsth,
+    dstx,
+    dsty,
+    mask,
+    maskw,
+    maskh,
+    color,
+    paintAtZero=True,
+    wraparound=False,
+):
     drawgradientmask(
         dst,
         dstw,
@@ -5170,6 +5210,7 @@ def drawmask(dst, dstw, dsth, dstx, dsty, mask, maskw, maskh, color, wraparound=
         maskh,
         color,
         color,
+        paintAtZero=paintAtZero,
         wraparound=wraparound,
     )
 
@@ -6891,7 +6932,7 @@ def drawsunkenouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
 
 # Draw an inner Windows CE button edge in sunken style.
 def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
-    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, dksh,hilt)
+    drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, dksh, hilt)
 
 ####
 
@@ -8018,13 +8059,27 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
     else:
         ret = _randomnoiseimage(w, h, palette, tileable=dotile)
     if bordertile:
-        _tileborder(ret, w, h)
-        graymap(
-            ret,
-            w,
-            h,
-            colorgradient([0, 0, 0], [random.randint(0, 255) for i in range(3)]),
-        )
+        if random.randint(0, 5) < 4:
+            ret2 = blankimage(w, h, [192, 192, 192])
+            _tileborder(ret2, w, h)
+            pos = 0
+            for i in range(w * h):
+                c = ret2[pos]  # Gray level for shading: 192 leaves pixel unchanged
+                for j in range(3):
+                    ret[pos + j] = (
+                        (ret[pos + j] * c // 192)
+                        if c <= 192
+                        else (ret[pos + j] + (255 - ret[pos + j]) * (c - 192) // 192)
+                    )
+                pos += 3
+        else:
+            _tileborder(ret, w, h)
+            graymap(
+                ret,
+                w,
+                h,
+                colorgradient([0, 0, 0], [random.randint(0, 255) for i in range(3)]),
+            )
     if random.randint(0, 7) == 0 and (not tileable or (w % 4 == 0 and h % 4 == 0)):
         # Draw a random hatch pattern, only if width and height are
         # divisible by 4 or image is not tileable

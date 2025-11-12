@@ -2028,7 +2028,7 @@ def _pilReadImage(imagebytes):
         return [None, 0, 0]
     if not image:
         return [None, 0, 0]
-    if image.mode=='1':
+    if image.mode == "1":
         # PIL (or at least the Pillow fork) has a bug where transparent
         # 1-bit PNGs are not recognized as transparent after conversion
         # to RGBA
@@ -2501,15 +2501,15 @@ def _readicon(f, packedWinBitmap=False):
             # andmaskhdr[0] == 0x7c indicates BITMAPV5HEADER
             _errprint("nonzero slack; ignore the slack")
     elif andmaskhdr[0] >= 0x10:
-        fr=f.read(12)
-        if len(fr)<12:
+        fr = f.read(12)
+        if len(fr) < 12:
             _errprint("too short")
             return None
         andmaskhdr += struct.unpack("<llHH", fr)
         if andmaskhdr[4] <= 8:
             andpalette = 1 << andmaskhdr[4]
         slack = f.read(andmaskhdr[0] - 0x10)
-        if len(fr)<andmaskhdr[0]-0x10:
+        if len(fr) < andmaskhdr[0] - 0x10:
             _errprint("too short")
             return None
         allzeros = True
@@ -3058,65 +3058,94 @@ def _icnspalette256():
 # has the same format returned by the reados2icon() method.
 def readicn(infile):
     f = open(infile, "rb")
-    ret=[None for i in range(72)]
+    ret = [None for i in range(72)]
     try:
-       addrs=struct.unpack(">HH",f.read(4))
-       iconblks=[None for i in range(72)]
-       iconwidth=0
-       iconheight=0
-       maxicon=0
-       for i in range(72):
-           iconblks[i]=struct.unpack("<LLLBBHHHHHHHHHH",f.read(34))
-           maxmask=max(iconblks[i][0],iconblks[i][1])
-           if maxmask>=144: raise ValueError
-           fgcolor=(iconblks[i][4]>>4)&0x0F
-           bgcolor=(iconblks[i][4]>>4)&0x0F
-           if iconblks[i][4]!=0x10: raise ValueError("Nonblack/white colors not supported")
-           print([fgcolor,bgcolor])
-           width=iconblks[i][9]
-           height=iconblks[i][10]
-           if width%16!=0 or width==0: raise ValueError("Unsupported width")
-           if height==0: raise ValueError("Unsupported height")
-           if i==0: iconwidth=width
-           if i==0: iconheight=height
-       iconsize=2*((iconwidth+15)//16)*iconheight
-       iconoffset=f.tell()
-       for i in range(72):
-           rowsize=2*((iconwidth+15)//16)
-           iconmask=[None,None]
-           for k in range(2):
-            f.seek(iconoffset+iconblks[i][k]*iconsize)
-            img=dw.blankimage(iconwidth,iconheight)
+        addrs = struct.unpack(">HH", f.read(4))
+        iconblks = [None for i in range(72)]
+        iconwidth = 0
+        iconheight = 0
+        maxicon = 0
+        for i in range(72):
+            iconblks[i] = struct.unpack("<LLLBBHHHHHHHHHH", f.read(34))
+            maxmask = max(iconblks[i][0], iconblks[i][1])
+            if maxmask >= 144:
+                raise ValueError
+            fgcolor = (iconblks[i][4] >> 4) & 0x0F
+            bgcolor = (iconblks[i][4] >> 4) & 0x0F
+            if iconblks[i][4] != 0x10:
+                raise ValueError("Nonblack/white colors not supported")
+            print([fgcolor, bgcolor])
+            width = iconblks[i][9]
+            height = iconblks[i][10]
+            if width % 16 != 0 or width == 0:
+                raise ValueError("Unsupported width")
+            if height == 0:
+                raise ValueError("Unsupported height")
+            if i == 0:
+                iconwidth = width
+            if i == 0:
+                iconheight = height
+        iconsize = 2 * ((iconwidth + 15) // 16) * iconheight
+        iconoffset = f.tell()
+        for i in range(72):
+            rowsize = 2 * ((iconwidth + 15) // 16)
+            iconmask = [None, None]
+            for k in range(2):
+                f.seek(iconoffset + iconblks[i][k] * iconsize)
+                img = dw.blankimage(iconwidth, iconheight)
+                for y in range(iconheight):
+                    icon = f.read(rowsize)
+                    if len(icon) < rowsize:
+                        raise ValueError
+                    c = rowsize - 2
+                    x = iconwidth - 16
+                    while c >= 0:
+                        word = (icon[c + 1] << 8) | icon[c]
+                        for j in range(16):
+                            if (word & (1 << (15 - j))) != 0:
+                                dw.setpixel(
+                                    img, iconwidth, iconheight, x + j, y, [0, 0, 0]
+                                )
+                            else:
+                                dw.setpixel(
+                                    img,
+                                    iconwidth,
+                                    iconheight,
+                                    x + j,
+                                    y,
+                                    [255, 255, 255],
+                                )
+                        x -= 16
+                        c -= 2
+                iconmask[k] = img
+            icon = dw.blankimage(iconwidth, iconheight, alpha=True)
             for y in range(iconheight):
-             icon=f.read(rowsize)
-             if len(icon)<rowsize: raise ValueError
-             c=rowsize-2
-             x=iconwidth-16
-             while c>=0:
-               word=(icon[c+1]<<8)|icon[c]
-               for j in range(16):
-                  if ( word&(1<<(15-j)) )!=0:
-                     dw.setpixel(img,iconwidth,iconheight,x+j,y,[0,0,0])
-                  else:
-                     dw.setpixel(img,iconwidth,iconheight,x+j,y,[255,255,255])
-               x-=16
-               c-=2
-            iconmask[k]=img
-           icon=dw.blankimage(iconwidth,iconheight,alpha=True)
-           for y in range(iconheight):
-             for x in range(iconwidth):
-              maskpixel=dw.getpixel(iconmask[0],iconwidth,iconheight,x,y)
-              iconpixel=dw.getpixel(iconmask[1],iconwidth,iconheight,x,y)
-              dw.setpixelalpha(icon,iconwidth,iconheight,x,y,[
-                 iconpixel[0],iconpixel[1],iconpixel[2],0 if maskpixel[0]!=0 else 255])
-           ret[i]=[icon,iconwidth,iconheight,0,0]
-       if not ret: raise ValueError
-       return ret
+                for x in range(iconwidth):
+                    maskpixel = dw.getpixel(iconmask[0], iconwidth, iconheight, x, y)
+                    iconpixel = dw.getpixel(iconmask[1], iconwidth, iconheight, x, y)
+                    dw.setpixelalpha(
+                        icon,
+                        iconwidth,
+                        iconheight,
+                        x,
+                        y,
+                        [
+                            iconpixel[0],
+                            iconpixel[1],
+                            iconpixel[2],
+                            0 if maskpixel[0] != 0 else 255,
+                        ],
+                    )
+            ret[i] = [icon, iconwidth, iconheight, 0, 0]
+        if not ret:
+            raise ValueError
+        return ret
     except:
-       if not ret: raise ValueError
-       return ret
+        if not ret:
+            raise ValueError
+        return ret
     finally:
-       f.close()
+        f.close()
 
 # Reads icon images from a file in the Apple icon resource format (also known
 # as icon family or icon suite), in the '.icns' format.  This format was
