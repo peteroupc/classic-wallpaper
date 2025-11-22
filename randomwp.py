@@ -167,6 +167,110 @@ def _diamondtileoverlay(
     )
     return [bg, imgwidth, imgheight]
 
+def _drawmask1(img, mask, w, h, palette=None):
+    # Draw dark version of image where mask is black, and light version elsewhere,
+    # or vice versa.
+    offx = random.randint(0, w - 1)
+    offy = random.randint(0, h - 1)
+    dk = [v * 65 // 100 for v in img]
+    lt = [v + (255 - v) * 35 // 100 for v in img]
+    if random.randint(0, 1) == 0:
+        t = dk
+        dk = lt
+        lt = t  # swap dk and lt
+    # Draw dk on lt where mask is "black"
+    dw.imageblitex(
+        # destination
+        lt,
+        w,
+        h,
+        offx,
+        offy,
+        w + offx,
+        h + offy,
+        # source
+        mask,
+        w,
+        h,
+        0,
+        0,
+        # pattern
+        dk,
+        w,
+        h,
+        0,
+        0,
+        ropForeground=0xB8,
+        wraparound=True,
+    )
+    # copy to image
+    dw.imageblitex(img, w, h, 0, 0, w, h, lt, w, h)
+    if palette:
+        dw.patternDither(img, w, h, palette)
+
+def _drawmask2(img, mask, w, h, palette=None):
+    # draw color on the image, where mask is black, along
+    # with a drop shadow.
+    colors = [[0, 0, 0], [128, 128, 128], [192, 192, 192], [255, 255, 255]]
+    usedefaults = (not palette) or (
+        colors[0] in palette
+        and colors[1] in palette
+        and colors[2] in palette
+        and colors[3] in palette
+    )
+    if usedefaults and random.randint(0, 1) == 0:
+        colors.reverse()
+    colors2 = colors
+    if random.randint(0, 99) < 50 or (not usedefaults):
+        colors = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            (
+                random.choose(palette)
+                if palette
+                else [random.randint(0, 255) for i in range(3)]
+            ),
+        ]
+        colors2 = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            (
+                random.choose(palette)
+                if palette
+                else [random.randint(0, 255) for i in range(3)]
+            ),
+        ]
+    offx = random.randint(0, w - 1)
+    offy = random.randint(0, h - 1)
+    for i in range(len(colors)):
+        dw.drawgradientmask(
+            img,
+            w,
+            h,
+            offx + len(colors) - 1 - i,
+            offy + len(colors2) - 1 - i,
+            mask,
+            w,
+            h,
+            colors[i],
+            colors2[i],
+            paintAtZero=True,
+            wraparound=True,
+        )
+    if palette:
+        dw.patternDither(img, w, h, palette)
+
+def randomdrawmask(img, mask, w, h, palette=None):
+    match random.randint(0, 1):
+        case 0:
+            _drawmask1(img, mask, w, h, palette=palette)
+        case 1:
+            _drawmask2(img, mask, w, h, palette=palette)
+        case _:
+            raise ValueError
+
 def randomwallpaper(palette=None):
     match random.randint(0, 2):
         case 0:
@@ -239,6 +343,8 @@ def randomwallpaper3(palette=None):
             pass
     image, w, h = _randomTransformed(image, w, h)
     image = dw.randommaybemonochrome(image, w, h)
+    if random.randint(0, 9) == 0:
+        dw.randombordertile(image, w, h)
     return [image, w, h]
 
 def randomwallpaper2(palette=None):
@@ -332,4 +438,6 @@ def _randomwallpaper1ex(palette=None, variant=1):
             )
     image3, width, height = _randomTransformed(imagebg, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
+    if random.randint(0, 9) == 0:
+        dw.randombordertile(image3, width, height)
     return [image3, width, height]

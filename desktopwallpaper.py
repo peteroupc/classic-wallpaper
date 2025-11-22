@@ -1537,6 +1537,8 @@ def imageblitex(
             maskpos = masky + (x0mask + x) * pixelsize if maskimage else 0
             for i in range(pixelsize):
                 s1 = srcimage[srcpos + i] if srcimage else 0
+                if srcimage and s1 == None:
+                    raise ValueError
                 d1 = dstimage[dstpos + i] if dstimage and needDestination else 0
                 p1 = patternimage[patpos + i] if patternimage else 0
                 m1 = maskimage[maskpos + i] if maskimage else 0
@@ -7559,7 +7561,7 @@ def randommaybemonochrome(image, width, height, vga=False):
     r = random.randint(0, 99)
     black = [0, 0, 0]
     white = [255, 255, 255]
-    if r < 16:
+    if r < 10:
         r2 = random.randint(0, 6)
         # dark gray and light gray from the VGA palette
         color0 = [128, 128, 128]
@@ -8036,6 +8038,51 @@ def randommixedimage(width, height, palette, tileable=True):
         patternDither(image, width, height, palette)
     return image
 
+def _tryrandomnondark(palette=None):
+    for i in range(10):
+        r = (
+            random.choice(palette)
+            if palette
+            else [random.randint(0, 255) for i in range(3)]
+        )
+        if max(r) >= 64:
+            return r
+    # Fallback
+    return None if palette else [random.randint(64, 255) for i in range(3)]
+
+# Image 'ret' has the same format returned by the blankimage() method with alpha=False.
+def randombordertile(ret, w, h, palette=None):
+    if random.randint(0, 8) < 7:
+        ret2 = blankimage(w, h, [192, 192, 192])
+        _tileborder(ret2, w, h)
+        pos = 0
+        for i in range(w * h):
+            c = ret2[
+                pos
+            ]  # Gray level for shading or tinting: 192 leaves pixel unchanged
+            for j in range(3):
+                ret[pos + j] = (
+                    (ret[pos + j] * c // 192)
+                    if c <= 192
+                    else (ret[pos + j] + (255 - ret[pos + j]) * (c - 192) // 192)
+                )
+            pos += 3
+        if palette:
+            patternDither(ret, w, h, palette)
+    else:
+        nondark = _tryrandomnondark(palette)
+        if not nondark:
+            return
+        _tileborder(ret, w, h)
+        graymap(
+            ret,
+            w,
+            h,
+            colorgradient([0, 0, 0], nondark),
+        )
+        if palette:
+            patternDither(ret, w, h, palette)
+
 # Image returned by this method has the same format returned by the blankimage() method with alpha=False.
 def randombackgroundimage(w, h, palette=None, tileable=True):
     r = random.randint(0, 6)
@@ -8059,27 +8106,7 @@ def randombackgroundimage(w, h, palette=None, tileable=True):
     else:
         ret = _randomnoiseimage(w, h, palette, tileable=dotile)
     if bordertile:
-        if random.randint(0, 5) < 4:
-            ret2 = blankimage(w, h, [192, 192, 192])
-            _tileborder(ret2, w, h)
-            pos = 0
-            for i in range(w * h):
-                c = ret2[pos]  # Gray level for shading: 192 leaves pixel unchanged
-                for j in range(3):
-                    ret[pos + j] = (
-                        (ret[pos + j] * c // 192)
-                        if c <= 192
-                        else (ret[pos + j] + (255 - ret[pos + j]) * (c - 192) // 192)
-                    )
-                pos += 3
-        else:
-            _tileborder(ret, w, h)
-            graymap(
-                ret,
-                w,
-                h,
-                colorgradient([0, 0, 0], [random.randint(0, 255) for i in range(3)]),
-            )
+        randombordertile(ret, w, h, palette)
     if random.randint(0, 7) == 0 and (not tileable or (w % 4 == 0 and h % 4 == 0)):
         # Draw a random hatch pattern, only if width and height are
         # divisible by 4 or image is not tileable

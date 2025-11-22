@@ -2,6 +2,8 @@
 
 This page discusses aspects of the traditional design of user-interface graphics, such as button and border styles, icons, and mouse pointers.
 
+> **Note:** User interfaces found in video games are outside the scope of this document.
+
 <a id=Contents></a>
 
 ## Contents
@@ -34,7 +36,7 @@ Some display modes follow along with their screen densities and commonly impleme
 
 - VGA's (IBM Video Graphics Array) 640 &times; 480 16-color display mode: 96 horizontal and vertical pixels per inch.
 - IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch.
-- IBM Color/Graphics Adapter's (CGA) 640 &times; 200 two-level monochrome display mode: 96 horizontal and 48 vertical pixels per inch.
+- IBM Color/Graphics Adapter's (CGA) 640 &times; 200 2-color display mode: 96 horizontal and 48 vertical pixels per inch.
 
 An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode has "square" pixels, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
 
@@ -263,7 +265,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 ## End Notes
 
-[^1]: These two values for pixel density need not match the true pixel density of a particular computer display.  For example, the drivers that come with Windows version 3.x employ a pixel density that is larger, on average, than the true one to aid readability of text (C. Petzold, _Programming Windows: The Microsoft Guide to Writing Applications for Windows 3_, Microsoft Press, 1990, chapter 14).<br>Moreover, two display modes with the same screen resolution can differ in their pixel density, even if both are meant for displays with the same aspect ratio.  For example, the pixel density of a 320-&times;-200 display mode can be 40 or 48 vertical pixels per inch, even if both are intended for displays with the 4:3 aspect ratio typical in 2000 and earlier.
+[^1]: These two values for pixel density need not match the true pixel density of a particular computer display.  For example, the drivers that come with Windows version 3.x employ a pixel density that is greater, on average, than the true one to aid readability of text (C. Petzold, _Programming Windows: The Microsoft Guide to Writing Applications for Windows 3_, Microsoft Press, 1990, chapter 14).<br>Moreover, two display modes with the same screen resolution can differ in their pixel density, even if both are meant for displays with the same aspect ratio.  For example, a 320-&times;-200 display mode can have 40 or 48 vertical pixels per inch, even if both are intended for displays with the 4:3 aspect ratio typical in 2000 and earlier.
 
 [^2]: _Window borders_ are the outer edges of desktop windows.  Text box borders are also known as "field borders".  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.
 
