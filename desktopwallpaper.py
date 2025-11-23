@@ -5761,10 +5761,14 @@ def threedeeCapsule(
 
 # Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False.
-def brushednoise(width, height, tileable=True, alpha=False):
+def brushednoise(width, height, tileable=True, alpha=False, extraTones=False):
     image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 5):
-        c = random.choice([128, 128, 128, 128, 0, 255])
+        c = (
+            random.choice([128, 128, 128, 128, 0, 255])
+            if not extraTones
+            else (random.randint(0, 255) + random.randint(0, 255)) // 2
+        )
         x = random.randint(0, width - 1)
         y = random.randint(0, height - 1)
         x1 = x + random.randint(0, width // 2)
@@ -5784,10 +5788,14 @@ def brushednoise(width, height, tileable=True, alpha=False):
 
 # Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.  The returned image is of dots at random positions and random gray tones.
 # The default value for 'alpha' is False.
-def marknoise(width, height, tileable=True, alpha=False):
+def marknoise(width, height, tileable=True, alpha=False, extraTones=False):
     image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 5):
-        c = random.choice([128, 128, 128, 128, 0, 255])
+        c = (
+            random.choice([128, 128, 128, 128, 0, 255])
+            if not extraTones
+            else (random.randint(0, 255) + random.randint(0, 255)) // 2
+        )
         pattern = [0x18, 0x3C, 0x7E, 0xFF, 0xFF, 0x7E, 0x3C, 0x18]
         x = random.randint(0, width)
         y = random.randint(0, height)
@@ -5808,10 +5816,14 @@ def marknoise(width, height, tileable=True, alpha=False):
 
 # Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False.
-def brushednoise2(width, height, tileable=True, alpha=False):
+def brushednoise2(width, height, tileable=True, alpha=False, extraTones=False):
     image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 5):
-        c = random.choice([128, 128, 128, 128, 0, 255])
+        c = (
+            random.choice([128, 128, 128, 128, 0, 255])
+            if not extraTones
+            else (random.randint(0, 255) + random.randint(0, 255)) // 2
+        )
         x = random.randint(0, width)
         y = random.randint(0, height)
         x1 = x + (-1 if random.randint(0, 1) == 0 else 1) * random.randint(
@@ -5836,10 +5848,14 @@ def brushednoise2(width, height, tileable=True, alpha=False):
 
 # Returns an image with the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False.
-def brushednoise3(width, height, tileable=True, alpha=False):
+def brushednoise3(width, height, tileable=True, alpha=False, extraTones=False):
     image = blankimage(width, height, [192, 192, 192], alpha=alpha)
     for i in range(max(width, height) * 3):
-        c = random.choice([128, 128, 128, 128, 0, 255])
+        c = (
+            random.choice([128, 128, 128, 128, 0, 255])
+            if not extraTones
+            else (random.randint(0, 255) + random.randint(0, 255)) // 2
+        )
         if random.randint(0, 2) == 0:
             # circle
             x = random.randint(0, width)
@@ -7907,16 +7923,24 @@ def _randomnoiseimage(w, h, palette=None, tileable=True):
     hh = w if transpose else h
     r = random.randint(0, 5)
     if r == 0:
-        image = brushednoise(ww, hh, tileable=tileable)
+        image = brushednoise(
+            ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
+        )
     elif r == 1:
-        image = brushednoise2(ww, hh, tileable=tileable)
+        image = brushednoise2(
+            ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
+        )
     elif r == 2:
         image = noiseimage(ww, hh)
         convolveRow(image, ww, hh)
     elif r == 2:
-        image = marknoise(ww, hh, tileable=tileable)
+        image = marknoise(
+            ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
+        )
     else:
-        image = brushednoise3(ww, hh, tileable=tileable)
+        image = brushednoise3(
+            ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
+        )
     if transpose:
         image = imagetranspose(image, ww, hh)
     graymap(

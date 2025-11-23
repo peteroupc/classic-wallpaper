@@ -244,13 +244,15 @@ def _drawmask2(img, mask, w, h, palette=None):
         ]
     offx = random.randint(0, w - 1)
     offy = random.randint(0, h - 1)
+    reloffx = 1 if random.randint(0, 1) == 0 else -1
+    reloffy = 1 if random.randint(0, 1) == 0 else -1
     for i in range(len(colors)):
         dw.drawgradientmask(
             img,
             w,
             h,
-            offx + len(colors) - 1 - i,
-            offy + len(colors2) - 1 - i,
+            offx + len(colors) - 1 - i * reloffx,
+            offy + len(colors2) - 1 - i * reloffy,
             mask,
             w,
             h,
