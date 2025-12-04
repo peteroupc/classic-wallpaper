@@ -163,7 +163,7 @@ From about 1990 to about 1997, user-interface text&mdash;
 
 In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^18]  But new applications should avoid having text in icons, cursors, and pixel images.
 
-New user-interface graphics with limited colors ought to be designed as vector graphics (for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when rendered in their original size.
+New user-interface graphics with limited colors ought to be designed as vector graphics (for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when rendered in their original size.  Existing pixel images that function like icons should be [**converted to vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if they are simple enough.
 
 <a id=Flexible_User_Interface_Graphics></a>
 
@@ -171,7 +171,7 @@ New user-interface graphics with limited colors ought to be designed as vector g
 
 For a high degree of flexibility, new graphical user interface systems should allow for the following:
 
-- Designing icons, cursors, and other user-interface elements in the form of [**vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md).
+- Designing icons, cursors, and other user-interface elements in the form of [**vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if desired.
 - Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
 - Designing user-interface elements as images limited to gray tones, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;

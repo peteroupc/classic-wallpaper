@@ -62,11 +62,11 @@ Additional color palettes allowed are as follows.
 - The canonical CGA palette plus each "half-and-half mixture" [^5] of any two colors in the palette, for a total of 85 unique colors.
 - One of the following "color-cube" palettes:
     - A 27-color palette where each color component is 0, 128, or 255.
-    - The 64 colors displayable by Enhanced Graphics Adapter (EGA) monitors (each color component is 0, 85, 170, or 255).
+    - The 64 colors displayable by Enhanced Graphics Adapter (EGA) and "Tandy graphics adapter" monitors (each color component is 0, 85, 170, or 255).
     - A 125-color palette where each color component is 0, 64, 128, 192, or 255.
 - An excerpt from larger divisions of the "color cube":
     - Up to 16 colors from those displayable by original Atari ST computers and other 9-bit color displays (each color component is either 255 or a multiple of 32).
-    - Up to 32 colors from those displayable by Amiga computers and other 12-bit color displays (each color component is a multiple of 17).
+    - Up to 32 or 64 colors from those displayable by Amiga computers and other 12-bit color displays (each color component is a multiple of 17).
     - Up to 16 colors from those displayable by 15-bit color displays (each color component is a multiple of 8).
 - A palette of the 256 colors used by default in [**VGA 256-color mode**](https://github.com/canidlogic/vgapal).
 - A palette of five to 64 gray tones (all color components the same).

@@ -6934,7 +6934,7 @@ def drawsunkeninnerwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):
     drawedgebotdom(helper, x0 + 1, y0 + 1, x1 - 1, y1 - 1, sh, lt)
 
 # The following four functions draw Windows CE button edges,
-# in raised and sunken style.
+# in raised and sunken style, especially for 4-level monochrome displays.
 
 # Draw an outer Windows CE button edge in raised style.
 def drawraisedouterwindowbutton(helper, x0, y0, x1, y1, hilt, lt, sh, dksh):

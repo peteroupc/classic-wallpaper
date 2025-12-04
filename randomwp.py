@@ -167,6 +167,31 @@ def _diamondtileoverlay(
     )
     return [bg, imgwidth, imgheight]
 
+def _drawmask3(img, mask, w, h, palette=None):
+    offx = random.randint(0, w - 1)
+    offy = random.randint(0, h - 1)
+    helper = dw.ImageDrawHelper(img, w, h, wraparound=True)
+    col = (
+        random.choose(palette)
+        if palette
+        else [random.randint(0, 255) for i in range(3)]
+    )
+    halfcol = [x // 2 for x in col]
+    # generate a random-colored 3-D version of the mask
+    dw.threedee(
+        helper,
+        offx,
+        offy,
+        mask,
+        w,
+        h,
+        [[col, [0, 0, 0]], [col, [0, 0, 0]]],
+        fillColor=halfcol if random.randint(0, 1) == 0 else None,
+        traceInnerCorners=False,
+    )
+    if palette:
+        dw.patternDither(img, w, h, palette)
+
 def _drawmask1(img, mask, w, h, palette=None):
     # Draw dark version of image where mask is black, and light version elsewhere,
     # or vice versa.
@@ -265,11 +290,13 @@ def _drawmask2(img, mask, w, h, palette=None):
         dw.patternDither(img, w, h, palette)
 
 def randomdrawmask(img, mask, w, h, palette=None):
-    match random.randint(0, 1):
+    match random.randint(0, 2):
         case 0:
             _drawmask1(img, mask, w, h, palette=palette)
         case 1:
             _drawmask2(img, mask, w, h, palette=palette)
+        case 2:
+            _drawmask3(img, mask, w, h, palette=palette)
         case _:
             raise ValueError
 
