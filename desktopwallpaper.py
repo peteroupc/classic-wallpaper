@@ -4676,16 +4676,21 @@ def noiseimage(width=64, height=64):
 
 # Generate an image of white noise.  The noise image will have only gray tones.
 # Returns an image with the same format returned by the blankimage() method with alpha=False.
-def whitenoiseimage(width=64, height=64):
+# 'minnoise' and 'maxnoise'  must be 0 or greater, and 255 or less, and 'minnoise' must be less
+# than or equal to 'maxnoise'.
+# Example with a mostly-light-gray noise image:
+# whitenoiseimage(64,64,minnoise=200,255)
+def whitenoiseimage(width=64, height=64, minnoise=0,maxnoise=255):
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
+    if minnoise<0 or maxnoise>255 or minnoise>maxnoise: raise ValueError
     image = []
     for y in range(height):
         row = [0 for i in range(width * 3)]
         for x in range(width):
-            r = random.randint(0, 255)
+            r = random.randint(minnoise,maxnoise)
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
@@ -7921,7 +7926,7 @@ def _randomnoiseimage(w, h, palette=None, tileable=True):
     transpose = random.randint(0, 1) == 0
     ww = h if transpose else w
     hh = w if transpose else h
-    r = random.randint(0, 5)
+    r = random.randint(0, 6)
     if r == 0:
         image = brushednoise(
             ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
@@ -7933,10 +7938,12 @@ def _randomnoiseimage(w, h, palette=None, tileable=True):
     elif r == 2:
         image = noiseimage(ww, hh)
         convolveRow(image, ww, hh)
-    elif r == 2:
+    elif r == 3:
         image = marknoise(
             ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
         )
+    elif r == 4:
+        image = whitenoiseimage(ww, hh,minnoise=200 if ((random.randint(0, 1) == 0) else 0,maxnoise=255)
     else:
         image = brushednoise3(
             ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
