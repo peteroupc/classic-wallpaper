@@ -7306,6 +7306,9 @@ def draw16button(
 # Draws a mask pattern with a "shaded" and shifted mask pattern above it.
 # 'image' and 'mask' have the same format returned by the blankimage() method with alpha=False.
 # 'mask' should be limited to "black" pixels (0,0,0) and "white" pixels (255,255,255).
+# 'shiftx' is the X shift of the shaded shape (can be positive, negative, or zero);
+# 'shifty' is the Y shift of the shaded shape (can be positive, negative, or zero).
+# 'shadowcolor' is optional and can be None.
 def shadeabove(
     image,
     w,
@@ -7315,11 +7318,11 @@ def shadeabove(
     mask,
     maskwidth,
     maskheight,
-    shiftx,  # X shift of shaded shape
-    shifty,  # Y shift of shaded shape
     color,
-    shadowcolor,  # Optional; can be None
+    shadowcolor,
     midcolor,
+    shiftx=1,
+    shifty=1,
     wraparound=False,
 ):
     newmask = [x for x in mask]
@@ -7342,15 +7345,15 @@ def shadeabove(
         ropForeground=0xEE,
         wraparound=False,
     )
-    # Fill upper rows with "white"
+    # Fill upper rows (or lower ones, if negative) with "white"
     imageblitex(
         newmask,
         maskwidth,
         maskheight,
         0,
-        0,
+        0 if sy >= 0 else maskheight + sy,
         maskwidth,
-        sy,
+        sy if sy >= 0 else maskheight,
         mask,
         maskwidth,
         maskheight,
@@ -7358,14 +7361,14 @@ def shadeabove(
         0,
         ropForeground=0xFF,
     )
-    # Fill left-hand columns with "white"
+    # Fill left-hand columns (or right-hand ones, if negative) with "white"
     imageblitex(
         newmask,
         maskwidth,
         maskheight,
+        0 if sx >= 0 else maskwidth + sx,
         0,
-        sy,
-        sx,
+        sx if sx >= 0 else maskwidth,
         maskheight,
         mask,
         maskwidth,
@@ -7373,6 +7376,7 @@ def shadeabove(
         0,
         0,
         ropForeground=0xFF,
+        wraparound=True,
     )
     drawmask(
         image, w, h, x, y, mask, maskwidth, maskheight, color, wraparound=wraparound

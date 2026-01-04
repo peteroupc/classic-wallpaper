@@ -1434,15 +1434,18 @@ Data descriptors defined here:<br>
     mask,
     maskwidth,
     maskheight,
-    shiftx,
-    shifty,
     color,
     shadowcolor,
     midcolor,
+    shiftx=1,
+    shifty=1,
     wraparound=False
 )</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;mask&nbsp;pattern&nbsp;with&nbsp;a&nbsp;"shaded"&nbsp;and&nbsp;shifted&nbsp;mask&nbsp;pattern&nbsp;above&nbsp;it.<br>
 #&nbsp;'image'&nbsp;and&nbsp;'mask'&nbsp;have&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
-#&nbsp;'mask'&nbsp;should&nbsp;be&nbsp;limited&nbsp;to&nbsp;"black"&nbsp;pixels&nbsp;(0,0,0)&nbsp;and&nbsp;"white"&nbsp;pixels&nbsp;(255,255,255).</span></dd></dl>
+#&nbsp;'mask'&nbsp;should&nbsp;be&nbsp;limited&nbsp;to&nbsp;"black"&nbsp;pixels&nbsp;(0,0,0)&nbsp;and&nbsp;"white"&nbsp;pixels&nbsp;(255,255,255).<br>
+#&nbsp;'shiftx'&nbsp;is&nbsp;the&nbsp;X&nbsp;shift&nbsp;of&nbsp;the&nbsp;shaded&nbsp;shape&nbsp;(can&nbsp;be&nbsp;positive,&nbsp;negative,&nbsp;or&nbsp;zero);<br>
+#&nbsp;'shifty'&nbsp;is&nbsp;the&nbsp;Y&nbsp;shift&nbsp;of&nbsp;the&nbsp;shaded&nbsp;shape&nbsp;(can&nbsp;be&nbsp;positive,&nbsp;negative,&nbsp;or&nbsp;zero).<br>
+#&nbsp;'shadowcolor'&nbsp;is&nbsp;optional&nbsp;and&nbsp;can&nbsp;be&nbsp;None.</span></dd></dl>
  <dl><dt><a name="-shadowedborderedbox"><strong>shadowedborderedbox</strong></a>(
     image,
     width,

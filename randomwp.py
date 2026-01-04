@@ -235,7 +235,7 @@ def _drawmask1(img, mask, w, h, palette=None):
 
 def _drawmask4(img, mask, w, h, palette=None):
     # draw color on the image, where mask is black, along
-    # with am outline.
+    # with an outline.
     colors = [[0, 0, 0], [128, 128, 128], [192, 192, 192], [255, 255, 255]]
     usedefaults = (not palette) or (
         colors[0] in palette
@@ -298,6 +298,47 @@ def _drawmask4(img, mask, w, h, palette=None):
     if palette:
         dw.patternDither(img, w, h, palette)
 
+def _randomvivid():
+    while True:
+        rgb = [random.randint(0, 255) for i in range(3)]
+        if rgb[0] == rgb[1] and rgb[1] == rgb[2]:
+            continue
+        rmn = min(rgb)
+        rmx = max(rgb)
+        return [
+            0 if v == rmn else (255 if v == rmx else (v - rmn) * 255 // (rmx - rmn))
+            for v in rgb
+        ]
+
+def _drawmask5(img, mask, w, h, palette=None):
+    # draw color on the image, where mask is black, along
+    # with a drop shadow and middle color.
+    color = _randomvivid()
+    halfcolor = [v // 2 for v in color]
+    shadow = [128, 128, 128]
+    offx = random.randint(0, w - 1)
+    offy = random.randint(0, h - 1)
+    reloffx = random.choice([1, -1, 2, -2])
+    reloffy = random.choice([1, -1, 2, -2])
+    dw.shadeabove(
+        img,
+        w,
+        h,
+        offx,
+        offy,
+        mask,
+        w,
+        h,
+        color,
+        shadow,
+        halfcolor,
+        shiftx=reloffx,
+        shifty=reloffy,
+        wraparound=True,
+    )
+    if palette:
+        dw.patternDither(img, w, h, palette)
+
 def _drawmask2(img, mask, w, h, palette=None):
     # draw color on the image, where mask is black, along
     # with a drop shadow.
@@ -355,7 +396,7 @@ def _drawmask2(img, mask, w, h, palette=None):
         dw.patternDither(img, w, h, palette)
 
 def randomdrawmask(img, mask, w, h, palette=None):
-    match random.randint(0, 3):
+    match random.randint(0, 4):
         case 0:
             _drawmask1(img, mask, w, h, palette=palette)
         case 1:
@@ -364,6 +405,8 @@ def randomdrawmask(img, mask, w, h, palette=None):
             _drawmask3(img, mask, w, h, palette=palette)
         case 3:
             _drawmask4(img, mask, w, h, palette=palette)
+        case 4:
+            _drawmask5(img, mask, w, h, palette=palette)
         case _:
             raise ValueError
 
