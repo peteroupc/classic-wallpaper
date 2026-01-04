@@ -4680,17 +4680,18 @@ def noiseimage(width=64, height=64):
 # than or equal to 'maxnoise'.
 # Example with a mostly-light-gray noise image:
 # whitenoiseimage(64,64,minnoise=200,255)
-def whitenoiseimage(width=64, height=64, minnoise=0,maxnoise=255):
+def whitenoiseimage(width=64, height=64, minnoise=0, maxnoise=255):
     if width <= 0 or int(width) != width:
         raise ValueError
     if height <= 0 or int(height) != height:
         raise ValueError
-    if minnoise<0 or maxnoise>255 or minnoise>maxnoise: raise ValueError
+    if minnoise < 0 or maxnoise > 255 or minnoise > maxnoise:
+        raise ValueError
     image = []
     for y in range(height):
         row = [0 for i in range(width * 3)]
         for x in range(width):
-            r = random.randint(minnoise,maxnoise)
+            r = random.randint(minnoise, maxnoise)
             row[x * 3] = r
             row[x * 3 + 1] = r
             row[x * 3 + 2] = r
@@ -7943,7 +7944,9 @@ def _randomnoiseimage(w, h, palette=None, tileable=True):
             ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)
         )
     elif r == 4:
-        image = whitenoiseimage(ww, hh,minnoise=200 if ((random.randint(0, 1) == 0) else 0,maxnoise=255)
+        image = whitenoiseimage(
+            ww, hh, minnoise=(200 if random.randint(0, 1) == 0 else 0), maxnoise=255
+        )
     else:
         image = brushednoise3(
             ww, hh, tileable=tileable, extraTones=(random.randint(0, 1) == 0)

@@ -115,9 +115,9 @@ The pixel dimensions allowed are as follows.
 | dzigzagcyan.png | peteroupc | Two colors (cyan and teal) | 64 &times; 32 | Unlicense |
 | truchet2color.png | peteroupc | Black and white | 32 &times; 32 | Unlicense |
 | truchet2colorthick.png | peteroupc | Black and white | 32 &times; 32 | Unlicense |
-| truchet3color.png | peteroupc | Black/gray/white | 32 &times; 32 | Unlicense [^5] |
+| truchet3color.png | peteroupc | Black/gray/white | 32 &times; 32 | Unlicense [^8] |
 | smallslant.png | peteroupc | Four tones | 8 &times; 8 | Unlicense |
-| truchetff5500vga.png | peteroupc | VGA palette | 32 &times; 32 | Unlicense [^8] |
+| truchetff5500vga.png | peteroupc | VGA palette | 32 &times; 32 | Unlicense [^9] |
 | boxes.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
 | circlec.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
 | circlews.png | peteroupc | "Safety palette" | 128 &times; 128 | Unlicense |
@@ -146,9 +146,9 @@ The texture generator at [**`schalkt/tgen`**](https://github.com/schalkt/tgen), 
 6. **Stochastic tiling:** Wang tiles are a finite set of tiles (here, wallpaper images) that can cover an arbitrary grid without seams.  One example is the [**set of 16 tiles**](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
 
     - A randomized tiling, or _stochastic tiling_, can be generated from this tile set by repeatedly selecting a grid position and choosing a random tile that can go in that position without introducing seams, until the whole grid is covered.
-    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper image at each grid position, where each version has the same dimensions and the same edges as each other version but can otherwise vary.[^9]
+    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper image at each grid position, where each version has the same dimensions and the same edges as each other version but can otherwise vary.[^10]
 
-    Both kinds of stochastic tiling can be combined.  [**See example**](https://web.archive.org/web/20160220062702/http://www.cr31.co.uk/stagecast/wang/2edge.html).[^10]
+    Both kinds of stochastic tiling can be combined.  [**See example**](https://web.archive.org/web/20160220062702/http://www.cr31.co.uk/stagecast/wang/2edge.html).[^11]
 
 <a id=Sample_Wallpaper_Generation_Code></a>
 
@@ -227,7 +227,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [**_wallpaper groups_**](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.  Many tileable wallpapers are _seamless_, but not all (consider a pattern of bricks or square floor tiles).<br>For the Macintosh operating system, System 7.5.x and Mac OS 7.6.x, 8.x, and 9.x supported _desktop patterns_ of size up to 128 &times; 128 pixels, Mac OS 8.x and 9.x distinguished between desktop patterns and _desktop pictures_ (of usually larger size and lying above the desktop pattern), and versions earlier than System 7.5 supported only 8-&times;-8-pixel desktop patterns.<br>In Windows version 3.1, Windows 95, and Windows 98, _desktop patterns_ are of size 8x8 pixels and have only two colors (black and the desktop background color), and _desktop wallpaper_ is of arbitrary size and lies above the desktop pattern.
 
-[^2]: Can be generated from `dstripe` using the following ImageMagick command: `magick dstripe.png \( +clone -flop \) +append dzigzag.png`.
+[^2]: The "safety palette", also known as the "Web safe" colors, consists of 216 colors that are uniformly spaced in the red&ndash;green&ndash;blue color cube.  Robert Hess's article "[**The Safety Palette**](https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10))", 1996, described the advantage that images that use only colors in this palette won't dither when displayed by Web browsers on displays that can show up to 256 colors at once. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors). Dithering is the scattering of colors in a limited set to simulate colors outside that set.)  When the "safety palette" forms part of a 256-color repertoire, as it usually does, 40 slots are left that can be filled with additional colors, and as Hess mentions, graphics designers have no control over what these additional colors are. Usually these additional colors include the four Windows-specific colors plus the eight VGA palette colors not already in the "safety palette".  For Java's `BufferedImage.TYPE_BYTE_INDEXED`, these 40 colors are gray tones not already in the "safety palette".
 
 [^3]: The Enhanced Graphics Adapter (EGA) video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color (192, 192, 192) is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
 
@@ -235,12 +235,14 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^5]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
 
-[^6]: Can be generated from `truchet3color` using the following [**ImageMagick**](https://imagemagick.org/) command: `magick truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
+[^6]: See also _OpenGL Programming Guide_ (1993), chapter 6; D. Rogerson, "OpenGL IV: Color Index Mode" (Jan. 19, 1995).
 
-[^7]: Can be generated from `truchet2color` using the following ImageMagick command: `magick truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1x2 gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF` and `#808080` indicate the two colors white and gray, respectively.
+[^7]: Can be generated from `dstripe` using the following ImageMagick command: `magick dstripe.png \( +clone -flop \) +append dzigzag.png`.
 
-[^8]: The "safety palette", also known as the "Web safe" colors, consists of 216 colors that are uniformly spaced in the red&ndash;green&ndash;blue color cube.  Robert Hess's article "[**The Safety Palette**](https://learn.microsoft.com/en-us/previous-versions/ms976419(v=msdn.10))", 1996, described the advantage that images that use only colors in this palette won't dither when displayed by Web browsers on displays that can show up to 256 colors at once. (See also [**Wikipedia**](http://en.wikipedia.org/wiki/Web_colors). Dithering is the scattering of colors in a limited set to simulate colors outside that set.)  When the "safety palette" forms part of a 256-color repertoire, as it usually does, 40 slots are left that can be filled with additional colors, and as Hess mentions, graphics designers have no control over what these additional colors are. Usually these additional colors include the four legacy Windows colors plus the eight VGA palette colors not already in the "safety palette".  For Java's `BufferedImage.TYPE_BYTE_INDEXED`, these 40 colors are gray tones not already in the "safety palette".
+[^8]: Can be generated from `truchet2color` using the following ImageMagick command: `magick truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1x2 gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF` and `#808080` indicate the two colors white and gray, respectively.
 
-[^9]: This covers the special case of _Truchet tiles_, involving two versions of an image where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
+[^9]: Can be generated from `truchet3color` using the following [**ImageMagick**](https://imagemagick.org/) command: `magick truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
 
-[^10]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.
+[^10]: This covers the special case of _Truchet tiles_, involving two versions of an image where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
+
+[^11]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.

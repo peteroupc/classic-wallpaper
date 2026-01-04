@@ -1759,8 +1759,12 @@ Data descriptors defined here:<br>
 #&nbsp;green,&nbsp;and&nbsp;blue&nbsp;components&nbsp;in&nbsp;that&nbsp;order,&nbsp;where&nbsp;each<br>
 #&nbsp;component&nbsp;is&nbsp;an&nbsp;integer&nbsp;from&nbsp;0&nbsp;through&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-wellborder"><strong>wellborder</strong></a>(helper, x0, y0, x1, y1, hilt, windowText)</dt></dl>
- <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.&nbsp;&nbsp;The&nbsp;noise&nbsp;image&nbsp;will&nbsp;have&nbsp;only&nbsp;gray&nbsp;tones.<br>
-#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
+ <dl><dt><a name="-whitenoiseimage"><strong>whitenoiseimage</strong></a>(width=64, height=64, minnoise=0, maxnoise=255)</dt><dd><span class="code">#&nbsp;Generate&nbsp;an&nbsp;image&nbsp;of&nbsp;white&nbsp;noise.&nbsp;&nbsp;The&nbsp;noise&nbsp;image&nbsp;will&nbsp;have&nbsp;only&nbsp;gray&nbsp;tones.<br>
+#&nbsp;Returns&nbsp;an&nbsp;image&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.<br>
+#&nbsp;'minnoise'&nbsp;and&nbsp;'maxnoise'&nbsp;&nbsp;must&nbsp;be&nbsp;0&nbsp;or&nbsp;greater,&nbsp;and&nbsp;255&nbsp;or&nbsp;less,&nbsp;and&nbsp;'minnoise'&nbsp;must&nbsp;be&nbsp;less<br>
+#&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;'maxnoise'.<br>
+#&nbsp;Example&nbsp;with&nbsp;a&nbsp;mostly-light-gray&nbsp;noise&nbsp;image:<br>
+#&nbsp;<a href="#-whitenoiseimage">whitenoiseimage</a>(64,64,minnoise=200,255)</span></dd></dl>
  <dl><dt><a name="-windowborder"><strong>windowborder</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt></dl>
  <dl><dt><a name="-writepalette"><strong>writepalette</strong></a>(f, palette, name=None, raiseIfExists=False, comment=None)</dt></dl>
 </td></tr></table>
