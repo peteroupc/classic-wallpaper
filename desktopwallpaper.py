@@ -3185,7 +3185,7 @@ def imagegradientbox(
 
 # Image has the same format returned by the blankimage() method with alpha=False.
 # Draw a wraparound box in a gradient fill on an image.
-# 'border' is the color of the 1-pixel-thick border. Can be None (so
+# 'border' is the color of the 1-unit-thick border. Can be None (so
 # that no border is drawn)
 # 'gradient' is a list of 256 colors for mapping the 256 possible shades
 # of the gradient fill.
@@ -3252,7 +3252,7 @@ def borderedgradientbox(
 
 # Image has the same format returned by the blankimage() method with alpha=False.
 # Draw a wraparound box in a two-color dithered gradient fill on an image.
-# 'border' is the color of the 1-pixel-thick border. Can be None (so
+# 'border' is the color of the 1-unit-thick border. Can be None (so
 # that no border is drawn)
 # 'color1' and 'color2' are the dithered
 # versions of the inner color. 'color1' and 'color2' can't be None.
@@ -3392,7 +3392,7 @@ def outlineimage(image, width, height, lt=None, sh=None):
 # Draw a wraparound dither-colored box on an image.
 # Image has the same format returned by the blankimage() method with the specified value of 'alpha'.
 # The default value for 'alpha' is False
-# 'border' is the color of the 1-pixel-thick border. Can be None (so
+# 'border' is the color of the 1-unit-thick border. Can be None (so
 # that no border is drawn)
 # 'color1' and 'color2' are the dithered
 # versions of the inner color. 'color1' and 'color2' can't be None.

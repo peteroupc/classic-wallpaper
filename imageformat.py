@@ -1927,7 +1927,7 @@ def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
     # Returns 255 if bpp is not 32.
     if bpp == 32:
         row = scanSize * (height - 1 - y)
-        return row + x * 4 + 3
+        return byteData[row + x * 4 + 3]
     else:
         return 255
 
@@ -2166,6 +2166,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
         for x in range(width):
             bitand = _read1bppBitmap(andmask, andmaskscan, height, x, y)
             pxalpha = _readBitmapAlpha(xormask, xormaskscan, height, bitcount, x, y)
+            # if pxalpha>255: raise ValueError
             px = _readBitmapAsColorBGR(
                 xormask, xormaskscan, height, bitcount, x, y, colortable
             ) + (

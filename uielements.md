@@ -28,8 +28,8 @@ This page discusses aspects of the traditional design of user-interface graphics
 In this document:
 
 - A _display mode_ is a way to set up a computer display to show graphics.
-- _Screen resolution_ gives the number of columns and rows of pixels the display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.[^1]
-- _Pixel density_ gives a display mode's horizontal pixels per inch and vertical pixels per inch.  If these two values are the same, then the pixels are "square".[^2]
+- _Screen resolution_ gives the number of columns and rows of pixels (point samples) the display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.[^1]
+- _Pixel density_ gives a display mode's horizontal pixels per inch and vertical pixels per inch.  If these two values are the same, then the display mode has _uniform pixel spacing_ ("square pixels").[^2]
 
 Some display modes follow, along with their screen resolutions and commonly implemented pixel densities:
 
@@ -37,9 +37,9 @@ Some display modes follow, along with their screen resolutions and commonly impl
 - IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch.
 - IBM Color/Graphics Adapter's (CGA) 640 &times; 200 2-color display mode: 96 horizontal and 48 vertical pixels per inch.
 
-An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode has "square" pixels, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
+An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode has uniform pixel spacing, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
 
-More generally, units similar to pixels may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [**_dialog box units_**](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [**_effective pixels_**](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display and its size, among other things).
+More generally, units similar to the spacing from one pixel to another may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [**_dialog box units_**](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [**_effective pixels_**](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display and its size, among other things).
 
 <a id=Button_and_Border_Styles></a>
 
@@ -80,7 +80,7 @@ The following appearances are traditionally seen in ordinary buttons:
 - _Embossed appearance_: The button's text and icons are drawn&mdash;
 
     - using the button highlight color instead of its normal colors, then
-    - using the button shadow color instead of its normal colors and offset 1 pixel upward and 1 pixel to the left,
+    - using the button shadow color instead of its normal colors and offset 1 unit upward and 1 unit to the left,
 
     in each case with transparency and opacity in the label preserved.
 - _Unavailable appearance_: The button's text and icons have an _embossed appearance_ [^5], are drawn with 50% opacity, or are drawn such that only every other pixel is rendered in a checkerboard pattern.
@@ -91,7 +91,7 @@ The following appearances are traditionally seen in ordinary buttons:
 
 The following is typical in buttons found in Windows versions 3.0 and 3.1 [^6], Windows 95 [^5], and applications for these systems:
 
-- For the pressed button style, the button's text and icons are shifted one pixel to the right and one pixel down, compared to the unpressed style.
+- For the pressed button style, the button's text and icons are shifted one unit to the right and one unit down, compared to the unpressed style.
 
 The following ways to draw buttons, default buttons, and toolbar buttons are typical in Windows 95 [^5] and applications for it:
 
@@ -112,7 +112,7 @@ Traditionally, the three-dimensional effects of buttons, icons, and other user-i
 An icon (a small graphic representing a computer program, document, or resource) should come in a set of variations in color and dimensions:
 
 - The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette.[^10]
-- The same icon should be drawn in the pixel dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64, and may be drawn in other dimensions to account for [**pixel density**](#display-modes). [^11]
+- The same icon should have dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64 pixels, and may be drawn in other dimensions to account for [**pixel density**](#display-modes). [^11]
 - All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.
 
@@ -121,7 +121,7 @@ Traditionally, 32 &times; 32 icons with the VGA palette are the most common vari
 Cursors (mouse pointer graphics) can follow the guidelines given earlier as well, but most cursors are traditionally drawn:
 
 - In a single width and height, generally 32 &times; 32 pixels, except to account for [**pixel density**](#display-modes).
-- Either in black and white, or with colors limited to white, black, and other gray tones, in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-pixel black outline or vice versa, to make the cursor easy to see over any background.
+- Either in black and white, or with colors limited to white, black, and other gray tones, in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-unit-thick black outline or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** Icon formats for OS/2 Presentation Manager and Microsoft Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](./imageformat.html).
 
@@ -137,7 +137,7 @@ Although Windows 95 and later versions have an _animation control_ for displayin
 
 In general, when user-interface graphics, including icons, cursors, and illustrations, from about 1995 to about 2003 are drawn using a limited number of colors, the following is observed:
 
-- Curves and straight line segments are drawn unsmoothed and one pixel thick.
+- Curves and straight line segments are one unit thick and drawn without smoothing.
 - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
 - There are no translucent (semitransparent) pixels.
 - The three-dimensional (3-D) appearance of buttons and other objects in two-dimensional graphics supposes the presence of a light source shining from the upper left.[^5]
@@ -160,7 +160,7 @@ In general, from about 1990 to about 1997, user-interface text&mdash;
 - was drawn in one color only, and
 - rarely had smoothed edges, and only if the display mode can show more than 256 colors at a time.
 
-In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one pixel upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^19]  But new applications should avoid having text in icons, cursors, and pixel images.
+In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^19]  But new applications should avoid having text in icons, cursors, and pixel images.
 
 New user-interface graphics with limited colors ought to be designed as vector graphics (for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.  Existing pixel images that function like icons should be [**converted to vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if they are simple enough.
 
@@ -266,7 +266,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 ## End Notes
 
-[^1]: This definition disregards whether a display shows pixels using interlacing (for example, alternating between showing only odd rows and only even rows) or a progressive-scan method (all rows are displayed each frame).
+[^1]: This definition disregards whether a display shows an image using interlacing (for example, alternating between showing only odd rows and only even rows) or a progressive-scan method (all rows are displayed each frame).
 
 [^2]: These two values for pixel density need not match the true pixel density of a particular computer display.  For example, the drivers that come with Windows version 3.x employ a pixel density that is greater, on average, than the true one to aid readability of text (C. Petzold, _Programming Windows: The Microsoft Guide to Writing Applications for Windows 3_, Microsoft Press, 1990, chapter 14).<br>Moreover, two display modes with the same screen resolution can differ in their pixel density, even if both are meant for displays with the same aspect ratio.  For example, a 320-&times;-200 display mode can have 40 or 48 vertical pixels per inch, even if both are intended for displays with the 4:3 aspect ratio typical in 2000 and earlier.
 
@@ -278,23 +278,23 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^6]: Buttons possessed a 3-D look (in that they appear to have depth or elevation) in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that gives 3-D appearances to more places in an application.
 
-[^7]: In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-pixel thick edge drawn in the button face color.
+[^7]: In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-unit-thick edge drawn in the button face color.
 
 [^8]: _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in System 7 of the Macintosh Operating System was designed to be legible even when rendered this way).
 
 [^9]: _The Windows Interface Guidelines for Software Design_; _Macintosh Human Interface Guidelines_, p. 232.
 
-[^10]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE before version 4.1 also supported four-color icons in a two-bit-per-pixel format, where the colors tend to be the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128,128,128)) ("Display Buffer Formats", Windows CE Device Driver Kit).<br>A Windows color icon file can store an icon limited to 8 colors, but still in the 4-bits-per pixel format, separately from 16-color icons in that format (Petzold, chapter 8), but such an 8-color icon is rarely seen in practice.  Indeed, before version 3.0, the Windows EGA and VGA video drivers supported only eight logical colors rather than sixteen (Petzold, ch. 14), and there were no standard Windows color icon and bitmap file formats.  (In addition, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards.) A traditional color choice for 8-color icons was a table of eight colors where each color component is 0 or 255.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color light gray is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
+[^10]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE before version 4.1 also supported four-color icons in a 2-bit-per-pixel format, where the colors tend to be the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128,128,128)) ("Display Buffer Formats", Windows CE Device Driver Kit).<br>A Windows color icon file can store an icon limited to 8 colors, but still in the 4-bit-per-pixel format, separately from 16-color icons in that format (Petzold, chapter 8), but such an 8-color icon is rarely seen in practice.  Indeed, before version 3.0, the Windows EGA and VGA video drivers supported only eight logical colors rather than sixteen (Petzold, ch. 14), and there were no standard Windows color icon and bitmap file formats.  (In addition, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards.) A traditional color choice for 8-color icons was a table of eight colors where each color component is 0 or 255.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color light gray is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).
 
 [^11]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.
 
 [^12]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.
 
-[^13]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows before version 3.1 tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two pixels.
+[^13]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows before version 3.1 tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two units.
 
 [^14]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.  But computer monitors may still be drawn straight on in order to accentuate what the monitor is showing.
 
-[^15]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially one-pixel-thick lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill an area of pixels that is surrounded by pixels of other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
+[^15]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially 1-unit-thick lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill a colored area that is surrounded by other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
 
 [^16]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
 
@@ -304,6 +304,6 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^19]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
 
-[^20]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than two pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and one-pixel-thick line segments.
+[^20]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than two pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and 1-unit-thick line segments.
 
 [^21]: The resulting color may vary slightly from the one calculated by the Motif toolkit, because of rounding errors committed by that toolkit.
