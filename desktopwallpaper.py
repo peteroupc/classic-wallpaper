@@ -3335,10 +3335,10 @@ def alphaToTwoLevel(image, width, height, dither=False):
             i += 4
     return image
 
-# Splits a 4-byte-per pixel image (four elements per pixel) into a
-# color mask and an (inverted) alpha mask, in that order.
+# Splits a 4-byte-per-pixel image (four elements per pixel) into an
+# opaque color image and a monochrome alpha matte ((255,255,255) means transparent, (0,0,0) means opaque), in that order.
 # The parameter 'image' has the same format returned by the blankimage() method with alpha=True.
-# Returns a list of two elements, the color mask and the alpha mask, both
+# Returns a list of two elements, the color image and the alpha matte, both
 # with the same format returned by the blankimage() method with alpha=False.
 def splitmask(image, width, height):
     if width * height * 4 != len(image):
@@ -3348,16 +3348,16 @@ def splitmask(image, width, height):
     for i in range(width * height):
         if image[i * 4 + 3] == 0:
             # Set color to black for every transparent pixel,
-            # to ease the color mask's use as an XOR mask
-            # (when every pixel in the alpha mask's bits are all zeros or all ones)
+            # to ease the color image's use as an XOR mask
+            # (when every pixel in the alpha matte's bits are all zeros or all ones)
             img[i * 3] = img[i * 3 + 1] = img[i * 3 + 2] = 0
             mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255
         else:
             img[i * 3] = image[i * 4]
             img[i * 3 + 1] = image[i * 4 + 1]
             img[i * 3 + 2] = image[i * 4 + 2]
-            # Invert alpha channel to ease the alpha mask's use as an AND mask
-            # (when the bits of every pixel in the mask are all zeros or all ones)
+            # Invert alpha channel to ease the alpha matte's use as an AND mask
+            # (when the bits of every pixel in the alpha matte are all zeros or all ones)
             mask[i * 3] = mask[i * 3 + 1] = mask[i * 3 + 2] = 255 - image[i * 4 + 3]
     return [img, mask]
 
@@ -3486,9 +3486,9 @@ def interlace(image, width, height, alpha=False):
 # The image is in the form of a list with a number of
 # elements equal to width*height*3 (or width*height*4 if 'alpha' is True).  The
 # array is divided into 'height' many rows running from top to bottom. Each row
-# is divided into 'width' many pixels (one pixel for each column from left to
-# right), with three elements per pixel (or four elements if 'alpha' is True).
-# In each pixel, which represents a color at the specified row and column, the
+# is divided into 'width' many point samples (pixels) (one sample for each column from left to
+# right), with three elements per sample (or four elements if 'alpha' is True).
+# In each sample, which represents a color at the specified row and column, the
 # first element is the color's red component; the second, its blue component;
 # the third, its red component; the fourth, if present, is the color's alpha
 # component or _opacity_ (0 if the color is transparent; 255 if opaque; otherwise,

@@ -200,9 +200,9 @@ Data descriptors defined here:<br>
 #&nbsp;The&nbsp;image&nbsp;is&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;list&nbsp;with&nbsp;a&nbsp;number&nbsp;of<br>
 #&nbsp;elements&nbsp;equal&nbsp;to&nbsp;width*height*3&nbsp;(or&nbsp;width*height*4&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).&nbsp;&nbsp;The<br>
 #&nbsp;array&nbsp;is&nbsp;divided&nbsp;into&nbsp;'height'&nbsp;many&nbsp;rows&nbsp;running&nbsp;from&nbsp;top&nbsp;to&nbsp;bottom.&nbsp;Each&nbsp;row<br>
-#&nbsp;is&nbsp;divided&nbsp;into&nbsp;'width'&nbsp;many&nbsp;pixels&nbsp;(one&nbsp;pixel&nbsp;for&nbsp;each&nbsp;column&nbsp;from&nbsp;left&nbsp;to<br>
-#&nbsp;right),&nbsp;with&nbsp;three&nbsp;elements&nbsp;per&nbsp;pixel&nbsp;(or&nbsp;four&nbsp;elements&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).<br>
-#&nbsp;In&nbsp;each&nbsp;pixel,&nbsp;which&nbsp;represents&nbsp;a&nbsp;color&nbsp;at&nbsp;the&nbsp;specified&nbsp;row&nbsp;and&nbsp;column,&nbsp;the<br>
+#&nbsp;is&nbsp;divided&nbsp;into&nbsp;'width'&nbsp;many&nbsp;point&nbsp;samples&nbsp;(pixels)&nbsp;(one&nbsp;sample&nbsp;for&nbsp;each&nbsp;column&nbsp;from&nbsp;left&nbsp;to<br>
+#&nbsp;right),&nbsp;with&nbsp;three&nbsp;elements&nbsp;per&nbsp;sample&nbsp;(or&nbsp;four&nbsp;elements&nbsp;if&nbsp;'alpha'&nbsp;is&nbsp;True).<br>
+#&nbsp;In&nbsp;each&nbsp;sample,&nbsp;which&nbsp;represents&nbsp;a&nbsp;color&nbsp;at&nbsp;the&nbsp;specified&nbsp;row&nbsp;and&nbsp;column,&nbsp;the<br>
 #&nbsp;first&nbsp;element&nbsp;is&nbsp;the&nbsp;color's&nbsp;red&nbsp;component;&nbsp;the&nbsp;second,&nbsp;its&nbsp;blue&nbsp;component;<br>
 #&nbsp;the&nbsp;third,&nbsp;its&nbsp;red&nbsp;component;&nbsp;the&nbsp;fourth,&nbsp;if&nbsp;present,&nbsp;is&nbsp;the&nbsp;color's&nbsp;alpha<br>
 #&nbsp;component&nbsp;or&nbsp;_opacity_&nbsp;(0&nbsp;if&nbsp;the&nbsp;color&nbsp;is&nbsp;transparent;&nbsp;255&nbsp;if&nbsp;opaque;&nbsp;otherwise,<br>
@@ -1482,10 +1482,10 @@ Data descriptors defined here:<br>
  <dl><dt><a name="-slider3d"><strong>slider3d</strong></a>(dst, dstwidth, dstheight, x0, y0, sw=12, sh=24)</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;slider&nbsp;thumb&nbsp;with&nbsp;a&nbsp;three-dimensional&nbsp;look.<br>
 #&nbsp;'dst'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-solid"><strong>solid</strong></a>(bg=[192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
- <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per&nbsp;pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;a<br>
-#&nbsp;color&nbsp;mask&nbsp;and&nbsp;an&nbsp;(inverted)&nbsp;alpha&nbsp;mask,&nbsp;in&nbsp;that&nbsp;order.<br>
+ <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image, width, height)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;an<br>
+#&nbsp;opaque&nbsp;color&nbsp;image&nbsp;and&nbsp;a&nbsp;monochrome&nbsp;alpha&nbsp;matte&nbsp;((255,255,255)&nbsp;means&nbsp;transparent,&nbsp;(0,0,0)&nbsp;means&nbsp;opaque),&nbsp;in&nbsp;that&nbsp;order.<br>
 #&nbsp;The&nbsp;parameter&nbsp;'image'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>
-#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;two&nbsp;elements,&nbsp;the&nbsp;color&nbsp;mask&nbsp;and&nbsp;the&nbsp;alpha&nbsp;mask,&nbsp;both<br>
+#&nbsp;Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;two&nbsp;elements,&nbsp;the&nbsp;color&nbsp;image&nbsp;and&nbsp;the&nbsp;alpha&nbsp;matte,&nbsp;both<br>
 #&nbsp;with&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=False.</span></dd></dl>
  <dl><dt><a name="-statusfieldbox"><strong>statusfieldbox</strong></a>(helper, x0, y0, x1, y1, hilt, lt, sh, dksh, face=None)</dt><dd><span class="code">#&nbsp;Draws&nbsp;a&nbsp;status&nbsp;field&nbsp;box,&nbsp;intended&nbsp;to&nbsp;resemble&nbsp;a&nbsp;slightly&nbsp;recessed&nbsp;box,&nbsp;in&nbsp;Windows&nbsp;95&nbsp;style.</span></dd></dl>
  <dl><dt><a name="-styledbrush1"><strong>styledbrush1</strong></a>(color1, color2, color3, spacing=3, hatchsize=1)</dt><dd><span class="code">#&nbsp;Creates&nbsp;a&nbsp;brush&nbsp;pattern&nbsp;(also&nbsp;known&nbsp;as&nbsp;a&nbsp;stipple)&nbsp;with&nbsp;width&nbsp;2&nbsp;and&nbsp;height&nbsp;equal&nbsp;to&nbsp;'spacing'*2.<br>

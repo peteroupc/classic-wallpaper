@@ -29,7 +29,7 @@ In this document:
 
 - A _display mode_ is a way to set up a computer display to show graphics.
 - _Screen resolution_ gives the number of columns and rows of pixels (point samples) the display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.[^1]
-- _Pixel density_ gives a display mode's horizontal pixels per inch and vertical pixels per inch.  If these two values are the same, then the display mode has _uniform pixel spacing_ ("square pixels").[^2]
+- _Pixel density_ gives a display mode's horizontal and vertical pixel spacing, each in pixels per inch.  If these two values are the same, then the display mode is _isotropic_ (has "square pixel spacing").[^2]
 
 Some display modes follow, along with their screen resolutions and commonly implemented pixel densities:
 
@@ -37,7 +37,7 @@ Some display modes follow, along with their screen resolutions and commonly impl
 - IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch.
 - IBM Color/Graphics Adapter's (CGA) 640 &times; 200 2-color display mode: 96 horizontal and 48 vertical pixels per inch.
 
-An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode has uniform pixel spacing, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
+An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode is isotropic, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
 
 More generally, units similar to the spacing from one pixel to another may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [**_dialog box units_**](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [**_effective pixels_**](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display and its size, among other things).
 
@@ -101,7 +101,7 @@ The following ways to draw buttons, default buttons, and toolbar buttons are typ
     - For the unpressed style, its inner background has a _mixed appearance_. [^7]
     - For the unavailable style, its text and icons have an _unavailable appearance_.
 
-In Presentation Manager and in System 7 of the Macintosh Operating System [^8], to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a checkerboard pattern.
+In Presentation Manager and in System 7 of the Macintosh Operating System [^8], to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a "checkerboard" pattern.
 
 Traditionally, the three-dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^9]
 
@@ -148,6 +148,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
 - For graphics with 17 to 256 colors, gradient fills are present but subtle.
+- Icons with more than 32 colors are rare; more than 64 colors, very rare.
 - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.[^16]
 - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in a typeface, or font; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^17]
 
@@ -160,9 +161,9 @@ In general, from about 1990 to about 1997, user-interface text&mdash;
 - was drawn in one color only, and
 - rarely had smoothed edges, and only if the display mode can show more than 256 colors at a time.
 
-In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three pixels downward and rightward) followed by an unshifted rendering in the base color or pattern.[^19]  But new applications should avoid having text in icons, cursors, and pixel images.
+In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three units downward and rightward) followed by an unshifted rendering in the base color or pattern.[^19]  But new applications should avoid having text in icons, cursors, and other images.
 
-New user-interface graphics with limited colors ought to be designed as vector graphics (for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.  Existing pixel images that function like icons should be [**converted to vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if they are simple enough.
+New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.  Existing images that function like icons should be [**converted to vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if they are simple enough.
 
 <a id=Flexible_User_Interface_Graphics></a>
 
@@ -172,7 +173,7 @@ For a high degree of flexibility, new graphical user interface systems should al
 
 - Designing icons, cursors, and other user-interface elements in the form of [**vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if desired.
 - Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
-- Designing user-interface elements as images limited to gray tones, where the system replaces each gray tone in the image with the corresponding color in a color gradient involving one or more system colors.
+- Designing user-interface elements as images or vector graphics limited to gray tones, where the system replaces each gray tone in the image or graphic with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
     - in multiple variations in size (width, height, or both), each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [**vector graphics**](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^20], and
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
@@ -214,7 +215,7 @@ authors' suggestions for the three-dimensional appearance of buttons and certain
 
 ## Worthy Mentions
 
-- The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics, not pixel images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
+- The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics (geometric models), not images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
 - The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^21]  The [**pseudocode conventions**](https://peteroupc.github.io/pseudocode.html) apply to the following pseudocode.
 
 ```
@@ -304,6 +305,6 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^19]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
 
-[^20]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than two pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and 1-unit-thick line segments.
+[^20]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than twice the spacing between pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and 1-unit-thick line segments.
 
 [^21]: The resulting color may vary slightly from the one calculated by the Motif toolkit, because of rounding errors committed by that toolkit.
