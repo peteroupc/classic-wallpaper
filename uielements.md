@@ -113,15 +113,13 @@ An icon (a small graphic representing a computer program, document, or resource)
 
 - The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette.[^10]
 - The same icon should have dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64 pixels, and may be drawn in other dimensions to account for [**pixel density**](#display-modes). [^11]
-- All icons can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons.
 - Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.
 
 Traditionally, 32 &times; 32 icons with the VGA palette are the most common variation.
 
-Cursors (mouse pointer graphics) can follow the guidelines given earlier as well, but most cursors are traditionally drawn:
+Cursors (mouse pointer graphics) can follow the guidelines given earlier as well, but most cursors are traditionally in a single width and height, generally 32 &times; 32 pixels, except to account for [**pixel density**](#display-modes).
 
-- In a single width and height, generally 32 &times; 32 pixels, except to account for [**pixel density**](#display-modes).
-- Either in black and white, or with colors limited to white, black, and other gray tones, in either case with optional transparency.  In the black-and-white case, each shape of the cursor is generally either white with a 1-unit-thick black outline or vice versa, to make the cursor easy to see over any background.
+Icons and cursors can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons and cursors.
 
 > **Note:** Icon formats for OS/2 Presentation Manager and Microsoft Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](./imageformat.html).
 
@@ -150,6 +148,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 - For graphics with 17 to 256 colors, gradient fills are present but subtle.
 - Icons with more than 32 colors are rare; more than 64 colors, very rare.
 - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the original icon but with finer but nonessential detail.[^16]
+- Most cursors are limited to the two colors black and white, with optional transparency.  Cursors with colors other than black and white are rare, and cursors with more than 32 colors are very rare.  In the black-and-white case, each shape of the cursor is generally either white with a 1-unit-thick black outline or vice versa, to make the cursor easy to see over any background.
 - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in a typeface, or font; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^17]
 
 In general, before 1995, black-and-white icons (with no intermediate gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^18]

@@ -34,7 +34,7 @@ are not within the scope of this document.
 
 There is an algorithm by Kopf and Lischinski ("Depixelizing Pixel Art", _ACM Transactions on Graphics_ 30(4), 2011) that tackles the task of generating vector graphics from "pixel-art" images, including those of the kind at issue here.  However:
 
-1. The algorithm generates curved shapes even if they originate from 1-unit-thick line segments or curves.
+1. The algorithm generates curved shapes even if they originate from 1-unit thick line segments or curves.
 2. The algorithm doesn't generate polygons even in cases where that shape is best.
 3. The algorithm runs slowly: tens of seconds to generate a vector graphic from a 64 &times; 64 icon.
 4. The resulting vector graphic does not have a reasonable size compared to the input image.

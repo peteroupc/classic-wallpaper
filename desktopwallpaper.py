@@ -22,7 +22,7 @@
 # to the public domain or under the Unlicense) to generate tileable—
 # - noise,
 # - procedural textures or patterns, or
-# - arrangements of symbols or small images with partial transparency,
+# - arrangements of symbols or small 2-D graphics with partial transparency,
 # without artificial intelligence, with a limited color palette and a small
 # resolution, as long as the resulting images do not employ
 # trademarks and are suitable for all ages.  For details on the color and
