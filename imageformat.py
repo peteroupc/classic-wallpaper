@@ -2174,7 +2174,11 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
                 if bitand == 0
                 else alpha0
             )
-            dw.setpixelbgralpha(bl, width, height, x, y, px)
+            try:
+                dw.setpixelbgralpha(bl, width, height, x, y, px)
+            except:
+                _errprint("failure to set pixel")
+                return None
     return [
         bl,
         width,
@@ -2859,7 +2863,11 @@ def _readicon(f, packedWinBitmap=False):
                     if andalphamask and andalphamask != 0
                     else alpha1
                 )
-                dw.setpixelbgralpha(ci, cw, ch, x, y, col + alpha)
+                try:
+                    dw.setpixelbgralpha(ci, cw, ch, x, y, col + alpha)
+                except:
+                    _errprint("failure to set pixel")
+                    return None
         ret = ci
         width = cw
         height = ch
@@ -2901,7 +2909,11 @@ def _readicon(f, packedWinBitmap=False):
                         )
                     )
                 ) + ((alpha1) if bitand == 0 else alpha0)
-                dw.setpixelbgralpha(bl, cw, ch, x, y, px)
+                try:
+                    dw.setpixelbgralpha(bl, cw, ch, x, y, px)
+                except:
+                    _errprint("failure to set pixel")
+                    return None
         width = cw
         height = ch
         ret = bl

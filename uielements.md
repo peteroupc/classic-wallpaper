@@ -288,7 +288,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^11]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.
 
-[^12]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.
+[^12]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.  For an example of an animation in the form of a single image file, see Herman Rodent, "Animation in Win32", Microsoft Developer Network, Feb. 1, 1994.
 
 [^13]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows before version 3.1 tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two units.
 
