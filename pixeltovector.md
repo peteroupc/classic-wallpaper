@@ -1,4 +1,4 @@
-# Converting images to Vector Graphics
+# Converting Images to Vector Graphics
 
 This page concerns ways to go about remaking traditional user interface icons, which have the form of images (rectangular arrays of samples called _pixels_), as vector graphics (or geometric models), a process sometimes called _image vectorization_.  The icons concerned here tend to have the following properties: [^1]
 
