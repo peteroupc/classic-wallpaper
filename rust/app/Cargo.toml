@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 desktopwallpaper = { version = "0.1.0", path = "../desktopwallpaper" }
+
+

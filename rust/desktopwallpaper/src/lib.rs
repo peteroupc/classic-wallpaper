@@ -91,7 +91,6 @@ fn randomrects<T: basicrgbimage::BasicRgbImage>(image: &mut T){
   let unify=new_uniform!(0,image.height());
   let unifbyte=new_uniform!(0,255);
   let mut rng=new_rng!();
-  let mut pixels:u64=0;
   for _ in 0..100 {
     let color=[
       sample_rng!(unifbyte,&mut rng) as u8,
@@ -105,7 +104,6 @@ fn randomrects<T: basicrgbimage::BasicRgbImage>(image: &mut T){
     let ry0=std::cmp::min(y0,y1);
     let rx1=std::cmp::max(x0,x1);
     let ry1=std::cmp::max(y0,y1);
-    pixels+=((rx1-rx0) as u64)*((ry1-ry0) as u64);
     imageop::rectangle(image, rx0,ry0,rx1,ry1,color);
   }
 }
@@ -117,7 +115,6 @@ fn randomsprites<T: basicrgbimage::BasicRgbImage>(image: &mut T){
   let unify=new_uniform!(0,if image.height()<64 { 0 } else {image.height()-64} );
   let unifbyte=new_uniform!(0,255);
   let mut rng=new_rng!();
-  let mut pixels:u64=0;
   for _ in 0..512 {
     let color=[
       sample_rng!(unifbyte,&mut rng) as u8,
@@ -131,22 +128,11 @@ fn randomsprites<T: basicrgbimage::BasicRgbImage>(image: &mut T){
     let ry0=std::cmp::min(y0,y1);
     let rx1=std::cmp::max(x0,x1);
     let ry1=std::cmp::max(y0,y1);
-    pixels+=((rx1-rx0) as u64)*((ry1-ry0) as u64);
     imageop::rectangle(image, rx0,ry0,rx1,ry1,color);
   }
 }
 
-
-fn blacken<T: basicrgbimage::BasicRgbImage>(image: &mut T){
-                let height=image.height();
-                let width=image.width();
-                for y in 0..height {
-                  for x in 0..width {
-                    image.put_pixel(x,y,[0,0,0]);
-                  }
-                }
-}
-
+/*
 fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_time::Instant){
                 let f32elapsed:f32 = startTime.elapsed().as_secs_f32();
                 let height=image.height();
@@ -163,6 +149,7 @@ fn shader_draw<T: basicrgbimage::BasicRgbImage>(image: &mut T, startTime: &web_t
                   }
                 }
 }
+*/
 
 impl winit::application::ApplicationHandler for AppState {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
@@ -234,9 +221,11 @@ impl winit::application::ApplicationHandler for AppState {
                 self.frame+=1;
                 let mut buffer = surface.buffer_mut().unwrap();
                 // Draw on buffer
+                /*
                 let elapsedu64: u64 = (self.start.elapsed().as_secs_f64()*60.0) as u64;
                 let realframe=(elapsedu64 & 0xFFFFFFFF) as u32;
-                //imageop::copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
+                imageop::copy_to_buffer_tiled(softbuffer_data_mut!(buffer,width,height),&self.wp,realframe,realframe);
+                */
                 randomsprites(softbuffer_data_mut!(buffer,width,height));
                 imageop::websafedither(softbuffer_data_mut!(buffer,width,height), true);
                 // End drawing on buffer

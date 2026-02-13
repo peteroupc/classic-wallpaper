@@ -1,3 +1,9 @@
 [workspace]
 resolver="3"
 members=["desktopwallpaper","run-wasm", "app"]
+
+[profile.release]
+lto=true
+codegen-units=1
+opt-level="z"
+panic='abort'

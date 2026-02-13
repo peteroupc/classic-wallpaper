@@ -151,12 +151,14 @@ pub fn websafedither<T: BasicRgbImage>(image: &mut T, include_vga: bool) -> &mut
     image
 }
 
+/**
+ * Draws a rectangle filled with the given solid color ('color') on an image ('image').
+ * 'x0', 'y0', 'x1', and 'y1', give the rectangle's left, upper, right, and bottom edges.
+ */
 pub fn rectangle<T: BasicRgbImage>(
    image: &mut T,
    x0:u32,y0:u32,x1:u32,y1:u32, color:[u8;3]) {
   if x0>=x1 || y0>=y1 { return; }
-  let width: u32=image.width();
-  let height: u32=image.height();
   for y in y0..y1 {
      for x in x0..x1 {
         image.put_pixel(x,y,color);

@@ -2293,7 +2293,7 @@ def _bilerp(y0x0, y0x1, y1x0, y1x1, tx, ty):
 # 'y' is the point's y-coordinate, which need not be an integer.
 # If 'wraparound' is True (the default), an out-of-bounds point ('x','y') will
 # undergo a wraparound adjustment, as though the specified image were part
-# of an "infinite" tiling.  If False, an out-of-bounds point is adjusted to
+# of an "infinite" tiling.  If False, an out-of-bounds point adjusts to
 # lie in the image (0<=x<='width'-1; 0<=y<='height'-1).
 #
 # Blending Note: Operations that involve the blending of two RGB (red-green-
@@ -2828,7 +2828,7 @@ def pgg(x, y):
 # 'width' and 'height' are the width and height of the image to create.
 # If 'wraparound' is True (the default), an out-of-bounds source point will
 # undergo a wraparound adjustment, as though the source image were part
-# of an "infinite" tiling.  If False, an out-of-bounds point is adjusted to
+# of an "infinite" tiling.  If False, an out-of-bounds point adjusts to
 # lie in the image (0<=x<='sw'-1; 0<=y<='sh'-1).
 # 'groupFunc' is a wallpaper group function that translates output image
 # coordinates to input image (source image) coordinates; default is pmm().
