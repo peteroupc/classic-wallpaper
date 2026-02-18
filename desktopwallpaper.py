@@ -1332,10 +1332,11 @@ def hatchedbox_alignorigins(
 # 0x55: "Destination invert".
 # 0x66: "Source invert", "XOR pen"; invert destination where the source bit is 1.
 # 0x77: "Not mask pen".
-# 0x88: "Source AND".
-# 0x99: "Not XOR pen".
+# 0x88: "Source AND"; copy source to destination where the destination bit is 1.
+# 0x99: "Not XOR pen"; invert destination where the source bit is 0.
 # 0xAA: "No-op"; destination is left unchanged.
-# 0xBB: "Merge paint", "merge not pen".
+# 0xBB: "Merge paint", "merge not pen"; copy inverted source to destination
+#     where the destination bit is 0.
 # 0xCC: "Source copy"; copy source to destination.
 # 0xDD: "Merge pen not".
 # 0xEE: "Source paint"; "merge pen not"; "source OR destination".

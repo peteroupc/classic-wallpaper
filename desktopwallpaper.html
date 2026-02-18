@@ -909,10 +909,11 @@ Data descriptors defined here:<br>
 #&nbsp;0x55:&nbsp;"Destination&nbsp;invert".<br>
 #&nbsp;0x66:&nbsp;"Source&nbsp;invert",&nbsp;"XOR&nbsp;pen";&nbsp;invert&nbsp;destination&nbsp;where&nbsp;the&nbsp;source&nbsp;bit&nbsp;is&nbsp;1.<br>
 #&nbsp;0x77:&nbsp;"Not&nbsp;mask&nbsp;pen".<br>
-#&nbsp;0x88:&nbsp;"Source&nbsp;AND".<br>
-#&nbsp;0x99:&nbsp;"Not&nbsp;XOR&nbsp;pen".<br>
+#&nbsp;0x88:&nbsp;"Source&nbsp;AND";&nbsp;copy&nbsp;source&nbsp;to&nbsp;destination&nbsp;where&nbsp;the&nbsp;destination&nbsp;bit&nbsp;is&nbsp;1.<br>
+#&nbsp;0x99:&nbsp;"Not&nbsp;XOR&nbsp;pen";&nbsp;invert&nbsp;destination&nbsp;where&nbsp;the&nbsp;source&nbsp;bit&nbsp;is&nbsp;0.<br>
 #&nbsp;0xAA:&nbsp;"No-op";&nbsp;destination&nbsp;is&nbsp;left&nbsp;unchanged.<br>
-#&nbsp;0xBB:&nbsp;"Merge&nbsp;paint",&nbsp;"merge&nbsp;not&nbsp;pen".<br>
+#&nbsp;0xBB:&nbsp;"Merge&nbsp;paint",&nbsp;"merge&nbsp;not&nbsp;pen";&nbsp;copy&nbsp;inverted&nbsp;source&nbsp;to&nbsp;destination<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;the&nbsp;destination&nbsp;bit&nbsp;is&nbsp;0.<br>
 #&nbsp;0xCC:&nbsp;"Source&nbsp;copy";&nbsp;copy&nbsp;source&nbsp;to&nbsp;destination.<br>
 #&nbsp;0xDD:&nbsp;"Merge&nbsp;pen&nbsp;not".<br>
 #&nbsp;0xEE:&nbsp;"Source&nbsp;paint";&nbsp;"merge&nbsp;pen&nbsp;not";&nbsp;"source&nbsp;OR&nbsp;destination".<br>
