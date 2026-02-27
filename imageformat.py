@@ -2303,7 +2303,6 @@ def _readwinicon(f):
         width = 256 if dirent[0] == 0 else dirent[0]
         height = 256 if dirent[1] == 0 else dirent[1]
         colorcount = dirent[2]
-        planes=
         if iscursor:
             if dirent[4] == 0xFFFF and dirent[5] == 0xFFFF:
                 _errprint("no hot spot?")
@@ -2321,22 +2320,34 @@ def _readwinicon(f):
             # But some icons can have a colorcount of 0 in practice.
             # Reference: Raymond Chen, "The evolution of the ICO file format,
             # part 1: Monochrome beginnings", The Old New Thing, Oct. 18, 2010.
-            #---
+            # ---
             # Apparently, planes and bit count can be 0.
-            if dirent[3]!=0:
-               _errprint("unsupported reserved value")
-               entries.append(None); continue
-            if dirent[4]!=0 and dirent[4]!=1:
-               _errprint("unsupported planes")
-               entries.append(None); continue
-            if dirent[5]>=8 and colorcount!=0:
-               _errprint("unsupported bit count and color count: %d, %d"%(dirent[5],colorcount))
-               entries.append(None); continue
-            if dirent[5]!=0 and dirent[5]!=1 and dirent[5]!=2 and \
-               dirent[5]!=4 and dirent[5]!=8 and \
-               dirent[5]!=24:
-               _errprint("unsupported bit count")
-               entries.append(None); continue
+            if dirent[3] != 0:
+                _errprint("unsupported reserved value")
+                entries.append(None)
+                continue
+            if dirent[4] != 0 and dirent[4] != 1:
+                _errprint("unsupported planes")
+                entries.append(None)
+                continue
+            if dirent[5] >= 8 and colorcount != 0:
+                _errprint(
+                    "unsupported bit count and color count: %d, %d"
+                    % (dirent[5], colorcount)
+                )
+                entries.append(None)
+                continue
+            if (
+                dirent[5] != 0
+                and dirent[5] != 1
+                and dirent[5] != 2
+                and dirent[5] != 4
+                and dirent[5] != 8
+                and dirent[5] != 24
+            ):
+                _errprint("unsupported bit count")
+                entries.append(None)
+                continue
         entries.append(
             [width, height, colorcount, dirent[5], dirent[6], dirent[7] + ft, dirent[4]]
         )

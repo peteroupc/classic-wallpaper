@@ -1,6 +1,6 @@
 # Classic Tiled Wallpaper Challenge
 
-This repository is intended to hold open-source wallpaper images and source code for the following challenge.
+This repository is intended to hold open-source wallpaper graphics and source code for the following challenge.
 
 Given that desktop backgrounds today tend to cover the full computer screen, to employ thousands of colors, and to have a high-definition resolution (1920 &times; 1080 or larger), rendering tileable backgrounds with limited colors and pixel size ever harder to find, I make the following challenge.
 
@@ -8,32 +8,32 @@ Given that desktop backgrounds today tend to cover the full computer screen, to 
 
 ## The Challenge
 
-Create a tileable desktop wallpaper image [^1] meeting the following requirements.
+Create a tileable desktop wallpaper graphic [^1] meeting the following requirements.
 
-- The image is one of the following:
-    - It is a pixel image (also known as _raster image_ or _bitmap_) with one of the color palettes and one of the pixel dimensions given later.
+- The graphic is one of the following:
+    - It is an image (also known as a _raster image_, a rectangular array of pixels) with one of the color palettes and one of the pixel dimensions given later.
     - It is a vector graphic in the Scalable Vector Graphics (SVG) format made only of two-dimensional filled outlines with no stroke.  Excessive detail should be avoided.  Moreover:
-        - Each outline is filled black and either opaque or translucent (semitransparent).  The image can then be scaled to any pixel dimension desired and turned into a grayscale (see later) pixel image using known techniques (see [**_Hero Patterns_**](https://heropatterns.com/) for an example).  Or...
+        - Each outline is filled black and either opaque or translucent (semitransparent).  The vector graphic can then be scaled to any pixel dimension desired and turned into a grayscale (see later) image using known techniques (see [**_Hero Patterns_**](https://heropatterns.com/) for an example).  Or...
         - Each outline is opaque and filled with one of up to ten colors from a color palette given later.  See [**_colourlovers.com_**](https://www.colourlovers.com/patterns) for examples.
-- The image is preferably abstract, should not employ trademarks, and is suitable for all ages.
-- The image does not contain text.  Images that contain depictions of people or human faces are not preferred.
-- The image should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
-- The image is in the public domain or licensed under the [**Unlicense**](https://unlicense.org/) or, less preferably, another open-source license approved by the Open Source Initiative.
-- The image was not produced by artificial-intelligence tools or with their help.
+- The graphic is preferably abstract, should not employ trademarks, and is suitable for all ages.
+- The graphic does not contain text.  Graphics that contain depictions of people or human faces are not preferred.
+- The graphic should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
+- The graphic is in the public domain or licensed under the [**Unlicense**](https://unlicense.org/) or, less preferably, another open-source license approved by the Open Source Initiative.
+- The graphic was not produced by artificial-intelligence tools or with their help.
 
 Also welcome would be computer code (released to the public domain or licensed under the Unlicense) to generate tileable or seamless&mdash;
 
 - noise,
 - procedural textures or patterns, or
-- arrangements of symbols or small images with partial transparency,
+- arrangements of symbols or small graphics or images with partial transparency,
 
 meeting the requirements given earlier.
 
 In general, the following are not within the scope of this challenge.
 
 - Photographic images (see "Wallpaper Generation Notes", later in this document).
-- Images with a single solid color on all four sides; such images are trivially tileable.
-- Images that can be tiled in one dimension only, such as those depicting horizontal or vertical borders with an "infinitely" extending background.
+- Graphics with a single solid color on all four sides; such graphics are trivially tileable.
+- Graphics that can be tiled in one dimension only, such as those depicting horizontal or vertical borders with an "infinitely" extending background.
 
 <a id=Color_Palettes></a>
 
@@ -131,11 +131,11 @@ The texture generator at [**`schalkt/tgen`**](https://github.com/schalkt/tgen), 
 
 ## Wallpaper Generation Notes
 
-1. Suppose a wallpaper image has only colors of the same hue and "saturation".  Then a _grayscale_ version of the image is preferred (that is, a version of the image where the colors are limited to gray tones, black, and white), since then the image could be color-shifted and then adapted to have the colors of any limited-color palette by known [**dithering techniques**](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.
+1. Suppose an image used as wallpaper has only colors of the same hue and "saturation".  Then a _grayscale_ version of the image is preferred (that is, a version of the image where the colors are limited to gray tones, black, and white), since then the image could be color-shifted and then adapted to have the colors of any limited-color palette by known [**dithering techniques**](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.
      - If only part of the image has only colors of the same hue and "saturation", and the rest is grayscale, then the color shifting can be limited to the nongrayscale part.
      - If an image looks unsatisfactory after being automatically adapted to a particular color palette (such as one mentioned earlier in "Color Palettes"), it can be manually adapted instead.
 
-2. Other tileable wallpapers employing more than 256 colors and otherwise satisfying the challenge's requirements are acceptable, though not preferable.  If a wallpaper image has more than 256 colors and otherwise meets those requirements, it can be adapted to have the colors of a limited-color palette (see "Color Palettes", earlier) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
+2. Other tileable wallpapers employing more than 256 colors and otherwise satisfying the challenge's requirements are acceptable, though not preferable.  If an image used as wallpaper has more than 256 colors and otherwise meets those requirements, it can be adapted to have the colors of a limited-color palette (see "Color Palettes", earlier) by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
 
 3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper files `RIBBONS.BMP` and `PARTY.BMP`, both of which were distributed with Windows 3.0 and the latter was inspired by the Memphis group style.
 
@@ -143,10 +143,10 @@ The texture generator at [**`schalkt/tgen`**](https://github.com/schalkt/tgen), 
 
 5. One way to generate a wallpaper image is by blending a solid color (or another tileable wallpaper) with a tileable image consisting of only transparent pixels and semitransparent and opaque black pixels (such as a masonry pattern).
 
-6. **Stochastic tiling:** Wang tiles are a finite set of tiles (here, wallpaper images) that can cover an arbitrary grid without seams.  One example is the [**set of 16 tiles**](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
+6. **Stochastic tiling:** Wang tiles are a finite set of tiles (here, wallpaper graphics) that can cover an arbitrary grid without seams.  One example is the [**set of 16 tiles**](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
 
     - A randomized tiling, or _stochastic tiling_, can be generated from this tile set by repeatedly selecting a grid position and choosing a random tile that can go in that position without introducing seams, until the whole grid is covered.
-    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper image at each grid position, where each version has the same dimensions and the same edges as each other version but can otherwise vary.[^10]
+    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper graphic at each grid position, where each version has the same dimensions and the same edges as each other version but can otherwise vary.[^10]
 
     Both kinds of stochastic tiling can be combined.  [**See example**](https://web.archive.org/web/20160220062702/http://www.cr31.co.uk/stagecast/wang/2edge.html).[^11]
 
@@ -154,7 +154,7 @@ The texture generator at [**`schalkt/tgen`**](https://github.com/schalkt/tgen), 
 
 ## Sample Wallpaper Generation Code
 
-This repository has the following code files in Python for generating tiled wallpapers and reading and writing Windows icon files and pixel images in the PNG and Windows bitmap formats: `desktopwallpaper.py`, `imageformat.py`, `randomwp.py`.
+This repository has the following code files in Python for generating tiled wallpapers and reading and writing Windows icon files and images in the PNG and Windows bitmap formats: `desktopwallpaper.py`, `imageformat.py`, `randomwp.py`.
 
 This repository also has a directory (`rust/`) with Rust source code for generating a tiled wallpaper.
 
@@ -243,6 +243,6 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^9]: Can be generated from `truchet3color` using the following [**ImageMagick**](https://imagemagick.org/) command: `magick truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
 
-[^10]: This covers the special case of _Truchet tiles_, involving two versions of an image where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
+[^10]: This covers the special case of _Truchet tiles_, involving two versions of a graphic where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
 
 [^11]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.
