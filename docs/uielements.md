@@ -163,14 +163,15 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the  original icon but with finer but nonessential detail.[^21]
 - Cursors:
     - Most cursors are limited to the two colors black and white, with optional transparency.[^18]
-    - Before 1990, cursors do not have colors other than black and white.  From 1990 to about 2003, cursors with colors other than black and white are rare, and cursors with more than 32 colors are very rare.
+    - Before 1990, cursors do not have colors other than black and white.
+    - From 1990 to about 2003, cursors with colors other than black and white are rare, and cursors with more than 32 colors are very rare.  From 1995 to about 2003, cursors with colors limited to the VGA palette become more common, especially infrequently seen cursors such as the busy-wait cursor.
     - Before 2003, and even before 1995, each shape of a black-and-white cursor is generally either white with a 1-unit-thick black outline or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^12] or similar techniques.
 
 In general, from about 1990 to about 1997, user-interface text was drawn in one color only and rarely had smoothed edges; the edges were smoothed only if the display mode can show more than 256 colors at a time.  In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three units downward and rightward) followed by an unshifted rendering in the base color or pattern.[^22]  But new applications should avoid having text in icons, cursors, and other images.
 
-New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.  Existing images that function like icons should be [**converted to vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if they are simple enough.
+New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.  Existing images that function like icons should be [**converted to vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if they are simple enough.
 
 <a id=Animations></a>
 
@@ -184,7 +185,7 @@ Although Windows 95 and later versions have an _animation control_ for displayin
 
 For a high degree of flexibility, new graphical user interface systems should allow for the following:
 
-- Designing icons, cursors, and other user-interface elements in the form of [**vector graphics**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) if desired.
+- Designing icons, cursors, and other user-interface elements in the form of [**vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if desired.
 - Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
 - Designing user-interface elements as images or vector graphics limited to gray tones, where the system replaces each gray tone in the image or graphic with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
@@ -232,44 +233,42 @@ authors' suggestions for the three-dimensional appearance of buttons and certain
 - The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics (geometric models), not images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
 - The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^25]  The [**pseudocode conventions**](https://peteroupc.github.io/pseudocode.html) apply to the following pseudocode.
 
-```
-// First calculate the background color's "brightness",
-// then calculate the derivative colors.
-// Assumes each component of background color is
-// from 0 through 1.
-// 'getrgb' gets the color's three components.
-rgb=getrgb(background); r=rgb[0];g=rgb[1];b=rgb[2]
-// default values for thresholds
-foregroundThreshold=0.7
-lightThreshold=0.93
-darkThreshold=0.2
-// find "brightness" of background color
-brightness=0.75 * ((r+g+b)/3) + 0.25 * (0.3*r+0.59*g+0.11*b)
-// find foreground color
-if brightness>foregroundThreshold
-   foreground=[0,0,0] // black
-else
-   foreground=[1,1,1] // white
-end
-if brightness<darkThreshold
-    // very dark color
-    select_color=background+0.15*(1-background)
-    lower_shadow=background+0.3*(1-background)
-    upper_shadow=background+0.5*(1-background)
-else if brightness>lightThreshold
-    // very light color
-    select_color=background-0.15*background
-    lower_shadow=background-0.4*background
-    upper_shadow=background-0.2*background
-else
-    // medium color
-    select_color=background-0.15*background
-    fac = 0.6-0.2*brightness
-    lower_shadow=background-fac*background
-    fac = 0.5+0.1*brightness
-    upper_shadow=background+fac*(1-background)
-end
-```
+    // First calculate the background color's "brightness",
+    // then calculate the derivative colors.
+    // Assumes each component of background color is
+    // from 0 through 1.
+    // 'getrgb' gets the color's three components.
+    rgb=getrgb(background); r=rgb[0];g=rgb[1];b=rgb[2]
+    // default values for thresholds
+    foregroundThreshold=0.7
+    lightThreshold=0.93
+    darkThreshold=0.2
+    // find "brightness" of background color
+    brightness=0.75 * ((r+g+b)/3) + 0.25 * (0.3*r+0.59*g+0.11*b)
+    // find foreground color
+    if brightness>foregroundThreshold
+       foreground=[0,0,0] // black
+    else
+       foreground=[1,1,1] // white
+    end
+    if brightness<darkThreshold
+        // very dark color
+        select_color=background+0.15*(1-background)
+        lower_shadow=background+0.3*(1-background)
+        upper_shadow=background+0.5*(1-background)
+    else if brightness>lightThreshold
+        // very light color
+        select_color=background-0.15*background
+        lower_shadow=background-0.4*background
+        upper_shadow=background-0.2*background
+    else
+        // medium color
+        select_color=background-0.15*background
+        fac = 0.6-0.2*brightness
+        lower_shadow=background-fac*background
+        fac = 0.5+0.1*brightness
+        upper_shadow=background+fac*(1-background)
+    end
 
 <a id=License></a>
 

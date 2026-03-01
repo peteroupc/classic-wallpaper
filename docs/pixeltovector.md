@@ -56,7 +56,7 @@ Take the following image:
 
 The desired vector graphic should have the following commands in this order:
 
-1. Polygon, filled with white, connecting the points (1.5, 15.5), (15.5, 1.5), (29.5, 15.5), (15.5, 29.5).  (The coordinates are adjusted by 0.5 because of the placement of pixels at half-integer coordinates in SVG, for example.)
+1. Polygon, filled with white, connecting the points (1.5, 15.5), (15.5, 1.5), (29.5, 15.5), (15.5, 29.5).  (The coordinates adjust by 0.5 because of the placement of pixels at half-integer coordinates in SVG, for example.)
 2. 1-unit-thick polyline (sequence of line segments), colored black, connecting the points in the foregoing polygon.  Alternatively, that polygon is stroked with a 1-unit-thick black outline in addition to being filled. [^2]
 
 [**In SVG**](https://peteroupc.github.io/svg.html), the desired vector graphic looks like:
