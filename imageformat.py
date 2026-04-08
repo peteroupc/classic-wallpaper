@@ -1499,7 +1499,7 @@ def _rle4decompress(bitdata, dst, width, height):
 # the hot spot x- and y-coordinates are each 0 if the image relates to
 # an icon or bitmap, rather than a pointer.
 # 2. Although PM and Windows icons and cursors support pixels that invert
-# the screen colors, this feature is not supported in images returned by
+# the screen colors, this feature is unavailable in images returned by
 # this function; areas where the icon or cursor would invert screen colors
 # are treated as transparent instead.
 #
@@ -1659,14 +1659,22 @@ def reados2iconcore(f):
     elif tag == bytes([0, 0]):
         # Windows icon
         f.seek(ft)
-        return _readwinicon(f)
+        try:
+            icon = _readwinicon(f)
+        except:
+            return None
+        return icon
     elif (
         tag != b"CI" and tag != b"CP" and tag != b"IC" and tag != b"PT" and tag != b"BM"
     ):
         return []
     else:
         f.seek(ft)
-        return [_readicon(f)]
+        try:
+            icon = _readicon(f)
+        except:
+            return [None]
+        return [icon]
 
 # Reads the color table from an OS/2 Presentation Manager or Windows palette file.
 # Returns an list of the colors read from the file.
@@ -2121,7 +2129,7 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
         and bitcount != 24
         and bitcount != 32
     ):
-        _errprint("unsupported bit count")
+        _errprint("unsupported bit count: %d" % (bitcount))
         return None
     xormaskscan = ((width * bitcount + 31) >> 5) << 2
     andmaskscan = ((width * 1 + 31) >> 5) << 2
@@ -2344,8 +2352,9 @@ def _readwinicon(f):
                 and dirent[5] != 4
                 and dirent[5] != 8
                 and dirent[5] != 24
+                and dirent[5] != 32
             ):
-                _errprint("unsupported bit count")
+                _errprint("unsupported bit count: %d" % (dirent[5]))
                 entries.append(None)
                 continue
         entries.append(
@@ -2426,7 +2435,10 @@ def _readicon(f, packedWinBitmap=False):
     colormask = None
     colormaskscan = 0
     colormaskcolors = None
-    andmaskhdr = struct.unpack("<L", f.read(4))
+    fr = f.read(4)
+    if len(fr) < 4:
+        return None
+    andmaskhdr = struct.unpack("<L", fr)
     andpalette = 0
     andcompression = 0
     andsizeImage = 0

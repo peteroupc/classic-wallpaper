@@ -160,60 +160,56 @@ This repository also has a directory (`rust/`) with Rust source code for generat
 
 In addition, the following code in Python is presented as an example of computer code to generate tileable wallpaper patterns. It uses the `desktopwallpaper` and `imageformat` modules and helped generate `circlec.png` and `circlews.png`.
 
-```python
-import desktopwallpaper as dw
-import imageformat as ifmt
-import random
+    import desktopwallpaper as dw
+    import imageformat as ifmt
+    import random
 
-def contouring(x,y,z):
-    return abs(x**z+y**z)**(1/z)
+    def contouring(x,y,z):
+        return abs(x**z+y**z)**(1/z)
 
-def _togray(x):
-    return int(abs(max(-1, min(1, x))) * 255.0)
+    def _togray(x):
+        return int(abs(max(-1, min(1, x))) * 255.0)
 
-width = 128
-height = 128
-# Draw an image with a grayscale gradient fill
-image = [
-    _togray(contouring((p%width) * 2.0 / width - 1.0, (p//width) * 2.0 / height - 1.0, 2.5))
-    for p in range(width*height)
-]
-# Generate a random color gradient
-colors = dw.randomColorization()
-# Create a colorized version of the image
-image = [cc for pix in [colors[x] for x in image] for cc in pix]
-# Draw a checkerboard overlay over the image
-image = dw.checkerboard(
-  dw.blankimage(width,height,[random.randint(0, 255) for i in range(3)]),
-  image,
-  width, height)
-# Dither the image
-image2 = [x for x in image]  # copy image for dithering
-# Dither in VGA colors
-dw.patternDither(image, width, height, dw.classiccolors())
-# Dither in "safety palette"
-dw.websafeDither(image2, width, height)
-# Write dithered images
-ifmt.writepng("/tmp/circlec.png", image, width, height)
-ifmt.writepng("/tmp/circlews.png", image2, width, height)
-```
+    width = 128
+    height = 128
+    # Draw an image with a grayscale gradient fill
+    image = [
+        _togray(contouring((p%width) * 2.0 / width - 1.0, (p//width) * 2.0 / height - 1.0, 2.5))
+        for p in range(width*height)
+    ]
+    # Generate a random color gradient
+    colors = dw.randomColorization()
+    # Create a colorized version of the image
+    image = [cc for pix in [colors[x] for x in image] for cc in pix]
+    # Draw a checkerboard overlay over the image
+    image = dw.checkerboard(
+      dw.blankimage(width,height,[random.randint(0, 255) for i in range(3)]),
+      image,
+      width, height)
+    # Dither the image
+    image2 = [x for x in image]  # copy image for dithering
+    # Dither in VGA colors
+    dw.patternDither(image, width, height, dw.classiccolors())
+    # Dither in "safety palette"
+    dw.websafeDither(image2, width, height)
+    # Write dithered images
+    ifmt.writepng("/tmp/circlec.png", image, width, height)
+    ifmt.writepng("/tmp/circlews.png", image2, width, height)
 
 Replacing the `contouring` method just given with the one given next leads to a diagonal gradient fill that's tileable:
 
-```
-def contouring(x,y,z):
-   c=abs(x+y)%2.0; return 2-c if c > 1.0 else c
-```
+    def contouring(x,y,z):
+       c=abs(x+y)%2.0; return 2-c if c > 1.0 else c
 
 <a id=Other_User_Interface_Graphics></a>
 
 ## Other User-Interface Graphics
 
-For discussions on the traditional design of user-interface elements such as buttons, border styles, icons, cursors, and animations, see [**uielements.md**](https://github.com/peteroupc/classic-wallpaper/blob/main/uielements.md) in this repository.
+For discussions on the traditional design of user-interface elements such as buttons, border styles, icons, cursors, and animations, see [**uielements.md**](https://peteroupc.github.io/classic-wallpaper/docs/uielements.html) in this repository.
 
 The page also describes an additional challenge to write computer code (released to the public domain or licensed under the Unlicense) to draw traditional button and border styles.
 
-For discussions on converting traditional icons to vector graphics, see [**pixeltovector.md**](https://github.com/peteroupc/classic-wallpaper/blob/main/pixeltovector.md) in this repository.
+For discussions on converting traditional icons to vector graphics, see [**pixeltovector.md**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) in this repository.
 
 <a id=License></a>
 

@@ -31,7 +31,7 @@ In this document:
 
 - A _display mode_ is a way to set up a computer display to show graphics.
 - _Screen resolution_ gives the number of columns and rows of pixels (point samples) the display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.[^1]
-- _Pixel density_ gives a display mode's horizontal and vertical pixel spacing, each in pixels per inch.  If these two values are the same, then the display mode is _isotropic_ (has "square pixel spacing").[^2]
+- _Pixel density_ gives a display mode's horizontal and vertical pixel spacing, each in pixels per inch.[^2]
 
 Some display modes follow, along with their screen resolutions and commonly implemented pixel densities:
 
@@ -39,7 +39,7 @@ Some display modes follow, along with their screen resolutions and commonly impl
 - IBM Enhanced Graphics Adapter's (EGA) 640 &times; 350 16-color display mode: 96 horizontal and 72 vertical pixels per inch.
 - IBM Color/Graphics Adapter's (CGA) 640 &times; 200 2-color display mode: 96 horizontal and 48 vertical pixels per inch.
 
-An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode is isotropic, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
+An image can be adapted for display modes with pixel densities that differ from the VGA mode just given (which is the usual one in the mid-1990s) by scaling the image's width, height, or both.  For example, a 300 &times; 300 image, when adapted for the EGA mode, becomes a shrunken 300 &times; 225 image (the height becomes 72/96 = 3/4 of the original height).  If a display mode's horizontal and vertical pixel spacing are equal, one way to find an appropriate scaling factor for images is to divide the mode's pixels per inch by 96 (or whatever value of pixels per inch is the "normal" one); examples of such a factor are 1.25 (for the pixel density 1.25 to 1; IBM 8514/a), 2 (for high-pixel-density displays), and 3 (for very-high-pixel-density displays).
 
 More generally, units similar to the spacing from one pixel to another may be employed as units of measure for user-interface elements, for design purposes to promote right-sized user interfaces.  Examples include [**_dialog box units_**](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdialogbaseunits) (which depend on the font in which text is rendered) and [**_effective pixels_**](https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/guidance-for-rounded-display-bezels) (which depend on the kind of display and its size, among other things).
 
@@ -55,14 +55,16 @@ This section discusses the traditional drawing style for buttons and the borders
 
 Traditionally, the kinds of colors used to design buttons and borders in user interfaces (also called _system colors_) were the following.  The given default values are those found in the "Windows Standard" color scheme in Windows 95.
 
-- Button face color (by default, (192, 192, 192)).
-- Window frame color (black by default).
-- Button highlight color (by default, (255,255,255) or white).[^3]  Often, this is a lighter version of the button face color.
-- Button shadow color (by default, (128, 128, 128)).   Often, this is a darker version of the button face color.
-- Button "light" highlight color (by default, (192, 192, 192)).[^4]  Often, this is either the button face color or comes between the highlight and face colors.
-- Button dark shadow color (by default, (0,0,0) or black).[^4]  Often, this is either the window frame color or a darker version of the button shadow color.
+- Button face color (by default, (192, 192, 192)<span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).
+- Window frame color (by default, (0,0,0)<span style='background:rgb(0,0,0);border:1px white'>&nbsp;&nbsp;&nbsp;</span> or black).
+- Button highlight color (by default, (255,255,255)<span style='background:rgb(255,255,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span> or white).[^3]  Often, this is a lighter version of the button face color.
+- Button shadow color (by default, (128, 128, 128)<span style='background:rgb(128,128,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).   Often, this is a darker version of the button face color.
+- Button "light" highlight color (by default, (192, 192, 192)<span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).[^4]  Often, this is either the button face color or comes between the highlight and face colors.
+- Button dark shadow color (by default, (0,0,0)<span style='background:rgb(0,0,0);border:1px white'>&nbsp;&nbsp;&nbsp;</span> or black).[^4]  Often, this is either the window frame color or a darker version of the button shadow color.
 
 User-interface conventions other than Windows 95 may use only a subset of these system colors or derive some of them (such as the highlight or shadow color) from a base color (such as the button face color).[^5]
+
+This discussion does not apply to black-and-white buttons (buttons with colors limited to black and white).  For example, buttons in Mac OS versions before 8.0 and in Windows 1.x and 2.x were of that kind.
 
 <a id=Traditional_Button_Styles></a>
 
@@ -117,7 +119,9 @@ Here is a challenge.  Write computer code (released to the public domain or lice
 
 Using only the following system colors and with some pixels or areas allowed to be transparent: the button face, window frame, button highlight, button shadow, button "light" highlight, and button dark shadow colors.  It is allowed to simulate more colors using these six system colors by means of dithering.[^12]
 
-The _desktopwallpaper.py_ file has some example code for border and button drawing. I expect many other variations here, some more subtle than others, but the design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial-intelligence tools.
+The border and button design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial-intelligence tools.  Moreover, the design should not be a mere copy of border and button appearances found by default in Windows or other operating systems.
+
+The _desktopwallpaper.py_ file has some example code for border and button drawing.
 
 <a id=Icons_and_Cursors></a>
 
@@ -135,7 +139,7 @@ Cursors (mouse pointer graphics) can follow the guidelines given earlier as well
 
 Icons and cursors can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons and cursors.
 
-> **Note:** Icon formats for OS/2 Presentation Manager and Microsoft Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](./imageformat.html).
+> **Note:** Icon formats for OS/2 Presentation Manager and Microsoft Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](https://github.com/peteroupc/classic-wallpaper/blob/main/imageformat.html).
 
 <a id=Drawing_Style></a>
 
@@ -169,9 +173,11 @@ In general, when user-interface graphics, including icons, cursors, and illustra
 
 > **Note:** After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^12] or similar techniques.
 
-In general, from about 1990 to about 1997, user-interface text was drawn in one color only and rarely had smoothed edges; the edges were smoothed only if the display mode can show more than 256 colors at a time.  In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three units downward and rightward) followed by an unshifted rendering in the base color or pattern.[^22]  But new applications should avoid having text in icons, cursors, and other images.
+In general, from about 1990 to about 1997, user-interface text was drawn in one color only and rarely had smoothed edges; the edges were smoothed only if the display mode can show more than 256 colors at a time.  In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three units downward and rightward) followed by an unshifted rendering in the base color or pattern.[^22]  But new applications should avoid having text in icons, cursors, and other images. An example of shadowed text follows:
 
-New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.  Existing images that function like icons should be [**converted to vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if they are simple enough.
+![The word "Sample" in blue, shadowed above by gray and below by black.](shadowed.png)
+
+New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.[^22a]  Existing images that function like icons should be [**converted to vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if they are simple enough.
 
 <a id=Animations></a>
 
@@ -186,7 +192,7 @@ Although Windows 95 and later versions have an _animation control_ for displayin
 For a high degree of flexibility, new graphical user interface systems should allow for the following:
 
 - Designing icons, cursors, and other user-interface elements in the form of [**vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if desired.
-- Having certain outlines of shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color).
+- Having certain shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color), and drawing lines and curves in such graphics with system colors.
 - Designing user-interface elements as images or vector graphics limited to gray tones, where the system replaces each gray tone in the image or graphic with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
     - in multiple variations in size (width, height, or both), each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [**vector graphics**](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^24], and
@@ -220,7 +226,7 @@ The following books and other works discuss design matters on traditional user i
 - _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
 - [**_Macintosh Human Interface Guidelines_**](https://dl.acm.org/doi/book/10.5555/573097), 1992.
 - _Mac OS 8 Human Interface Guidelines_ (addendum to _Macintosh User Interface Guidelines_), Sep. 2, 1997.
-- "Color, Windows, and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
+- "Color, Windows and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
 - E. Voas, "Appearance: Not Just Another Pretty Interface", _develop_ (Apple), June 1997.
 - J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the
 authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
@@ -232,6 +238,8 @@ authors' suggestions for the three-dimensional appearance of buttons and certain
 
 - The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics (geometric models), not images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
 - The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^25]  The [**pseudocode conventions**](https://peteroupc.github.io/pseudocode.html) apply to the following pseudocode.
+
+----
 
     // First calculate the background color's "brightness",
     // then calculate the derivative colors.
@@ -286,7 +294,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^3]: In Windows, this color was first supported in version 3.1.  In the Foundation Class Library's implementation of toolbars, this color is fixed to (255,255,255); see MFC Technical Note TN031, "Control Bars".
 
-[^4]: In Windows, this color was first supported in the Win32 interface, and so was not supported in Windows 3.1 or earlier.
+[^4]: In Windows, this color was first supported in the Win32 interface, and so was not available in Windows 3.1 or earlier.
 
 [^5]: Examples include the Motif toolkit (see the section "Worthy Mentions") as well as [**Windows 10 and Windows 11**](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsyscolor).
 
@@ -323,6 +331,8 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^21]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
 
 [^22]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
+
+[^22a]: I am reminded of the way textures were created for the modern game _QUOD_ by "Daivuk": they were stored as editing commands such as bevels, sunken areas, and tiling.
 
 [^23]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.  For an example of an animation in the form of a single image file, see Herman Rodent, "Animation in Win32", Microsoft Developer Network, Feb. 1, 1994.
 
