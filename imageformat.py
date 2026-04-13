@@ -36,7 +36,6 @@ try:
 except:
     pass
 
-
 # IO over a limited portion of
 # another IO, which must be readable
 # and seekable.  This class is not
@@ -70,7 +69,6 @@ class _LimitedIO:
         else:
             return self.f.read(min(count, self.size - self.tell()))
 
-
 class _MemIO:
     def __init__(self):
         self.mem = b""
@@ -81,10 +79,8 @@ class _MemIO:
     def get(self):
         return self.mem
 
-
 def _errprint(s):
     print(s, file=sys.stderr)
-
 
 # Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 def writeppm(f, image, width, height, raiseIfExists=False):
@@ -98,7 +94,6 @@ def writeppm(f, image, width, height, raiseIfExists=False):
     fd.write(bytes("P6\n%d %d\n255\n" % (width, height), "utf-8"))
     fd.write(bytes(image))
     fd.close()
-
 
 # Image has the same format returned by the _desktopwallpaper_ module's
 # blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
@@ -115,14 +110,12 @@ def writepng(f, image, width, height, raiseIfExists=False, alpha=False):
     finally:
         fd.close()
 
-
 # Image has the same format returned by the _desktopwallpaper_ module's
 # blankimage() method with the specified value of 'alpha' (default value for 'alpha' is False).
 def pngbytes(image, width, height, alpha=False):
     fd = _MemIO()
     _writepng(fd, image, width, height, alpha=alpha)
     return fd.get()
-
 
 def _writepng(fd, image, width, height, alpha=False):
     if not image:
@@ -150,10 +143,8 @@ def _writepng(fd, image, width, height, alpha=False):
     fd.write(struct.pack(">L", zlib.crc32(chunk)))
     fd.write(b"\0\0\0\0IEND\xae\x42\x60\x82")
 
-
 def _isRiffOrListChunk(chunk):
     return chunk[0] == b"RIFF" or chunk[0] == b"LIST"
-
 
 def _getRiffChunkSize(chunk):
     if _isRiffOrListChunk(chunk):
@@ -164,13 +155,11 @@ def _getRiffChunkSize(chunk):
     else:
         return chunk[1]
 
-
 def _writeChunkHead(f, chunk):
     f.write(bytes(chunk[0]))
     f.write(struct.pack("<L", _getRiffChunkSize(chunk)))
     if _isRiffOrListChunk(chunk):
         f.write(bytes(chunk[1]))
-
 
 def _blackWhiteOnly(colortable, numuniques):
     return (
@@ -191,7 +180,6 @@ def _blackWhiteOnly(colortable, numuniques):
             and (colortable[4] == 0 or colortable[4] == 255)
         )
     )
-
 
 # Images have the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=True.
 # Note that, for mouse pointers (cursors), 32 &times; 32 pixels are the standard width and height.
@@ -433,7 +421,6 @@ def writeanicursor(
                         raise RuntimeError
     finally:
         f.close()
-
 
 # Images have the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 def writeavi(
@@ -837,12 +824,10 @@ def writeavi(
             fd.write(img)
     fd.close()
 
-
 def writebmp(f, image, width, height, raiseIfExists=False):
     return writeavi(
         f, [image], width, height, raiseIfExists=raiseIfExists, singleFrameAsBmp=True
     )
-
 
 def _rle8decompress(bitdata, dst, width, height):
     # RLE compression for 8-bit-per-pixel bitmaps.
@@ -924,7 +909,6 @@ def _rle8decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
     return True
-
 
 def _rle24decompress(bitdata, dst, width, height):
     # RLE compression for 24-bit-per-pixel bitmaps.
@@ -1022,7 +1006,6 @@ def _rle24decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
     return True
-
 
 _HUFFBOTH = {
     (4, 8): 91,
@@ -1218,13 +1201,11 @@ _HUFFBLACKS = {
     (6, 7, 119): 82,
 }
 
-
 def _createhuffctx(bitdata, dst, width, height):
     linesz = ((width + 31) >> 5) << 2  # bytes per scan line
     # bitdata, dst, width, height, dstbytepos, dstbitpos, dstX, linesz,
     # color, srcbytepos, srcbitpos
     return [bitdata, dst, width, height, 0, 0, 0, linesz, 0, 0, 0]
-
 
 def _nextbit(ctx):
     bitdata = ctx[0]
@@ -1236,7 +1217,6 @@ def _nextbit(ctx):
         ctx[10] = 0
         ctx[9] += 1
     return ret
-
 
 def _nexthuffcode(ctx):
     color = ctx[8]
@@ -1285,37 +1265,30 @@ def _nexthuffcode(ctx):
             return ret
     return None
 
-
 def _ismakeupcode(code):
     return code != None and code[1] >= 64
-
 
 def _istermcode(code):
     return code != None and code[1] >= 0 and code[1] < 64
 
-
 def _isstartcode(code):
     return code != None and code[1] == -1
-
 
 def _codebitcount(code):
     if code == None or code[1] == -1:
         raise ValueError
     return code[1] if code[1] < 64 else (code[1] - 63) * 64
 
-
 def _codecolor(code):
     if code == None or code[1] == -1:
         raise ValueError
     return code[0]
-
 
 def _newscan(ctx, y):
     ctx[8] = 0  # switch to white
     ctx[6] = 0  # set X to 0
     ctx[4] = (ctx[3] - 1 - y) * ctx[7]  # set scan position
     ctx[5] = 0  # set scan bit position
-
 
 def _writebitstodest(ctx, bit, count):
     dst = ctx[1]
@@ -1347,7 +1320,6 @@ def _writebitstodest(ctx, bit, count):
             ctx[4] += 1
             ctx[5] = 0
     return True
-
 
 def _huffmandecompress(bitdata, dst, width, height):
     # Group 3 one-dimensional encoding (ITU-T Rec. T.4),
@@ -1397,7 +1369,6 @@ def _huffmandecompress(bitdata, dst, width, height):
             return False
         starting = False
     return True
-
 
 def _rle4decompress(bitdata, dst, width, height):
     # RLE compression for 4-bit-per-pixel bitmaps.
@@ -1510,7 +1481,6 @@ def _rle4decompress(bitdata, dst, width, height):
                             return False
                         bits += 1
 
-
 # Reads an OS/2 Presentation Manager (PM) icon, mouse pointer (cursor), bitmap (pixel image), or bitmap array,
 # or a Windows bitmap, icon, or cursor.
 # PM and Windows icons have the '.ico' file extension; PM cursors, '.ptr';
@@ -1569,7 +1539,6 @@ def reados2icon(infile):
     finally:
         f.close()
 
-
 # Reads cursor images from a file in the XCursor format.  The return value
 # has the same format returned by the 'reados2icon' method.
 def readxcursor(infile):
@@ -1623,7 +1592,6 @@ def readxcursor(infile):
         return images
     finally:
         f.close()
-
 
 # Same as 'reados2icon', but takes an I/O object such as one
 # returned by Python's 'open' method.
@@ -1708,7 +1676,6 @@ def reados2iconcore(f):
             return [None]
         return [icon]
 
-
 # Reads the color table from an OS/2 Presentation Manager or Windows palette file.
 # Returns an list of the colors read from the file.
 # Each element in the list is a color in the form of a three-element list consisting of
@@ -1736,7 +1703,6 @@ def reados2palette(infile):
         return pal
     finally:
         f.close()
-
 
 def _readwinpal(f):
     ret = []
@@ -1767,7 +1733,6 @@ def _readwinpal(f):
         else:
             f.seek(f.tell() + sz)
 
-
 def _readoldicon(f, kind, num):
     if num == 0:
         return _readoldiconcore(f, kind)
@@ -1779,7 +1744,6 @@ def _readoldicon(f, kind, num):
         ret[i] = ic[0]
     f.close()
     return ret
-
 
 def _readoldiconcore(f, kind, keepopen=False):
     # Read Windows 2.x icon or cursor
@@ -1852,7 +1816,6 @@ def _readoldiconcore(f, kind, keepopen=False):
         f.close()
     return [[img, width, height, hotspotx, hotspoty]]
 
-
 def _readoldbitmap(f):
     # Read Windows 2.x bitmap
     fr = f.read(16)
@@ -1897,7 +1860,6 @@ def _readoldbitmap(f):
             pos += 4
     f.close()
     return [[img, header[4], header[5], 0, 0]]
-
 
 # Reads the bitmaps, icons, and pointers in an OS/2 Presentation Manager theme resource file.
 # A Presentation Manager theme resource file is a collection of Presentation Manager-compatible
@@ -1948,12 +1910,10 @@ def readitr(infile):
     finally:
         f.close()
 
-
 def _read1bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 1-bit-per-pixel
     # Windows or Presentation Manager bitmap data.
     return (byteData[scanSize * (height - 1 - y) + (x >> 3)] >> (7 - (x & 7))) & 1
-
 
 def _read2bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 2-bit-per-pixel
@@ -1962,14 +1922,12 @@ def _read2bppBitmap(byteData, scanSize, height, x, y):
     # Drivers and Hardware", September 1997.
     return (byteData[scanSize * (height - 1 - y) + (x >> 2)] >> (3 - (x & 3))) & 3
 
-
 def _read4bppBitmap(byteData, scanSize, height, x, y):
     # Reads the bit value of an array of bottom-up 4-bit-per-pixel
     # Windows or Presentation Manager bitmap data.
     return (
         byteData[scanSize * (height - 1 - y) + (x >> 1)] >> (4 * (1 - (x & 1)))
     ) & 0x0F
-
 
 def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
     # Reads the alpha value at the specified pixel position of a pixel image,
@@ -1980,7 +1938,6 @@ def _readBitmapAlpha(byteData, scanSize, height, bpp, x, y):
         return byteData[row + x * 4 + 3]
     else:
         return 255
-
 
 def _readBitmapAsAlphaBitfields(byteData, scanSize, height, bpp, x, y, alphamask):
     # Reads the alpha at the specified pixel position of a pixel image
@@ -2000,7 +1957,6 @@ def _readBitmapAsAlphaBitfields(byteData, scanSize, height, bpp, x, y, alphamask
             return bytes([((v & alphamask[0]) >> alphamask[2]) << alphamask[1]])
         case _:
             return bytes([255])
-
 
 def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields):
     # Reads the pixel color value at the specified position of a pixel image
@@ -2033,7 +1989,6 @@ def _readBitmapAsColorBitfields(byteData, scanSize, height, bpp, x, y, bitfields
             )
         case _:
             raise ValueError("Bits per pixel not supported")
-
 
 def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
     # Reads the pixel color value at the specified position of a pixel image,
@@ -2074,7 +2029,6 @@ def _readBitmapAsColorBGR(byteData, scanSize, height, bpp, x, y, palette):
         case _:
             raise ValueError("Bits per pixel not supported")
 
-
 def _pilReadImage(imagebytes):
     try:
         image = PIL.Image.open(io.BytesIO(imagebytes))
@@ -2099,7 +2053,6 @@ def _pilReadImage(imagebytes):
             iconimg[pos + 3] = px[3]
             pos += 4
     return [iconimg, image.width, image.height]
-
 
 def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
     ft = f.tell()
@@ -2242,12 +2195,10 @@ def _readwiniconcore(f, entry, isicon, hotspot, resourceSize):
         hotspot[1] if hotspot else 0,
     ]
 
-
 def _dup(x):
     if x == None:
         return None
     return [([[z for z in y[0]], y[1], y[2], y[3], y[4]] if y else None) for y in x]
-
 
 # Reads from a Windows animated icon/cursor file.  The return value
 # has the same format returned by the 'readitr' method.
@@ -2334,7 +2285,6 @@ def readanimicon(infile):
     finally:
         f.close()
 
-
 # Reads images from a Windows icon or cursor file.  The return value
 # has the same format returned by the 'reados2icon' method.
 def readwinicon(infile):
@@ -2343,7 +2293,6 @@ def readwinicon(infile):
         return readwinicon(f)
     finally:
         f.close()
-
 
 def _readwinicon(f):
     ft = f.tell()
@@ -2427,7 +2376,6 @@ def _readwinicon(f):
             raise ValueError
     return entries
 
-
 def _maskToLeftShift(mask):
     if mask == 0:
         return 0
@@ -2439,7 +2387,6 @@ def _maskToLeftShift(mask):
         shift += 1
     return 8 - shift
 
-
 def _maskToRightShift(mask):
     if mask == 0:
         return 0
@@ -2448,7 +2395,6 @@ def _maskToRightShift(mask):
         mask >>= 1
         shift += 1
     return shift
-
 
 def _readicon(f, packedWinBitmap=False):
     unusual = False
@@ -3032,7 +2978,6 @@ def _readicon(f, packedWinBitmap=False):
         ret = bl
     return [ret, width, height, hotspotX, hotspotY]
 
-
 # Saves a video file by converting the image to grayscale, animating the pixel intensities, and
 # replacing the intensities with the color values from the specified color table.
 # Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
@@ -3049,7 +2994,6 @@ def colorTableAnimation(image, width, height, colorTable, destAnimation, fps=15)
         images.append(gm)
         i += 2
     writeavi(destAnimation, images, width, height, fps=fps)
-
 
 # Image has the same format returned by the _desktopwallpaper_ module's blankimage() method with alpha=False.
 # NOTE: Currently, there must be 256 or fewer unique colors used in the image
@@ -3093,7 +3037,6 @@ def parallaxAvi(
         if len(images[i]) != width * outputHeight * 3:
             raise ValueError
     writeavi(destAVI, images, width, outputHeight, fps=fps)
-
 
 # Generates an AVI video file consisting of images arranged
 # in a row or column and writes the file to the path given by
@@ -3143,7 +3086,6 @@ def animationBitmap(
         images.append(dst)
     writeavi(destAVI, images, animWidth, animHeight, fps=fps)
 
-
 def _icnspalette256():
     ret = []
     for i in range(215):
@@ -3160,7 +3102,6 @@ def _icnspalette256():
         ret.append([v + (v << 4), v + (v << 4), v + (v << 4)])
     ret.append([0, 0, 0])
     return ret
-
 
 # Reads icon images from a file in the GEM icon resource format. The return value
 # has the same format returned by the reados2icon() method.
@@ -3255,7 +3196,6 @@ def readicn(infile):
     finally:
         f.close()
 
-
 # Reads icon images from a file in the Apple icon resource format (also known
 # as icon family or icon suite), in the '.icns' format.  This format was
 # introduced in Mac OS 8.5 (see Apple TN1142: "Mac OS 8.5").  The return value
@@ -3274,7 +3214,6 @@ def readicns(infile):
         return _readicns_core(lp, tag)
     finally:
         f.close()
-
 
 def _readicns_core(lp, starttag):
     tag = lp.read(4)
@@ -3594,7 +3533,6 @@ def _readicns_core(lp, starttag):
     ret = ret2
     return ret
 
-
 def _iconsize(icontag):
     if icontag == b"is32":
         return 16
@@ -3633,7 +3571,6 @@ def _iconsize(icontag):
     if icontag == b"it32":
         return 128
     raise ValueError
-
 
 def _masktag(icontag):
     if icontag == b"SICN":
@@ -3674,7 +3611,6 @@ def _masktag(icontag):
         return b"t8mk"
     raise ValueError
 
-
 def _icnsrle24decode(f, image, planes=3):
     ftell = f.tell()
     nulldata = f.read(4)
@@ -3709,7 +3645,6 @@ def _icnsrle24decode(f, image, planes=3):
                     pos += 4
     return True
 
-
 # Gets the width and height of a PNG file from its
 # header. 'f' is the file's filename.
 # Returns a two-element array with the width
@@ -3735,7 +3670,6 @@ def getpngwidthheight(f):
     ff.close()
     return [width, height]
 
-
 def _tiledSvg(imagedata, width, height, screenwidth, screenheight):
     dataurl = "data:image/png;base64," + str(base64.b64encode(imagedata), "utf-8")
     svgbytes = bytes(
@@ -3754,7 +3688,6 @@ def _tiledSvg(imagedata, width, height, screenwidth, screenheight):
     )
     return svgbytes
 
-
 def tiledSvgFromImage(
     image, width, height, alpha=False, screenwidth=1920, screenheight=1080
 ):
@@ -3765,7 +3698,6 @@ def tiledSvgFromImage(
         screenwidth,
         screenheight,
     )
-
 
 def tiledSvgFromFile(pngFile, screenwidth=1920, screenheight=1080):
     ff = open(pngFile, "rb")
@@ -3788,7 +3720,6 @@ def tiledSvgFromFile(pngFile, screenwidth=1920, screenheight=1080):
     imagedata = existingdata + ff.read()
     ff.close()
     return _tiledSvg(imagedata, width, height, screenwidth, screenheight)
-
 
 def imageToSvg(image, width, height, alpha=False):
     pixelBytes = 4 if alpha else 3
@@ -3823,7 +3754,6 @@ def imageToSvg(image, width, height, alpha=False):
         )
     return bytes(ret + "</svg>", "utf-8")
 
-
 class _BitArray:
     def __init__(self, count):
         self.bits = [0 for i in range((count + 31) // 32)]
@@ -3845,7 +3775,6 @@ class _BitArray:
 
     def get(self, i):
         return (self.bits[i >> 5] & (1 << (i & 31))) != 0
-
 
 class SvgPath:
     def __init__(self):
@@ -3869,12 +3798,10 @@ class SvgPath:
     def __str__(self):
         return self.path
 
-
 def _isInside(rows, width, height, target, x, y):
     pos = (y * width + x) * 3
     # Right-hand side is true if the specified pixel is "black" (all zeros)
     return target == ((rows[pos] | rows[pos + 1] | rows[pos + 2]) == 0)
-
 
 def _floodFillOuter(rows, width, height, rc, x, y, target, bits, fillbits):
     # four-neighbor flood fill
@@ -3925,7 +3852,6 @@ def _floodFillOuter(rows, width, height, rc, x, y, target, bits, fillbits):
             and not fillbits.get(below)
         ):
             _floodFillOuter(rows, width, height, rc, i, y + 1, target, bits, fillbits)
-
 
 def _floodFillInner(rows, width, height, rc, x, y, target, bits, fillbits):
     # eight-neighbor flood fill
@@ -4011,7 +3937,6 @@ def _floodFillInner(rows, width, height, rc, x, y, target, bits, fillbits):
                     rows, width, height, rc, i + 1, y + 1, target, bits, fillbits
                 )
 
-
 # Returns an SVG path string of the outline traced by the
 # black pixels in the specified image.  A black pixel has a red
 # component, green component, and blue component of 0.
@@ -4021,7 +3946,6 @@ def pathFromBitmap(ibi, width, height):
     path = SvgPath()
     _pathFromBitmapEx(ibi, width, height, [0, 0, width, height], path, 1)
     return str(path)
-
 
 def _pathFromBitmapEx(ibi, width, height, rcExtent, path, targetPixel):
     rows = None
@@ -4074,12 +3998,10 @@ def _pathFromBitmapEx(ibi, width, height, rcExtent, path, targetPixel):
                         )
             bitindex += 1
 
-
 _DIR_LEFT = 0
 _DIR_RIGHT = 1
 _DIR_UP = 2
 _DIR_DOWN = 3
-
 
 def _traceShape(rows, width, height, rc, x, y, target, bits, path):
     # Start from the right, then go clockwise around
@@ -4158,7 +4080,6 @@ def _traceShape(rows, width, height, rc, x, y, target, bits, path):
         if not (x != xBegin or y != yBegin):
             break
     path.Close()
-
 
 def _floodFillInnerCheck(rows, width, height, rc, x, y, target, fillbits, point):
     # eight-neighbor flood fill
@@ -4245,7 +4166,6 @@ def _floodFillInnerCheck(rows, width, height, rc, x, y, target, fillbits, point)
                 _floodFillInnerCheck(
                     rows, width, height, rc, i + 1, y + 1, target, fillbits, point
                 )
-
 
 def _traceShapeInner(rows, width, height, rc, x, y, target, bits, path):
     # Start down, then go clockwise around
