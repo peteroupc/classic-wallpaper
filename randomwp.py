@@ -7,7 +7,6 @@ import random
 import math
 import desktopwallpaper as dw
 
-
 def scatteredIconAnimationOverlay(icons, bgwidth, bgheight, framecount=40):
     if (not icons) or bgwidth <= 0 or bgheight <= 0 or framecount <= 0:
         raise ValueError
@@ -68,7 +67,6 @@ def scatteredIconAnimationOverlay(icons, bgwidth, bgheight, framecount=40):
         animation.append(bgi)
     return animation
 
-
 def scatteredIconAnimation(
     icons, bgImage, bgwidth, bgheight, framecount=40, palette=None
 ):
@@ -97,7 +95,6 @@ def scatteredIconAnimation(
         if palette:
             dw.patternDither(anim[i], bgwidth, bgheight, palette, alpha=False)
     return anim
-
 
 def randomdiamondtileoverlay(imgwidth, imgheight, icon, iconwidth, iconheight):
     iconpos1 = [0, 0]
@@ -131,7 +128,6 @@ def randomdiamondtileoverlay(imgwidth, imgheight, icon, iconwidth, iconheight):
         iconpos1=iconpos1,
         iconpos2=iconpos2,
     )
-
 
 def _diamondtileoverlay(
     imgwidth, imgheight, icon, iconwidth, iconheight, iconpos1, iconpos2
@@ -171,7 +167,6 @@ def _diamondtileoverlay(
     )
     return [bg, imgwidth, imgheight]
 
-
 def _drawmask3(img, mask, w, h, palette=None):
     offx = random.randint(0, w - 1)
     offy = random.randint(0, h - 1)
@@ -196,7 +191,6 @@ def _drawmask3(img, mask, w, h, palette=None):
     )
     if palette:
         dw.patternDither(img, w, h, palette)
-
 
 def _drawmask1(img, mask, w, h, palette=None):
     # Draw dark version of image where mask is black, and light version elsewhere,
@@ -238,7 +232,6 @@ def _drawmask1(img, mask, w, h, palette=None):
     dw.imageblitex(img, w, h, 0, 0, w, h, lt, w, h)
     if palette:
         dw.patternDither(img, w, h, palette)
-
 
 def _drawmask4(img, mask, w, h, palette=None):
     # draw color on the image, where mask is black, along
@@ -305,7 +298,6 @@ def _drawmask4(img, mask, w, h, palette=None):
     if palette:
         dw.patternDither(img, w, h, palette)
 
-
 def _randomvivid():
     while True:
         rgb = [random.randint(0, 255) for i in range(3)]
@@ -317,7 +309,6 @@ def _randomvivid():
             0 if v == rmn else (255 if v == rmx else (v - rmn) * 255 // (rmx - rmn))
             for v in rgb
         ]
-
 
 def _drawmask5(img, mask, w, h, palette=None):
     # draw color on the image, where mask is black, along
@@ -347,7 +338,6 @@ def _drawmask5(img, mask, w, h, palette=None):
     )
     if palette:
         dw.patternDither(img, w, h, palette)
-
 
 def _drawmask2(img, mask, w, h, palette=None):
     # draw color on the image, where mask is black, along
@@ -405,7 +395,6 @@ def _drawmask2(img, mask, w, h, palette=None):
     if palette:
         dw.patternDither(img, w, h, palette)
 
-
 def randomdrawmask(img, mask, w, h, palette=None):
     match random.randint(0, 4):
         case 0:
@@ -421,7 +410,6 @@ def randomdrawmask(img, mask, w, h, palette=None):
         case _:
             raise ValueError
 
-
 def randomwallpaper(palette=None):
     match random.randint(0, 2):
         case 0:
@@ -430,7 +418,6 @@ def randomwallpaper(palette=None):
             return randomwallpaper2(palette=palette)
         case _:
             return randomwallpaper3(palette=palette)
-
 
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
@@ -444,7 +431,6 @@ def _waverotaterows(image, width, height, wavesize, wavecount=1, alpha=False):
         )
     return image
 
-
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
 def _waverotatecolumns(image, width, height, wavesize, wavecount=1, alpha=False):
@@ -456,7 +442,6 @@ def _waverotatecolumns(image, width, height, wavesize, wavecount=1, alpha=False)
             image, width, height, i, int((0.5 * wavesize) * p + 0.5), alpha=alpha
         )
     return image
-
 
 def _randomTransformed(image, w, h):
     if random.randint(0, 99) < 5 and w > 4 and h > 4:
@@ -480,7 +465,6 @@ def _randomTransformed(image, w, h):
         return (image, w, h)
     return (image2, w2, h2)
 
-
 def randomwallpaper3(palette=None):
     w = random.randint(32, 192)
     w -= w % 8
@@ -502,17 +486,14 @@ def randomwallpaper3(palette=None):
         dw.randombordertile(image, w, h)
     return [image, w, h]
 
-
 def randomwallpaper2(palette=None):
     return _randomwallpaper1ex(palette=palette, variant=2)
-
 
 def _argylemask(width, height, expo):
     img = dw.blankimage(width, height, [0, 0, 0], alpha=False)
     helper = dw.ImageDrawHelper(img, width, height, alpha=False)
     dw.helperellipsefill(helper, [255, 255, 255], 0, 0, width, height, expo=expo)
     return img
-
 
 def _shiftImage(image, width, height):
     dw.imageblitex(
@@ -532,10 +513,8 @@ def _shiftImage(image, width, height):
         alpha=False,
     )
 
-
 def randomwallpaper1(palette=None):
     return _randomwallpaper1ex(palette=palette, variant=1)
-
 
 def _randomwallpaper1ex(palette=None, variant=1):
     w = random.randint(96, 256)
