@@ -42,7 +42,7 @@ There is an algorithm by Kopf and Lischinski ("Depixelizing Pixel Art", _ACM Tra
 
 Potrace version 1.16 (2019) likewise suffers from points 1 and 2, and also supports only black-and-white opaque images and not color ones.
 
-[**Algorithms designed for scaling images**](http://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms), such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting a image to a vector graphic.  In any case, none of the algorithms mentioned renders 1-unit-thick lines as vector line commands.
+[**Algorithms designed for scaling images**](http://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms), such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting an image to a vector graphic.  In any case, none of the algorithms mentioned renders 1-unit-thick lines as vector line commands.
 
 A [**related project**](https://github.com/eviltrout/agi-upscale) involves drawing enlarged versions of a vector graphic defined essentially by 1-unit-thick lines and by flood fills rather than polygons.
 
@@ -73,6 +73,6 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 ## Notes
 
-[^1]: A image with a high number of unique colors (say, 32 or more), is hard to convert to a vector graphic without sacrificing image quality.  While such images ought to be designed as vector graphics from the start, a simple upscaling and downscaling solution, such as bilinear filtering, is acceptable for such images, especially for the use case of user-interface graphics where scaling factors from 50% through 300% are expected.<br>Limited-color images greater than 64 &times; 64 are also of interest and occur among user-interface graphics (such as wizard graphics in Windows 95), but are not the main priority; indeed, the larger the image size, the more time the conversion to a vector graphic is expected to take.
+[^1]: An image with a high number of unique colors (say, 32 or more), is hard to convert to a vector graphic without sacrificing image quality.  While such images ought to be designed as vector graphics from the start, a simple upscaling and downscaling solution, such as bilinear filtering, is acceptable for such images, especially for the use case of user-interface graphics where scaling factors from 50% through 300% are expected.<br>Limited-color images greater than 64 &times; 64 are also of interest and occur among user-interface graphics (such as wizard graphics in Windows 95), but are not the main priority; indeed, the larger the image size, the more time the conversion to a vector graphic is expected to take.
 
 [^2]: In SVG, the stroke would also be marked with the `vector-effect:non-scaling-stroke` style, so that the stroke looks 1 unit thick regardless of scaling.
