@@ -231,6 +231,7 @@ The following books and other works discuss design matters on traditional user i
 - J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the
 authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
 - [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
+- Commodore-Amiga, Inc., _Amiga User Interface Style Guide_, Addison-Wesley, 1991.[^24a]
 
 <a id=Worthy_Mentions></a>
 
@@ -337,5 +338,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^23]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.  For an example of an animation in the form of a single image file, see Herman Rodent, "Animation in Win32", Microsoft Developer Network, Feb. 1, 1994.
 
 [^24]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than twice the spacing between pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and 1-unit-thick line segments.
+
+[^24a]: Suggested to me by a Reddit community.
 
 [^25]: The resulting color may vary slightly from the one calculated by the Motif toolkit, because of rounding errors committed by that toolkit.
