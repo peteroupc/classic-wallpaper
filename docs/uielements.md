@@ -1,8 +1,6 @@
 # Traditional User-Interface Graphics
 
-This page discusses aspects of the traditional design (up to about the year 2003) of user-interface graphics, such as button and border styles, icons, and mouse pointers.
-
-> **Note:** User interfaces found in video games are outside the scope of this document.
+This page discusses aspects of the traditional design (up to about the year 2003) of user-interface graphics, such as button and border styles, icons, and mouse pointers. User interfaces found in video games are outside the scope of this document.
 
 <a id=Contents></a>
 
