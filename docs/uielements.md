@@ -146,7 +146,7 @@ Icons and cursors can include transparent pixels, but should have no translucent
 In general, when user-interface graphics, including icons, cursors, and illustrations, are drawn using a limited number of colors, the following is observed.  The observations apply to graphics from 1995 to about 2003, unless noted otherwise.
 
 - Before 2003 (and even before 1995):
-    - Curves and straight line segments are one unit thick and drawn without smoothing.
+    - Curves and straight line segments are drawn without smoothing by approximating them with points at integer coordinates and coloring the pixels at those points.
     - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
     - There are no translucent (semitransparent) pixels.
 - The three-dimensional (3-D) appearance of buttons and other objects in two-dimensional graphics supposes the presence of a light source shining from the upper left.[^6]
@@ -167,7 +167,7 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Most cursors are limited to the two colors black and white, with optional transparency.[^18]
     - Before 1990, cursors do not have colors other than black and white.
     - From 1990 to about 2003, cursors with colors other than black and white are rare, and cursors with more than 32 colors are very rare.  From 1995 to about 2003, cursors with colors limited to the VGA palette become more common, especially infrequently seen cursors such as the busy-wait cursor.
-    - Before 2003, and even before 1995, each shape of a black-and-white cursor is generally either white with a 1-unit-thick black outline or vice versa, to make the cursor easy to see over any background.
+    - Before 2003, and even before 1995, each shape of a black-and-white cursor is generally either white with a black outline (approximated with integer coordinates) or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^12] or similar techniques.
 
@@ -301,7 +301,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^7]: Buttons possessed a 3-D look (in that they appear to have depth or elevation) in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that gives 3-D appearances to more places in an application.
 
-[^8]: In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional 1-unit-thick edge drawn in the button face color.
+[^8]: In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional edge consisting of simple line segments drawn in the button face color.
 
 [^9]: _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in System 7 of the Macintosh Operating System was designed to be legible even when rendered this way).
 
@@ -319,7 +319,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^16]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.  But computer monitors may still be drawn straight on in order to accentuate what the monitor is showing.
 
-[^17]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially 1-unit-thick lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill a colored area that is surrounded by other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
+[^17]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially simple lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill a colored area that is surrounded by other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
 
 [^18]: The only icons and cursors supported by Windows versions before Windows 3.0 (in 1990) were limited to the two colors black and white.
 
@@ -335,7 +335,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^23]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.  For an example of an animation in the form of a single image file, see Herman Rodent, "Animation in Win32", Microsoft Developer Network, Feb. 1, 1994.
 
-[^24]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than twice the spacing between pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and 1-unit-thick line segments.
+[^24]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than twice the spacing between pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and simple line segments.
 
 [^24a]: Suggested to me by a Reddit community.
 
