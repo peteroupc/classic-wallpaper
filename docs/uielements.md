@@ -301,7 +301,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^7]: Buttons possessed a 3-D look (in that they appear to have depth or elevation) in Windows versions 3.0 and 3.1 by default, but not other interface elements.  The article "Adding 3-D Effects to Controls" describes a library for these versions that gives 3-D appearances to more places in an application.
 
-[^8]: In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance is surrounded by an additional edge consisting of simple line segments drawn in the button face color.
+[^8]: In this case, if the button is a toolbar button with a thin border, the button's inner background involved in the mixed-value appearance has an inner outline colored in the button face color.
 
 [^9]: _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in System 7 of the Macintosh Operating System was designed to be legible even when rendered this way).
 
