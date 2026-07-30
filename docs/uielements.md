@@ -289,7 +289,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^14]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 (or 16 &times; 15; see MFC Technical Note TN031, "Control Bars") and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.  In _The Windows Interface Guidelines for Software Design_ (Windows 95), the recommended icons were 16 &times; 16 in 16 colors, and 32 &times; 32 in 16 colors, and 48 &times; 48 in 256 colors (large version of desktop icon; see _Win32 Programmer's Reference_).
 
-[^15]: [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
+[^15]: [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636%28v=msdn.10%29) (Microsoft Learn), July 2001.
 
 [^16]: Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows 3.0 (as opposed to version 3.1) tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two units.
 
@@ -323,7 +323,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^31]: Microsoft Knowledge Base article Q69079, "How to Give a 3-D Effect to Windows Controls".
 
-[^32]: [**K. Brockschmidt, "A Primer on Designing Custom Controls"**](https://scholar.google.com/scholar?q=K.+Brockschmidt,+A+Primer+on+Designing+Custom+Controls), _Microsoft Systems Journal_ 7(2).
+[^32]: [**K. Brockschmidt, "A Primer on Designing Custom Controls"**](https://scholar.google.com/scholar?q=K.+Brockschmidt,+A+Primer+on+Designing+Custom+Controls), _Microsoft Systems Journal_ 7(2), March 1992.
 
 [^33]: [**K. P. Welch, "Extending the Windows 3.0 Interface with Installable Custom Controls"**](https://scholar.google.com/scholar?q=K.+P.+Welch,+Extending+the+Windows+3.0+Interface+with+Installable+Custom+Controls), _Microsoft Systems Journal_ 5(4), July 1990.
 
