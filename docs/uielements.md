@@ -203,14 +203,14 @@ Given a graphic with multiple variations (such as in size, colors, or being a ve
 
 ## Relevant Works
 
-There are many books and other works that discuss design matters on traditional user interfaces.[^27] [^6] [^28] [^29] [^30] [^31] [^32] [^33] [^34] [^35] [^36] [^37] [^38] [^39] [^40] [^41] [^42] [^43] [^44] [^45] [^46] [^47] [^15] [^48] [^50]
+There are many books and other works that discuss design matters on traditional user interfaces.[^27] [^6] [^28] [^29] [^30] [^31] [^32] [^33] [^34] [^35] [^36] [^37] [^38] [^39] [^40] [^41] [^42] [^43] [^44] [^45] [^46] [^47] [^15] [^48] [^49]
 
 <a id=Worthy_Mentions></a>
 
 ## Worthy Mentions
 
 - The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics (geometric models), not images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
-- The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^49]  The [**pseudocode conventions**](https://peteroupc.github.io/pseudocode.html) apply to the following pseudocode.
+- The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color's calculated "brightness". [^50]  The [**pseudocode conventions**](https://peteroupc.github.io/pseudocode.html) apply to the following pseudocode.
 
 ----
 
@@ -317,23 +317,23 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^28]: "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
 
-[^29]: Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
+[^29]: [**Matt Saettler, "Graphics Design and Optimization"**](https://scholar.google.com/scholar?q=Matt+Saettler,+Graphics+Design+and+Optimization), Multimedia Technical Note (Microsoft), 1992.
 
-[^30]: W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
+[^30]: [**W. Cherry and K. Marsh, "Adding 3-D Effects to Controls"**](https://scholar.google.com/scholar?q=W.+Cherry+and+K.+Marsh,+Adding+3-D+Effects+to+Controls), Technical Note (Microsoft), 1992-1993.
 
 [^31]: Microsoft Knowledge Base article Q69079, "How to Give a 3-D Effect to Windows Controls".
 
-[^32]: K. Brockschmidt, "A Primer on Designing Custom Controls", _Microsoft Systems Journal_ 7(2).
+[^32]: [**K. Brockschmidt, "A Primer on Designing Custom Controls"**](https://scholar.google.com/scholar?q=K.+Brockschmidt,+A+Primer+on+Designing+Custom+Controls), _Microsoft Systems Journal_ 7(2).
 
-[^33]: K. P. Welch, "Extending the Windows 3.0 Interface with Installable Custom Controls", _Microsoft Systems Journal_ 5(4), July 1990.
+[^33]: [**K. P. Welch, "Extending the Windows 3.0 Interface with Installable Custom Controls"**](https://scholar.google.com/scholar?q=K.+P.+Welch,+Extending+the+Windows+3.0+Interface+with+Installable+Custom+Controls), _Microsoft Systems Journal_ 5(4), July 1990.
 
-[^34]: Kyle Marsh, "Implementing a Status Bar", Technical Note (Microsoft), April 2, 1992.
+[^34]: [**Kyle Marsh, "Implementing a Status Bar"**](https://scholar.google.com/scholar?q=Kyle+Marsh,+Implementing+a+Status+Bar), Technical Note (Microsoft), April 2, 1992.
 
-[^35]: Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
+[^35]: [**Kyle Marsh, "Creating a Toolbar"**](https://scholar.google.com/scholar?q=Kyle+Marsh,+Creating+a+Toolbar), Technical Note (Microsoft), December 31, 1992.
 
 [^36]: The "Visual Design Guide" that came with Microsoft Visual Basic 3.0 Professional Edition.
 
-[^37]: "Tip 53: Adding Three-Dimensional Effects to Visual Basic Controls", Visual Basic Tips, April 10, 1995.
+[^37]: [**"Tip 53: Adding Three-Dimensional Effects to Visual Basic Controls"**](https://scholar.google.com/scholar?q=Tip+53+Adding+Three-Dimensional+Effects+to+Visual+Basic+Controls), Visual Basic Tips, April 10, 1995.
 
 [^38]: _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 
@@ -349,14 +349,14 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^44]: _Mac OS 8 Human Interface Guidelines_ (addendum to _Macintosh User Interface Guidelines_), Sep. 2, 1997.
 
-[^45]: "Color, Windows and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
+[^45]: [**"Color, Windows and 7.0"**](https://scholar.google.com/scholar?q=Color,+Windows+and+7.0), Apple Technical Note TB33, Oct. 1, 1992.
 
-[^46]: E. Voas, "Appearance: Not Just Another Pretty Interface", _develop_ (Apple), June 1997.
+[^46]: [**E. Voas, "Appearance: Not Just Another Pretty Interface"**](https://scholar.google.com/scholar?q=E.+Voas,+Appearance+Not+Just+Another+Pretty+Interface), _develop_ (Apple), June 1997.
 
-[^47]: J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
+[^47]: [**J. Osborne, D. Thomas, "Working in the Third Dimension"**](https://scholar.google.com/scholar?q=J.+Osborne,+D.+Thomas,+Working+in+the+Third+Dimension), _develop_ (Apple), September 1993, describes the authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
 
 [^48]: Commodore-Amiga, Inc., _Amiga User Interface Style Guide_, Addison-Wesley, 1991. Suggested to me by a Reddit community.
 
-[^49]: The resulting color may vary slightly from the one calculated by the Motif toolkit, because of rounding errors committed by that toolkit.
+[^49]: C. Petzold, _Programming Windows: The Microsoft Guide to Writing Applications for Windows 3_, Microsoft Press, 1990.
 
-[^50]: C. Petzold, _Programming Windows: The Microsoft Guide to Writing Applications for Windows 3_, Microsoft Press, 1990.
+[^50]: The resulting color may vary slightly from the one calculated by the Motif toolkit, because of rounding errors committed by that toolkit.
