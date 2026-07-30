@@ -97,7 +97,7 @@ The following ways to draw buttons, default buttons, and toolbar buttons are typ
 
 In Presentation Manager and in System 7 of the Macintosh Operating System [^9], to render a button in the unavailable style, the entire button (including text, icons, and borders) is drawn such that only every other pixel is rendered in a "checkerboard" pattern.
 
-Traditionally, the three-dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^10]
+Traditionally, the three-dimensional effects of buttons, icons, and other user-interface elements are based on a light source shining from the upper left. [^6] [^10]
 
 <a id=Button_and_Border_Drawing_Challenge></a>
 
@@ -150,38 +150,38 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
     - There are no translucent (semitransparent) pixels.
 - The three-dimensional (3-D) appearance of buttons and other objects in two-dimensional graphics supposes the presence of a light source shining from the upper left.[^6]
-    - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^15]
-    - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^16]  \(This doesn't apply to the edges of buttons.)
-- Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^17]
+    - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^15] [^16]
+    - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^17]  \(This doesn't apply to the edges of buttons.)
+- Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^18]
 - From 1990 to about 2003, for graphics limited to the 16-color VGA palette: [^13]
     - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
 - For graphics with 17 to 256 colors, gradient fills are present but subtle.
 - Icons:
-    - Before 1990, icons are limited to the two colors black and white, with optional transparency.[^18]
-    - Before 1995, black-and-white icons (with no intermediate gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^19]
+    - Before 1990, icons are limited to the two colors black and white, with optional transparency.[^19]
+    - Before 1995, black-and-white icons (with no intermediate gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^20]
     - Icons with more than 32 colors are rare; more than 64 colors, very rare.
-    - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in a typeface, or font; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^20]
-    - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the  original icon but with finer but nonessential detail.[^21]
+    - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in a typeface, or font; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^21]
+    - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the  original icon but with finer but nonessential detail.[^22]
 - Cursors:
-    - Most cursors are limited to the two colors black and white, with optional transparency.[^18]
+    - Most cursors are limited to the two colors black and white, with optional transparency.[^19]
     - Before 1990, cursors do not have colors other than black and white.
     - From 1990 to about 2003, cursors with colors other than black and white are rare, and cursors with more than 32 colors are very rare.  From 1995 to about 2003, cursors with colors limited to the VGA palette become more common, especially infrequently seen cursors such as the busy-wait cursor.
     - Before 2003, and even before 1995, each shape of a black-and-white cursor is generally either white with a black outline (approximated with integer coordinates) or vice versa, to make the cursor easy to see over any background.
 
 > **Note:** After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^12] or similar techniques.
 
-In general, from about 1990 to about 1997, user-interface text was drawn in one color only and rarely had smoothed edges; the edges were smoothed only if the display mode can show more than 256 colors at a time.  In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three units downward and rightward) followed by an unshifted rendering in the base color or pattern.[^22]  But new applications should avoid having text in icons, cursors, and other images. An example of shadowed text follows:
+In general, from about 1990 to about 1997, user-interface text was drawn in one color only and rarely had smoothed edges; the edges were smoothed only if the display mode can show more than 256 colors at a time.  In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three units downward and rightward) followed by an unshifted rendering in the base color or pattern.[^23]  But new applications should avoid having text in icons, cursors, and other images. An example of shadowed text follows:
 
 ![**The word "Sample" in blue, shadowed above by gray and below by black.**](shadowed.png)
 
-New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.[^23]  Existing images that function like icons should be [**converted to vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if they are simple enough.
+New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.[^24]  Existing images that function like icons should be [**converted to vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if they are simple enough.
 
 <a id=Animations></a>
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple video files without sound that are limited to 256 colors, this control appears to be rarely used.  More usually, traditional desktop applications don't store an animation as a video file; rather, the images making up the animation are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames). [^24]  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
+Although Windows 95 and later versions have an _animation control_ for displaying simple video files without sound that are limited to 256 colors, this control appears to be rarely used.  More usually, traditional desktop applications don't store an animation as a video file; rather, the images making up the animation are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames). [^25]  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
 
 <a id=Flexible_User_Interface_Graphics></a>
 
@@ -193,7 +193,7 @@ For a high degree of flexibility, new graphical user interface systems should al
 - Having certain shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color), and drawing lines and curves in such graphics with system colors.
 - Designing user-interface elements as images or vector graphics limited to gray tones, where the system replaces each gray tone in the image or graphic with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
-    - in multiple variations in size (width, height, or both), each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [**vector graphics**](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^25], and
+    - in multiple variations in size (width, height, or both), each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [**vector graphics**](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^26], and
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
 - Animation of icons and cursors.
 
@@ -203,7 +203,7 @@ Given a graphic with multiple variations (such as in size, colors, or being a ve
 
 ## Relevant Works
 
-There are many books and other works that discuss design matters on traditional user interfaces.[^26] [^6] [^27] [^28] [^29] [^30] [^31] [^32] [^33] [^34] [^35] [^36] [^37] [^38] [^39] [^40] [^41] [^42] [^43] [^44] [^45] [^46] [^47] [^48]
+There are many books and other works that discuss design matters on traditional user interfaces.[^27] [^6] [^28] [^29] [^30] [^31] [^32] [^33] [^34] [^35] [^36] [^37] [^38] [^39] [^40] [^41] [^42] [^43] [^44] [^45] [^46] [^47] [^15] [^48] [^50]
 
 <a id=Worthy_Mentions></a>
 
@@ -263,7 +263,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^1]: This definition disregards whether a display shows an image using interlacing (for example, alternating between showing only odd rows and only even rows) or a progressive-scan method (all rows are displayed each frame).
 
-[^2]: These two values for pixel density need not match the true pixel density of a particular computer display.  For example, the drivers that come with Windows version 3.x employ a pixel density that is greater, on average, than the true one to aid readability of text (C. Petzold, _Programming Windows: The Microsoft Guide to Writing Applications for Windows 3_, Microsoft Press, 1990, chapter 14).<br>Moreover, two display modes with the same screen resolution can differ in their pixel density, even if both are meant for displays with the same aspect ratio.  For example, a 320-&times;-200 display mode can have 40 or 48 vertical pixels per inch, even if both are intended for displays with the 4:3 aspect ratio typical in 2000 and earlier.
+[^2]: These two values for pixel density need not match the true pixel density of a particular computer display.  For example, the drivers that come with Windows version 3.x employ a pixel density that is greater, on average, than the true one to aid readability of text (chapter 14 of Petzold 1990).<br>Moreover, two display modes with the same screen resolution can differ in their pixel density, even if both are meant for displays with the same aspect ratio.  For example, a 320-&times;-200 display mode can have 40 or 48 vertical pixels per inch, even if both are intended for displays with the 4:3 aspect ratio typical in 2000 and earlier.
 
 [^3]: In Windows, this color was first supported in version 3.1.  In the Foundation Class Library's implementation of toolbars, this color is fixed to (255,255,255); see MFC Technical Note TN031, "Control Bars".
 
@@ -279,7 +279,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^9]: _Macintosh Human Interface Guidelines_, p. 207 (according to which the system font in System 7 of the Macintosh Operating System was designed to be legible even when rendered this way).
 
-[^10]: _The Windows Interface Guidelines for Software Design_; _Macintosh Human Interface Guidelines_, p. 232.
+[^10]: _Macintosh Human Interface Guidelines_, p. 232.
 
 [^11]: _Window borders_ are the outer edges of desktop windows.  Text box borders are also known as "field borders".  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.
 
@@ -289,72 +289,74 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^14]: Modern guidelines recommend a 256 &times; 256 icon as well.  Toolbar icons are traditionally offered in 16 &times; 16 (or 16 &times; 15; see MFC Technical Note TN031, "Control Bars") and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.  In _The Windows Interface Guidelines for Software Design_ (Windows 95), the recommended icons were 16 &times; 16 in 16 colors, and 32 &times; 32 in 16 colors, and 48 &times; 48 in 256 colors (large version of desktop icon; see _Win32 Programmer's Reference_).
 
-[^15]: See "Creating Windows XP Icons".  Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows 3.0 (as opposed to version 3.1) tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two units.
+[^15]: [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
 
-[^16]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.  But computer monitors may still be drawn straight on in order to accentuate what the monitor is showing.
+[^16]: Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows 3.0 (as opposed to version 3.1) tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two units.
 
-[^17]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially simple lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill a colored area that is surrounded by other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
+[^17]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.  But computer monitors may still be drawn straight on in order to accentuate what the monitor is showing.
 
-[^18]: The only icons and cursors supported by Windows versions before Windows 3.0 (in 1990) were limited to the two colors black and white.
+[^18]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially simple lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill a colored area that is surrounded by other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
 
-[^19]: _Macintosh Human Interface Guidelines_, p. 263.
+[^19]: The only icons and cursors supported by Windows versions before Windows 3.0 (in 1990) were limited to the two colors black and white.
 
-[^20]: Exceptions are found in the [**_Marlett_**](https://learn.microsoft.com/en-us/typography/font-list/marlett), [**_Wingdings_**](https://learn.microsoft.com/en-us/typography/font-list/wingdings), and [**_Webdings_**](https://learn.microsoft.com/en-us/typography/font-list/webdings) symbol fonts in Microsoft operating systems.
+[^20]: _Macintosh Human Interface Guidelines_, p. 263.
 
-[^21]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
+[^21]: Exceptions are found in the [**_Marlett_**](https://learn.microsoft.com/en-us/typography/font-list/marlett), [**_Wingdings_**](https://learn.microsoft.com/en-us/typography/font-list/wingdings), and [**_Webdings_**](https://learn.microsoft.com/en-us/typography/font-list/webdings) symbol fonts in Microsoft operating systems.
 
-[^22]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
+[^22]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
 
-[^23]: I am reminded of the way textures were created for the modern game _QUOD_ by "Daivuk": they were stored as editing commands such as bevels, sunken areas, and tiling.
+[^23]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
 
-[^24]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.  For an example of an animation in the form of a single image file, see Herman Rodent, "Animation in Win32", Microsoft Developer Network, Feb. 1, 1994.
+[^24]: I am reminded of the way textures were created for the modern game _QUOD_ by "Daivuk": they were stored as editing commands such as bevels, sunken areas, and tiling.
 
-[^25]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than twice the spacing between pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and simple line segments.
+[^25]: _The Microsoft Windows User Experience_ considers an animation to be fluid only if it runs at 16 or more frames per second.  For an example of an animation in the form of a single image file, see Herman Rodent, "Animation in Win32", Microsoft Developer Network, Feb. 1, 1994.
 
-[^26]: _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
+[^26]: For example, an image can be drawn with four variations in width and height: 32 &times; 32, 40 &times; 40, 32 &times; 24, and 32 &times; 16 pixels.  Multiple sizes and vector versions of a graphic are useful for several reasons, including:<br>(1) to accommodate different display modes and pixel densities;<br>(2) to render parts of the graphic more crisply, especially if their [**smallest feature would measure less than twice the spacing between pixels**](http://rastertragedy.com/RTRCh1.htm).<br>They are useful for toolbar icons, for example, especially nowadays where the icon style is a single-color filled outline akin to a typographic symbol.  Indeed, even 16-&times;-15-pixel images often used as toolbar icons are, in many cases, ultimately vector graphics consisting of polygons and simple line segments.
 
-[^27]: "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
+[^27]: _The Microsoft Windows User Experience_, which applies to Windows 98 and Windows 2000.
 
-[^28]: Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
+[^28]: "Wizard 97" (1999) and "Backward Compatible Wizard 97", part of the Windows Platform SDK, April 2000.
 
-[^29]: W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
+[^29]: Matt Saettler, "Graphics Design and Optimization", Multimedia Technical Note (Microsoft), 1992.
 
-[^30]: Microsoft Knowledge Base article Q69079, "How to Give a 3-D Effect to Windows Controls".
+[^30]: W. Cherry and K. Marsh, "Adding 3-D Effects to Controls", Technical Note (Microsoft), 1992-1993.
 
-[^31]: K. Brockschmidt, "A Primer on Designing Custom Controls", _Microsoft Systems Journal_ 7(2).
+[^31]: Microsoft Knowledge Base article Q69079, "How to Give a 3-D Effect to Windows Controls".
 
-[^32]: K. P. Welch, "Extending the Windows 3.0 Interface with Installable Custom Controls", _Microsoft Systems Journal_ 5(4), July 1990.
+[^32]: K. Brockschmidt, "A Primer on Designing Custom Controls", _Microsoft Systems Journal_ 7(2).
 
-[^33]: Kyle Marsh, "Implementing a Status Bar", Technical Note (Microsoft), April 2, 1992.
+[^33]: K. P. Welch, "Extending the Windows 3.0 Interface with Installable Custom Controls", _Microsoft Systems Journal_ 5(4), July 1990.
 
-[^34]: Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
+[^34]: Kyle Marsh, "Implementing a Status Bar", Technical Note (Microsoft), April 2, 1992.
 
-[^35]: The "Visual Design Guide" that came with Microsoft Visual Basic 3.0 Professional Edition.
+[^35]: Kyle Marsh, "Creating a Toolbar", Technical Note (Microsoft), December 31, 1992.
 
-[^36]: "Tip 53: Adding Three-Dimensional Effects to Visual Basic Controls", Visual Basic Tips, April 10, 1995.
+[^36]: The "Visual Design Guide" that came with Microsoft Visual Basic 3.0 Professional Edition.
 
-[^37]: _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
+[^37]: "Tip 53: Adding Three-Dimensional Effects to Visual Basic Controls", Visual Basic Tips, April 10, 1995.
 
-[^38]: Shiz Kobara, _Visual Design with OSF/Motif_, Addison-Wesley, 1991.
+[^38]: _Common User Access: Basic Interface Design Guide_ and _Common User Access: Advanced Interface Design Guide_, which apply to Windows version 3.0 and Presentation Manager.
 
-[^39]: _OSF/Motif Style Guide_ (releases 1.1, 1.2, and 2.0), and _OSF/Motif Widget Writer's Guide_.
+[^39]: Shiz Kobara, _Visual Design with OSF/Motif_, Addison-Wesley, 1991.
 
-[^40]: _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
+[^40]: _OSF/Motif Style Guide_ (releases 1.1, 1.2, and 2.0), and _OSF/Motif Widget Writer's Guide_.
 
-[^41]: _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
+[^41]: _The Windows Interface: An Application Design Guide_, which applies to Windows version 3.1.
 
-[^42]: _Macintosh Human Interface Guidelines_, 1992. [https://doi.org/10.5555/573097](https://doi.org/10.5555/573097)
+[^42]: _Motif Reference Manual_ (Volume Six B) and _XView Reference Manual_ (Volume Seven B), from the X Window System series published by O'Reilly & Associates.
 
-[^43]: _Mac OS 8 Human Interface Guidelines_ (addendum to _Macintosh User Interface Guidelines_), Sep. 2, 1997.
+[^43]: _Macintosh Human Interface Guidelines_, 1992. [**https://doi.org/10.5555/573097**](https://doi.org/10.5555/573097)
 
-[^44]: "Color, Windows and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
+[^44]: _Mac OS 8 Human Interface Guidelines_ (addendum to _Macintosh User Interface Guidelines_), Sep. 2, 1997.
 
-[^45]: E. Voas, "Appearance: Not Just Another Pretty Interface", _develop_ (Apple), June 1997.
+[^45]: "Color, Windows and 7.0", Apple Technical Note TB33, Oct. 1, 1992.
 
-[^46]: J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
+[^46]: E. Voas, "Appearance: Not Just Another Pretty Interface", _develop_ (Apple), June 1997.
 
-[^47]: [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636(v=msdn.10)) (Microsoft Learn), July 2001.
+[^47]: J. Osborne, D. Thomas, "Working in the Third Dimension", _develop_ (Apple), September 1993, describes the authors' suggestions for the three-dimensional appearance of buttons and certain other interface elements compatible with System 7 of the Macintosh Operating System.
 
 [^48]: Commodore-Amiga, Inc., _Amiga User Interface Style Guide_, Addison-Wesley, 1991. Suggested to me by a Reddit community.
 
 [^49]: The resulting color may vary slightly from the one calculated by the Motif toolkit, because of rounding errors committed by that toolkit.
+
+[^50]: C. Petzold, _Programming Windows: The Microsoft Guide to Writing Applications for Windows 3_, Microsoft Press, 1990.
