@@ -305,7 +305,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^22]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
 
-[^23]: For example, see the discussion on buttons in the _RIPscrip_ specification developed by TeleGrafix in 1992 and 1993. This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.
+[^23]: For example, see the discussion on buttons in the _ RIPscrip Graphics Protocol Specification_ developed by the now-defunct TeleGrafix (for example, version 1.54 from July 1993). This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.  Besides RIPscrip, though, many videotex systems (information exchange systems involving a video screen) in the 1980s and early 1990s did not support displaying images or line graphics in addition to text; an exception is CSA T500-1983/ANSI X3.110-1983, the North American Presentation Layer Protocol Syntax (for an overview see the series of articles titled "NAPLPS: A New Standard for Text and Graphics" in _BYTE_, February 1983, March 1983, April 1983, and May 1983).
 
 [^24]: I am reminded of the way textures were created for the modern game _QUOD_ by "Daivuk": they were stored as editing commands such as bevels, sunken areas, and tiling.
 
