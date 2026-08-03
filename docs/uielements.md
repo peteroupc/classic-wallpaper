@@ -194,7 +194,7 @@ For a high degree of flexibility, new graphical user interface systems should al
 - Designing user-interface elements as images or vector graphics limited to gray tones, where the system replaces each gray tone in the image or graphic with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
     - in multiple variations in size (width, height, or both), each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [**vector graphics**](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^26], and
-    - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2^24 colors).
+    - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2<sup>24</sup> colors).
 - Animation of icons and cursors.
 
 Given a graphic with multiple variations (such as in size, colors, or being a vector graphic), a system could then choose or synthesize the appropriate version of that graphic depending on the current display mode's pixel density and which colors the mode can show.  (For example, a vector graphic could be scaled up for high-pixel-density display modes, or a 256-color icon could be dithered to the VGA palette [^13] if the display mode can show only colors in that palette.)
