@@ -411,13 +411,15 @@ def randomdrawmask(img, mask, w, h, palette=None):
             raise ValueError
 
 def randomwallpaper(palette=None):
-    match random.randint(0, 2):
+    match random.randint(0, 3):
         case 0:
             return randomwallpaper1(palette=palette)
         case 1:
             return randomwallpaper2(palette=palette)
-        case _:
+        case 2:
             return randomwallpaper3(palette=palette)
+        case _:
+            return randomwallpaper4(palette=palette)
 
 # Image has the same format returned by the blankimage() method with the
 # specified value of 'alpha' (default value for 'alpha' is False).
@@ -489,6 +491,9 @@ def randomwallpaper3(palette=None):
 def randomwallpaper2(palette=None):
     return _randomwallpaper1ex(palette=palette, variant=2)
 
+def randomwallpaper4(palette=None):
+    return _randomwallpaper1ex(palette=palette, variant=3)
+
 def _argylemask(width, height, expo):
     img = dw.blankimage(width, height, [0, 0, 0], alpha=False)
     helper = dw.ImageDrawHelper(img, width, height, alpha=False)
@@ -519,8 +524,10 @@ def randomwallpaper1(palette=None):
 def _randomwallpaper1ex(palette=None, variant=1):
     w = random.randint(96, 256)
     h = random.randint(96, 256)
-    columns = 2 if variant == 2 else random.choice([1, 1, 1, 2, 3, 4, 5])
-    rows = 2 if variant == 2 else random.choice([1, 1, 1, 2, 3, 4, 5])
+    columns = (
+        2 if (variant == 2 or variant == 3) else random.choice([1, 1, 1, 2, 3, 4, 5])
+    )
+    rows = 2 if (variant == 2 or variant == 3) else random.choice([1, 1, 1, 2, 3, 4, 5])
     w = w // columns
     h = h // rows
     w = max(32, w - w % 8)
@@ -533,50 +540,60 @@ def _randomwallpaper1ex(palette=None, variant=1):
         if variant == 2
         else dw.randombackgroundimage(w, h, palette, tileable=False)
     )
-    expo1 = random.uniform(0.5, 2.5)
-    expo1a = random.uniform(0.5, 2.5)
-    expo1b = random.uniform(0.5, 2.5)
-    ###############
-    if random.randint(0, 99) < 90:
-        # shape background
-        imagebg = dw.randombackgroundimage(
-            w * columns, h * rows, palette, tileable=True
-        )
-    else:
-        # shape background, tiled style
-        imagebg = dw.randombackgroundimage(w, h, palette, tileable=False)
-        _shiftImage(imagebg, w, h)
-        imagebg = dw.tiledImage(imagebg, w, h, w * columns, h * rows)
-    mask1 = _argylemask(w, h, expo1)
-    mask2 = _argylemask(w, h, expo1a)
-    mask3 = None if variant == 2 else _argylemask(w, h, expo1b)
-    for y in range(rows):
-        for x in range(columns):
-            i = random.choice([0, 1, 2])
-            if variant == 2:
-                mask = [mask1, mask2][(x + y) % 2]
-                img = [image1, image1a][(x + y) % 2]
-            else:
-                mask = [mask1, mask2, mask3][i]
-                img = [image1, image1a, image1b][i]
-            dw.imageblitex(
-                imagebg,
-                w * columns,
-                h * rows,
-                w * x,
-                h * y,
-                w * (x + 1),
-                h * (y + 1),
-                img,
-                w,
-                h,
-                maskimage=mask,
-                maskwidth=w,
-                maskheight=h,
-                alpha=False,
+    if variant == 3:
+        if random.randint(0, 100) < 50:
+            imagebg = dw.imagefromtiles(
+                columns, rows, [image1, image1a, image1b, image1], w, h
             )
+        else:
+            imagebg = dw.imagefromtiles(
+                columns, rows, [image1a, image1, image1, image1b], w, h
+            )
+    else:
+        expo1 = random.uniform(0.5, 2.5)
+        expo1a = random.uniform(0.5, 2.5)
+        expo1b = random.uniform(0.5, 2.5)
+        ###############
+        if random.randint(0, 99) < 90:
+            # shape background
+            imagebg = dw.randombackgroundimage(
+                w * columns, h * rows, palette, tileable=True
+            )
+        else:
+            # shape background, tiled style
+            imagebg = dw.randombackgroundimage(w, h, palette, tileable=False)
+            _shiftImage(imagebg, w, h)
+            imagebg = dw.tiledImage(imagebg, w, h, w * columns, h * rows)
+        mask1 = _argylemask(w, h, expo1)
+        mask2 = _argylemask(w, h, expo1a)
+        mask3 = None if variant == 2 else _argylemask(w, h, expo1b)
+        for y in range(rows):
+            for x in range(columns):
+                i = random.choice([0, 1, 2])
+                if variant == 2:
+                    mask = [mask1, mask2][(x + y) % 2]
+                    img = [image1, image1a][(x + y) % 2]
+                else:
+                    mask = [mask1, mask2, mask3][i]
+                    img = [image1, image1a, image1b][i]
+                dw.imageblitex(
+                    imagebg,
+                    w * columns,
+                    h * rows,
+                    w * x,
+                    h * y,
+                    w * (x + 1),
+                    h * (y + 1),
+                    img,
+                    w,
+                    h,
+                    maskimage=mask,
+                    maskwidth=w,
+                    maskheight=h,
+                    alpha=False,
+                )
     image3, width, height = _randomTransformed(imagebg, w * columns, h * rows)
     image3 = dw.randommaybemonochrome(image3, width, height)
-    if random.randint(0, 9) == 0:
+    if random.randint(0, 9) == 0 and variant != 3:
         dw.randombordertile(image3, width, height)
     return [image3, width, height]
