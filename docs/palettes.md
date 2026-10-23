@@ -1,6 +1,6 @@
 # Color Palettes for Classic-Style Graphics Projects
 
-This page gathers suggested limited-color palettes that graphics artists (for example, "pixel artists") and game developers can decide to adopt for their projects, when they wish for their creations to have a "classic" or "retro" look (for example, one that is characteristic of the year 1995 or earlier).
+This page gathers suggested limited-color palettes that graphics artists (for example, "pixel artists") and game developers can decide to adopt for their projects, when they wish for their creations to have a "classic" or "retro" look (for example, one that is characteristic of the year 1995 or earlier).  Almost all of these palettes have 256 colors or fewer.
 
 The color palettes suggested are as follows.
 
@@ -73,4 +73,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^4]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
 
-[^5]: See also:<br>Chapter 6 of Woo, Mason, et al., _OpenGL Programming Guide: The Official Guide to Learning OpenGL, Version 1.1_, second edition, Addison Wesley Longman, 1997. ISBN 0-201-46138-2.<br>D. Rogerson, "OpenGL IV: Color Index Mode" (Jan. 19, 1995).
+[^5]: See also:<br>Chapter 4 of Woo, Mason, et al., _OpenGL Programming Guide: The Official Guide to Learning OpenGL, Version 1.1_, second edition, Addison Wesley Longman, 1997. ISBN 0-201-46138-2.<br>D. Rogerson, "OpenGL IV: Color Index Mode" (Jan. 19, 1995).

@@ -61,7 +61,7 @@ The pixel dimensions allowed are as follows.
 | truchet2colorthick.png | peteroupc | Black and white | 32 &times; 32 | Unlicense |
 | truchet3color.png | peteroupc | Black/gray/white | 32 &times; 32 | Unlicense [^5] |
 | smallslant.png | peteroupc | Four tones | 8 &times; 8 | Unlicense |
-| truchetff5500vga.png | peteroupc | VGA palette [^9] | 32 &times; 32 | Unlicense [^6] |
+| truchetff5500vga.png | peteroupc | VGA palette [^6] | 32 &times; 32 | Unlicense [^7] |
 | boxes.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
 | circlec.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
 | circlews.png | peteroupc | "Safety palette" | 128 &times; 128 | Unlicense |
@@ -90,9 +90,9 @@ The texture generator at [**`schalkt/tgen`**](https://github.com/schalkt/tgen), 
 6. **Stochastic tiling:** Wang tiles are a finite set of tiles (here, wallpaper graphics) that can cover an arbitrary grid without seams.  One example is the [**set of 16 tiles**](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
 
     - A randomized tiling, or _stochastic tiling_, can be generated from this tile set by repeatedly selecting a grid position and choosing a random tile that can go in that position without introducing seams, until the whole grid is covered.
-    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper graphic at each grid position, where each version has the same dimensions and the same edges as each other version but can otherwise vary.[^7]
+    - Another kind of stochastic tiling occurs with placing a randomly chosen version of a wallpaper graphic at each grid position, where each version has the same dimensions and the same edges as each other version but can otherwise vary.[^8]
 
-    Both kinds of stochastic tiling can be combined.  [**See example**](https://web.archive.org/web/20160220062702/http://www.cr31.co.uk/stagecast/wang/2edge.html).[^8]
+    Both kinds of stochastic tiling can be combined.  [**See example**](https://web.archive.org/web/20160220062702/http://www.cr31.co.uk/stagecast/wang/2edge.html).[^9]
 
 <a id=Sample_Wallpaper_Generation_Code></a>
 
@@ -175,10 +175,10 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^5]: Can be generated from `truchet2color` using the following ImageMagick command: `magick truchet2color.png \( +clone \( +clone \) -append \( +clone \) +append -crop 50%x50%+1+1 \( -size 1x2 gradient:#FFFFFF-#808080 \) -clut \) -compose Multiply -composite truchet3color.png`.  Here, `#FFFFFF` and `#808080` indicate the two colors white and gray, respectively.
 
-[^6]: Can be generated from `truchet3color` using the following [**ImageMagick**](https://imagemagick.org/) command: `magick truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
+[^6]: The 16-color VGA (Video Graphics Array) palette has colors as follows: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).
 
-[^7]: This covers the special case of _Truchet tiles_, involving two versions of a graphic where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
+[^7]: Can be generated from `truchet3color` using the following [**ImageMagick**](https://imagemagick.org/) command: `magick truchet3color.png \( +clone -grayscale Rec709Luma \) \( -size 1x256 gradient:#000000-#ff5500 \) -delete 0 -clut  \( -size 1x1 xc:#000000 xc:#808080 xc:#FFFFFF xc:#C0C0C0 xc:#FF0000 xc:#800000 xc:#00FF00 xc:#008000 xc:#0000FF xc:#000080 xc:#FF00FF xc:#800080 xc:#00FFFF xc:#008080 xc:#FFFF00 xc:#808000 +append -write mpr:z +delete \) -dither FloydSteinberg -remap mpr:z truchetff5500vga.png`. This example, which employs a color shift and dither, demonstrates that derivative colored wallpapers with limited colored palettes can easily be generated from black/gray/white wallpapers using non-AI computer programs.
 
-[^8]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.
+[^8]: This covers the special case of _Truchet tiles_, involving two versions of a graphic where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
 
-[^9]: The 16-color VGA (Video Graphics Array) palette has colors as follows: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).
+[^9]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.
