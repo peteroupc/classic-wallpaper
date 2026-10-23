@@ -10,16 +10,17 @@ Given that desktop backgrounds today tend to cover the full computer screen, to 
 
 Create a tileable desktop wallpaper graphic [^1] meeting the following requirements.
 
-- The graphic is one of the following:
-    - It is an image (also known as a _raster image_, a rectangular array of pixels) with one of the color palettes and one of the pixel dimensions given later.
-    - It is a vector graphic in the Scalable Vector Graphics (SVG) format made only of two-dimensional filled outlines with no stroke.  Excessive detail should be avoided.  Moreover:
-        - Each outline is filled black and either opaque or translucent (semitransparent).  The vector graphic can then be scaled to any pixel dimension desired and turned into a grayscale (see later) image using known techniques (see [**_Hero Patterns_**](https://heropatterns.com/) for an example).  Or...
-        - Each outline is opaque and filled with one of up to ten colors from a color palette given later.  See [**_colourlovers.com_**](https://www.colourlovers.com/patterns) for examples.
+- The graphic is an image (also known as a _raster image_, a rectangular array of pixels) with one of the color palettes and one of the pixel dimensions given later.
 - The graphic is preferably abstract, should not employ trademarks, and is suitable for all ages.
 - The graphic does not contain text.  Graphics that contain depictions of people or human faces are not preferred.
 - The graphic should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
 - The graphic is in the public domain or licensed under the [**Unlicense**](https://unlicense.org/) or, less preferably, another open-source license approved by the Open Source Initiative.
 - The graphic was not produced by artificial-intelligence tools or with their help.
+
+Instead of being an image, the graphic is allowed to be a vector graphic with two-dimensional filled outlines with no stroke, where&mdash;
+
+- each outline is filled black and either opaque or translucent (semitransparent),[^12] or
+- each outline is opaque and filled with one of up to ten colors from a color palette given later.[^13]
 
 Also welcome would be computer code (released to the public domain or licensed under the Unlicense) to generate tileable or seamless&mdash;
 
@@ -242,3 +243,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^10]: This covers the special case of _Truchet tiles_, involving two versions of a graphic where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
 
 [^11]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.
+
+[^12]: See [**_Hero Patterns_**](https://heropatterns.com/) for an example.
+
+[^13]: See [**_colourlovers.com_**](https://www.colourlovers.com/patterns) for examples.
