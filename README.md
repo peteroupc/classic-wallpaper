@@ -10,7 +10,7 @@ Given that desktop backgrounds today tend to cover the full computer screen, to 
 
 Create a tileable desktop wallpaper graphic [^1] meeting the following requirements.
 
-- The graphic is an image (also known as a _raster image_, a rectangular array of pixels) with one of the color palettes given in "[**Color Palettes for Classic-Style Graphics Projects**](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes)" and one of the pixel dimensions given later.
+- The graphic is an image (also known as a _raster image_, a rectangular array of pixels) with one of the color palettes given in "[**Color Palettes for Classic-Style Graphics Projects**](https://peteroupc.github.io/classic-wallpaper/docs/palettes.html)" and one of the pixel dimensions given later.
 - The graphic is preferably abstract, should not employ trademarks, and is suitable for all ages.
 - The graphic does not contain text.  Graphics that contain depictions of people or human faces are not preferred.
 - The graphic should be uncompressed or compressed without loss (so in PNG or BMP format, for example, rather than JPG format).
@@ -20,7 +20,7 @@ Create a tileable desktop wallpaper graphic [^1] meeting the following requireme
 Instead of being an image, the graphic is allowed to be a vector graphic with two-dimensional filled outlines with no stroke, where&mdash;
 
 - each outline is filled black and either opaque or translucent (semitransparent),[^2] or
-- each outline is opaque and filled with one of up to ten colors from a color palette given in "[**Color Palettes for Classic-Style Graphics Projects**](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes)".[^3]
+- each outline is opaque and filled with one of up to ten colors from a color palette given in "[**Color Palettes for Classic-Style Graphics Projects**](https://peteroupc.github.io/classic-wallpaper/docs/palettes.html)".[^3]
 
 Also welcome would be computer code (released to the public domain or licensed under the Unlicense) to generate tileable or seamless&mdash;
 
@@ -61,7 +61,7 @@ The pixel dimensions allowed are as follows.
 | truchet2colorthick.png | peteroupc | Black and white | 32 &times; 32 | Unlicense |
 | truchet3color.png | peteroupc | Black/gray/white | 32 &times; 32 | Unlicense [^5] |
 | smallslant.png | peteroupc | Four tones | 8 &times; 8 | Unlicense |
-| truchetff5500vga.png | peteroupc | VGA palette | 32 &times; 32 | Unlicense [^6] |
+| truchetff5500vga.png | peteroupc | VGA palette [^9] | 32 &times; 32 | Unlicense [^6] |
 | boxes.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
 | circlec.png | peteroupc | VGA palette | 128 &times; 128 | Unlicense |
 | circlews.png | peteroupc | "Safety palette" | 128 &times; 128 | Unlicense |
@@ -75,11 +75,11 @@ The texture generator at [**`schalkt/tgen`**](https://github.com/schalkt/tgen), 
 
 ## Wallpaper Generation Notes
 
-1. Suppose an image used as wallpaper has only colors of the same hue and "saturation".  Then a _grayscale_ version of the image is preferred (that is, a version of the image where the colors are limited to gray tones, black, and white), since then the image could be color-shifted and then adapted to have the colors of any limited-color palette (as given in "[**Color Palettes for Classic-Style Graphics Projects**](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes)") by known [**dithering techniques**](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.
+1. Suppose an image used as wallpaper has only colors of the same hue and "saturation".  Then a _grayscale_ version of the image is preferred (that is, a version of the image where the colors are limited to gray tones, black, and white), since then the image could be color-shifted and then adapted to have the colors of any limited-color palette (as given in "[**Color Palettes for Classic-Style Graphics Projects**](https://peteroupc.github.io/classic-wallpaper/docs/palettes.html)") by known [**dithering techniques**](https://bisqwit.iki.fi/story/howto/dither/jy/) or print-simulating _halftoning techniques_. Dithering scatters an image's pixels in a limited-color palette to simulate colors outside that palette.  For an example, see the `patternDither` method in _desktopwallpaper.py_.
      - If only part of the image has only colors of the same hue and "saturation", and the rest is grayscale, then the color shifting can be limited to the nongrayscale part.
-     - If an image looks unsatisfactory after being automatically adapted to a particular color palette (such as one mentioned in "[**Color Palettes for Classic-Style Graphics Projects**](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes)"), it can be manually adapted instead.
+     - If an image looks unsatisfactory after being automatically adapted to a particular color palette (such as one mentioned in "[**Color Palettes for Classic-Style Graphics Projects**](https://peteroupc.github.io/classic-wallpaper/docs/palettes.html)"), it can be manually adapted instead.
 
-2. Other tileable wallpapers employing more than 256 colors and otherwise satisfying the challenge's requirements are acceptable, though not preferable.  If an image used as wallpaper has more than 256 colors and otherwise meets those requirements, it can be adapted to have the colors of a limited-color palette (see "[**Color Palettes for Classic-Style Graphics Projects**](https://github.com/peteroupc/classic-wallpaper/tree/main/palettes)") by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
+2. Other tileable wallpapers employing more than 256 colors and otherwise satisfying the challenge's requirements are acceptable, though not preferable.  If an image used as wallpaper has more than 256 colors and otherwise meets those requirements, it can be adapted to have the colors of a limited-color palette (see "[**Color Palettes for Classic-Style Graphics Projects**](https://peteroupc.github.io/classic-wallpaper/docs/palettes.html)") by dithering techniques, where the image can be converted to a grayscale image, color shifted, or both before adapting it this way.  And, if the image is not tileable, the _desktopwallpaper.py_ has an `argyle` method that generates a tileable wallpaper image from two images of the same size, neither of which need be tileable.
 
 3. An unusual form of wallpaper results from layering a tileable foreground over a nontileable (abstract) background, where the foreground has transparent pixels and wraps around the edges.  Examples of this technique are shown in the wallpaper files `RIBBONS.BMP` and `PARTY.BMP`, both of which were distributed with Windows 3.0 and the latter was inspired by the Memphis group style.
 
@@ -180,3 +180,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^7]: This covers the special case of _Truchet tiles_, involving two versions of a graphic where each edge is symmetric and the second version is horizontally or vertically mirrored from the first.
 
 [^8]: For more on stochastic tiling using Wang tiles, see Cohen, M.F., Shade, J., et al., "Wang Tiles for Image and Texture Generation", SIGGRAPH 2003.<br>Tiling techniques that also blend adjacent tiles to hide seams are too complex to describe here. For examples, see Efros and Freeman, "Image Quilting for Texture Synthesis and Transfer", SIGGRAPH 2001; Deliot and Heitz, "Procedural Stochastic Textures by Tiling and Blending", 2019.
+
+[^9]: The 16-color VGA (Video Graphics Array) palette has colors as follows: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128).
