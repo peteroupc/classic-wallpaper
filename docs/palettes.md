@@ -35,7 +35,7 @@ Additional color palettes suggested are as follows.
 - A palette of five to 64 gray tones (all color components the same).
 - A 255-color palette in which each color component is a multiple of 3 and each color is as follows: All components are the same; or both the green and blue components are 0; or the red component is 255 and the green and blue components are the same.
     - Essentially, the palette is made of two color gradients: one going from black to white, and another going from black to "red" (255,0,0) to white.
-    - This palette is proposed to allow for easy "recoloring" of an image based on a so-called _accent color_: the cases just given deal with a mixture of "black" and "white"; a mixture of "black" (0,0,0) and the accent color; and a mixture of "white" (255,255,255) and the accent color.[^5]  An example occurs with "red" and "blue" variants of a playing card back.  For examples, see the `recolor()` and `recolordither()` methods in `desktopwallpaper.py`.
+    - This palette is proposed to allow for easy "recoloring" of an image based on a so-called _accent color_: the cases just given deal with a mixture of "black" and "white"; a mixture of "black" (0,0,0) and the accent color; and a mixture of "white" (255,255,255) and the accent color.[^5]  An example occurs with "red" and "blue" variants of a playing card back.  For examples, see the `recolor()` and `recolordither()` methods in [**`desktopwallpaper.py`**](https://github.com/peteroupc/classic-wallpaper/blob/main/desktopwallpaper.py).
 - A palette just described, except (129, 129, 129) is replaced with (128, 128, 128); (129, 0, 0), with (128, 0, 0); and (255, 129, 129), with (255, 128, 128).
 - A 255-color palette consisting of a gradient from "black" to "white": (0, 0, 0), (2, 2, 2), (4, 4, 4), ..., (250, 250, 250), (252, 252, 252), (255, 255, 255); and a gradient from "black" to "red": (2, 0, 0), (4, 0, 0), ..., (250, 0, 0), (252, 0, 0), (254, 0, 0), (255, 0, 0).
 - A subset of a color palette mentioned earlier in this section.
@@ -44,7 +44,7 @@ The following color palettes are within the spirit of this page, but not preferr
 
 - Up to 16 colors from those displayable by 16-bit color displays (each red and blue component is a multiple of 8; each green, a multiple of 4).
 - Up to 16 colors from those displayable by pure VGA monitors (each color component is a multiple of 4).
-- A palette of 236 gray tones (all color components the same).
+- A palette of 236 gray tones (all color components the same).[^6]
 - A palette of 256 gray tones (all color components the same).
 - A color palette of up to 256 colors listed in the [**_Lospec_ palette list**](https://lospec.com/palette-list).
 - A 765-color palette in which each color is as follows: All components are the same; or both the green and blue components are 0; or the red component is 255 and the green and blue components are the same.
@@ -74,3 +74,5 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 [^4]: A "half-and-half mixture" of two colors is found by averaging their three components then rounding each average up to the nearest integer.
 
 [^5]: See also:<br>Chapter 4 of Woo, Mason, et al., _OpenGL Programming Guide: The Official Guide to Learning OpenGL, Version 1.1_, second edition, Addison Wesley Longman, 1997. ISBN 0-201-46138-2.<br>D. Rogerson, "OpenGL IV: Color Index Mode" (Jan. 19, 1995).
+
+[^6]: It is sometimes suggested to limit the number of colors an application works with to 236 or fewer when working with 8-bit-per-pixel display modes under Windows versions before Windows 8, given that such versions tend to reserve the first ten and the last ten of the 256 colors available in such modes.  See, for example, D. Rogerson, "[**OpenGL II: Windows Palettes in RGBA Mode**](https://learn.microsoft.com/en-us/previous-versions/ms970748(v=msdn.10))", December 4, 1994.
