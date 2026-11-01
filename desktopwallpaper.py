@@ -4808,7 +4808,7 @@ def _gradient(stops: any, count: int = 256):
     return ret
 
 # Returns a 256-element color gradient for coloring user-interface elements (for example,
-# using the 'graymap' function).
+# using the 'graymap' function).  For this function, the gradient stops are at 0, 128, 192, 255.
 # The parameters are all three-element lists identifying colors.  Each parameter can
 # be None.  The examples for this function are similar to those given in the
 # 'uicolorgradient2' function.
@@ -4827,9 +4827,26 @@ def uicolorgradient(
         ]
     )
 
+# Same as uicolorgradient, except the gradient stops are at 0, 85, 170, 255.
+def fourcolorgradient(
+    hilightColor: any = None,
+    lightColor: any = None,
+    shadowColor: any = None,
+    darkShadowColor: any = None,
+):
+    return _gradient(
+        [
+            [0, darkShadowColor if darkShadowColor else [0, 0, 0]],
+            [85, shadowColor if shadowColor else [128, 128, 128]],
+            [170, lightColor if lightColor else [192, 192, 192]],
+            [255, hilightColor if hilightColor else [255, 255, 255]],
+        ]
+    )
+
 # Returns a 256-element color gradient for coloring user-interface elements (for example,
-# using the 'graymap' function), given a desired button face color.  The parameters are all
-# three-element lists identifying colors.  Each parameter can be None.
+# using the 'graymap' function), given a desired button face color.
+# For this function, the gradient stops are at 0, 128, 192, 255.
+# The parameters are all three-element lists identifying colors.  Each parameter can be None.
 #
 # Example 1: Suppose 'img' is the image of a custom drawn button in grayscale,
 # with the button face colored light gray (192, 192, 192) and highlights
@@ -8255,6 +8272,32 @@ def randommaybemonochrome(image: list, width: int, height: int, vga: bool = Fals
     black = [0, 0, 0]
     white = [255, 255, 255]
     if r < 10:
+
+        def _clamp(x):
+            return 0 if x < 0 else (255 if x > 255 else x)
+
+        if random.randint(0, 99) < 20:
+            # Four-color near-monochrome palette
+            c3 = [random.randint(0, 255) for i in range(3)]
+            c2 = [
+                _clamp(c3[i] * 75 // 100 + random.randint(0, 8) - 4) for i in range(3)
+            ]
+            c1 = [
+                _clamp(c3[i] * 50 // 100 + random.randint(0, 8) - 4) for i in range(3)
+            ]
+            c0 = [
+                _clamp(c3[i] * 25 // 100 + random.randint(0, 8) - 4) for i in range(3)
+            ]
+            gcolors = _gradient([[0, c0], [85, c1], [170, c2], [255, c3]])
+            # Convert to grayscale, then maybe dither
+            image = dithertograyimage(
+                [x for x in image],
+                width,
+                height,
+                [0, 85, 170, 255] if random.randint(0, 1) == 0 else None,
+            )
+            # Map gray tones/black/white to the gradient
+            return graymap([x for x in image], width, height, gcolors)
         r2 = random.randint(0, 6)
         # dark gray and light gray from the VGA palette
         color0 = [128, 128, 128]

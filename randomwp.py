@@ -486,6 +486,7 @@ def randomwallpaper3(palette=None):
     image = dw.randommaybemonochrome(image, w, h)
     if random.randint(0, 9) == 0:
         dw.randombordertile(image, w, h)
+    image, w, h = _randomstretch(image, w, h)
     return [image, w, h]
 
 def randomwallpaper2(palette=None):
@@ -596,4 +597,47 @@ def _randomwallpaper1ex(palette=None, variant=1):
     image3 = dw.randommaybemonochrome(image3, width, height)
     if random.randint(0, 9) == 0 and variant != 3:
         dw.randombordertile(image3, width, height)
+    image3, width, height = _randomstretch(image3, width, height)
     return [image3, width, height]
+
+def _randomstretch(img, w, h):
+    if w * 2 * h * 2 <= 207360 and random.randint(0, 16) == 0:
+        return [
+            dw.affine(
+                dw.blankimage(w * 2, h * 2),
+                w * 2,
+                h * 2,
+                img,
+                w,
+                h,
+                2,
+                1,
+                1,
+                2,
+                alpha=False,
+                smoothing=False,
+            ),
+            w * 2,
+            h * 2,
+        ]
+    elif w * 3 * h * 3 <= 207360 and random.randint(0, 16) == 0:
+        return [
+            dw.affine(
+                dw.blankimage(w * 3, h * 3),
+                w * 3,
+                h * 3,
+                img,
+                w,
+                h,
+                3,
+                1,
+                1,
+                3,
+                alpha=False,
+                smoothing=False,
+            ),
+            w * 3,
+            h * 3,
+        ]
+    else:
+        return [img, w, h]

@@ -1004,6 +1004,12 @@ Data descriptors defined here:<br>
     alpha: bool = False
 )</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;<a href="#-patternDither">patternDither</a>(),&nbsp;but&nbsp;uses&nbsp;the&nbsp;Floyd-Steinberg&nbsp;algorithm.<br>
 #&nbsp;There&nbsp;is&nbsp;no&nbsp;'fast'&nbsp;parameter.</span></dd></dl>
+ <dl><dt><a name="-fourcolorgradient"><strong>fourcolorgradient</strong></a>(
+    hilightColor: any = None,
+    lightColor: any = None,
+    shadowColor: any = None,
+    darkShadowColor: any = None
+)</dt><dd><span class="code">#&nbsp;Same&nbsp;as&nbsp;uicolorgradient,&nbsp;except&nbsp;the&nbsp;gradient&nbsp;stops&nbsp;are&nbsp;at&nbsp;0,&nbsp;85,&nbsp;170,&nbsp;255.</span></dd></dl>
  <dl><dt><a name="-getgrays"><strong>getgrays</strong></a>(palette: any)</dt><dd><span class="code">#&nbsp;Finds&nbsp;the&nbsp;gray&nbsp;tones&nbsp;in&nbsp;the&nbsp;specified&nbsp;color&nbsp;palette&nbsp;and&nbsp;returns<br>
 #&nbsp;a&nbsp;sorted&nbsp;list&nbsp;of&nbsp;them&nbsp;(as&nbsp;a&nbsp;list&nbsp;of&nbsp;integers,&nbsp;not&nbsp;three-element<br>
 #&nbsp;lists).</span></dd></dl>
@@ -2201,13 +2207,14 @@ Data descriptors defined here:<br>
     shadowColor: any = None,
     darkShadowColor: any = None
 )</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;for&nbsp;coloring&nbsp;user-interface&nbsp;elements&nbsp;(for&nbsp;example,<br>
-#&nbsp;using&nbsp;the&nbsp;'graymap'&nbsp;function).<br>
+#&nbsp;using&nbsp;the&nbsp;'graymap'&nbsp;function).&nbsp;&nbsp;For&nbsp;this&nbsp;function,&nbsp;the&nbsp;gradient&nbsp;stops&nbsp;are&nbsp;at&nbsp;0,&nbsp;128,&nbsp;192,&nbsp;255.<br>
 #&nbsp;The&nbsp;parameters&nbsp;are&nbsp;all&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can<br>
 #&nbsp;be&nbsp;None.&nbsp;&nbsp;The&nbsp;examples&nbsp;for&nbsp;this&nbsp;function&nbsp;are&nbsp;similar&nbsp;to&nbsp;those&nbsp;given&nbsp;in&nbsp;the<br>
 #&nbsp;'uicolorgradient2'&nbsp;function.</span></dd></dl>
  <dl><dt><a name="-uicolorgradient2"><strong>uicolorgradient2</strong></a>(btnface: list = None)</dt><dd><span class="code">#&nbsp;Returns&nbsp;a&nbsp;256-element&nbsp;color&nbsp;gradient&nbsp;for&nbsp;coloring&nbsp;user-interface&nbsp;elements&nbsp;(for&nbsp;example,<br>
-#&nbsp;using&nbsp;the&nbsp;'graymap'&nbsp;function),&nbsp;given&nbsp;a&nbsp;desired&nbsp;button&nbsp;face&nbsp;color.&nbsp;&nbsp;The&nbsp;parameters&nbsp;are&nbsp;all<br>
-#&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can&nbsp;be&nbsp;None.<br>
+#&nbsp;using&nbsp;the&nbsp;'graymap'&nbsp;function),&nbsp;given&nbsp;a&nbsp;desired&nbsp;button&nbsp;face&nbsp;color.<br>
+#&nbsp;For&nbsp;this&nbsp;function,&nbsp;the&nbsp;gradient&nbsp;stops&nbsp;are&nbsp;at&nbsp;0,&nbsp;128,&nbsp;192,&nbsp;255.<br>
+#&nbsp;The&nbsp;parameters&nbsp;are&nbsp;all&nbsp;three-element&nbsp;lists&nbsp;identifying&nbsp;colors.&nbsp;&nbsp;Each&nbsp;parameter&nbsp;can&nbsp;be&nbsp;None.<br>
 #<br>
 #&nbsp;Example&nbsp;1:&nbsp;Suppose&nbsp;'img'&nbsp;is&nbsp;the&nbsp;image&nbsp;of&nbsp;a&nbsp;custom&nbsp;drawn&nbsp;button&nbsp;in&nbsp;grayscale,<br>
 #&nbsp;with&nbsp;the&nbsp;button&nbsp;face&nbsp;colored&nbsp;light&nbsp;gray&nbsp;(192,&nbsp;192,&nbsp;192)&nbsp;and&nbsp;highlights<br>
