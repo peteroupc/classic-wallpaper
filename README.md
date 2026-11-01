@@ -22,13 +22,13 @@ Instead of being an image, the graphic is allowed to be a vector graphic with tw
 - each outline is filled black and either opaque or translucent (semitransparent),[^2] or
 - each outline is opaque and filled with one of up to ten colors from a color palette given in "[**Color Palettes for Classic-Style Graphics Projects**](https://peteroupc.github.io/classic-wallpaper/docs/palettes.html)".[^3]
 
-Also welcome would be computer code (released to the public domain or licensed under the Unlicense) to generate tileable or seamless&mdash;
+Also welcome would be computer code (released to the public domain or licensed under the Unlicense) to generate tileable&mdash;
 
 - noise,
 - procedural textures or patterns, or
 - arrangements of symbols or small graphics or images with partial transparency,
 
-meeting the requirements given earlier. (In this sense, tileable or seamless _grayscale_ images, as defined later, are quite versatile; see note 1 in "[**Wallpaper Generation Notes**](#Wallpaper_Generation_Notes)".)
+meeting the requirements given earlier. (In this sense, tileable _grayscale_ images, as defined later, are quite versatile; see note 1 in "[**Wallpaper Generation Notes**](#Wallpaper_Generation_Notes)".)
 
 In general, the following are not within the scope of this challenge.
 
@@ -170,7 +170,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 ## Notes
 
-[^1]: Every tileable desktop wallpaper has a pattern that belongs in one of 17 [**_wallpaper groups_**](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.  Many tileable wallpapers are _seamless_, but not all (consider a pattern of bricks or square floor tiles).<br>For the Macintosh operating system, System 7.5.x and Mac OS 7.6.x, 8.x, and 9.x supported _desktop patterns_ of size up to 128 &times; 128 pixels, Mac OS 8.x and 9.x distinguished between desktop patterns and _desktop pictures_ (of usually larger size and lying above the desktop pattern's tiling), and versions earlier than System 7.5 supported only 8-&times;-8-pixel desktop patterns.<br>In Windows version 3.1, Windows 95, and Windows 98, _desktop patterns_ are of size 8x8 pixels and have only two colors (black and the desktop background color), and _desktop wallpaper_ is of arbitrary size and lies above the desktop pattern's tiling.
+[^1]: In this document, a rectangular image is _tileable_ if it is _seamless_ (its left edge "matches" with its right edge, and its upper edge with its lower) or its edges form a natural border (as with checkerboard patterns, brick patterns, or rectangular floor tiles).<br>Every tileable desktop wallpaper has a pattern that belongs in one of 17 [**_wallpaper groups_**](https://en.wikipedia.org/wiki/Wallpaper_group).  The shape of the pattern is a rectangle in ten of them, a diamond with one corner pointing upward in two of them, and another parallelogram in the remaining five.<br>For the Macintosh operating system, System 7.5.x and Mac OS 7.6.x, 8.x, and 9.x supported _desktop patterns_ of size up to 128 &times; 128 pixels, Mac OS 8.x and 9.x distinguished between desktop patterns and _desktop pictures_ (of usually larger size and lying above the desktop pattern's tiling), and versions earlier than System 7.5 supported only 8-&times;-8-pixel desktop patterns.<br>In Windows version 3.1, Windows 95, and Windows 98, _desktop patterns_ are of size 8x8 pixels and have only two colors (black and the desktop background color), and _desktop wallpaper_ is of arbitrary size and lies above the desktop pattern's tiling.
 
 [^2]: See [**_Hero Patterns_**](https://heropatterns.com/) for an example.
 
