@@ -32,7 +32,7 @@ meeting the requirements given earlier. (In this sense, tileable _grayscale_ ima
 
 In general, the following are not within the scope of this challenge.
 
-- Photographic images (see note 2 in "[**Wallpaper Generation Notes"**](#Wallpaper_Generation_Notes)", later in this document).
+- Photographic images (see note 2 in "[**Wallpaper Generation Notes**](#Wallpaper_Generation_Notes)", later in this document).
 - Graphics with a single solid color on all four sides; such graphics are trivially tileable.
 - Graphics that can be tiled in one dimension only, such as those depicting horizontal or vertical borders with an "infinitely" extending background.
 
