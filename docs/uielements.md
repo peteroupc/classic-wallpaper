@@ -1,12 +1,13 @@
 # Traditional User-Interface Graphics
 
-This page discusses aspects of the traditional design (up to about the year 2003) of user-interface graphics, such as button and border styles, icons, and mouse pointers. User interfaces found in video games are outside the scope of this document.
+This page discusses aspects of the traditional design (up to about the year 2003) of user-interface graphics, such as button and border styles, icons, and mouse pointer graphics. User interfaces found in video games are outside the scope of this document.
 
 <a id=Contents></a>
 
 ## Contents
 
 - [**Contents**](#Contents)
+- [**Definitions**](#Definitions)
 - [**Display Modes**](#Display_Modes)
 - [**Button and Border Styles**](#Button_and_Border_Styles)
     - [**Colors for Button and Border Styling**](#Colors_for_Button_and_Border_Styling)
@@ -21,15 +22,31 @@ This page discusses aspects of the traditional design (up to about the year 2003
 - [**License**](#License)
 - [**End Notes**](#End_Notes)
 
-<a id=Display_Modes></a>
+<a id=Definitions></a>
 
-## Display Modes
+## Definitions
 
 In this document:
 
+- A _graphic_ means a visual depiction in the form of data.  Graphics include _images_ and _vector graphics_.
+- An _image_ is a graphic that is a rectangular array of pixel samples.  More generally, an image is as defined in [**"A Sprite Theory of Image Computing"**](https://alvyray.com/Memos/CG/Microsoft/5_sprite.pdf) by Alvy Ray Smith, but, in the present document, images are two-dimensional.
+- A _vector graphic_ is a two-dimensional graphic in the form of geometric drawing commands (such as line- or circle-drawing commands).
 - A _display mode_ is a way to set up a computer display to show graphics.
-- _Screen resolution_ gives the number of columns and rows of pixels (point samples) the display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.[^1]
+- _Screen resolution_ gives the number of columns and rows of pixels (point samples) a display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.[^1]
 - _Pixel density_ gives a display mode's horizontal and vertical pixel spacing, each in pixels per inch.[^2]
+- An _icon_ is a small graphic that represents a computer program, document, or resource.
+- A _cursor_ is a small graphic that represents the mouse pointer on a computer display.
+- The abbreviation _bpc_ stands for bits per color component, also known as bits per color channel.
+- _Window borders_ are the outer edges of desktop windows.
+- Text box borders are also known as "field borders".
+- _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.
+- _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a drop-down menu.
+- _System colors_ are colors intended for drawing buttons, borders, and other elements of a graphical user interface.
+- _Dithering_ is the scattering of colors in a limited set to simulate colors outside that set.
+
+<a id=Display_Modes></a>
+
+## Display Modes
 
 Some display modes follow, along with their screen resolutions and commonly implemented pixel densities:
 
@@ -51,13 +68,13 @@ This section discusses the traditional drawing style for buttons and the borders
 
 ### Colors for Button and Border Styling
 
-Traditionally, the kinds of colors used to design buttons and borders in user interfaces (also called _system colors_) were the following.  The given default values are those found in the "Windows Standard" color scheme in Windows 95.
+The following are examples of system colors for drawing buttons and borders.  They correspond to the default values for the "Windows Standard" color scheme in Windows 95. The colors given are red&ndash;green&ndash;blue colors with components ranging from 0 through 1.
 
-- Button face color (by default, (192, 192, 192)<span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).
+- Button face color (by default, (192/255, 192/255, 192/255)<span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).
 - Window frame color (by default, (0,0,0)<span style='background:rgb(0,0,0);border:1px white'>&nbsp;&nbsp;&nbsp;</span> or black).
-- Button highlight color (by default, (255,255,255)<span style='background:rgb(255,255,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span> or white).[^6]  Often, this is a lighter version of the button face color.
-- Button shadow color (by default, (128, 128, 128)<span style='background:rgb(128,128,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).   Often, this is a darker version of the button face color.
-- Button "light" highlight color (by default, (192, 192, 192)<span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).[^7]  Often, this is either the button face color or comes between the highlight and face colors.
+- Button highlight color (by default, (1,1,1)<span style='background:rgb(255,255,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span> or white).[^6]  Often, this is a lighter version of the button face color.
+- Button shadow color (by default, (128/255, 128/255, 128/255)<span style='background:rgb(128,128,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).   Often, this is a darker version of the button face color.
+- Button "light" highlight color (by default, (192/255, 192/255, 192/255)<span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span>).[^7]  Often, this is either the button face color or comes between the highlight and face colors.
 - Button dark shadow color (by default, (0,0,0)<span style='background:rgb(0,0,0);border:1px white'>&nbsp;&nbsp;&nbsp;</span> or black).[^7]  Often, this is either the window frame color or a darker version of the button shadow color.
 
 User-interface conventions other than Windows 95 may use only a subset of these system colors or derive some of them (such as the highlight or shadow color) from a base color (such as the button face color).[^8]
@@ -115,29 +132,29 @@ Here is a challenge.  Write computer code (released to the public domain or lice
 - Toolbar buttons in normal, mixed-value, and "option-set" states:  Hover style.
 - Optionally, other user-interface elements (such as scroll bars and toggle switches).
 
-Using only the following system colors and with some pixels or areas allowed to be transparent: the button face, window frame, button highlight, button shadow, button "light" highlight, and button dark shadow colors.  It is allowed to simulate more colors using these six system colors by means of dithering.[^15]
+Using only the following system colors and with some pixels or areas allowed to be transparent: the button face, window frame, button highlight, button shadow, button "light" highlight, and button dark shadow colors.  It is allowed to simulate more colors using these six system colors by means of dithering.[^14]
 
 The border and button design should not employ trademarks, should be suitable for all ages, and must not involve the help of artificial-intelligence tools.  Moreover, the design should not be a mere copy of border and button appearances found by default in Windows or other operating systems.
 
-The _desktopwallpaper.py_ file has some example code for border and button drawing.
+The [**_desktopwallpaper.py_ file**](https://github.com/peteroupc/classic-wallpaper/blob/main/desktopwallpaper.py) in the `peteroupc/colorwallpaper` repository has some example code for border and button drawing.
 
 <a id=Icons_and_Cursors></a>
 
 ## Icons and Cursors
 
-An icon (a small graphic representing a computer program, document, or resource) should come in a set of variations in color and dimensions:
+An icon should come in a set of variations in color and dimensions:
 
-- The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bits per color component (also known as 8 bits per color channel or _8 bpc_).  A traditional color choice for 16-color icons is the VGA palette[^16]\: <span style='background:rgb(0,0,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,0,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,128,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,128,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,0,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,0,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,128,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,128,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,0,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,255,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,255,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,0,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,0,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,255,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,255,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span>.
-- The same icon should have dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64 pixels, and may be drawn in other dimensions to account for [**pixel density**](#display-modes). [^17]
+- The same icon should be drawn in up to 2, up to 16, and up to 256 unique colors, and optionally with 8 bpc.  A traditional color choice for 16-color icons is the VGA palette[^15]\: <span style='background:rgb(0,0,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,0,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,128,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,128,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,0,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,0,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,128,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(128,128,128);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(192,192,192);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,0,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,255,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,255,0);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,0,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,0,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(0,255,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span><span style='background:rgb(255,255,255);border:1px black'>&nbsp;&nbsp;&nbsp;</span>.
+- The same icon should have dimensions 16 &times; 16, 24 &times; 24, 32 &times; 32, 48 &times; 48, and 64 &times; 64 pixels, and may be drawn in other dimensions to account for [**pixel density**](#display-modes). [^16]
 - Although the 256- and 16-color icons should be specially drawn if feasible, it is allowed to derive those icons from 8-bpc and 256-color icons, respectively, through an automated method.
 
 Traditionally, 32 &times; 32 icons with the VGA palette are the most common variation.
 
-Cursors (mouse pointer graphics) can follow the guidelines given earlier as well, but most cursors are traditionally in a single width and height, generally 32 &times; 32 pixels, except to account for [**pixel density**](#display-modes).
+Cursors can follow the guidelines given earlier as well, but most cursors are traditionally in a single width and height, generally 32 &times; 32 pixels, except to account for [**pixel density**](#display-modes).
 
 Icons and cursors can include transparent pixels, but should have no translucent (semitransparent) pixels except for 8-bpc icons and cursors.
 
-> **Note:** Icon formats for OS/2 Presentation Manager and Microsoft Windows allow for icons and cursors with _inverted pixels_ (where some existing pixels have their colors inverted), in addition to transparent and translucent (semitransparent) pixels.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](https://github.com/peteroupc/classic-wallpaper/blob/main/imageformat.html).
+> **Note:** Icon formats for OS/2 Presentation Manager and Microsoft Windows allow for icons and cursors with pixels that "invert" the background's existing colors.  Describing these icon formats here is beyond the scope of this page, but see the [**`imageformat` module documentation**](https://github.com/peteroupc/classic-wallpaper/blob/main/imageformat.html).
 
 <a id=Drawing_Style></a>
 
@@ -150,26 +167,28 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - Straight line segments are horizontal, are vertical, or have a slope equal to an integer or 1 divided by an integer.  This can be achieved by drawing the line segment in equally sized steps.
     - There are no translucent (semitransparent) pixels.
 - The three-dimensional (3-D) appearance of buttons and other objects in two-dimensional graphics supposes the presence of a light source shining from the upper left.[^9]
-    - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^18] [^19]
-    - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an _isometric_ view (rather than straight on).[^20]  \(This doesn't apply to the edges of buttons.)
-- Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^21]
-- From 1990 to about 2003, for graphics limited to the 16-color VGA palette: [^16]
-    - Areas are filled with either a solid color in the palette or an alternating checkerboard pattern of two colors (to simulate a color outside the palette).
+    - Graphics are drawn with a "black outline" on the bottom and right edges and with a "dark gray or other dark outline" on the other edges. [^17] [^18]
+    - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an isometric view (rather than straight on).[^19]  \(This doesn't apply to the edges of buttons.)
+- Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^20]
+- From 1990 to about 2003, for graphics limited to the 16-color VGA palette[^15] or a palette with similar colors to that palette:
+    - Areas are filled with either a solid color in the palette or a dithered simulation of a solid color outside that palette.  If dithering occurs, it is mostly in the form of an alternating checkerboard pattern of two colors.  Error-diffusion dithering (such as Floyd&ndash;Steinberg dithering) tends to occur only if the graphic is black-and-white or the graphic is 64 &times; 64 or larger.
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
-- For graphics with 17 to 256 colors, gradient fills are present but subtle.
+- Gradient fills, if present on graphics with 17 to 256 colors, are subtle.
 - Icons:
-    - Before 1990, icons are limited to the two colors black and white, with optional transparency.[^22]
-    - Before 1995, black-and-white icons (with no intermediate gray tones) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^23]
+    - Before 1990, icons are limited to the two colors black and white, with optional transparency.[^21]
+    - Before 1995, black-and-white icons (with no intermediate mixture of black and white) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^22]
     - Icons with more than 32 colors are rare; more than 64 colors, very rare.
-    - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in a typeface, or font; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^24]
-    - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the  original icon but with finer but nonessential detail.[^25]
+    - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in typography; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^23]
+    - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the  original icon but with finer but nonessential detail.[^24]
+    - From 1990 to about 2003, dithering is generally used only to simulate a solid color, and mostly in cases where the colors available cannot be freely chosen (for example, the colors are limited to black and white, or they must come from the VGA palette). In colored icons, error-diffusion dithering is not used.[^25]
 - Cursors:
-    - Most cursors are limited to the two colors black and white, with optional transparency.[^22]
+    - Most cursors are limited to the two colors black and white, with optional transparency.[^21]
     - Before 1990, cursors do not have colors other than black and white.
     - From 1990 to about 2003, cursors with colors other than black and white are rare, and cursors with more than 32 colors are very rare.  From 1995 to about 2003, cursors with colors limited to the VGA palette become more common, especially infrequently seen cursors such as the busy-wait cursor.
     - Before 2003, and even before 1995, each shape of a black-and-white cursor is generally either white with a black outline (approximated with integer coordinates) or vice versa, to make the cursor easy to see over any background.
+    - From 1990 to about 2003, dithering is generally used only to simulate a solid color, and mostly in cases where the colors available cannot be freely chosen.  Error-diffusion dithering is not used.
 
-> **Note:** After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through _dithering_[^15] or similar techniques.
+> **Note:** After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through dithering or similar techniques.
 
 In general, from about 1990 to about 1997, user-interface text was drawn in one color only and rarely had smoothed edges; the edges were smoothed only if the display mode can show more than 256 colors at a time.  In fancier ways to show text, a "shadowed" text look was often achieved using multiple shifted renderings of the text in a single color (for example, from one unit upward and leftward to three units downward and rightward) followed by an unshifted rendering in the base color or pattern.[^26]  But new applications should avoid having text in icons, cursors, and other images. An example of shadowed text follows:
 
@@ -181,7 +200,7 @@ New user-interface graphics with limited colors ought to be designed as vector g
 
 ## Animations
 
-Although Windows 95 and later versions have an _animation control_ for displaying simple video files without sound that are limited to 256 colors, this control appears to be rarely used.  More usually, traditional desktop applications don't store an animation as a video file; rather, the images making up the animation are either stored as separate image files or arranged in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames). [^28]  The source code file _desktopwallpaper.py_ has a method, named `writeavi`, to write video files.
+Although Windows 95 and later versions have an _animation control_ for displaying silent movie files (in this case, files in the audio-video-interleaved format) that are limited to 256 colors, this control appears to be rarely used.  For animations made of images, alternatives to movie files include storing those images as separate image files or arranging them in a row or column of a single image file (in either case with transparent pixels marked with a color not present in the animation's frames). [^28]  The source code file [**_desktopwallpaper.py_**](https://github.com/peteroupc/classic-wallpaper/blob/main/desktopwallpaper.py) has a method, named `writeavi`, to write movie files.
 
 <a id=Flexible_User_Interface_Graphics></a>
 
@@ -191,19 +210,19 @@ For a high degree of flexibility, new graphical user interface systems should al
 
 - Designing icons, cursors, and other user-interface elements in the form of [**vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if desired.
 - Having certain shapes in vector graphics be filled with system colors, the values of which are user-defined (such as a button face color or button highlight color), and drawing lines and curves in such graphics with system colors.
-- Designing user-interface elements as images or vector graphics limited to gray tones, where the system replaces each gray tone in the image or graphic with the corresponding color in a color gradient involving one or more system colors.
+- Designing user-interface elements as images or vector graphics whose colors are limited to black, white, and mixtures of black and white (grays), where the system replaces each such color in the image or graphic with the corresponding color in a color gradient involving one or more system colors.
 - Drawing the same icon, cursor, or graphic&mdash;
     - in multiple variations in size (width, height, or both), each with a different level of detail (where the system is expected to use a shrinking of the smallest available graphic that's larger than the requested size, if the requested size is not available), even in the case of [**vector graphics**](https://www.haiku-os.org/docs/userguide/en/applications/icon-o-matic.html) [^29], and
     - with a different maximum number of unique colors (such as 2, 8, 16, 256, or 2<sup>24</sup> colors).
 - Animation of icons and cursors.
 
-Given a graphic with multiple variations (such as in size, colors, or being a vector graphic), a system could then choose or synthesize the appropriate version of that graphic depending on the current display mode's pixel density and which colors the mode can show.  (For example, a vector graphic could be scaled up for high-pixel-density display modes, or a 256-color icon could be dithered[^15] to the VGA palette[^16] if the display mode can show only colors in that palette.)
+Given a graphic with multiple variations (such as in size, colors, or being a vector graphic), a system could then choose or synthesize the appropriate version of that graphic depending on the current display mode's pixel density and which colors the mode can show.  (For example, a vector graphic could be scaled up for high-pixel-density display modes, or a 256-color icon could be dithered[^14] to the VGA palette[^15] if the display mode can show only colors in that palette.)
 
 <a id=Relevant_Works></a>
 
 ## Relevant Works
 
-There are many books and other works that discuss design matters on traditional user interfaces.[^30] [^9] [^31] [^32] [^33] [^34] [^35] [^36] [^37] [^38] [^39] [^40] [^41] [^42] [^43] [^44] [^45] [^46] [^47] [^48] [^49] [^50] [^18] [^51] [^52]
+There are many books and other works that discuss design matters on traditional user interfaces.[^30] [^9] [^31] [^32] [^33] [^34] [^35] [^36] [^37] [^38] [^39] [^40] [^41] [^42] [^43] [^44] [^45] [^46] [^47] [^48] [^49] [^50] [^17] [^51] [^52]
 
 <a id=Worthy_Mentions></a>
 
@@ -213,7 +232,7 @@ There are many books and other works that discuss design matters on traditional 
 - The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color. [^53]
 
     1. First, calculate the background color's "brightness".  If _r_, _g_, and _b_ are the color's red, green, and blue components, and each component is from 0 through 1, the "brightness" is $(3/4)\times ((r+g+b)/3) + (1/4)\times(0.3\times r+0.59\times g+0.11\times b)$.
-    2. Next, the foreground color is found.  This color is "black" (0,0,0) if the brightness is greater than a _foreground threshold_ (0.7 by default); otherwise the color is "white" (1,1,1).
+    2. Next, the foreground color is found.  This color is "black" (0,0,0) if the brightness is greater than a foreground threshold (0.7 by default); otherwise the color is "white" (1,1,1).
     3. Now the selection color, the lower shadow color, and the upper shadow color are calculated.  Initially, all three colors equal the background color.
         - If the brightness is less than a _dark threshold_ (0.2 by default), then the three colors are boosted by 0.15, 0.3, and 0.5, respectively.
         - Otherwise, if the brightness is greater than a _light threshold_ (0.93 by default), then the three colors are toned down by 0.15, 0.4, and 0.2, respectively.
@@ -241,7 +260,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^5]: IBM Corp., _IBM Color/Graphics Monitor Adapter_, undated.
 
-[^6]: In Windows, this color was first supported in version 3.1.  In the Foundation Class Library's implementation of toolbars, this color is fixed to (255,255,255); see MFC Technical Note TN031, "Control Bars".
+[^6]: In Windows, this color was first supported in version 3.1.  In the Foundation Class Library's implementation of toolbars, this color is fixed to the white color; see MFC Technical Note TN031, "Control Bars".
 
 [^7]: In Windows, this color was first supported in the Win32 interface, and so was not available in Windows 3.1 or earlier.
 
@@ -257,31 +276,31 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^13]: _Macintosh Human Interface Guidelines_, p. 232.
 
-[^14]: _Window borders_ are the outer edges of desktop windows.  Text box borders are also known as "field borders".  _Status field borders_ are the edges of inner boxes found in a _status bar_, which can appear on the bottom of some desktop windows.  _Grouping borders_ are the outer edges of areas that bring together several user-interface elements, such as checkboxes or option buttons ("radio buttons") with a common purpose; grouping borders also serve as horizontal bars that separate parts of a menu.
+[^14]: No note text yet.
 
-[^15]: _Dithering_ is the scattering of colors in a limited set to simulate colors outside that set.
+[^15]: The VGA palette has 16 colors, each of which is one of the following (where each color in the palette is a red&ndash;green&ndash;blue color with components ranging from 0 through 1): light gray, that is, (192/255, 192/255, 192/255); or each color component is 0 or 1; or each color component is 0 or 128/255.<br>Windows CE before version 4.1 also supported four-color icons in a 2-bit-per-pixel format, where the colors tend to be the following four colors of the VGA palette: black or (0,0,0), white or (1,1,1), light gray, and dark gray or (128/255,128/255,128/255) ("Display Buffer Formats", _Windows CE Device Driver Kit_).<br>A Windows color icon file can store an icon limited to 8 colors, but still in the 4-bit-per-pixel format, separately from 16-color icons in that format (Petzold, chapter 8), but such an 8-color icon is rarely seen in practice.  Indeed, before version 3.0, the Windows EGA and VGA video drivers supported only eight logical colors rather than sixteen (Petzold, ch. 14), and there were no standard Windows color icon and bitmap file formats.  (In addition, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards.) A traditional color choice for 8-color icons was a table of eight colors where each color component is 0 or 1.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color light gray is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).<br>Moreover, the 16-color palette found in practice in Windows icons can differ slightly from the VGA palette.  For example, in the Windows version 3.1 system palette, “the low-intensity system color values for the VGA \[driver\] are different from those for the \[IBM\] 8514 \[video driver\]” (Windows 3.1 SDK, Programmer’s Reference Volume 1, section 23.2.2), but how exactly they differ is not set forth in any article, as far as I am aware.
 
-[^16]: The VGA palette has 16 colors, each of which is one of the following: light gray, that is, (192, 192, 192); or each color component is 0 or 255; or each color component is 0 or 128.<br>Windows CE before version 4.1 also supported four-color icons in a 2-bit-per-pixel format, where the colors tend to be the four gray tones of the VGA palette (namely, black or (0,0,0), white or (255,255,255), light gray, and dark gray or (128,128,128)) ("Display Buffer Formats", Windows CE Device Driver Kit).<br>A Windows color icon file can store an icon limited to 8 colors, but still in the 4-bit-per-pixel format, separately from 16-color icons in that format (Petzold, chapter 8), but such an 8-color icon is rarely seen in practice.  Indeed, before version 3.0, the Windows EGA and VGA video drivers supported only eight logical colors rather than sixteen (Petzold, ch. 14), and there were no standard Windows color icon and bitmap file formats.  (In addition, the Japanese computers PC-8801 and PC-9801 were equipped with eight-color video cards.) A traditional color choice for 8-color icons was a table of eight colors where each color component is 0 or 255.<br>The EGA video driver for Windows version 3.1 supports 16 logical colors, but only 15 "physical" colors: the VGA palette is used, except the logical color light gray is missing and often replaced with a dithered mixture of dark gray and "white" (which is one possible way to adapt images colored using the VGA palette to the EGA driver).<br>Moreover, the 16-color palette found in practice in Windows icons can differ slightly from the VGA palette.  For example, in the Windows version 3.1 system palette, “the low-intensity system color values for the VGA \[driver\] are different from those for the \[IBM\] 8514 \[video driver\]” (Windows 3.1 SDK, Programmer’s Reference Volume 1, section 23.2.2), but how exactly they differ is not set forth in any article, as far as I am aware.
+[^16]: [**Modern guidelines**](https://learn.microsoft.com/en-us/windows/apps/design/iconography/app-icon-construction) recommend a 256 &times; 256 icon among the sizes they recommend.  Toolbar icons are traditionally offered in 16 &times; 16 (or 16 &times; 15; see MFC Technical Note TN031, "Control Bars") and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.  In _The Windows Interface Guidelines for Software Design_ (Windows 95), the recommended icons were 16 &times; 16 in 16 colors, and 32 &times; 32 in 16 colors, and 48 &times; 48 in 256 colors (large version of desktop icon; see _Win32 Programmer's Reference_).
 
-[^17]: [**Modern guidelines**](https://learn.microsoft.com/en-us/windows/apps/design/iconography/app-icon-construction) recommend a 256 &times; 256 icon among the sizes they recommend.  Toolbar icons are traditionally offered in 16 &times; 16 (or 16 &times; 15; see MFC Technical Note TN031, "Control Bars") and 20 &times; 20.  The standard icon sizes in OS/2 Presentation Manager are 16 &times; 16, 20 &times; 20, 32 &times; 32, and 40 &times; 40 ("Bitmap File Format", in _Presentation Manager Programming Guide and Reference_); sometimes larger icons such as 64 &times; 64 occur.  In _The Windows Interface Guidelines for Software Design_ (Windows 95), the recommended icons were 16 &times; 16 in 16 colors, and 32 &times; 32 in 16 colors, and 48 &times; 48 in 256 colors (large version of desktop icon; see _Win32 Programmer's Reference_).
+[^17]: [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636%28v=msdn.10%29) (Microsoft Learn), July 2001.
 
-[^18]: [**"Creating Windows XP Icons"**](https://learn.microsoft.com/en-us/previous-versions/ms997636%28v=msdn.10%29) (Microsoft Learn), July 2001.
+[^18]: Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows 3.0 (as opposed to version 3.1) tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two units.
 
-[^19]: Similar advice was also given in _The Microsoft Windows User Experience_. <br>Before 1995 the icon outline tended to be black on all edges (see, for example, _Macintosh Human Interface Guidelines_, p. 239). And icons seen in Windows 3.0 (as opposed to version 3.1) tended to be drawn over a _drop shadow_, more specifically a dark gray silhouette of the icon, which silhouette is offset down and to the right by two units.
+[^19]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128/255,128/255)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.  But computer monitors may still be drawn straight on in order to accentuate what the monitor is showing.
 
-[^20]: This is evident in the graphics (also known as _watermarks_) of Windows 95's wizards, which are drawn in a teal background (color (0,128,128)) and show one or more computing devices in a three-dimensional, often rectangular appearance, and where, although there is internal shadowing, no shadow is cast on the teal background.  But computer monitors may still be drawn straight on in order to accentuate what the monitor is showing.
+[^20]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially simple lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill a colored area that is surrounded by other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
 
-[^21]: Adventure games developed by Sierra On-Line in the early 1990s are well known to employ essentially simple lines and flood fills in their illustrations.  (A _flood fill_ is a way to fill a colored area that is surrounded by other colors.) Windows 95 wizard watermarks are also of this style, essentially, except that the use of black outlines, as opposed to outlines of other colors, is rarer and less systematic.
+[^21]: The only icons and cursors supported by Windows versions before Windows 3.0 (in 1990) were limited to the two colors black and white.
 
-[^22]: The only icons and cursors supported by Windows versions before Windows 3.0 (in 1990) were limited to the two colors black and white.
+[^22]: _Macintosh Human Interface Guidelines_, p. 263.
 
-[^23]: _Macintosh Human Interface Guidelines_, p. 263.
+[^23]: Exceptions are found in the [**_Marlett_**](https://learn.microsoft.com/en-us/typography/font-list/marlett), [**_Wingdings_**](https://learn.microsoft.com/en-us/typography/font-list/wingdings), and [**_Webdings_**](https://learn.microsoft.com/en-us/typography/font-list/webdings) symbol fonts in Microsoft operating systems.
 
-[^24]: Exceptions are found in the [**_Marlett_**](https://learn.microsoft.com/en-us/typography/font-list/marlett), [**_Wingdings_**](https://learn.microsoft.com/en-us/typography/font-list/wingdings), and [**_Webdings_**](https://learn.microsoft.com/en-us/typography/font-list/webdings) symbol fonts in Microsoft operating systems.
+[^24]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
 
-[^25]: See also _Macintosh Human Interface Guidelines_, p. 233, which discusses deriving smaller icons from larger ones (in this case, 16 &times; 16 icons from 32 &times; 32 ones).
+[^25]: A notable exception is found in Windows 98's 256-color folder icons.
 
-[^26]: For example, see the discussion on buttons in the _ RIPscrip Graphics Protocol Specification_ developed by the now-defunct TeleGrafix (for example, version 1.54 from July 1993). This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.  Besides RIPscrip, though, many videotex systems (information exchange systems involving a video screen) in the 1980s and early 1990s did not support displaying images or line graphics in addition to text; an exception is CSA T500-1983/ANSI X3.110-1983, the North American Presentation Layer Protocol Syntax (for an overview see the series of articles titled "NAPLPS: A New Standard for Text and Graphics" in _BYTE_, February 1983, March 1983, April 1983, and May 1983).
+[^26]: For example, see the discussion on buttons in the _ RIPscrip Graphics Protocol Specification_ developed by the now-defunct TeleGrafix (for example, version 1.54 from July 1993). This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.  Besides RIPscrip, though, many videotex systems (information exchange systems involving a video screen) in the 1980s and early 1990s did not support displaying images or vector graphics in addition to text; an exception is CSA T500-1983/ANSI X3.110-1983, the North American Presentation Layer Protocol Syntax (for an overview see the series of articles titled "NAPLPS: A New Standard for Text and Graphics" in _BYTE_, February 1983, March 1983, April 1983, and May 1983).
 
 [^27]: I am reminded of the way textures were created for the modern game _QUOD_ by "Daivuk": they were stored as editing commands such as bevels, sunken areas, and tiling.
 

@@ -6875,12 +6875,12 @@ def _createBrushIndirect(color: any):
     )
     return struct.pack("<LHHLh", 7, 0x2FC, 0 if color else 1, cref, 0)
 
-def _selectObject(index: any):
+def _selectObject(index: int):
     if index < 0 or index > 0x7FFF:
         raise ValueError
     return struct.pack("<LHH", 4, 0x12D, index & 0xFFFF)
 
-def _deleteObject(index: any):
+def _deleteObject(index: int):
     if index < 0 or index > 0x7FFF:
         raise ValueError
     return struct.pack("<LHH", 4, 0x1F0, index & 0xFFFF)
@@ -9154,6 +9154,40 @@ def writepalette(
         _writeu16(ff, 0)
 
 if __name__ == "__main__":
+
+    def rgbToHsl(rgb):
+     return rgbToHsl01([x / 255.0 for x in rgb])
+
+    def rgbToHsl01(rgb):
+     vmax = max(max(rgb[0], rgb[1]), rgb[2])
+     vmin = min(min(rgb[0], rgb[1]), rgb[2])
+     vadd = vmax + vmin
+     lt = vadd / 2.0
+     if vmax == vmin:
+        return [0, 0, lt]
+     vd = vmax - vmin
+     divisor = vadd
+     if lt > 0.5:
+        divisor = 2.0 - vadd
+     s = vd / divisor
+     h = 0
+     hvd = vd / 2.0
+     deg60 = math.pi / 3
+     if rgb[0] == vmax:
+        h = ((vmax - rgb[2]) * deg60 + hvd) / vd
+        h = h - ((vmax - rgb[1]) * deg60 + hvd) / vd
+     elif rgb[2] == vmax:
+        h = math.pi * 4 / 3 + ((vmax - rgb[1]) * deg60 + hvd) / vd
+        h = h - ((vmax - rgb[0]) * deg60 + hvd) / vd
+     else:
+        h = math.pi * 2 / 3 + ((vmax - rgb[0]) * deg60 + hvd) / vd
+        h = h - ((vmax - rgb[2]) * deg60 + hvd) / vd
+     if h < 0:
+        h = math.pi * 2 - (-h) % (math.pi * 2)
+     if h >= math.pi * 2:
+        h = (h) % (math.pi * 2)
+     return [h / (math.pi * 2), s, lt]
+
     try:
         os.mkdir("palettes")
     except FileExistsError:
@@ -9243,9 +9277,17 @@ if __name__ == "__main__":
         + [[192, 220, 192], [160, 160, 164], [255, 251, 240], [166, 202, 240]],
         "Windows 20-Color Palette",
     )
+    def rankcolor(a):
+       ahsl=rgbToHsl(a)
+       return [0 if ahsl[1]==0 else 1,ahsl[0],ahsl[1],ahsl[2]]
+
+    def sortcolors(p):
+       p.sort(key=rankcolor)
+       return p
+
     writepalette(
         "palettes/vga-with-halfmixtures",
-        paletteandhalfhalf(classiccolors()),
+        sortcolors(paletteandhalfhalf(classiccolors())),
         "VGA Palette with Half-and-Half Mixtures",
         comment=[
             "NOTE: Images drawn with this palette should",
