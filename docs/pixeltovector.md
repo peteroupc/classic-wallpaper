@@ -10,7 +10,7 @@ The output should be a vector graphic with the following properties:
 
 - A point-sampled version of the vector graphic (without antialiasing or scaling) should closely match the input image.
 - The graphic is reasonably scalable, with horizontal and vertical scaling factors each from 50% through 300%.   The low end is given to accommodate displays with nonsquare pixel spacing; the high end, displays with dense pixel spacing.
-- Single-color line segments or curves that are one unit thick should be rendered as line or curve commands.
+- Simple outlines, in a single color, of line segments and curves should be rendered as line or curve commands.
 - Simple polygons of a single color in the input image should be rendered as such in the vector graphic.
 - Size blowup compared to the image should be reasonable (for example, no more than a 2-times blowup on average).  Notably, if the input image depicts a single-color polygon, the vector graphic should be a single-color polygon which often consumes less memory than the image.
 - Optional: Contours recognized as arcs, ellipses, or circles should be rendered as such.
@@ -75,4 +75,4 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^1]: An image with a high number of unique colors (say, 32 or more), is hard to convert to a vector graphic without sacrificing image quality.  While such images ought to be designed as vector graphics from the start, a simple upscaling and downscaling solution, such as bilinear filtering, is acceptable for such images, especially for the use case of user-interface graphics where scaling factors from 50% through 300% are expected.<br>Limited-color images greater than 64 &times; 64 are also of interest and occur among user-interface graphics (such as wizard graphics in Windows 95), but are not the main priority; indeed, the larger the image size, the more time the conversion to a vector graphic is expected to take.
 
-[^2]: In SVG, the stroke would also be marked with the `vector-effect:non-scaling-stroke` style, so that the stroke looks 1 unit thick regardless of scaling.
+[^2]: In SVG, the stroke would also be marked with the `vector-effect:non-scaling-stroke` style, so that the stroke's apparent "thickness" doesn't vary with scaling.

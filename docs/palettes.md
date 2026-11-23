@@ -1,6 +1,8 @@
 # Color Palettes for Classic-Style Graphics Projects
 
-This page gathers suggested limited-color palettes that graphics artists (for example, "pixel artists") and game developers can decide to adopt for their projects, when they wish for their creations to have a "classic" or "retro" look (for example, one that is characteristic of the year 1995 or earlier).  All of these palettes have 256 colors or fewer.  On this page, each color is a red&ndash;green&ndash;blue color, where each component ranges from 0 through 255.
+This page gathers suggested limited-color palettes that graphics artists (for example, "pixel artists") and game developers can decide to adopt for their projects, when they wish for their creations to have a "classic" or "retro" look (for example, one that is characteristic of the year 1995 or earlier).  Examples of such projects are graphics for classic-style [**video games**](https://peteroupc.github.io/graphics.html#Graphics_Challenge_for_Classic_Style_Games), [**user interfaces**](https://peteroupc.github.io/classic-wallpaper/docs/uielements.html), or [**desktop wallpaper**](https://peteroupc.github.io/classic-wallpaper/).
+
+All palettes in this page have 256 colors or fewer.  On this page, each color is a red&ndash;green&ndash;blue color, where each component ranges from 0 through 255.
 
 The color palettes suggested are as follows.
 
