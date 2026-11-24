@@ -30,11 +30,12 @@ In this document:
 
 - A _graphic_ means a visual depiction in the form of data.  Graphics include _images_ and _vector graphics_.
 - An _image_ is a graphic that is a rectangular array of pixel samples.  More generally, an image is as defined in [**"A Sprite Theory of Image Computing"**](https://alvyray.com/Memos/CG/Microsoft/5_sprite.pdf) by Alvy Ray Smith, but, in the present document, images are two-dimensional.
-- A _vector graphic_ is a two-dimensional graphic in the form of geometric drawing commands (such as line- or circle-drawing commands).
+- A _vector graphic_ is a two-dimensional graphic in the form of geometric drawing commands (such as commands that draw lines or circles or fill polygons).  A 2-dimensional geometric model is one kind of vector graphic.
+- A graphic is _black-and-white_ if its colors are limited to black and white, with no intermediate mixture of black and white.
 - A _display mode_ is a way to set up a computer display to show graphics.
 - _Screen resolution_ gives the number of columns and rows of pixels (point samples) a display mode can effectively show.  For example, if a display mode's screen resolution is 320 &times; 200, it can show 320 columns and 200 rows of pixels.[^1]
 - _Pixel density_ gives a display mode's horizontal and vertical pixel spacing, each in pixels per inch.[^2]
-- An _icon_ is a small graphic that represents a computer program, document, or resource.
+- An _icon_ is a small graphic that represents a computer program, document, resource, or command.
 - A _cursor_ is a small graphic that represents the mouse pointer on a computer display.
 - The abbreviation _bpc_ stands for bits per color component, also known as bits per color channel.
 - _Window borders_ are the outer edges of desktop windows.
@@ -79,7 +80,7 @@ The following are examples of system colors for drawing buttons and borders.  Th
 
 User-interface conventions other than Windows 95 may use only a subset of these system colors or derive some of them (such as the highlight or shadow color) from a base color (such as the button face color).[^8]
 
-This discussion does not apply to black-and-white buttons (buttons with colors limited to black and white).  For example, buttons in Mac OS versions before 8.0 and in Windows 1.x and 2.x were of that kind.
+This discussion does not apply to black-and-white buttons.  For example, buttons in Mac OS versions before 8.0 and in Windows 1.x and 2.x were of that kind.
 
 <a id=Traditional_Button_Styles></a>
 
@@ -98,7 +99,7 @@ The following appearances are traditionally seen in ordinary buttons:
 - _Mixed appearance_: The button's inner background is drawn&mdash;
 
     - such that the button face color and the button highlight color alternate every other pixel in a checkerboard pattern, or
-    - as a solid color that's a mixture of the button face color and the button highlight color.
+    - as a single color that's a mixture of the button face color and the button highlight color.
 
 The following is typical in buttons found in Windows versions 3.0 and 3.1 [^10], Windows 95 [^9], and applications for these systems:
 
@@ -171,22 +172,25 @@ In general, when user-interface graphics, including icons, cursors, and illustra
     - If a real-world object should have a 3-D look with a limited number of colors, that object is drawn in an isometric view (rather than straight on).[^19]  \(This doesn't apply to the edges of buttons.)
 - Real-world objects depicted in user-interface graphics have an illustrative look with clean lines and curves rather than an abstract, pencil- or brush-drawn, highly realistic, or even _photorealistic_ look. [^20]
 - From 1990 to about 2003, for graphics limited to the 16-color VGA palette[^15] or a palette with similar colors to that palette:
-    - Areas are filled with either a solid color in the palette or a dithered simulation of a solid color outside that palette.  If dithering occurs, it is mostly in the form of an alternating checkerboard pattern of two colors.  Error-diffusion dithering (such as Floyd&ndash;Steinberg dithering) tends to occur only if the graphic is black-and-white or the graphic is 64 &times; 64 or larger.
+    - Areas are filled with either a single color in the palette or a dithered simulation of a single color outside that palette.
     - Color gradient fills (smooth transitions from one color to another) and simulations of color gradients are rare (and then especially in backgrounds of illustrations), if not avoided.
-- Gradient fills, if present on graphics with 17 to 256 colors, are subtle.
+    - Dithering can be present, but it occurs less often than not.
+         - _Ordered dithering_ occurs to simulate a single color.  In most cases, this simulation is in the form of an alternating checkerboard pattern of two colors.  Most dithering is ordered dithering.
+         - _Error-diffusion dithering_ (such as Floyd&ndash;Steinberg dithering) occurs to simulate nonsolid areas of color, such as color gradient fills or where the graphic is a color-reduced version of a photograph.  This dithering occurs only if the graphic is a black-and-white image or an image that is 64 &times; 64 pixels or larger.
+- Color gradient fills, if present on graphics with 17 to 256 colors, are subtle.
 - Icons:
     - Before 1990, icons are limited to the two colors black and white, with optional transparency.[^21]
-    - Before 1995, black-and-white icons (with no intermediate mixture of black and white) from which a color version is derived do not use shading or hatch patterns to mimic shadows or solid colors.[^22]
+    - Before 1995, black-and-white icons from which a color version is derived do not use shading or hatch patterns to mimic shadows or single colors.[^22]
     - Icons with more than 32 colors are rare; more than 64 colors, very rare.
     - Icons for toolbars, menu items, and the like do not behave like typographic symbols (dingbats), unlike the tendency in the late 2010s. For example, they are not designed in the same way as letters and digits in typography; they can be colored; and they have less harmony with accompanying text than such symbols as the at-sign `@`.[^23]
     - Larger versions of originally 32 &times; 32 icons (for example, the 48 &times; 48 version) appear the same as the  original icon but with finer but nonessential detail.[^24]
-    - From 1990 to about 2003, dithering is generally used only to simulate a solid color, and mostly in cases where the colors available cannot be freely chosen (for example, the colors are limited to black and white, or they must come from the VGA palette). In colored icons, error-diffusion dithering is not used.[^25]
+    - From 1990 to about 2003, dithering is generally used only to simulate a single color, and mostly in cases where the colors available cannot be freely chosen (for example, the colors are limited to black and white, or they must come from the VGA palette). In colored icons, error-diffusion dithering is not used.[^25]
 - Cursors:
     - Most cursors are limited to the two colors black and white, with optional transparency.[^21]
     - Before 1990, cursors do not have colors other than black and white.
     - From 1990 to about 2003, cursors with colors other than black and white are rare, and cursors with more than 32 colors are very rare.  From 1995 to about 2003, cursors with colors limited to the VGA palette become more common, especially infrequently seen cursors such as the busy-wait cursor.
     - Before 2003, and even before 1995, each shape of a black-and-white cursor is generally either white with a black outline (approximated with integer coordinates) or vice versa, to make the cursor easy to see over any background.
-    - From 1990 to about 2003, dithering is generally used only to simulate a solid color, and mostly in cases where the colors available cannot be freely chosen.  Error-diffusion dithering is not used.
+    - From 1990 to about 2003, dithering is generally used only to simulate a single color, and mostly in cases where the colors available cannot be freely chosen.  Error-diffusion dithering is not used.
 
 > **Note:** After about 2003, user-interface graphics tend to be 8-bpc images (with or without translucent pixels) and are less interesting to discuss here, as 16- and 256-color versions are often made from those images through dithering or similar techniques.
 
@@ -194,7 +198,7 @@ In general, from about 1990 to about 1997, user-interface text was drawn in one 
 
 ![**The word "Sample" in blue, shadowed above by gray and below by black.**](shadowed.png)
 
-New user-interface graphics with limited colors ought to be designed as vector graphics (geometric models; for example, line segments and filled polygons) from the start, even if they are meant to resemble the drawing style given in this section when in their original size.[^27]  Existing images that function like icons should be [**converted to vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if they are simple enough.
+New user-interface graphics with limited colors ought to be designed as vector graphics from the start, even if they are meant to resemble the drawing style given in this section when in their original size.[^27]  Existing images that function like icons should be [**converted to vector graphics**](https://peteroupc.github.io/classic-wallpaper/docs/pixeltovector.html) if they are simple enough.
 
 <a id=Animations></a>
 
@@ -228,7 +232,7 @@ There are many books and other works that discuss design matters on traditional 
 
 ## Worthy Mentions
 
-- The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics (geometric models), not images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
+- The `QLCDNumber` interface element, from the Qt framework, displays a number in a form resembling seven-segment displays.  The number's digits are vector graphics, not images, and `QLCDNumber` supports a drawing mode where the upper and left-hand outlines are drawn in a lighter color than the lower and right-hand outlines.
 - The [**Motif interface toolkit**](https://github.com/fjardon/motif) generates four kinds of system colors from a background color: a selection color, a foreground (text) color (which is either black or white), an upper shadow color, and a lower shadow color (generally darker than the upper shadow color), using an algorithm like the following that depends on the background color. [^53]
 
     1. First, calculate the background color's "brightness".  If _r_, _g_, and _b_ are the color's red, green, and blue components, and each component is from 0 through 1, the "brightness" is $(3/4)\times ((r+g+b)/3) + (1/4)\times(0.3\times r+0.59\times g+0.11\times b)$.
@@ -300,7 +304,7 @@ Any copyright to this page is released to the Public Domain.  In case this is no
 
 [^25]: A notable exception is found in Windows 98's 256-color folder icons.
 
-[^26]: For example, see the discussion on buttons in the _ RIPscrip Graphics Protocol Specification_ developed by the now-defunct TeleGrafix (for example, version 1.54 from July 1993). This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.  Besides RIPscrip, though, many videotex systems (information exchange systems involving a video screen) in the 1980s and early 1990s did not support displaying images or vector graphics in addition to text; an exception is CSA T500-1983/ANSI X3.110-1983, the North American Presentation Layer Protocol Syntax (for an overview see the series of articles titled "NAPLPS: A New Standard for Text and Graphics" in _BYTE_, February 1983, March 1983, April 1983, and May 1983).
+[^26]: For example, see the discussion on buttons in the _ RIPscrip Graphics Protocol Specification_ developed by the now-defunct TeleGrafix (for example, version 1.54 from July 1993). This specification was designed for building graphical user interfaces for online bulletin board systems under the EGA display mode.  Besides RIPscrip, though, many videotex systems (information exchange systems involving a video screen) in the 1980s and early 1990s did not support displaying images or line drawings in addition to text; an exception is CSA T500-1983/ANSI X3.110-1983, the North American Presentation Layer Protocol Syntax (for an overview see the series of articles titled "NAPLPS: A New Standard for Text and Graphics" in _BYTE_, February 1983, March 1983, April 1983, and May 1983).
 
 [^27]: I am reminded of the way textures were created for the modern game _QUOD_ by "Daivuk": they were stored as editing commands such as bevels, sunken areas, and tiling.
 

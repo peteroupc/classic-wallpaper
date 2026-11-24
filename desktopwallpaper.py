@@ -435,7 +435,7 @@ def magickgradientditherfilter(
         ret += ["-remap", "mpr:z"]
     return ret
 
-# ImageMagick command for clearing an image with a solid color.
+# ImageMagick command for clearing an image with a single color.
 def solid(bg: any = [192, 192, 192]):
     if bg == None or len(bg) < 3:
         raise ValueError
@@ -4654,9 +4654,9 @@ def floydSteinbergDither(
 # value of 'alpha' (default value for 'alpha' is False).
 # If 'fast' is True, use a smaller dither matrix. The default value for
 # 'fast' is False.
-# Example: The following function generates an 8 &times; 8 image of a solid color simulated
-# by the colors in the specified color palette.  By default, the palette is the same
-# as that returned by the _classiccolors_ function.  The solid color is a three-element
+# Example: The following function generates an 8 &times; 8 image of a color that is
+# simulated by the colors in the specified color palette.  By default, the palette is the same
+# as that returned by the _classiccolors_ function.  The simulated color is a three-element
 # list of a color as described for the blankimage() function.
 #
 # def ditherBrush(color:any, palette:list=None):
@@ -9244,8 +9244,8 @@ if __name__ == "__main__":
         paletteandhalfhalf(cgacolors()),
         "Canonical CGA Palette with Half-and-Half Mixtures",
         comment=[
-            "NOTE: Images drawn with this palette should",
-            'be in solid colors only; "manual" dithering patterns',
+            "NOTE: When drawing images with this palette,",
+            '"manual" dithering patterns',
             "to simulate off-palette colors should be avoided.",
             "The `desktopwallpaper` Python module contains the method",
             "`dw.halfhalfditherimage(image,width,height,dw.cgacolors())`",
@@ -9290,8 +9290,8 @@ if __name__ == "__main__":
         sortcolors(paletteandhalfhalf(classiccolors())),
         "VGA Palette with Half-and-Half Mixtures",
         comment=[
-            "NOTE: Images drawn with this palette should",
-            'be in solid colors only; "manual" dithering patterns',
+            "NOTE: When drawing images with this palette,",
+            '"manual" dithering patterns',
             "to simulate off-palette colors should be avoided.",
             "The `desktopwallpaper` Python module contains the method",
             "`dw.halfhalfditherimage(image,width,height,dw.classiccolors())`",

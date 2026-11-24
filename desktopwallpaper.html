@@ -1820,9 +1820,9 @@ Data descriptors defined here:<br>
 #&nbsp;value&nbsp;of&nbsp;'alpha'&nbsp;(default&nbsp;value&nbsp;for&nbsp;'alpha'&nbsp;is&nbsp;False).<br>
 #&nbsp;If&nbsp;'fast'&nbsp;is&nbsp;True,&nbsp;use&nbsp;a&nbsp;smaller&nbsp;dither&nbsp;matrix.&nbsp;The&nbsp;default&nbsp;value&nbsp;for<br>
 #&nbsp;'fast'&nbsp;is&nbsp;False.<br>
-#&nbsp;Example:&nbsp;The&nbsp;following&nbsp;function&nbsp;generates&nbsp;an&nbsp;8&nbsp;&amp;times;&nbsp;8&nbsp;image&nbsp;of&nbsp;a&nbsp;solid&nbsp;color&nbsp;simulated<br>
-#&nbsp;by&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;specified&nbsp;color&nbsp;palette.&nbsp;&nbsp;By&nbsp;default,&nbsp;the&nbsp;palette&nbsp;is&nbsp;the&nbsp;same<br>
-#&nbsp;as&nbsp;that&nbsp;returned&nbsp;by&nbsp;the&nbsp;_classiccolors_&nbsp;function.&nbsp;&nbsp;The&nbsp;solid&nbsp;color&nbsp;is&nbsp;a&nbsp;three-element<br>
+#&nbsp;Example:&nbsp;The&nbsp;following&nbsp;function&nbsp;generates&nbsp;an&nbsp;8&nbsp;&amp;times;&nbsp;8&nbsp;image&nbsp;of&nbsp;a&nbsp;color&nbsp;that&nbsp;is<br>
+#&nbsp;simulated&nbsp;by&nbsp;the&nbsp;colors&nbsp;in&nbsp;the&nbsp;specified&nbsp;color&nbsp;palette.&nbsp;&nbsp;By&nbsp;default,&nbsp;the&nbsp;palette&nbsp;is&nbsp;the&nbsp;same<br>
+#&nbsp;as&nbsp;that&nbsp;returned&nbsp;by&nbsp;the&nbsp;_classiccolors_&nbsp;function.&nbsp;&nbsp;The&nbsp;simulated&nbsp;color&nbsp;is&nbsp;a&nbsp;three-element<br>
 #&nbsp;list&nbsp;of&nbsp;a&nbsp;color&nbsp;as&nbsp;described&nbsp;for&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;function.<br>
 #<br>
 #&nbsp;def&nbsp;ditherBrush(color:any,&nbsp;palette:list=None):<br>
@@ -2022,7 +2022,7 @@ Data descriptors defined here:<br>
     sh: int = 24
 )</dt><dd><span class="code">#&nbsp;Draw&nbsp;a&nbsp;slider&nbsp;thumb&nbsp;with&nbsp;a&nbsp;three-dimensional&nbsp;look.<br>
 #&nbsp;'dst'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha:bool=False.</span></dd></dl>
- <dl><dt><a name="-solid"><strong>solid</strong></a>(bg: any = [192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;solid&nbsp;color.</span></dd></dl>
+ <dl><dt><a name="-solid"><strong>solid</strong></a>(bg: any = [192, 192, 192])</dt><dd><span class="code">#&nbsp;ImageMagick&nbsp;command&nbsp;for&nbsp;clearing&nbsp;an&nbsp;image&nbsp;with&nbsp;a&nbsp;single&nbsp;color.</span></dd></dl>
  <dl><dt><a name="-splitmask"><strong>splitmask</strong></a>(image: list, width: int, height: int)</dt><dd><span class="code">#&nbsp;Splits&nbsp;a&nbsp;4-byte-per-pixel&nbsp;image&nbsp;(four&nbsp;elements&nbsp;per&nbsp;pixel)&nbsp;into&nbsp;an<br>
 #&nbsp;opaque&nbsp;color&nbsp;image&nbsp;and&nbsp;a&nbsp;monochrome&nbsp;alpha&nbsp;matte&nbsp;((255,255,255)&nbsp;means&nbsp;transparent,&nbsp;(0,0,0)&nbsp;means&nbsp;opaque),&nbsp;in&nbsp;that&nbsp;order.<br>
 #&nbsp;The&nbsp;parameter&nbsp;'image'&nbsp;has&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the&nbsp;<a href="#-blankimage">blankimage</a>()&nbsp;method&nbsp;with&nbsp;alpha=True.<br>

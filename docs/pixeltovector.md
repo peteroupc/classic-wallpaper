@@ -14,7 +14,7 @@ The output should be a vector graphic with the following properties:
 - Simple polygons of a single color in the input image should be rendered as such in the vector graphic.
 - Size blowup compared to the image should be reasonable (for example, no more than a 2-times blowup on average).  Notably, if the input image depicts a single-color polygon, the vector graphic should be a single-color polygon which often consumes less memory than the image.
 - Optional: Contours recognized as arcs, ellipses, or circles should be rendered as such.
-- Optional: The algorithm should recognize half-tone dithered areas as solid-colored areas.
+- Optional: The algorithm should recognize half-tone dithered areas as single-color areas.
 
 In addition, the algorithm:
 

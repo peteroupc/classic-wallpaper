@@ -35,7 +35,7 @@ meeting the requirements given earlier. (In this sense, tileable _grayscale_ ima
 In general, the following are not within the scope of this challenge.
 
 - Photographic images (see note 2 in "[**Wallpaper Generation Notes**](#Wallpaper_Generation_Notes)", later in this document).
-- Graphics with a single solid color on all four sides; such graphics are trivially tileable.
+- Graphics with a single color on all four sides; such graphics are trivially tileable.
 - Graphics that can be tiled in one dimension only, such as those depicting horizontal or vertical borders with an "infinitely" extending background.
 
 <a id=Pixel_Dimensions></a>
@@ -93,7 +93,7 @@ The texture generator at [**`schalkt/tgen`**](https://github.com/schalkt/tgen), 
 
 5. One example of tileable noise can be generated using the "[**diamond-square algorithm**](https://en.wikipedia.org/wiki/Diamond-square_algorithm)".
 
-6. One way to generate a wallpaper image is by blending a solid color (or another tileable wallpaper) with a tileable image consisting of only transparent pixels and semitransparent and opaque black pixels (such as a masonry pattern).
+6. One way to generate a wallpaper image is by blending a single-color image (or another tileable wallpaper) with a tileable image consisting of only transparent pixels and semitransparent and opaque black pixels (such as a masonry pattern).
 
 7. **Stochastic tiling:** Wang tiles are a finite set of tiles (here, wallpaper graphics) that can cover an arbitrary grid without seams.  One example is the [**set of 16 tiles**](https://web.archive.org/web/20150612010851/http://www.cr31.co.uk/stagecast/wang/intro.html) whose edges have two variations each: two upper-edge, two lower-edge, two left-edge, and two right-edge variations.
 
