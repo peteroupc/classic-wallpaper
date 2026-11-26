@@ -42,9 +42,9 @@ There is an algorithm by Kopf and Lischinski ("[**Depixelizing Pixel Art**](http
 
 Potrace version 1.16 (2019) likewise suffers from points 1 and 2, and also supports only black-and-white opaque images and not color ones.
 
-[**Algorithms designed for scaling images**](http://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms), such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting an image to a vector graphic.  In any case, none of the algorithms mentioned renders 1-unit-thick lines as vector line commands.
+[**Algorithms designed for scaling images**](http://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms), such as Eric Johnston's `EPX`, Derek Liauw Kie Fa's `2xSaI`, Maxim Stepin's `Hqx`, and Andrea Mazzoleni's `Scale2x`, have no known adaptation for converting an image to a vector graphic.  In any case, none of the algorithms mentioned renders simple lines as vector line commands.
 
-A [**related project**](https://github.com/eviltrout/agi-upscale) involves drawing enlarged versions of a vector graphic defined essentially by 1-unit-thick lines and by flood fills rather than polygons.
+A [**related project**](https://github.com/eviltrout/agi-upscale) involves drawing enlarged versions of a vector graphic defined essentially by simple line segments and by flood fills rather than polygons.
 
 <a id=Example></a>
 
